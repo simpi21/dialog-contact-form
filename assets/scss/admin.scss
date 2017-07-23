@@ -1,0 +1,25 @@
+// sass --watch assets/scss/admin.scss:assets/css/admin.css --style compressed
+@import 'admin/accordion';
+
+.sp-card {
+  box-sizing: border-box;
+  margin: 1rem 0;
+}
+
+.ui-state-highlight {
+  height: 3rem;
+  margin: 1rem 0;
+  border: 1px solid rgba(#000, 0.1);
+  background-color: rgba(#000, 0.1);
+}
+
+.col-addOptions,
+.col-numberOption {
+  display: none;
+}
+
+code.mailtag.code {
+  display: inline-block;
+  margin: 0 5px 5px 0;
+  padding: 5px 8px;
+}

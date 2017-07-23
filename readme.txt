@@ -1,18 +1,18 @@
 === Dialog Contact Form ===
-Contributors: sayful, sayfulit
-Tags: contact, contact form, dialog contact form, email, feedback, form, modal form
+Contributors: sayful
+Tags: contact, contact form, email, feedback, form, modal, dialog
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3LZWQTHEVYWCY
-Requires at least: 3.6
+Requires at least: 4.0
 Tested up to: 4.8
-Stable tag: 1.2.1
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Stable tag: 2.0.0
+License: GPLv3
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-A very simple WordPress contact form with AJAX and Captcha validation.
+Just another WordPress contact form plugin. Simple but flexible.
 
 == Description ==
 
-A very simple WordPress contact form with Captcha validation and AJAX.
+Just another WordPress contact form plugin. Simple but flexible.
 
 = Features =
 * Very simple and lightweight.

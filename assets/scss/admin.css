@@ -55,3 +55,11 @@
 .col-numberOption {
     display: none;
 }
+
+code.mailtag.code {
+    display: inline-block;
+    margin: 0 5px 5px 0;
+    padding: 5px 8px;
+}
+
+/*# sourceMappingURL=admin.css.map */
