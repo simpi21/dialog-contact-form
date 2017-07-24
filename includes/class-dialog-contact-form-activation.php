@@ -34,6 +34,7 @@ if ( ! class_exists( 'DialogContactFormActivation' ) ):
 				update_post_meta( $post_id, '_contact_form_fields', $this->form_field() );
 				update_post_meta( $post_id, '_contact_form_messages', $this->form_message() );
 				update_post_meta( $post_id, '_contact_form_config', $this->form_config() );
+				update_post_meta( $post_id, '_contact_form_mail', $this->form_mail() );
 			}
 
 		}
@@ -113,6 +114,10 @@ if ( ! class_exists( 'DialogContactFormActivation' ) ):
 
 		private function form_message() {
 			return dcf_validation_messages();
+		}
+
+		private function form_mail() {
+			return dcf_default_mail_template();
 		}
 	}
 
