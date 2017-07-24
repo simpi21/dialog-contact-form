@@ -53,6 +53,10 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
 				update_post_meta( $post_id, '_contact_form_messages', $_POST['messages'] );
 			}
 
+			if ( isset( $_POST['mail'] ) ) {
+				update_post_meta( $post_id, '_contact_form_mail', $_POST['mail'] );
+			}
+
 			if ( isset( $_POST['field']['field_id'] ) ) {
 				$_field    = $_POST['field'];
 				$_field_id = $_field['field_id'];
@@ -119,7 +123,15 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
 			add_meta_box(
 				"dialog-cf-configuration",
 				__( "Configuration", 'dialog-contact-form' ),
-				array( $this, 'meta_boxe_config_cb' ),
+				array( $this, 'meta_box_config_cb' ),
+				$this->post_type,
+				"side",
+				"high"
+			);
+			add_meta_box(
+				"dialog-cf-mail-template",
+				__( "Mail", 'dialog-contact-form' ),
+				array( $this, 'meta_box_mail_template_cb' ),
 				$this->post_type,
 				"normal",
 				"high"
@@ -135,12 +147,16 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
 
 		}
 
+		public function meta_box_config_cb(  ) {
+			include_once DIALOG_CONTACT_FORM_VIEWS . '/configuration.php';
+		}
+
 		public function meta_boxe_messages_cb() {
 			include_once DIALOG_CONTACT_FORM_VIEWS . '/messages.php';
 		}
 
-		public function meta_boxe_config_cb() {
-			include_once DIALOG_CONTACT_FORM_VIEWS . '/configuration.php';
+		public function meta_box_mail_template_cb() {
+			include_once DIALOG_CONTACT_FORM_VIEWS . '/mail-template.php';
 		}
 
 		public function meta_box_fields_cb() {

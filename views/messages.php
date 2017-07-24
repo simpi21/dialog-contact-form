@@ -42,7 +42,7 @@ $messages  = wp_parse_args( $_messages, $defaults );
         </td>
     </tr>
     <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid Email', 'dialog-contact-form' ); ?></label></th>
+        <th scope="row"><label><?php esc_html_e( 'Invalid email', 'dialog-contact-form' ); ?></label></th>
         <td>
             <input name="messages[invalid_email]" type="text"
                    value="<?php echo esc_attr( $messages['invalid_email'] ); ?>" class="widefat">
@@ -63,24 +63,94 @@ $messages  = wp_parse_args( $_messages, $defaults );
         </td>
     </tr>
     <tr>
-        <th scope="row"><label><?php esc_html_e( 'Too Short', 'dialog-contact-form' ); ?></label></th>
+        <th scope="row"><label><?php esc_html_e( 'Too short', 'dialog-contact-form' ); ?></label></th>
         <td>
             <input name="messages[invalid_too_short]" type="text"
                    value="<?php echo esc_attr( $messages['invalid_too_short'] ); ?>" class="widefat">
         </td>
     </tr>
     <tr>
-        <th scope="row"><label><?php esc_html_e( 'Number Too Short', 'dialog-contact-form' ); ?></label></th>
+        <th scope="row"><label><?php esc_html_e( 'Invalid number', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_number]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_number'] ); ?>" class="widefat">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Number too short', 'dialog-contact-form' ); ?></label></th>
         <td>
             <input name="messages[number_too_small]" type="text"
                    value="<?php echo esc_attr( $messages['number_too_small'] ); ?>" class="widefat">
         </td>
     </tr>
     <tr>
-        <th scope="row"><label><?php esc_html_e( 'Number Too Large', 'dialog-contact-form' ); ?></label></th>
+        <th scope="row"><label><?php esc_html_e( 'Number too large', 'dialog-contact-form' ); ?></label></th>
         <td>
             <input name="messages[number_too_large]" type="text"
                    value="<?php echo esc_attr( $messages['number_too_large'] ); ?>" class="widefat">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Invalid integer', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_int]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_int'] ); ?>" class="widefat">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Invalid alphabetic letters', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_alpha]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_alpha'] ); ?>" class="widefat">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Invalid alphanumeric characters', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_alnum]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_alnum'] ); ?>" class="widefat">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Invalid alphanumeric characters, dashes and underscores', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_alnumdash]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_alnumdash'] ); ?>" class="widefat">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Invalid date', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_date]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_date'] ); ?>" class="widefat">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Invalid IP address', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_ip]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_ip'] ); ?>" class="widefat">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Invalid user login', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_user_login]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_user_login'] ); ?>" class="widefat">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Invalid username', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_username]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_username'] ); ?>" class="widefat">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Invalid user email', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_user_email]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_user_email'] ); ?>" class="widefat">
         </td>
     </tr>
 </table>

@@ -51,13 +51,13 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			}
 
 			$form_id  = intval( $_POST['_user_form_id'] );
-			$config   = get_post_meta( $form_id, '_contact_form_config', true );
+			$mail     = get_post_meta( $form_id, '_contact_form_mail', true );
 			$messages = get_post_meta( $form_id, '_contact_form_messages', true );
 			$fields   = get_post_meta( $form_id, '_contact_form_fields', true );
 
 			$field_name = array_column( $fields, 'field_name' );
 
-			do_action( 'dcf_before_validation', $form_id, $config, $fields, $messages );
+			do_action( 'dcf_before_validation', $form_id, $mail, $fields, $messages );
 
 			if ( ! $this->validate->is_array( $fields ) ) {
 				return;
@@ -91,7 +91,7 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 
 			do_action( 'dcf_before_send_mail' );
 
-			$mail_sent = $this->send_mail( $field_name, $config );
+			$mail_sent = $this->send_mail( $field_name, $mail );
 
 			do_action( 'dcf_after_send_mail', $mail_sent );
 
@@ -132,13 +132,13 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			}
 
 			$form_id  = intval( $_POST['_user_form_id'] );
-			$config   = get_post_meta( $form_id, '_contact_form_config', true );
+			$mail     = get_post_meta( $form_id, '_contact_form_mail', true );
 			$fields   = get_post_meta( $form_id, '_contact_form_fields', true );
 			$messages = get_post_meta( $form_id, '_contact_form_messages', true );
 
 			$field_name = array_column( $fields, 'field_name' );
 
-			do_action( 'dcf_before_ajax_validation', $form_id, $config, $fields, $messages );
+			do_action( 'dcf_before_ajax_validation', $form_id, $mail, $fields, $messages );
 
 			if ( ! $this->validate->is_array( $fields ) ) {
 				return;
@@ -171,7 +171,7 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 
 			do_action( 'dcf_before_ajax_send_mail' );
 
-			$mail_sent = $this->send_mail( $field_name, $config );
+			$mail_sent = $this->send_mail( $field_name, $mail );
 
 			do_action( 'dcf_after_ajax_send_mail', $mail_sent );
 
@@ -191,8 +191,6 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 				);
 				wp_send_json( $response, 500 );
 			}
-
-
 		}
 
 		/**
@@ -207,14 +205,14 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 		public function validate_field( $value, $field, $messages ) {
 
 			$defaults = dcf_validation_messages();
-			$messages  = wp_parse_args( $messages, $defaults );
+			$messages = wp_parse_args( $messages, $defaults );
 
 			$message        = array();
 			$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
 
 			// If field type is email, url or number
 			// Add appropriate validation rule
-			if ( in_array( $field['field_type'], array( 'email', 'url', 'number' ) ) ) {
+			if ( in_array( $field['field_type'], array( 'email', 'url', 'number', 'date' ) ) ) {
 				$validate_rules[] = $field['field_type'];
 			}
 			// Make sure, validation rules are unique
@@ -319,29 +317,34 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 		 * Send Mail to User
 		 *
 		 * @param $field_name
-		 * @param $config
+		 * @param $mail
 		 *
 		 * @internal param $headers
 		 * @return bool
 		 */
-		private function send_mail( $field_name, $config ) {
+		private function send_mail( $field_name, $mail ) {
 			$placeholder = array();
 			foreach ( $field_name as $key => $_name ) {
 				$placeholder[ "%" . $_name . "%" ] = $_POST[ $_name ];
 			}
 
-			$subject = $config['subject'];
+			$subject = $mail['subject'];
 			$subject = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $subject );
 			$subject = esc_attr( $subject );
 
-			$body    = $config['body'];
+			$body    = $mail['body'];
 			$body    = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $body );
 			$body    = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $body );
 			$message = wp_kses( $body, wp_kses_allowed_html( 'post' ) );
 
-			$receiver    = $config['receiver'];
-			$senderEmail = sanitize_email( $config['senderEmail'] );
-			$senderName  = esc_attr( $config['senderName'] );
+			$receiver = $mail['receiver'];
+			$receiver = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $receiver );
+
+			$senderEmail = sanitize_email( $mail['senderEmail'] );
+			$senderEmail = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderEmail );
+
+			$senderName = esc_attr( $mail['senderName'] );
+			$senderName = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderName );
 
 			$headers   = array();
 			$headers[] = 'Content-Type: text/html; charset=UTF-8';

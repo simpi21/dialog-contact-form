@@ -1,0 +1,7 @@
+#Folder
+.idea
+.sass-cache
+
+#Files
+assets/css/admin.css.map
+assets/css/style.css.map

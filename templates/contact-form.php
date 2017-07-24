@@ -165,13 +165,12 @@ if ( $fields ): ?>
 			echo '</p>';
 			echo '</div>';
 		endforeach;
+
+		// Submit button
+		printf( '<div class="field column is-12"><p class="%s"><button type="submit" class="button dcf-submit">%s</button></p></div>',
+			( isset( $config['btnAlign'] ) && $config['btnAlign'] == 'right' ) ? 'control level-right' : 'control level-left',
+			esc_attr( $config['btnLabel'] )
+		);
 		?>
-
-        <div class="field column is-12">
-            <p class="control">
-                <button type="submit" class="button is-primary"><?php echo esc_attr( $config['btnLabel'] ); ?></button>
-            </p>
-        </div>
-
     </form>
 <?php endif; ?>
