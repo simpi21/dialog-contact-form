@@ -2,9 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
-if ( ! class_exists( 'DialogContactFormSMPT' ) ):
+if ( ! class_exists( 'DialogContactFormSettings' ) ):
 
-	class DialogContactFormSMPT {
+	class DialogContactFormSettings {
 
 		private $plugin_name = 'dcf-settings';
 
@@ -16,10 +16,10 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 		protected static $instance = null;
 
 		/**
-		 * Main DialogContactFormSMPT Instance
-		 * Ensures only one instance of DialogContactFormSMPT is loaded or can be loaded.
+		 * Main DialogContactFormSettings Instance
+		 * Ensures only one instance of DialogContactFormSettings is loaded or can be loaded.
 		 *
-		 * @return DialogContactFormSMPT - Main instance
+		 * @return DialogContactFormSettings - Main instance
 		 */
 		public static function init() {
 			if ( is_null( self::$instance ) ) {
@@ -48,7 +48,7 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 		 */
 		public function phpmailer_config( PHPMailer $phpmailer ) {
 
-			$_smpt = get_option( '_dcf_smpt' );
+			$_smpt = get_option( 'dialog_contact_form' );
 			if ( ! $_smpt ) {
 				return;
 			}
@@ -89,27 +89,6 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 				$this->plugin_name,
 				array( $this, 'admin_menu_callback' )
 			);
-		}
-
-		/**
-		 * Options page callback
-		 */
-		public function admin_menu_callback() {
-			// Set class property
-			$this->options = get_option( '_dcf_smpt' );
-			?>
-            <div class="wrap">
-                <h1><?php esc_html_e( 'Dialog Contact Form Settings', 'dialog-contact-form' ); ?></h1>
-                <form method="post" action="options.php">
-					<?php
-					// This prints out all hidden setting fields
-					settings_fields( '_shapla_smpt_option_group' );
-					do_settings_sections( '_shapla_smpt_settings_page' );
-					submit_button();
-					?>
-                </form>
-            </div>
-			<?php
 		}
 
 		/**
@@ -156,90 +135,111 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 		}
 
 		/**
+		 * Options page callback
+		 */
+		public function admin_menu_callback() {
+			// Set class property
+			$this->options = get_option( 'dialog_contact_form' );
+			?>
+            <div class="wrap">
+                <h1><?php esc_html_e( 'Dialog Contact Form Settings', 'dialog-contact-form' ); ?></h1>
+                <form method="post" action="options.php">
+					<?php
+					// This prints out all hidden setting fields
+					settings_fields( '_dcf_option_group' );
+					do_settings_sections( '_dcf_settings_page' );
+					submit_button();
+					?>
+                </form>
+            </div>
+			<?php
+		}
+
+		/**
 		 * Register and add settings
 		 */
 		public function page_init() {
 			register_setting(
-				'_shapla_smpt_option_group',
-				'_dcf_smpt',
+				'_dcf_option_group',
+				'dialog_contact_form',
 				array( $this, 'sanitize' )
 			);
 
 			add_settings_section(
-				'setting_section_id',
+				'dcf_smpt_server_section',
 				esc_html__( 'SMTP Server Settings', 'dialog-contact-form' ),
 				array( $this, 'print_section_info' ),
-				'_shapla_smpt_settings_page'
+				'_dcf_settings_page'
 			);
 			add_settings_section(
-				'additional_section_id',
+				'dcf_additional_mail_section',
 				esc_html__( 'Additional Mail Settings', 'dialog-contact-form' ),
 				array( $this, 'print_section_info' ),
-				'_shapla_smpt_settings_page'
+				'_dcf_settings_page'
 			);
 
 			add_settings_field(
 				'mailer',
 				esc_html__( 'Mailer', 'dialog-contact-form' ),
 				array( $this, 'mailer_callback' ),
-				'_shapla_smpt_settings_page',
-				'setting_section_id'
+				'_dcf_settings_page',
+				'dcf_smpt_server_section'
 			);
 
 			add_settings_field(
 				'smpt_host',
 				esc_html__( 'SMPT Host', 'dialog-contact-form' ),
 				array( $this, 'smpt_host_callback' ),
-				'_shapla_smpt_settings_page',
-				'setting_section_id'
+				'_dcf_settings_page',
+				'dcf_smpt_server_section'
 			);
 
 			add_settings_field(
 				'smpt_username',
 				esc_html__( 'SMPT Username', 'dialog-contact-form' ),
 				array( $this, 'smpt_username_callback' ),
-				'_shapla_smpt_settings_page',
-				'setting_section_id'
+				'_dcf_settings_page',
+				'dcf_smpt_server_section'
 			);
 
 			add_settings_field(
 				'smpt_password',
 				esc_html__( 'SMPT Password', 'dialog-contact-form' ),
 				array( $this, 'smpt_password_callback' ),
-				'_shapla_smpt_settings_page',
-				'setting_section_id'
+				'_dcf_settings_page',
+				'dcf_smpt_server_section'
 			);
 
 			add_settings_field(
 				'smpt_port',
 				esc_html__( 'SMPT Port', 'dialog-contact-form' ),
 				array( $this, 'smpt_port_callback' ),
-				'_shapla_smpt_settings_page',
-				'setting_section_id'
+				'_dcf_settings_page',
+				'dcf_smpt_server_section'
 			);
 
 			add_settings_field(
 				'encryption',
 				esc_html__( 'Encryption', 'dialog-contact-form' ),
 				array( $this, 'smpt_secure_callback' ),
-				'_shapla_smpt_settings_page',
-				'setting_section_id'
+				'_dcf_settings_page',
+				'dcf_smpt_server_section'
 			);
 
 			add_settings_field(
 				'smpt_from',
 				esc_html__( 'Sender Email', 'dialog-contact-form' ),
 				array( $this, 'smpt_from_callback' ),
-				'_shapla_smpt_settings_page',
-				'additional_section_id'
+				'_dcf_settings_page',
+				'dcf_additional_mail_section'
 			);
 
 			add_settings_field(
 				'smpt_from_name',
 				esc_html__( 'Sender Name', 'dialog-contact-form' ),
 				array( $this, 'smpt_from_name_callback' ),
-				'_shapla_smpt_settings_page',
-				'additional_section_id'
+				'_dcf_settings_page',
+				'dcf_additional_mail_section'
 			);
 		}
 
@@ -248,14 +248,14 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 
 		public function mailer_callback() {
 			printf(
-				'<label><input name="_dcf_smpt[mailer]" value="1" %s type="checkbox"> Send all emails via SMPT</label>',
+				'<label><input name="dialog_contact_form[mailer]" value="1" %s type="checkbox"> Send all emails via SMPT</label>',
 				isset( $this->options['mailer'] ) ? 'checked="checked"' : ''
 			);
 		}
 
 		public function smpt_host_callback() {
 			printf(
-				'<input type="text" id="smpt_host" name="_dcf_smpt[smpt_host]" value="%s" />',
+				'<input type="text" id="smpt_host" name="dialog_contact_form[smpt_host]" value="%s" />',
 				isset( $this->options['smpt_host'] ) ? esc_attr( $this->options['smpt_host'] ) : ''
 			);
 			printf(
@@ -266,7 +266,7 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 
 		public function smpt_username_callback() {
 			printf(
-				'<input type="text" id="smpt_username" name="_dcf_smpt[smpt_username]" value="%s" />',
+				'<input type="text" id="smpt_username" name="dialog_contact_form[smpt_username]" value="%s" />',
 				isset( $this->options['smpt_username'] ) ? esc_attr( $this->options['smpt_username'] ) : ''
 			);
 			printf(
@@ -277,7 +277,7 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 
 		public function smpt_password_callback() {
 			printf(
-				'<input type="text" id="smpt_password" name="_dcf_smpt[smpt_password]" value="%s" />',
+				'<input type="text" id="smpt_password" name="dialog_contact_form[smpt_password]" value="%s" />',
 				isset( $this->options['smpt_password'] ) ? esc_attr( $this->options['smpt_password'] ) : ''
 			);
 			printf(
@@ -288,7 +288,7 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 
 		public function smpt_port_callback() {
 			printf(
-				'<input type="text" id="smpt_port" name="_dcf_smpt[smpt_port]" value="%s" />',
+				'<input type="text" id="smpt_port" name="dialog_contact_form[smpt_port]" value="%s" />',
 				isset( $this->options['smpt_port'] ) ? absint( $this->options['smpt_port'] ) : ''
 			);
 			printf(
@@ -307,7 +307,7 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 			foreach ( $encryption as $key => $value ) {
 				$checked = ( $_val == $key ) ? 'checked="checked"' : '';
 				printf(
-					'<label><input type="radio" name="_dcf_smpt[encryption]" value="%s" %s> %s</label><br>',
+					'<label><input type="radio" name="dialog_contact_form[encryption]" value="%s" %s> %s</label><br>',
 					esc_attr( $key ),
 					$checked,
 					esc_attr( $value )
@@ -325,7 +325,7 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 			$senderEmail = sprintf( 'noreply@%s', $senderEmail );
 
 			printf(
-				'<input type="email" id="smpt_from" name="_dcf_smpt[smpt_from]" value="%s" />',
+				'<input type="email" id="smpt_from" name="dialog_contact_form[smpt_from]" value="%s" />',
 				isset( $this->options['smpt_from'] ) ? esc_attr( $this->options['smpt_from'] ) : $senderEmail
 			);
 			printf(
@@ -336,7 +336,7 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 
 		public function smpt_from_name_callback() {
 			printf(
-				'<input type="text" id="smpt_from_name" name="_dcf_smpt[smpt_from_name]" value="%s" />',
+				'<input type="text" id="smpt_from_name" name="dialog_contact_form[smpt_from_name]" value="%s" />',
 				isset( $this->options['smpt_from_name'] ) ? esc_attr( $this->options['smpt_from_name'] ) : get_option( 'blogname' )
 			);
 			printf(
@@ -348,4 +348,4 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 
 endif;
 
-DialogContactFormSMPT::init();
+DialogContactFormSettings::init();
