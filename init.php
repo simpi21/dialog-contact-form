@@ -127,35 +127,26 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions-dialog-contact-form.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-session.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-validator.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-settings.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-post-type.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-meta-boxes.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-process-request.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-shortcode.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-activation.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-smpt.php';
 		}
 
 		public function load_textdomain() {
-			// Set filter for plugin's languages directory
-			$lang_dir = DIALOG_CONTACT_FORM_PATH . '/languages/';
 
 			// Traditional WordPress plugin locale filter
 			$locale = apply_filters( 'plugin_locale', get_locale(), 'dialog-contact-form' );
 			$mofile = sprintf( '%1$s-%2$s.mo', 'dialog-contact-form', $locale );
 
 			// Setup paths to current locale file
-			$mofile_local  = $lang_dir . $mofile;
 			$mofile_global = WP_LANG_DIR . '/dialog-contact-form/' . $mofile;
 
 			if ( file_exists( $mofile_global ) ) {
-				// Look in global /wp-content/languages/carousel-slider folder
+				// Look in global /wp-content/languages/dialog-contact-form folder
 				load_textdomain( $this->plugin_name, $mofile_global );
-			} elseif ( file_exists( $mofile_local ) ) {
-				// Look in local /wp-content/plugins/carousel-slider/languages/ folder
-				load_textdomain( $this->plugin_name, $mofile_local );
-			} else {
-				// Load the default language files
-				load_plugin_textdomain( $this->plugin_name, false, $lang_dir );
 			}
 		}
 
