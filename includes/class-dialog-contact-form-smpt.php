@@ -6,7 +6,7 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 
 	class DialogContactFormSMPT {
 
-		private $plugin_name = 'dcf-smpt-settings';
+		private $plugin_name = 'dcf-settings';
 
 		/**
 		 * Holds the values to be used in the fields callbacks
@@ -83,8 +83,8 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 		public function admin_menu() {
 			add_submenu_page(
 				'edit.php?post_type=dialog-contact-form',
-				esc_html__( 'SMPT Settings', 'dialog-contact-form' ),
-				esc_html__( 'SMPT Settings', 'dialog-contact-form' ),
+				esc_html__( 'Settings', 'dialog-contact-form' ),
+				esc_html__( 'Settings', 'dialog-contact-form' ),
 				'manage_options',
 				$this->plugin_name,
 				array( $this, 'admin_menu_callback' )
@@ -99,7 +99,7 @@ if ( ! class_exists( 'DialogContactFormSMPT' ) ):
 			$this->options = get_option( '_dcf_smpt' );
 			?>
             <div class="wrap">
-                <h1><?php esc_html_e( 'Mail SMPT Settings', 'dialog-contact-form' ); ?></h1>
+                <h1><?php esc_html_e( 'Dialog Contact Form Settings', 'dialog-contact-form' ); ?></h1>
                 <form method="post" action="options.php">
 					<?php
 					// This prints out all hidden setting fields

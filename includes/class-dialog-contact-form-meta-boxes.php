@@ -147,7 +147,7 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
 
 		}
 
-		public function meta_box_config_cb(  ) {
+		public function meta_box_config_cb() {
 			include_once DIALOG_CONTACT_FORM_VIEWS . '/configuration.php';
 		}
 

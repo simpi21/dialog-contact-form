@@ -6,8 +6,8 @@ if ( ! defined( 'WPINC' ) ) {
 
 global $post;
 $defaults = dcf_default_mail_template();
-$mail  = get_post_meta( $post->ID, '_contact_form_mail', true );
-$mail   = wp_parse_args( $mail, $defaults );
+$mail     = get_post_meta( $post->ID, '_contact_form_mail', true );
+$mail     = wp_parse_args( $mail, $defaults );
 
 ?>
 <h1><?php esc_attr_e( 'Mail', 'dialog-contact-form' ); ?></h1>

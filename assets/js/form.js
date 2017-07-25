@@ -12,6 +12,7 @@
         success,
         dcfSuccess,
         dcfError,
+        submitBtn,
         i;
 
     // Stop working if formData is not supported
@@ -29,6 +30,10 @@
             form = this;
             dcfSuccess = form.querySelector('.dcf-response > .dcf-success');
             dcfError = form.querySelector('.dcf-response > .dcf-error');
+            submitBtn = form.querySelector('.dcf-submit');
+
+            // Add loading class to submit button
+            submitBtn.classList.add('is-loading');
 
             // Hide success message if any
             dcfSuccess.innerHTML = '';
@@ -58,12 +63,16 @@
             request.open("POST", DialogContactForm.ajaxurl, true);
             request.onload = function () {
                 if (request.status === 200) {
+                    // Remove loading class from submit button
+                    submitBtn.classList.remove('is-loading');
                     // Get success message and print on success div
                     success = JSON.parse(request.responseText);
                     dcfSuccess.innerHTML = '<p>' + success.message + '</p>';
                     // Remove form fields value
                     form.reset();
                 } else {
+                    // Remove loading class from submit button
+                    submitBtn.classList.remove('is-loading');
                     // Get error message
                     errors = JSON.parse(request.responseText);
 

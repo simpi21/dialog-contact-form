@@ -1,3 +1,12 @@
+@keyframes spinAround {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(359deg);
+    }
+}
+
 .column {
     display: block;
     flex-basis: 0;
@@ -929,6 +938,34 @@
     border-left: 6px solid #4CAF50;
     margin: 1rem 0;
     padding: 1rem;
+}
+
+abbr.dcf-required {
+    color: #f44336;
+}
+
+.dcf-submit {
+    position: relative;
+}
+
+.dcf-submit.is-loading {
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.dcf-submit.is-loading:after {
+    animation: spinAround 500ms infinite linear;
+    border: 2px solid #dbdbdb;
+    border-radius: 100px;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    content: "";
+    display: block;
+    height: 1em;
+    width: 1em;
+    left: calc(50% - (1em / 2));
+    top: calc(50% - (1em / 2));
+    position: absolute !important;
 }
 
 /*# sourceMappingURL=style.css.map */

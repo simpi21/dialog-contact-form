@@ -190,7 +190,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		}
 
 		public function time( $value ) {
-			return (bool) preg_match('/^(1[0-2]|0?[1-9]):[0-5][0-9] (AM|PM)$/i', $value);
+			return (bool) preg_match( '/^(1[0-2]|0?[1-9]):[0-5][0-9] (AM|PM)$/i', $value );
 		}
 
 		/**

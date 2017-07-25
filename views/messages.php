@@ -105,14 +105,17 @@ $messages  = wp_parse_args( $_messages, $defaults );
         </td>
     </tr>
     <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid alphanumeric characters', 'dialog-contact-form' ); ?></label></th>
+        <th scope="row"><label><?php esc_html_e( 'Invalid alphanumeric characters', 'dialog-contact-form' ); ?></label>
+        </th>
         <td>
             <input name="messages[invalid_alnum]" type="text"
                    value="<?php echo esc_attr( $messages['invalid_alnum'] ); ?>" class="widefat">
         </td>
     </tr>
     <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid alphanumeric characters, dashes and underscores', 'dialog-contact-form' ); ?></label></th>
+        <th scope="row">
+            <label><?php esc_html_e( 'Invalid alphanumeric characters, dashes and underscores', 'dialog-contact-form' ); ?></label>
+        </th>
         <td>
             <input name="messages[invalid_alnumdash]" type="text"
                    value="<?php echo esc_attr( $messages['invalid_alnumdash'] ); ?>" class="widefat">
