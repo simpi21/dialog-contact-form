@@ -24,12 +24,27 @@ if ( $fields ): ?>
 				$has_error = true;
 			}
 
+			$is_required   = false;
+			$required_abbr = '';
+			$required_attr = '';
+			if ( in_array( 'required', $_field['validation'] ) ) {
+				$is_required   = true;
+				$required_abbr = sprintf(
+					'&nbsp;<abbr class="dcf-required" title="%s">*</abbr>',
+					esc_html__( 'Required', 'dialog-contact-form' )
+				);
+				$required_attr = ' required';
+			}
+
 			echo sprintf( '<div class="field column %s">', $_field['field_width'] );
 
 			if ( ( $_field['field_type'] != 'hidden' ) && ( $config['labelPosition'] != 'placeholder' ) ) {
 				echo sprintf(
-					'<label for="%2$s-%1$s" class="label">%3$s</label>',
-					intval( $id ), esc_attr( $_field['field_id'] ), esc_attr( $_field['field_title'] )
+					'<label for="%2$s-%1$s" class="label">%3$s%4$s</label>',
+					intval( $id ),
+					esc_attr( $_field['field_id'] ),
+					esc_attr( $_field['field_title'] ),
+					$required_abbr
 				);
 			}
 
@@ -44,13 +59,14 @@ if ( $fields ): ?>
 
 			if ( $_field['field_type'] == 'textarea' ):
 				printf(
-					'<textarea id="%2$s-%1$s" name="%3$s" class="%6$s"%4$s>%5$s</textarea>',
+					'<textarea id="%2$s-%1$s" name="%3$s" class="%6$s"%4$s%7$s>%5$s</textarea>',
 					intval( $id ),
 					esc_attr( $_field['field_id'] ),
 					esc_attr( $_field['field_name'] ),
 					$placeholder,
 					empty( $_POST[ $_field['field_name'] ] ) ? null : esc_textarea( $_POST[ $_field['field_name'] ] ),
-					$has_error ? 'textarea is-danger' : 'textarea'
+					$has_error ? 'textarea is-danger' : 'textarea',
+					$required_attr
 				);
 
             elseif ( $_field['field_type'] == 'radio' ):
@@ -58,10 +74,11 @@ if ( $fields ): ?>
 				foreach ( $options as $option ) {
 					$checked = ( $value == $option ) ? ' checked' : '';
 					printf(
-						'<label class="radio"><input type="radio" name="%1$s" value="%2$s"%3$s> %2$s</label>',
+						'<label class="radio"><input type="radio" name="%1$s" value="%2$s"%3$s%4$s> %2$s</label>',
 						esc_attr( $_field['field_name'] ),
 						esc_attr( $option ),
-						$checked
+						$checked,
+						$required_attr
 					);
 				}
 
@@ -70,10 +87,11 @@ if ( $fields ): ?>
 				foreach ( $options as $option ) {
 					$checked = ( $value == $option ) ? ' checked' : '';
 					printf(
-						'<label class="checkbox"><input type="checkbox" name="%1$s" value="%2$s"%3$s> %2$s</label>',
+						'<label class="checkbox"><input type="checkbox" name="%1$s" value="%2$s"%3$s%4$s> %2$s</label>',
 						esc_attr( $_field['field_name'] ),
 						esc_attr( $option ),
-						$checked
+						$checked,
+						$required_attr
 					);
 				}
 
@@ -81,8 +99,11 @@ if ( $fields ): ?>
 				$value = empty( $_POST[ $_field['field_name'] ] ) ? null : esc_attr( $_POST[ $_field['field_name'] ] );
 				echo sprintf( '<div class="%s">', $has_error ? 'select is-danger' : 'select' );
 				echo sprintf(
-					'<select id="%2$s-%1$s" name="%3$s">',
-					intval( $id ), esc_attr( $_field['field_id'] ), esc_attr( $_field['field_name'] )
+					'<select id="%2$s-%1$s" name="%3$s"%4$s>',
+					intval( $id ),
+					esc_attr( $_field['field_id'] ),
+					esc_attr( $_field['field_name'] ),
+					$required_attr
 				);
 				if ( ! empty( $_field['placeholder'] ) ) {
 					echo sprintf( '<option value="">%s</option>', esc_attr( $_field['placeholder'] ) );
@@ -103,7 +124,7 @@ if ( $fields ): ?>
 				$max  = empty( $_field['number_max'] ) ? '' : sprintf( ' max="%s"', floatval( $_field['number_max'] ) );
 				$step = empty( $_field['number_step'] ) ? '' : sprintf( ' step="%s"', floatval( $_field['number_step'] ) );
 				printf(
-					'<input id="%2$s-%1$s" name="%3$s" type="number" class="%9$s" value="%4$s"%5$s%6$s%7$s%8$s>',
+					'<input id="%2$s-%1$s" name="%3$s" type="number" class="%9$s" value="%4$s"%5$s%6$s%7$s%8$s%10$s>',
 					intval( $id ),
 					esc_attr( $_field['field_id'] ),
 					esc_attr( $_field['field_name'] ),
@@ -112,19 +133,21 @@ if ( $fields ): ?>
 					$min,
 					$max,
 					$step,
-					$has_error ? 'input is-danger' : 'input'
+					$has_error ? 'input is-danger' : 'input',
+					$required_attr
 				);
 
             elseif ( $_field['field_type'] == 'file' ):
 				$accept   = '';
 				$multiple = '';
 				printf(
-					'<input id="%2$s-%1$s" name="%3$s" type="file" class="file"%4$s%5$s>',
+					'<input id="%2$s-%1$s" name="%3$s" type="file" class="file"%4$s%5$s%6$s>',
 					intval( $id ),
 					esc_attr( $_field['field_id'] ),
 					esc_attr( $_field['field_name'] ),
 					$multiple,
-					$accept
+					$accept,
+					$required_attr
 				);
 
             elseif ( in_array( $_field['field_type'], array(
@@ -138,24 +161,26 @@ if ( $fields ): ?>
 				'time'
 			) ) ):
 				printf(
-					'<input id="%2$s-%1$s" name="%3$s" type="%4$s" class="%7$s" %5$s value="%6$s">',
+					'<input id="%2$s-%1$s" name="%3$s" type="%4$s" class="%7$s" %5$s value="%6$s"%8$s>',
 					intval( $id ),
 					esc_attr( $_field['field_id'] ),
 					esc_attr( $_field['field_name'] ),
 					esc_attr( $_field['field_type'] ),
 					$placeholder,
 					empty( $_POST[ $_field['field_name'] ] ) ? null : esc_textarea( $_POST[ $_field['field_name'] ] ),
-					$has_error ? 'input is-danger' : 'input'
+					$has_error ? 'input is-danger' : 'input',
+					$required_attr
 				);
 			else:
 				printf(
-					'<input id="%2$s-%1$s" name="%3$s" type="text" class="%6$s" %4$s value="%5$s">',
+					'<input id="%2$s-%1$s" name="%3$s" type="text" class="%6$s" %4$s value="%5$s"%7$s>',
 					intval( $id ),
 					esc_attr( $_field['field_id'] ),
 					esc_attr( $_field['field_name'] ),
 					$placeholder,
 					empty( $_POST[ $_field['field_name'] ] ) ? null : esc_textarea( $_POST[ $_field['field_name'] ] ),
-					$has_error ? 'input is-danger' : 'input'
+					$has_error ? 'input is-danger' : 'input',
+					$required_attr
 				);
 			endif;
 			// Show error message if any
