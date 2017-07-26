@@ -14,9 +14,9 @@ if ( ! function_exists( 'dcf_delete_plugin_data' ) ) {
 		// Delete all contact form posts
 		$_posts = get_posts(
 			array(
-				'numberposts' => - 1,
-				'post_type'   => DIALOG_CONTACT_FORM_POST_TYPE,
-				'post_status' => 'any',
+				'posts_per_page' => - 1,
+				'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
+				'post_status'    => 'any',
 			)
 		);
 
@@ -26,10 +26,6 @@ if ( ! function_exists( 'dcf_delete_plugin_data' ) ) {
 
 		// Delete plugin options
 		delete_option( 'dialog_contact_form' );
-
-		// Delete database table
-		global $wpdb;
-		$wpdb->query( sprintf( "DROP TABLE IF EXISTS %s", $wpdb->prefix . 'dialog_contact_form' ) );
 	}
 }
 

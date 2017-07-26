@@ -12,6 +12,7 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 		 * Holds the values to be used in the fields callbacks
 		 */
 		private $options;
+		private $default_options;
 
 		protected static $instance = null;
 
@@ -39,6 +40,8 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 				add_action( 'admin_init', array( $this, 'page_init' ) );
 			}
+
+			$this->default_options = dcf_default_options();
 		}
 
 		/**
@@ -139,7 +142,8 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 		 */
 		public function admin_menu_callback() {
 			// Set class property
-			$this->options = get_option( 'dialog_contact_form' );
+			$_options      = get_option( 'dialog_contact_form' );
+			$this->options = wp_parse_args( $_options, $this->default_options );
 			?>
             <div class="wrap">
                 <h1><?php esc_html_e( 'Dialog Contact Form Settings', 'dialog-contact-form' ); ?></h1>
@@ -249,7 +253,7 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 		public function mailer_callback() {
 			printf(
 				'<label><input name="dialog_contact_form[mailer]" value="1" %s type="checkbox"> Send all emails via SMPT</label>',
-				isset( $this->options['mailer'] ) ? 'checked="checked"' : ''
+				isset( $this->options['mailer'] ) && $this->options['mailer'] == 1 ? 'checked="checked"' : ''
 			);
 		}
 

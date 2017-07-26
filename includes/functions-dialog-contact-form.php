@@ -225,31 +225,38 @@ if ( ! function_exists( 'dcf_default_configuration' ) ) {
 	 * @return array
 	 */
 	function dcf_default_configuration() {
-		$blogname    = get_option( 'blogname' );
-		$siteurl     = get_option( 'siteurl' );
-		$senderEmail = str_replace( [ 'https://', 'http://', 'www.' ], '', $siteurl );
-		$senderEmail = sprintf( 'mail@%s', $senderEmail );
-		$from        = esc_html__( 'From:', 'dialog-contact-form' );
-		$subject     = esc_html__( 'Subject:', 'dialog-contact-form' );
-		$message     = esc_html__( 'Message Body:', 'dialog-contact-form' );
-		$sign        = sprintf(
-			esc_html__( 'This email was sent from a contact form on %s (%s)', 'dialog-contact-form' ),
-			$blogname,
-			$siteurl
-		);
-
 		$defaults = [
-			'receiver'      => get_option( 'admin_email' ),
-			'senderEmail'   => $senderEmail,
-			'senderName'    => $blogname,
-			'subject'       => $blogname . ': %subject%',
 			'labelPosition' => 'both',
 			'btnAlign'      => 'left',
 			'btnLabel'      => esc_html__( 'Send', 'dialog-contact-form' ),
-			'body'          => "$from %your_name% <%your_email%>\n$subject %subject%\n\n$message\n%your_message%\n\n--\n$sign ",
 		];
 
 		return $defaults;
+	}
+}
+
+if ( ! function_exists( 'dcf_default_options' ) ) {
+	/**
+	 * Dialog contact form default options
+	 *
+	 * @return array
+	 */
+	function dcf_default_options() {
+		$siteurl     = get_option( 'siteurl' );
+		$senderEmail = str_replace( array( 'https://', 'http://', 'www.' ), '', $siteurl );
+		$senderEmail = sprintf( 'noreply@%s', $senderEmail );
+		$options     = [
+			'mailer'         => 0,
+			'smpt_host'      => '',
+			'smpt_username'  => '',
+			'smpt_password'  => '',
+			'smpt_port'      => '',
+			'encryption'     => '',
+			'smpt_from'      => sanitize_email( $senderEmail ),
+			'smpt_from_name' => sanitize_text_field( get_option( 'blogname' ) ),
+		];
+
+		return $options;
 	}
 }
 
