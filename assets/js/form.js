@@ -81,13 +81,15 @@
                     }
 
                     // Loop through all fields and print field error message if any
-                    for (i = 0; i < errors.length; i++) {
-                        fields = form.querySelector('[name="' + errors[i].field + '"]');
+                    if (errors.validation) {
+                        for (i = 0; i < errors.validation.length; i++) {
+                            fields = form.querySelector('[name="' + errors.validation[i].field + '"]');
 
-                        if (errors[i].message[0]) {
-                            error = '<span class="help is-danger">' + errors[i].message[0] + '</span>';
-                            fields.style.borderColor = '#f44336';
-                            fields.insertAdjacentHTML('afterend', error);
+                            if (errors.validation[i].message[0]) {
+                                error = '<span class="help is-danger">' + errors.validation[i].message[0] + '</span>';
+                                fields.style.borderColor = '#f44336';
+                                fields.insertAdjacentHTML('afterend', error);
+                            }
                         }
                     }
                 }

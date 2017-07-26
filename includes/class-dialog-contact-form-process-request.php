@@ -166,7 +166,12 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			do_action( 'dcf_after_ajax_validation', $errorData );
 
 			if ( $errorData ) {
-				wp_send_json( $errorData, 422 );
+				$response = array(
+					'status'     => 'fail',
+					'message'    => esc_attr( $messages['validation_error'] ),
+					'validation' => $errorData,
+				);
+				wp_send_json( $response, 422 );
 			}
 
 			do_action( 'dcf_before_ajax_send_mail' );

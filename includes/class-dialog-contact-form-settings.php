@@ -119,7 +119,8 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 			}
 
 			if ( isset( $input['smpt_port'] ) ) {
-				$new_input['smpt_port'] = absint( $input['smpt_port'] );
+				$smpt_port              = empty( $input['smpt_port'] ) ? '' : absint( $input['smpt_port'] );
+				$new_input['smpt_port'] = $smpt_port;
 			}
 
 			if ( isset( $input['encryption'] ) ) {
