@@ -135,6 +135,10 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				$new_input['smpt_from_name'] = sanitize_text_field( $input['smpt_from_name'] );
 			}
 
+			if ( isset( $input['spam_message'] ) ) {
+				$new_input['spam_message'] = sanitize_text_field( $input['spam_message'] );
+			}
+
 			return $new_input;
 		}
 
@@ -180,6 +184,12 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				'dcf_additional_mail_section',
 				esc_html__( 'Additional Mail Settings', 'dialog-contact-form' ),
 				array( $this, 'print_section_info' ),
+				'_dcf_settings_page'
+			);
+			add_settings_section(
+				'dcf_message_section',
+				esc_html__( 'Validation Messages', 'dialog-contact-form' ),
+				array( $this, 'print_message_section_info' ),
 				'_dcf_settings_page'
 			);
 
@@ -246,9 +256,24 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				'_dcf_settings_page',
 				'dcf_additional_mail_section'
 			);
+
+			add_settings_field(
+				'spam_message',
+				esc_html__( 'Submission filtered as spam', 'dialog-contact-form' ),
+				array( $this, 'spam_message_callback' ),
+				'_dcf_settings_page',
+				'dcf_message_section'
+			);
 		}
 
 		public function print_section_info() {
+		}
+
+		public function print_message_section_info() {
+			printf(
+				'<p>%s</p>',
+				esc_html__( 'Define default validation message. This message can be overwrite from each form.', 'dialog-contact-form' )
+			);
 		}
 
 		public function mailer_callback() {
@@ -347,6 +372,13 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 			printf(
 				'<p class="description">%s</p>',
 				esc_html__( 'Specify the from name for outgoing email.', 'dialog-contact-form' )
+			);
+		}
+
+		public function spam_message_callback() {
+			printf(
+				'<input type="text" id="spam_message" class="regular-text" name="dialog_contact_form[spam_message]" value="%s" />',
+				isset( $this->options['spam_message'] ) ? esc_attr( $this->options['spam_message'] ) : get_option( 'blogname' )
 			);
 		}
 	}

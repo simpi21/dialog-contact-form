@@ -15,6 +15,8 @@ Just another WordPress contact form plugin. Simple but flexible.
 Just another WordPress contact form plugin. Simple but flexible.
 
 = Features =
+* No premium version and will never be.
+* Beginner friendly WordPress contact form plugin.
 * Very simple and lightweight.
 * Support AJAX HTTP form submission
 * Support reload/change captcha over AJAX request.
@@ -54,6 +56,21 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 2. Screenshot of Dialog Contact Form of Setting Page.
 
 == Changelog ==
+
+= Master =
+* Added     - Re-write from core.
+* Added     - No JavaScript dependency, Written in vanilla JavaScript.
+* Added     - Design for modern browser but also works for older browsers.
+* Added     - Support creating multiple forms.
+* Added     - Support using multiple forms in same page.
+* Added     - Added option page for SMTP settings for better mail delivery.
+* Added     - Added more than ten input field types.
+* Added     - Added more than fifteen input field validation rules.
+* Added     - Added option to customize each field validation message.
+* Added     - Added Option to add unlimited fields for each form.
+* Added     - Option to arrange and re-arrange fields as your need.
+* Added     - Option to customize mail template as you want.
+* Added     - Custom field width: Full, Three Quarters, Two Thirds, Half, One Third, One Quarter.
 
 = version 1.2.1 - 2017-02-23 =
 * Fixed 	- Fixed 404 error for captcha file.

@@ -106,19 +106,13 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 		 * Process AJAX form Submit
 		 */
 		public function submit_form() {
-			$messages = dcf_validation_messages();
+			$default_options = dcf_default_options();
+			$options         = get_option( 'dialog_contact_form' );
+			$options         = wp_parse_args( $options, $default_options );
 			if ( ! isset( $_POST['nonce'] ) ) {
 				$response = array(
 					'status'  => 'fail',
-					'message' => esc_attr( $messages['mail_sent_ng'] ),
-				);
-				wp_send_json( $response, 403 );
-			}
-
-			if ( ! isset( $_POST['_user_form_id'] ) ) {
-				$response = array(
-					'status'  => 'fail',
-					'message' => esc_attr( $messages['mail_sent_ng'] ),
+					'message' => esc_attr( $options['spam_message'] ),
 				);
 				wp_send_json( $response, 403 );
 			}
@@ -126,7 +120,15 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			if ( ! wp_verify_nonce( $_POST['nonce'], 'dialog_contact_form_ajax' ) ) {
 				$response = array(
 					'status'  => 'fail',
-					'message' => esc_attr( $messages['mail_sent_ng'] ),
+					'message' => esc_attr( $options['spam_message'] ),
+				);
+				wp_send_json( $response, 403 );
+			}
+
+			if ( ! isset( $_POST['_user_form_id'] ) ) {
+				$response = array(
+					'status'  => 'fail',
+					'message' => esc_attr( $options['spam_message'] ),
 				);
 				wp_send_json( $response, 403 );
 			}

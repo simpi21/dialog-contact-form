@@ -63,6 +63,9 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 			do_action( 'dialog_contact_form_init' );
 		}
 
+		/**
+		 * Define constants
+		 */
 		private function define_constants() {
 			$this->define( 'DIALOG_CONTACT_FORM', $this->plugin_name );
 			$this->define( 'DIALOG_CONTACT_FORM_POST_TYPE', $this->post_type );
@@ -74,6 +77,7 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 			$this->define( 'DIALOG_CONTACT_FORM_VIEWS', DIALOG_CONTACT_FORM_PATH . '/views' );
 			$this->define( 'DIALOG_CONTACT_FORM_URL', plugins_url( '', DIALOG_CONTACT_FORM_FILE ) );
 			$this->define( 'DIALOG_CONTACT_FORM_ASSETS', DIALOG_CONTACT_FORM_URL . '/assets' );
+			$this->define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', WP_CONTENT_DIR . '/uploads/dcf-attachments' );
 		}
 
 		/**
@@ -167,9 +171,8 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 			wp_enqueue_style( $this->plugin_name, DIALOG_CONTACT_FORM_ASSETS . '/scss/style.css', array(), $this->version, 'all' );
 			wp_enqueue_script( $this->plugin_name, DIALOG_CONTACT_FORM_ASSETS . '/js/form.js', array(), $this->version, true );
 			wp_localize_script( $this->plugin_name, 'DialogContactForm', array(
-				'ajaxurl'      => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( 'dialog_contact_form_ajax' ),
-				'ajax_enabled' => true,
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'nonce'   => wp_create_nonce( 'dialog_contact_form_ajax' ),
 			) );
 		}
 

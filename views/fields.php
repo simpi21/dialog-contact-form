@@ -20,6 +20,9 @@ if ( ! defined( 'WPINC' ) ) {
             <div class="accordion">
                 <div class="accordion-header"><?php esc_html_e( $_field['field_title'] ); ?></div>
                 <div class="accordion-content">
+                    <p>
+                        <button class="button deleteField"><?php esc_html_e( 'Delete this field', 'dialog-contact-form' ); ?></button>
+                    </p>
                     <table class="form-table">
                         <tr>
                             <th scope="row"><label><?php esc_html_e( 'Field Title', 'dialog-contact-form' ); ?></label>
@@ -171,9 +174,6 @@ if ( ! defined( 'WPINC' ) ) {
                             </td>
                         </tr><!-- Error Message -->
                     </table>
-                    <p>
-                        <button class="button deleteField"><?php esc_html_e( 'Delete this field', 'dialog-contact-form' ); ?></button>
-                    </p>
                 </div>
             </div>
 

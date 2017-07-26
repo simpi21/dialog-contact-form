@@ -254,6 +254,7 @@ if ( ! function_exists( 'dcf_default_options' ) ) {
 			'encryption'     => '',
 			'smpt_from'      => sanitize_email( $senderEmail ),
 			'smpt_from_name' => sanitize_text_field( get_option( 'blogname' ) ),
+			'spam_message'   => esc_html__( 'There was an error trying to send your message. Please try again later.', 'dialog-contact-form' ),
 		];
 
 		return $options;
