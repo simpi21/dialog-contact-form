@@ -156,4 +156,11 @@ $messages  = wp_parse_args( $_messages, $defaults );
                    value="<?php echo esc_attr( $messages['invalid_user_email'] ); ?>" class="widefat">
         </td>
     </tr>
+    <tr>
+        <th scope="row"><label><?php esc_html_e( 'Invalid reCAPTCHA', 'dialog-contact-form' ); ?></label></th>
+        <td>
+            <input name="messages[invalid_recaptcha]" type="text"
+                   value="<?php echo esc_attr( $messages['invalid_recaptcha'] ); ?>" class="widefat">
+        </td>
+    </tr>
 </table>

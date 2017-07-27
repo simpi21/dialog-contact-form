@@ -211,6 +211,7 @@ if ( ! function_exists( 'dcf_validation_messages' ) ) {
 			'invalid_user_login' => esc_html__( 'No user exists with this information.', 'dialog-contact-form' ),
 			'invalid_username'   => esc_html__( 'The username does not exists.', 'dialog-contact-form' ),
 			'invalid_user_email' => esc_html__( 'The email does not exists.', 'dialog-contact-form' ),
+			'invalid_recaptcha'  => esc_html__( 'Check the checkbox.', 'dialog-contact-form' ),
 		];
 
 		return $messages;
@@ -246,15 +247,19 @@ if ( ! function_exists( 'dcf_default_options' ) ) {
 		$senderEmail = str_replace( array( 'https://', 'http://', 'www.' ), '', $siteurl );
 		$senderEmail = sprintf( 'noreply@%s', $senderEmail );
 		$options     = [
-			'mailer'         => 0,
-			'smpt_host'      => '',
-			'smpt_username'  => '',
-			'smpt_password'  => '',
-			'smpt_port'      => '',
-			'encryption'     => '',
-			'smpt_from'      => sanitize_email( $senderEmail ),
-			'smpt_from_name' => sanitize_text_field( get_option( 'blogname' ) ),
-			'spam_message'   => esc_html__( 'There was an error trying to send your message. Please try again later.', 'dialog-contact-form' ),
+			'mailer'               => 0,
+			'smpt_host'            => '',
+			'smpt_username'        => '',
+			'smpt_password'        => '',
+			'smpt_port'            => '',
+			'encryption'           => '',
+			'smpt_from'            => sanitize_email( $senderEmail ),
+			'smpt_from_name'       => sanitize_text_field( get_option( 'blogname' ) ),
+			'recaptcha_site_key'   => '',
+			'recaptcha_secret_key' => '',
+			'recaptcha_theme'      => 'light',
+			'spam_message'         => esc_html__( 'There was an error trying to send your message. Please try again later.', 'dialog-contact-form' ),
+			'invalid_recaptcha'    => esc_html__( 'Check the checkbox.', 'dialog-contact-form' ),
 		];
 
 		return $options;

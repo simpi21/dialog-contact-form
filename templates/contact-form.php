@@ -6,7 +6,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( $fields ): ?>
     <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" class="dcf-form columns is-multiline"
-          method="POST" accept-charset="UTF-8" enctype="multipart/form-data">
+          method="POST" accept-charset="UTF-8" enctype="multipart/form-data" novalidate>
         <div class="dcf-response">
             <div class="dcf-success"></div>
             <div class="dcf-error"></div>
@@ -190,6 +190,24 @@ if ( $fields ): ?>
 			echo '</p>';
 			echo '</div>';
 		endforeach;
+
+		// If Google reCAPTCHA, add here
+		if ( ! empty( $_options['recaptcha_site_key'] ) && ! empty( $_options['recaptcha_secret_key'] ) ) {
+			if ( isset( $config['recaptcha'] ) && $config['recaptcha'] == 'yes' ) {
+
+				echo '<div class="field column is-12">';
+				printf(
+					'<div class="g-recaptcha" data-sitekey="%1$s"></div>',
+					esc_attr( $_options['recaptcha_site_key'] )
+				);
+				echo '<input type="hidden" name="dcf_recaptcha">';
+				echo '</div>';
+
+				add_action( 'wp_footer', function () {
+					echo '<script src="https://www.google.com/recaptcha/api.js"></script>';
+				} );
+			}
+		}
 
 		// Submit button
 		printf( '<div class="field column is-12"><p class="%s"><button type="submit" class="button dcf-submit">%s</button></p></div>',

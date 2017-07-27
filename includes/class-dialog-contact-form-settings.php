@@ -135,8 +135,24 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				$new_input['smpt_from_name'] = sanitize_text_field( $input['smpt_from_name'] );
 			}
 
+			if ( isset( $input['recaptcha_site_key'] ) ) {
+				$new_input['recaptcha_site_key'] = sanitize_text_field( $input['recaptcha_site_key'] );
+			}
+
+			if ( isset( $input['recaptcha_secret_key'] ) ) {
+				$new_input['recaptcha_secret_key'] = sanitize_text_field( $input['recaptcha_secret_key'] );
+			}
+
+			if ( isset( $input['recaptcha_theme'] ) ) {
+				$new_input['recaptcha_theme'] = sanitize_text_field( $input['recaptcha_theme'] );
+			}
+
 			if ( isset( $input['spam_message'] ) ) {
 				$new_input['spam_message'] = sanitize_text_field( $input['spam_message'] );
+			}
+
+			if ( isset( $input['invalid_recaptcha'] ) ) {
+				$new_input['invalid_recaptcha'] = sanitize_text_field( $input['invalid_recaptcha'] );
 			}
 
 			return $new_input;
@@ -184,6 +200,12 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				'dcf_additional_mail_section',
 				esc_html__( 'Additional Mail Settings', 'dialog-contact-form' ),
 				array( $this, 'print_section_info' ),
+				'_dcf_settings_page'
+			);
+			add_settings_section(
+				'dcf_grecaptcha_section',
+				esc_html__( 'Google reCAPTCHA', 'dialog-contact-form' ),
+				array( $this, 'print_grecaptcha_section_info' ),
 				'_dcf_settings_page'
 			);
 			add_settings_section(
@@ -258,15 +280,55 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 			);
 
 			add_settings_field(
+				'recaptcha_site_key',
+				esc_html__( 'Site key', 'dialog-contact-form' ),
+				array( $this, 'recaptcha_site_key_callback' ),
+				'_dcf_settings_page',
+				'dcf_grecaptcha_section'
+			);
+
+			add_settings_field(
+				'recaptcha_secret_key',
+				esc_html__( 'Secret key', 'dialog-contact-form' ),
+				array( $this, 'recaptcha_secret_key_callback' ),
+				'_dcf_settings_page',
+				'dcf_grecaptcha_section'
+			);
+
+			add_settings_field(
+				'recaptcha_theme',
+				esc_html__( 'Theme', 'dialog-contact-form' ),
+				array( $this, 'recaptcha_theme_callback' ),
+				'_dcf_settings_page',
+				'dcf_grecaptcha_section'
+			);
+
+			add_settings_field(
 				'spam_message',
 				esc_html__( 'Submission filtered as spam', 'dialog-contact-form' ),
 				array( $this, 'spam_message_callback' ),
 				'_dcf_settings_page',
 				'dcf_message_section'
 			);
+
+			add_settings_field(
+				'invalid_recaptcha',
+				esc_html__( 'invalid reCAPTCHA', 'dialog-contact-form' ),
+				array( $this, 'invalid_recaptcha_callback' ),
+				'_dcf_settings_page',
+				'dcf_message_section'
+			);
 		}
 
 		public function print_section_info() {
+		}
+
+		public function print_grecaptcha_section_info() {
+			printf(
+				'<p>%1$s</p><p>%2$s</p>',
+				esc_html__( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse.', 'dialog-contact-form' ),
+				esc_html__( 'To use reCAPTCHA, you need to install an API key pair.', 'dialog-contact-form' )
+			);
 		}
 
 		public function print_message_section_info() {
@@ -375,10 +437,48 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 			);
 		}
 
+		public function recaptcha_site_key_callback() {
+			printf(
+				'<input type="text" id="recaptcha_site_key" class="regular-text" name="dialog_contact_form[recaptcha_site_key]" value="%s" />',
+				isset( $this->options['recaptcha_site_key'] ) ? esc_attr( $this->options['recaptcha_site_key'] ) : ''
+			);
+		}
+
+		public function recaptcha_secret_key_callback() {
+			printf(
+				'<input type="text" id="recaptcha_secret_key" class="regular-text" name="dialog_contact_form[recaptcha_secret_key]" value="%s" />',
+				isset( $this->options['recaptcha_secret_key'] ) ? esc_attr( $this->options['recaptcha_secret_key'] ) : ''
+			);
+		}
+
+		public function recaptcha_theme_callback() {
+			$themes = array(
+				'light' => esc_html__( 'Light', 'dialog-contact-form' ),
+				'dark'  => esc_html__( 'Dark', 'dialog-contact-form' ),
+			);
+			$_val   = isset( $this->options['recaptcha_theme'] ) ? esc_attr( $this->options['recaptcha_theme'] ) : 'light';
+			foreach ( $themes as $key => $value ) {
+				$checked = ( $_val == $key ) ? 'checked="checked"' : '';
+				printf(
+					'<label><input type="radio" name="dialog_contact_form[recaptcha_theme]" value="%s" %s> %s</label><br>',
+					esc_attr( $key ),
+					$checked,
+					esc_attr( $value )
+				);
+			}
+		}
+
 		public function spam_message_callback() {
 			printf(
 				'<input type="text" id="spam_message" class="regular-text" name="dialog_contact_form[spam_message]" value="%s" />',
-				isset( $this->options['spam_message'] ) ? esc_attr( $this->options['spam_message'] ) : get_option( 'blogname' )
+				isset( $this->options['spam_message'] ) ? esc_attr( $this->options['spam_message'] ) : ''
+			);
+		}
+
+		public function invalid_recaptcha_callback() {
+			printf(
+				'<input type="text" id="invalid_recaptcha" class="regular-text" name="dialog_contact_form[invalid_recaptcha]" value="%s" />',
+				isset( $this->options['invalid_recaptcha'] ) ? esc_attr( $this->options['invalid_recaptcha'] ) : ''
 			);
 		}
 	}

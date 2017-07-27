@@ -137,6 +137,11 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			$mail     = get_post_meta( $form_id, '_contact_form_mail', true );
 			$fields   = get_post_meta( $form_id, '_contact_form_fields', true );
 			$messages = get_post_meta( $form_id, '_contact_form_messages', true );
+			$config   = get_post_meta( $form_id, '_contact_form_config', true );
+
+			$default_options = dcf_default_options();
+			$options         = get_option( 'dialog_contact_form' );
+			$_options        = wp_parse_args( $options, $default_options );
 
 			$field_name = array_column( $fields, 'field_name' );
 
@@ -148,6 +153,16 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 
 			// Validate Form Data
 			$errorData = array();
+
+			// If Google reCAPTCHA enabled, verify it
+			if ( ! $this->validate_google_recaptcha( $config, $_options ) ) {
+				$errorData[] = array(
+					'field'   => 'dcf_recaptcha',
+					'message' => array( $messages['invalid_recaptcha'] ),
+				);
+			}
+
+			// Loop through form fields and validate its data
 			foreach ( $_POST as $field => $value ) {
 				if ( in_array( $field, $field_name ) ) {
 
@@ -358,6 +373,57 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			$headers[] = "From: $senderName <$senderEmail>";
 
 			return wp_mail( $receiver, $subject, $message, $headers );
+		}
+
+		/**
+		 * Verify Google reCAPTCHA code
+		 *
+		 * @param $config
+		 * @param $options
+		 *
+		 * @return bool
+		 */
+		private function validate_google_recaptcha( $config, $options ) {
+			if ( isset( $config['recaptcha'] ) && $config['recaptcha'] == 'yes' ) {
+				if ( ! empty( $options['recaptcha_site_key'] ) &&
+				     ! empty( $options['recaptcha_secret_key'] ) ) {
+
+					$recaptcha = isset( $_POST['g-recaptcha-response'] ) ? $_POST['g-recaptcha-response'] : null;
+					$_response = wp_remote_post(
+						'https://www.google.com/recaptcha/api/siteverify',
+						[
+							'body' => [
+								'secret'   => esc_attr( $options['recaptcha_secret_key'] ),
+								'response' => $recaptcha,
+								'remoteip' => $this->get_remote_ip_addr(),
+							]
+						]
+					);
+					$body      = json_decode( wp_remote_retrieve_body( $_response ), true );
+
+					if ( isset( $body['success'] ) && ! $body['success'] ) {
+						return false;
+
+					}
+
+				}
+			}
+
+			return true;
+		}
+
+		/**
+		 * Get user IP address
+		 *
+		 * @return string
+		 */
+		private function get_remote_ip_addr() {
+			if ( isset( $_SERVER['REMOTE_ADDR'] )
+			     && WP_Http::is_ip_address( $_SERVER['REMOTE_ADDR'] ) ) {
+				return $_SERVER['REMOTE_ADDR'];
+			}
+
+			return '';
 		}
 	}
 

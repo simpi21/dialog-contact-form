@@ -10,6 +10,7 @@ $defaults = [
 	'btnAlign'      => 'left',
 	'btnLabel'      => esc_html__( 'Send', 'dialog-contact-form' ),
 	'formType'      => 'internal',
+	'recaptcha'     => 'no',
 ];
 $_config  = get_post_meta( $post->ID, '_contact_form_config', true );
 $config   = wp_parse_args( $_config, $defaults );
@@ -73,6 +74,26 @@ $config   = wp_parse_args( $_config, $defaults );
 		);
 		foreach ( $btnAlign as $key => $value ) {
 			$selected = ( $config['formType'] == $key ) ? 'selected' : '';
+			echo sprintf( '<option value="%1$s" %3$s>%2$s</option>',
+				esc_attr( $key ),
+				esc_attr( $value ),
+				$selected
+			);
+		}
+		?>
+    </select>
+</p>
+
+<p>
+    <label><strong><?php esc_html_e( 'Enable Google reCAPTCHA', 'dialog-contact-form' ); ?></strong></label>
+    <select name="config[recaptcha]" class="widefat">
+		<?php
+		$btnAlign = array(
+			'no'  => esc_html__( 'No', 'dialog-contact-form' ),
+			'yes' => esc_html__( 'Yes', 'dialog-contact-form' ),
+		);
+		foreach ( $btnAlign as $key => $value ) {
+			$selected = ( $config['recaptcha'] == $key ) ? 'selected' : '';
 			echo sprintf( '<option value="%1$s" %3$s>%2$s</option>',
 				esc_attr( $key ),
 				esc_attr( $value ),

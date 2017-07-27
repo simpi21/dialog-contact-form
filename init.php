@@ -56,9 +56,9 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 			add_action( 'admin_footer', array( $this, 'form_template' ), 0 );
 			add_action( 'init', array( $this, 'load_textdomain' ) );
 
-			add_action( 'init', array( $this, 'start_session' ), 1 );
-			add_action( 'wp_logout', array( $this, 'end_session' ) );
-			add_action( 'wp_login', array( $this, 'end_session' ) );
+			// add_action( 'init', array( $this, 'start_session' ), 1 );
+			// add_action( 'wp_logout', array( $this, 'end_session' ) );
+			// add_action( 'wp_login', array( $this, 'end_session' ) );
 
 			do_action( 'dialog_contact_form_init' );
 		}

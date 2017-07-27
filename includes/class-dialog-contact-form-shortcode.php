@@ -50,6 +50,10 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 			$fields = get_post_meta( $id, '_contact_form_fields', true );
 			$config = get_post_meta( $id, '_contact_form_config', true );
 
+			$default_options = dcf_default_options();
+			$options         = get_option( 'dialog_contact_form' );
+			$_options        = wp_parse_args( $options, $default_options );
+
 			ob_start();
 			require DIALOG_CONTACT_FORM_TEMPLATES . '/contact-form.php';
 			$html = ob_get_contents();
