@@ -97,8 +97,6 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 
 			if ( $mail_sent ) {
 				DialogContactFormSession::flash( '_dcf_mail_sent_ok', $errorData );
-
-				return;
 			}
 		}
 
@@ -133,17 +131,15 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 				wp_send_json( $response, 403 );
 			}
 
-			$form_id  = intval( $_POST['_user_form_id'] );
-			$mail     = get_post_meta( $form_id, '_contact_form_mail', true );
-			$fields   = get_post_meta( $form_id, '_contact_form_fields', true );
-			$messages = get_post_meta( $form_id, '_contact_form_messages', true );
-			$config   = get_post_meta( $form_id, '_contact_form_config', true );
-
+			$form_id         = intval( $_POST['_user_form_id'] );
+			$mail            = get_post_meta( $form_id, '_contact_form_mail', true );
+			$fields          = get_post_meta( $form_id, '_contact_form_fields', true );
+			$messages        = get_post_meta( $form_id, '_contact_form_messages', true );
+			$config          = get_post_meta( $form_id, '_contact_form_config', true );
 			$default_options = dcf_default_options();
 			$options         = get_option( 'dialog_contact_form' );
 			$_options        = wp_parse_args( $options, $default_options );
-
-			$field_name = array_column( $fields, 'field_name' );
+			$field_name      = array_column( $fields, 'field_name' );
 
 			do_action( 'dcf_before_ajax_validation', $form_id, $mail, $fields, $messages );
 
@@ -182,6 +178,7 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 
 			do_action( 'dcf_after_ajax_validation', $errorData );
 
+			// If there is a error, send error response
 			if ( $errorData ) {
 				$response = array(
 					'status'     => 'fail',
@@ -191,9 +188,13 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 				wp_send_json( $response, 422 );
 			}
 
+			// If form upload a file, handle here
+			$attachments = $this->upload_attachments( $fields );
+
 			do_action( 'dcf_before_ajax_send_mail' );
 
-			$mail_sent = $this->send_mail( $field_name, $mail );
+			// Send mail to user
+			$mail_sent = $this->send_mail( $field_name, $mail, $attachments );
 
 			do_action( 'dcf_after_ajax_send_mail', $mail_sent );
 
@@ -340,11 +341,12 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 		 *
 		 * @param $field_name
 		 * @param $mail
+		 * @param array $attachments
 		 *
-		 * @internal param $headers
 		 * @return bool
+		 * @internal param $headers
 		 */
-		private function send_mail( $field_name, $mail ) {
+		private function send_mail( $field_name, $mail, $attachments = array() ) {
 			$placeholder = array();
 			foreach ( $field_name as $key => $_name ) {
 				$placeholder[ "%" . $_name . "%" ] = $_POST[ $_name ];
@@ -372,7 +374,7 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			$headers[] = 'Content-Type: text/html; charset=UTF-8';
 			$headers[] = "From: $senderName <$senderEmail>";
 
-			return wp_mail( $receiver, $subject, $message, $headers );
+			return wp_mail( $receiver, $subject, $message, $headers, $attachments );
 		}
 
 		/**
@@ -424,6 +426,57 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			}
 
 			return '';
+		}
+
+
+		/**
+		 * Upload attachments
+		 *
+		 * @param $fields
+		 *
+		 * @return array
+		 */
+		private function upload_attachments( $fields ) {
+			$attachments = array();
+			$field_name  = array_column( $fields, 'field_name' );
+			$field_type  = array_column( $fields, 'field_type' );
+
+			if ( in_array( 'file', $field_type ) && isset( $_FILES ) ) {
+
+				$upload_dir = wp_upload_dir();
+
+				$attachment_dir = join( DIRECTORY_SEPARATOR, [
+					$upload_dir['basedir'],
+					DIALOG_CONTACT_FORM_UPLOAD_DIR
+				] );
+
+
+				if ( ! file_exists( $attachment_dir ) ) {
+					wp_mkdir_p( $attachment_dir );
+				}
+
+
+				foreach ( $_FILES as $input_name => $file ) {
+					if ( in_array( $input_name, $field_name ) ) {
+						$name     = $_FILES[ $input_name ]['name'];
+						$tmp_name = $_FILES[ $input_name ]['tmp_name'];
+						$type     = $_FILES[ $input_name ]['type'];
+						$size     = $_FILES[ $input_name ]['size'];
+
+						$safe_filename = sanitize_file_name( $name );
+						$file_ext      = strtolower( end( explode( '.', $safe_filename ) ) );
+
+						$file_path = $attachment_dir . DIRECTORY_SEPARATOR . $safe_filename;
+						$response  = move_uploaded_file( $tmp_name, $file_path );
+
+						if ( $response ) {
+							$attachments[] = $file_path;
+						}
+					}
+				}
+			}
+
+			return $attachments;
 		}
 	}
 

@@ -77,7 +77,7 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 			$this->define( 'DIALOG_CONTACT_FORM_VIEWS', DIALOG_CONTACT_FORM_PATH . '/views' );
 			$this->define( 'DIALOG_CONTACT_FORM_URL', plugins_url( '', DIALOG_CONTACT_FORM_FILE ) );
 			$this->define( 'DIALOG_CONTACT_FORM_ASSETS', DIALOG_CONTACT_FORM_URL . '/assets' );
-			$this->define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', WP_CONTENT_DIR . '/uploads/dcf-attachments' );
+			$this->define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', 'dcf-attachments' );
 		}
 
 		/**

@@ -147,7 +147,7 @@ if ( ! function_exists( 'dcf_available_field_types' ) ) {
 			'radio'    => esc_html__( 'Multiple choice', 'dialog-contact-form' ),
 			'select'   => esc_html__( 'Dropdown', 'dialog-contact-form' ),
 			'checkbox' => esc_html__( 'Checkbox', 'dialog-contact-form' ),
-			//'file'     => esc_html__( 'File', 'dialog-contact-form' ),
+			'file'     => esc_html__( 'File', 'dialog-contact-form' ),
 		];
 
 		return $fieldType;
