@@ -31,6 +31,8 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 		public function __construct() {
 			add_shortcode( 'contact-form', array( $this, 'contact_form' ) );
 			add_shortcode( 'dialog_contact_form', array( $this, 'contact_form' ) );
+
+			add_action( 'wp_footer', array( $this, 'dcf_button' ) );
 		}
 
 		/**
@@ -39,13 +41,13 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 		 * @param  array $atts
 		 * @param  null $content
 		 *
-		 * @return string|void
+		 * @return string
 		 */
 		public function contact_form( $atts, $content = null ) {
 			extract( shortcode_atts( array( 'id' => 0 ), $atts ) );
 
 			if ( ! $id ) {
-				return;
+				return '';
 			}
 			$fields = get_post_meta( $id, '_contact_form_fields', true );
 			$config = get_post_meta( $id, '_contact_form_config', true );
@@ -60,6 +62,34 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 			ob_end_clean();
 
 			return $html;
+		}
+
+		public function dcf_button() {
+			$default_option = dcf_default_options();
+			$options        = get_option( 'dialog_contact_form' );
+			$options        = wp_parse_args( $options, $default_option );
+
+			if ( ! is_numeric( $options['dialog_form_id'] ) ) {
+				return;
+			}
+
+			printf(
+				'<button class="button dcf-footer-btn" style="background-color: %2$s;color: %3$s" data-toggle="modal" data-target="#modal-%4$s">%1$s</button>',
+				$options['dialog_button_text'],
+				$options['dialog_button_background'],
+				$options['dialog_button_color'],
+				$options['dialog_form_id']
+			);
+
+			$_content  = sprintf( '[dialog_contact_form id="%s"]', $options['dialog_form_id'] );
+			$shortcode = do_shortcode( $_content );
+
+			ob_start();
+			require DIALOG_CONTACT_FORM_TEMPLATES . '/dialog-form.php';
+			$html = ob_get_contents();
+			ob_end_clean();
+
+			echo $html;
 		}
 	}
 

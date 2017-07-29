@@ -247,19 +247,23 @@ if ( ! function_exists( 'dcf_default_options' ) ) {
 		$senderEmail = str_replace( array( 'https://', 'http://', 'www.' ), '', $siteurl );
 		$senderEmail = sprintf( 'noreply@%s', $senderEmail );
 		$options     = [
-			'mailer'               => 0,
-			'smpt_host'            => '',
-			'smpt_username'        => '',
-			'smpt_password'        => '',
-			'smpt_port'            => '',
-			'encryption'           => '',
-			'smpt_from'            => sanitize_email( $senderEmail ),
-			'smpt_from_name'       => sanitize_text_field( get_option( 'blogname' ) ),
-			'recaptcha_site_key'   => '',
-			'recaptcha_secret_key' => '',
-			'recaptcha_theme'      => 'light',
-			'spam_message'         => esc_html__( 'There was an error trying to send your message. Please try again later.', 'dialog-contact-form' ),
-			'invalid_recaptcha'    => esc_html__( 'Check the checkbox.', 'dialog-contact-form' ),
+			'mailer'                   => 0,
+			'smpt_host'                => '',
+			'smpt_username'            => '',
+			'smpt_password'            => '',
+			'smpt_port'                => '',
+			'encryption'               => '',
+			'smpt_from'                => sanitize_email( $senderEmail ),
+			'smpt_from_name'           => sanitize_text_field( get_option( 'blogname' ) ),
+			'recaptcha_site_key'       => '',
+			'recaptcha_secret_key'     => '',
+			'recaptcha_theme'          => 'light',
+			'spam_message'             => esc_html__( 'There was an error trying to send your message. Please try again later.', 'dialog-contact-form' ),
+			'invalid_recaptcha'        => esc_html__( 'Check the checkbox.', 'dialog-contact-form' ),
+			'dialog_button_text'       => esc_html__( 'Leave a message', 'dialog-contact-form' ),
+			'dialog_button_background' => '#f44336',
+			'dialog_button_color'      => '#f5f5f5',
+			'dialog_form_id'           => '',
 		];
 
 		return $options;

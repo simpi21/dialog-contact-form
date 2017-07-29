@@ -156,14 +156,16 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 
 		public function admin_scripts( $hook ) {
 			global $post_type;
-			if ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE ) {
+			if ( ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE ) && ( 'dialog-contact-form_page_dcf-settings' != $hook ) ) {
 				return;
 			}
 
+			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_style( $this->plugin_name . '-admin', DIALOG_CONTACT_FORM_ASSETS . '/scss/admin.css', array(), $this->version, 'all' );
 			wp_enqueue_script( $this->plugin_name . '-admin', DIALOG_CONTACT_FORM_ASSETS . '/js/admin.js', array(
 				'jquery',
-				'jquery-ui-sortable'
+				'jquery-ui-sortable',
+				'wp-color-picker'
 			), $this->version, true );
 		}
 

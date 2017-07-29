@@ -7,9 +7,14 @@
   }
 }
 
+@import "variables";
+@import "mixins";
 @import "components/columns";
 @import "components/form";
 @import "components/level";
+@import "components/modal";
+@import "components/delete";
+@import "components/card";
 
 // Response area
 .dcf-response {
@@ -62,4 +67,11 @@ abbr.dcf-required {
       position: absolute !important;
     }
   }
+}
+
+// Footer fixed button
+.dcf-footer-btn {
+  position: fixed;
+  bottom: 0;
+  right: 2rem;
 }

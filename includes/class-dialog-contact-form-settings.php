@@ -155,6 +155,22 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				$new_input['invalid_recaptcha'] = sanitize_text_field( $input['invalid_recaptcha'] );
 			}
 
+			if ( isset( $input['dialog_button_text'] ) ) {
+				$new_input['dialog_button_text'] = sanitize_text_field( $input['dialog_button_text'] );
+			}
+
+			if ( isset( $input['dialog_button_background'] ) ) {
+				$new_input['dialog_button_background'] = sanitize_hex_color( $input['dialog_button_background'] );
+			}
+
+			if ( isset( $input['dialog_button_color'] ) ) {
+				$new_input['dialog_button_color'] = sanitize_hex_color( $input['dialog_button_color'] );
+			}
+
+			if ( isset( $input['dialog_form_id'] ) ) {
+				$new_input['dialog_form_id'] = absint( $input['dialog_form_id'] );
+			}
+
 			return $new_input;
 		}
 
@@ -212,6 +228,12 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				'dcf_message_section',
 				esc_html__( 'Validation Messages', 'dialog-contact-form' ),
 				array( $this, 'print_message_section_info' ),
+				'_dcf_settings_page'
+			);
+			add_settings_section(
+				'dcf_dialog_section',
+				esc_html__( 'Dialog/Modal', 'dialog-contact-form' ),
+				array( $this, 'print_dialog_section_info' ),
 				'_dcf_settings_page'
 			);
 
@@ -318,9 +340,45 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				'_dcf_settings_page',
 				'dcf_message_section'
 			);
+
+			add_settings_field(
+				'dialog_button_text',
+				esc_html__( 'Dialog button text', 'dialog-contact-form' ),
+				array( $this, 'dialog_button_text_callback' ),
+				'_dcf_settings_page',
+				'dcf_dialog_section'
+			);
+			add_settings_field(
+				'dialog_button_background',
+				esc_html__( 'Dialog button background', 'dialog-contact-form' ),
+				array( $this, 'dialog_button_background_callback' ),
+				'_dcf_settings_page',
+				'dcf_dialog_section'
+			);
+			add_settings_field(
+				'dialog_button_color',
+				esc_html__( 'Dialog button color', 'dialog-contact-form' ),
+				array( $this, 'dialog_button_color_callback' ),
+				'_dcf_settings_page',
+				'dcf_dialog_section'
+			);
+			add_settings_field(
+				'dialog_form_id',
+				esc_html__( 'Choose Form', 'dialog-contact-form' ),
+				array( $this, 'dialog_form_id_callback' ),
+				'_dcf_settings_page',
+				'dcf_dialog_section'
+			);
 		}
 
 		public function print_section_info() {
+		}
+
+		public function print_dialog_section_info() {
+			printf(
+				'<p>%s</p>',
+				esc_html__( 'Configure fixed dialog/modal button at your site footer.', 'dialog-contact-form' )
+			);
 		}
 
 		public function print_grecaptcha_section_info() {
@@ -480,6 +538,59 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				'<input type="text" id="invalid_recaptcha" class="regular-text" name="dialog_contact_form[invalid_recaptcha]" value="%s" />',
 				isset( $this->options['invalid_recaptcha'] ) ? esc_attr( $this->options['invalid_recaptcha'] ) : ''
 			);
+		}
+
+		public function dialog_button_text_callback() {
+			printf(
+				'<input type="text" id="dialog_button_text" class="regular-text" name="dialog_contact_form[dialog_button_text]" value="%s" />',
+				isset( $this->options['dialog_button_text'] ) ? esc_attr( $this->options['dialog_button_text'] ) : ''
+			);
+		}
+
+		public function dialog_button_background_callback() {
+			printf(
+				'<input type="text" id="dialog_button_background" class="dcf-colorpicker" name="dialog_contact_form[dialog_button_background]" value="%s" />',
+				isset( $this->options['dialog_button_background'] ) ? esc_attr( $this->options['dialog_button_background'] ) : ''
+			);
+		}
+
+		public function dialog_button_color_callback() {
+			printf(
+				'<input type="text" id="dialog_button_color" class="dcf-colorpicker" name="dialog_contact_form[dialog_button_color]" value="%s" />',
+				isset( $this->options['dialog_button_color'] ) ? esc_attr( $this->options['dialog_button_color'] ) : ''
+			);
+		}
+
+		public function dialog_form_id_callback() {
+			$contact_forms = get_posts( array(
+				'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
+				'posts_per_page' => - 1,
+				'post_status'    => 'publish'
+			) );
+
+			if ( count( $contact_forms ) < 1 ) {
+				printf(
+					'<p>%s</p>',
+					esc_html__( 'Yor did not add any form yet. Please add a form first.' )
+				);
+			}
+
+			$contact_forms = array_map( function ( WP_Post $form ) {
+				return array(
+					'id'    => $form->ID,
+					'title' => $form->post_title,
+				);
+			}, $contact_forms );
+
+			$_val = isset( $this->options['dialog_form_id'] ) ? absint( $this->options['dialog_form_id'] ) : '';
+
+			echo '<select name="dialog_contact_form[dialog_form_id]" class="regular-text">';
+			echo '<option value="">' . esc_html__( 'Choose Form' ) . '</option>';
+			foreach ( $contact_forms as $_form ) {
+				$selected = ( $_val == $_form['id'] ) ? 'selected' : '';
+				printf( '<option value="%s" %s>%s</option>', absint( $_form['id'] ), $selected, esc_attr( $_form['title'] ) );
+			}
+			echo '</select>';
 		}
 	}
 
