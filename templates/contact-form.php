@@ -197,14 +197,17 @@ if ( $fields ): ?>
 
 				echo '<div class="field column is-12">';
 				printf(
-					'<div class="g-recaptcha" data-sitekey="%1$s"></div>',
-					esc_attr( $_options['recaptcha_site_key'] )
+					'<div class="g-recaptcha" data-sitekey="%1$s" data-theme="%2$s"></div>',
+					esc_attr( $_options['recaptcha_site_key'] ),
+					esc_attr( $_options['recaptcha_theme'] )
 				);
 				echo '<input type="hidden" name="dcf_recaptcha">';
 				echo '</div>';
 
-				add_action( 'wp_footer', function () {
-					echo '<script src="https://www.google.com/recaptcha/api.js"></script>';
+				add_action( 'wp_footer', function () use ( $_options ) {
+					$hl = isset( $_options['recaptcha_lang'] ) ? $_options['recaptcha_lang'] : 'en';
+					$hl = in_array( $hl, array_keys( dcf_google_recaptcha_lang() ) ) ? $hl : 'en';
+					echo sprintf( '<script src="https://www.google.com/recaptcha/api.js?hl=%s"></script>', $hl );
 				} );
 			}
 		}

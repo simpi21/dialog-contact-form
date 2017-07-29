@@ -69,7 +69,7 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 			$options        = get_option( 'dialog_contact_form' );
 			$options        = wp_parse_args( $options, $default_option );
 
-			if ( ! is_numeric( $options['dialog_form_id'] ) ) {
+			if ( intval( $options['dialog_form_id'] ) < 1 ) {
 				return;
 			}
 
@@ -94,7 +94,9 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 			echo $html;
 
 			if ( isset( $config['recaptcha'] ) && $config['recaptcha'] == 'yes' ) {
-				echo '<script src="https://www.google.com/recaptcha/api.js"></script>';
+				$hl = isset( $options['recaptcha_lang'] ) ? $options['recaptcha_lang'] : 'en';
+				$hl = in_array( $hl, array_keys( dcf_google_recaptcha_lang() ) ) ? $hl : 'en';
+				echo sprintf( '<script src="https://www.google.com/recaptcha/api.js?hl=%s"></script>', $hl );
 			}
 		}
 	}

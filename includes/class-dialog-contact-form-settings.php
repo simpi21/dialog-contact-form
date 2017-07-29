@@ -147,6 +147,10 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				$new_input['recaptcha_theme'] = sanitize_text_field( $input['recaptcha_theme'] );
 			}
 
+			if ( isset( $input['recaptcha_lang'] ) ) {
+				$new_input['recaptcha_lang'] = sanitize_text_field( $input['recaptcha_lang'] );
+			}
+
 			if ( isset( $input['spam_message'] ) ) {
 				$new_input['spam_message'] = sanitize_text_field( $input['spam_message'] );
 			}
@@ -313,6 +317,14 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				'recaptcha_secret_key',
 				esc_html__( 'Secret key', 'dialog-contact-form' ),
 				array( $this, 'recaptcha_secret_key_callback' ),
+				'_dcf_settings_page',
+				'dcf_grecaptcha_section'
+			);
+
+			add_settings_field(
+				'recaptcha_lang',
+				esc_html__( 'Language', 'dialog-contact-form' ),
+				array( $this, 'recaptcha_lang_callback' ),
 				'_dcf_settings_page',
 				'dcf_grecaptcha_section'
 			);
@@ -524,6 +536,21 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 					esc_attr( $value )
 				);
 			}
+		}
+
+		public function recaptcha_lang_callback() {
+			$languages = dcf_google_recaptcha_lang();
+			$_val      = isset( $this->options['recaptcha_lang'] ) ? esc_attr( $this->options['recaptcha_lang'] ) : 'en';
+			echo '<select name="dialog_contact_form[recaptcha_lang]" class="regular-text">';
+			foreach ( $languages as $key => $value ) {
+				$selected = ( $_val == $key ) ? 'selected' : '';
+				echo sprintf( '<option value="%1$s" %3$s>%2$s</option>',
+					esc_attr( $key ),
+					esc_attr( $value ),
+					$selected
+				);
+			}
+			echo '</select>';
 		}
 
 		public function spam_message_callback() {

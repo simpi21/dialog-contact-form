@@ -68,6 +68,7 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 * Added     - Added more than fifteen input field validation rules.
 * Added     - Added option to customize each field validation message.
 * Added     - Added Option to add unlimited fields for each form.
+* Added     - Added Google reCAPTCHA to protect your form from spam.
 * Added     - Option to arrange and re-arrange fields as your need.
 * Added     - Option to customize mail template as you want.
 * Added     - Custom field width: Full, Three Quarters, Two Thirds, Half, One Third, One Quarter.
