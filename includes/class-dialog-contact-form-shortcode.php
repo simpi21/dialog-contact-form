@@ -73,6 +73,8 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 				return;
 			}
 
+			$config = get_post_meta( $options['dialog_form_id'], '_contact_form_config', true );
+
 			printf(
 				'<button class="button dcf-footer-btn" style="background-color: %2$s;color: %3$s" data-toggle="modal" data-target="#modal-%4$s">%1$s</button>',
 				$options['dialog_button_text'],
@@ -90,6 +92,10 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 			ob_end_clean();
 
 			echo $html;
+
+			if ( isset( $config['recaptcha'] ) && $config['recaptcha'] == 'yes' ) {
+				echo '<script src="https://www.google.com/recaptcha/api.js"></script>';
+			}
 		}
 	}
 
