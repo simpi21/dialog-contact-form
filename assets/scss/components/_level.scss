@@ -7,7 +7,7 @@
   justify-content: center;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: $tablet - 1px) {
   .level-item:not(:last-child) {
     margin-bottom: 0.75rem;
   }
@@ -35,13 +35,13 @@
   justify-content: flex-start;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: $tablet - 1px) {
   .level-left + .level-right {
     margin-top: 1.5rem;
   }
 }
 
-@media screen and (min-width: 769px), print {
+@media screen and (min-width: $tablet), print {
   .level-left {
     display: flex;
   }
@@ -52,7 +52,7 @@
   justify-content: flex-end;
 }
 
-@media screen and (min-width: 769px), print {
+@media screen and (min-width: $tablet), print {
   .level-right {
     display: flex;
   }
@@ -67,7 +67,7 @@
   margin-bottom: 1.5rem;
 }
 
-@media screen and (min-width: 769px), print {
+@media screen and (min-width: $tablet), print {
   .level {
     display: flex;
   }

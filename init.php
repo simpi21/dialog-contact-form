@@ -161,7 +161,7 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 			}
 
 			wp_enqueue_style( 'wp-color-picker' );
-			wp_enqueue_style( $this->plugin_name . '-admin', DIALOG_CONTACT_FORM_ASSETS . '/scss/admin.css', array(), $this->version, 'all' );
+			wp_enqueue_style( $this->plugin_name . '-admin', DIALOG_CONTACT_FORM_ASSETS . '/css/admin.css', array(), $this->version, 'all' );
 			wp_enqueue_script( $this->plugin_name . '-admin', DIALOG_CONTACT_FORM_ASSETS . '/js/admin.js', array(
 				'jquery',
 				'jquery-ui-sortable',
@@ -170,7 +170,7 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 		}
 
 		public function frontend_scripts() {
-			wp_enqueue_style( $this->plugin_name, DIALOG_CONTACT_FORM_ASSETS . '/scss/style.css', array(), $this->version, 'all' );
+			wp_enqueue_style( $this->plugin_name, DIALOG_CONTACT_FORM_ASSETS . '/css/style.css', array(), $this->version, 'all' );
 			wp_enqueue_script( $this->plugin_name, DIALOG_CONTACT_FORM_ASSETS . '/js/form.js', array(), $this->version, true );
 			wp_localize_script( $this->plugin_name, 'DialogContactForm', array(
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),

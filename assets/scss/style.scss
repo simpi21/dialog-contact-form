@@ -1,20 +1,11 @@
-@keyframes spinAround {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(359deg);
-  }
-}
-
 @import "variables";
 @import "mixins";
+@import "animations";
 @import "components/columns";
-@import "components/form";
-@import "components/level";
-@import "components/modal";
 @import "components/delete";
-@import "components/card";
+@import "components/modal";
+@import "components/level";
+@import "components/form";
 
 // Response area
 .dcf-response {

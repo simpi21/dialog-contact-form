@@ -238,7 +238,7 @@ $color--error: #f44336;
   margin: 0;
 }
 
-@media screen and (min-width: 769px), print {
+@media screen and (min-width: $tablet), print {
   .field.is-horizontal {
     display: flex;
   }
