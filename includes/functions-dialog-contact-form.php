@@ -70,7 +70,7 @@ if ( ! function_exists( 'dcf_create_captcha' ) ) {
 
 		// Check if PHP GD extension is enabled
 		if ( ! function_exists( 'gd_info' ) ) {
-			return;
+			return '';
 		}
 
 		// Create a new palette based image
@@ -147,7 +147,7 @@ if ( ! function_exists( 'dcf_available_field_types' ) ) {
 			'radio'    => esc_html__( 'Multiple choice', 'dialog-contact-form' ),
 			'select'   => esc_html__( 'Dropdown', 'dialog-contact-form' ),
 			'checkbox' => esc_html__( 'Checkbox', 'dialog-contact-form' ),
-			'file'     => esc_html__( 'File', 'dialog-contact-form' ),
+			// 'file'     => esc_html__( 'File', 'dialog-contact-form' ),
 		];
 
 		return $fieldType;
@@ -295,8 +295,8 @@ if ( ! function_exists( 'dcf_default_mail_template' ) ) {
 			'receiver'    => get_option( 'admin_email' ),
 			'senderEmail' => $senderEmail,
 			'senderName'  => $blogname,
-			'subject'     => $blogname . ': %subject%',
-			'body'        => "$from %your_name% <%your_email%>\n$subject %subject%\n\n$message\n%your_message%\n\n--\n$sign ",
+			'subject'     => $blogname . ': [subject]',
+			'body'        => "$from [your_name] <[your_email]>\n$subject [subject]\n\n$message\n[your_message]\n\n--\n$sign ",
 		];
 
 		return $defaults;
@@ -384,5 +384,81 @@ if ( ! function_exists( 'dcf_google_recaptcha_lang' ) ) {
 			"vi"     => esc_html__( "Vietnamese", 'dialog-contact-form' ),
 			"zu"     => esc_html__( "Zulu", 'dialog-contact-form' ),
 		];
+	}
+}
+
+if ( ! function_exists( 'dcf_default_fields' ) ) {
+	/**
+	 * Dialog contact form default fields
+	 *
+	 * @return array
+	 */
+	function dcf_default_fields() {
+		return array(
+			array(
+				'field_title'   => esc_html__( 'Your Name', 'dialog-contact-form' ),
+				'field_name'    => 'your_name',
+				'field_id'      => 'your_name',
+				'field_type'    => 'text',
+				'options'       => '',
+				'number_min'    => '',
+				'number_max'    => '',
+				'number_step'   => '',
+				'field_value'   => '',
+				'field_class'   => '',
+				'field_width'   => 'is-6',
+				'validation'    => array( 'required' ),
+				'placeholder'   => '',
+				'error_message' => '',
+			),
+			array(
+				'field_title'   => esc_html__( 'Your Email', 'dialog-contact-form' ),
+				'field_name'    => 'your_email',
+				'field_id'      => 'your_email',
+				'field_type'    => 'email',
+				'options'       => '',
+				'number_min'    => '',
+				'number_max'    => '',
+				'number_step'   => '',
+				'field_value'   => '',
+				'field_class'   => '',
+				'field_width'   => 'is-6',
+				'validation'    => array( 'required', 'email' ),
+				'placeholder'   => '',
+				'error_message' => '',
+			),
+			array(
+				'field_title'   => esc_html__( 'Subject', 'dialog-contact-form' ),
+				'field_name'    => 'subject',
+				'field_id'      => 'subject',
+				'field_type'    => 'text',
+				'options'       => '',
+				'number_min'    => '',
+				'number_max'    => '',
+				'number_step'   => '',
+				'field_value'   => '',
+				'field_class'   => '',
+				'field_width'   => 'is-12',
+				'validation'    => array( 'required' ),
+				'placeholder'   => '',
+				'error_message' => '',
+			),
+			array(
+				'field_title'   => esc_html__( 'Your Message', 'dialog-contact-form' ),
+				'field_name'    => 'your_message',
+				'field_id'      => 'your_message',
+				'field_type'    => 'textarea',
+				'options'       => '',
+				'number_min'    => '',
+				'number_max'    => '',
+				'number_step'   => '',
+				'field_value'   => '',
+				'field_class'   => '',
+				'field_width'   => 'is-12',
+				'validation'    => array( 'required' ),
+				'placeholder'   => '',
+				'error_message' => '',
+			),
+		);
 	}
 }

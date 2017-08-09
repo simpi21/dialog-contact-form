@@ -13,7 +13,7 @@ if ( ! class_exists( 'DialogContactFormActivation' ) ):
 			$contact_forms = get_posts( array(
 				'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
 				'posts_per_page' => 5,
-				'post_status'    => 'publish'
+				'post_status'    => 'any'
 			) );
 
 			if ( count( $contact_forms ) > 0 ) {
@@ -35,77 +35,14 @@ if ( ! class_exists( 'DialogContactFormActivation' ) ):
 				update_post_meta( $post_id, '_contact_form_messages', $this->form_message() );
 				update_post_meta( $post_id, '_contact_form_config', $this->form_config() );
 				update_post_meta( $post_id, '_contact_form_mail', $this->form_mail() );
+
+				$this->upgrade_to_version_2( $post_id );
 			}
 
 		}
 
 		private function form_field() {
-			return array(
-				array(
-					'field_title'   => esc_html__( 'Your Name', 'dialog-contact-form' ),
-					'field_name'    => 'your_name',
-					'field_id'      => 'your_name',
-					'field_type'    => 'text',
-					'options'       => '',
-					'number_min'    => '',
-					'number_max'    => '',
-					'number_step'   => '',
-					'field_value'   => '',
-					'field_class'   => '',
-					'field_width'   => 'is-6',
-					'validation'    => array( 'required' ),
-					'placeholder'   => '',
-					'error_message' => '',
-				),
-				array(
-					'field_title'   => esc_html__( 'Your Email', 'dialog-contact-form' ),
-					'field_name'    => 'your_email',
-					'field_id'      => 'your_email',
-					'field_type'    => 'email',
-					'options'       => '',
-					'number_min'    => '',
-					'number_max'    => '',
-					'number_step'   => '',
-					'field_value'   => '',
-					'field_class'   => '',
-					'field_width'   => 'is-6',
-					'validation'    => array( 'required', 'email' ),
-					'placeholder'   => '',
-					'error_message' => '',
-				),
-				array(
-					'field_title'   => esc_html__( 'Subject', 'dialog-contact-form' ),
-					'field_name'    => 'subject',
-					'field_id'      => 'subject',
-					'field_type'    => 'text',
-					'options'       => '',
-					'number_min'    => '',
-					'number_max'    => '',
-					'number_step'   => '',
-					'field_value'   => '',
-					'field_class'   => '',
-					'field_width'   => 'is-12',
-					'validation'    => array( 'required' ),
-					'placeholder'   => '',
-					'error_message' => '',
-				),
-				array(
-					'field_title'   => esc_html__( 'Your Message', 'dialog-contact-form' ),
-					'field_name'    => 'your_message',
-					'field_id'      => 'your_message',
-					'field_type'    => 'textarea',
-					'options'       => '',
-					'number_min'    => '',
-					'number_max'    => '',
-					'number_step'   => '',
-					'field_value'   => '',
-					'field_class'   => '',
-					'field_width'   => 'is-12',
-					'validation'    => array( 'required' ),
-					'placeholder'   => '',
-					'error_message' => '',
-				),
-			);
+			return dcf_default_fields();
 		}
 
 		private function form_config() {
@@ -118,6 +55,31 @@ if ( ! class_exists( 'DialogContactFormActivation' ) ):
 
 		private function form_mail() {
 			return dcf_default_mail_template();
+		}
+
+
+		/**
+		 * Upgrade to version 2 from version 1
+		 *
+		 * @param int $post_id
+		 *
+		 * @return bool
+		 */
+		public function upgrade_to_version_2( $post_id = 0 ) {
+			$old_option = get_option( 'dialogcf_options' );
+			if ( ! isset( $old_option['display_dialog'], $old_option['dialog_color'] ) ) {
+				return false;
+			}
+
+			if ( 'show' != $old_option['display_dialog'] ) {
+				return false;
+			}
+
+			$option                             = dcf_default_options();
+			$option['dialog_button_background'] = $old_option['dialog_color'];
+			$option['dialog_form_id']           = $post_id;
+
+			return update_option( 'dialog_contact_form', $option );
 		}
 	}
 

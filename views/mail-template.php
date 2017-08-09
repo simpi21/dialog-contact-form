@@ -16,10 +16,13 @@ $mail     = wp_parse_args( $mail, $defaults );
 $fields     = get_post_meta( $post->ID, '_contact_form_fields', true );
 $fields     = is_array( $fields ) ? $fields : array();
 $field_name = array_column( $fields, 'field_name' );
-$name_ph    = array_map( function ( $n ) {
-	return "%" . $n . "%";
+if ( ! isset( $_GET['action'] ) && count( $field_name ) === 0 ) {
+	$field_name = array( 'your_name', 'your_email', 'subject', 'your_message' );
+}
+$name_ph = array_map( function ( $n ) {
+	return "[" . $n . "]";
 }, $field_name );
-$name_ph    = "<code class='mailtag code'>" . implode( "</code><code class='mailtag code'>", $name_ph ) . "</code>";
+$name_ph = "<code class='mailtag code'>" . implode( "</code><code class='mailtag code'>", $name_ph ) . "</code>";
 echo $name_ph;
 ?>
 <table class="form-table">

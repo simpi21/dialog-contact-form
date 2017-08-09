@@ -29,7 +29,6 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 		 * DialogContactFormShortcode constructor.
 		 */
 		public function __construct() {
-			add_shortcode( 'contact-form', array( $this, 'contact_form' ) );
 			add_shortcode( 'dialog_contact_form', array( $this, 'contact_form' ) );
 
 			add_action( 'wp_footer', array( $this, 'dcf_button' ) );

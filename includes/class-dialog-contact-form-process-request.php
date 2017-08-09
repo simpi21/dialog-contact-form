@@ -349,7 +349,7 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 		private function send_mail( $field_name, $mail, $attachments = array() ) {
 			$placeholder = array();
 			foreach ( $field_name as $key => $_name ) {
-				$placeholder[ "%" . $_name . "%" ] = $_POST[ $_name ];
+				$placeholder[ "[" . $_name . "]" ] = $_POST[ $_name ];
 			}
 
 			$subject = $mail['subject'];

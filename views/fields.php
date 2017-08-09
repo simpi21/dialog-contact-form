@@ -12,6 +12,10 @@ if ( ! defined( 'WPINC' ) ) {
 	$_fields = get_post_meta( $post->ID, '_contact_form_fields', true );
 	$_fields = is_array( $_fields ) ? $_fields : array();
 
+	if ( ! isset( $_GET['action'] ) && count( $_fields ) === 0 ) {
+		$_fields = dcf_default_fields();
+	}
+
 	if ( count( $_fields ) > 0 ):
 
 		$_field_number = 0;
