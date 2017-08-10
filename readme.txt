@@ -4,7 +4,7 @@ Tags: contact, contact form, email, feedback, form, modal, dialog
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3LZWQTHEVYWCY
 Requires at least: 4.0
 Tested up to: 4.8
-Stable tag: 1.3.0
+Stable tag: 2.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,20 +18,19 @@ Just another WordPress contact form plugin. Simple but flexible.
 * No premium version and will never be.
 * Beginner friendly WordPress contact form plugin.
 * Very simple and lightweight.
-* Support AJAX HTTP form submission
-* Support reload/change captcha over AJAX request.
-* Option to change button and modal header color.
-* Options to change Form label texts, placeholder texts, error messages texts
-
-= Usages =
-To add contact form at any page just add the following shortcode
-
-**[dialog_contact_form]**
-
-By default, It will just send email to E-mail address of blog administrator. To change email address go to  `Settings >> Dialog Contact Form` and change email address as your need.
-
-To activate dialog contact form check `Show Dialog`, a "Leave a message" button will appear at your site bottom right corner. Just click on it, a dialog contact form will appear.
-
+* No JavaScript dependency, Written in vanilla JavaScript.
+* Design for modern browser but also works for older browsers.
+* Support creating multiple forms.
+* Support using multiple forms in same page.
+* Option page for SMTP settings for better mail delivery.
+* More than ten input field types.
+* More than fifteen input field validation rules.
+* Option to customize each field validation message.
+* Option to add unlimited fields for each form.
+* Google reCAPTCHA to protect your form from spam.
+* Option to arrange and re-arrange fields as your need.
+* Option to customize mail template as you want.
+* Custom field width: Full, Three Quarters, Two Thirds, Half, One Third, One Quarter.
 
 == Installation ==
 
@@ -53,11 +52,12 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 == Screenshots ==
 
 1. Screenshot of Dialog Contact Form on Dialog.
-2. Screenshot of Dialog Contact Form of Setting Page.
+2. Screenshot of Dialog Contact Form on Page.
+3. Screenshot of Dialog Contact Form of Setting Page.
 
 == Changelog ==
 
-= Master =
+= version 2.0.0 - 2017-08-10 =
 * Added     - Re-write from core.
 * Added     - No JavaScript dependency, Written in vanilla JavaScript.
 * Added     - Design for modern browser but also works for older browsers.

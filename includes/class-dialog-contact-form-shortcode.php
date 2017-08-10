@@ -31,7 +31,7 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 		public function __construct() {
 			add_shortcode( 'dialog_contact_form', array( $this, 'contact_form' ) );
 
-			add_action( 'wp_footer', array( $this, 'dcf_button' ) );
+			add_action( 'wp_footer', array( $this, 'dcf_button' ), 5 );
 		}
 
 		/**
@@ -46,6 +46,10 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 			extract( shortcode_atts( array( 'id' => 0 ), $atts ) );
 
 			if ( ! $id ) {
+				if ( current_user_can( 'manage_options' ) ) {
+					return esc_html__( 'Dialog Contact form now required a form ID attribute. Please update your shortcode.', 'dialog-contact-form' );
+				}
+
 				return '';
 			}
 			$fields = get_post_meta( $id, '_contact_form_fields', true );
@@ -91,12 +95,6 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 			ob_end_clean();
 
 			echo $html;
-
-			if ( isset( $config['recaptcha'] ) && $config['recaptcha'] == 'yes' ) {
-				$hl = isset( $options['recaptcha_lang'] ) ? $options['recaptcha_lang'] : 'en';
-				$hl = in_array( $hl, array_keys( dcf_google_recaptcha_lang() ) ) ? $hl : 'en';
-				echo sprintf( '<script src="https://www.google.com/recaptcha/api.js?hl=%s"></script>', $hl );
-			}
 		}
 	}
 

@@ -1,5 +1,10 @@
 <?php
 
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 if ( ! function_exists( 'array_column' ) ) {
 	/**
 	 * array_column for php < 5.5

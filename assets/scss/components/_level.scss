@@ -1,77 +1,77 @@
 .level-item {
-  align-items: center;
-  display: flex;
-  flex-basis: auto;
-  flex-grow: 0;
-  flex-shrink: 0;
-  justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-basis: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
+    justify-content: center;
 }
 
 @media screen and (max-width: $tablet - 1px) {
-  .level-item:not(:last-child) {
-    margin-bottom: 0.75rem;
-  }
+    .level-item:not(:last-child) {
+        margin-bottom: 0.75rem;
+    }
 }
 
 .level-left,
 .level-right {
-  flex-basis: auto;
-  flex-grow: 0;
-  flex-shrink: 0;
+    flex-basis: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 .level-left .level-item:not(:last-child),
 .level-right .level-item:not(:last-child) {
-  margin-right: 0.75rem;
+    margin-right: 0.75rem;
 }
 
 .level-left .level-item.is-flexible,
 .level-right .level-item.is-flexible {
-  flex-grow: 1;
+    flex-grow: 1;
 }
 
 .level-left {
-  align-items: center;
-  justify-content: flex-start;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 @media screen and (max-width: $tablet - 1px) {
-  .level-left + .level-right {
-    margin-top: 1.5rem;
-  }
+    .level-left + .level-right {
+        margin-top: 1.5rem;
+    }
 }
 
 @media screen and (min-width: $tablet), print {
-  .level-left {
-    display: flex;
-  }
+    .level-left {
+        display: flex;
+    }
 }
 
 .level-right {
-  align-items: center;
-  justify-content: flex-end;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 @media screen and (min-width: $tablet), print {
-  .level-right {
-    display: flex;
-  }
+    .level-right {
+        display: flex;
+    }
 }
 
 .level {
-  align-items: center;
-  justify-content: space-between;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .level:not(:last-child) {
-  margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 @media screen and (min-width: $tablet), print {
-  .level {
-    display: flex;
-  }
-  .level > .level-item:not(.is-narrow) {
-    flex-grow: 1;
-  }
+    .level {
+        display: flex;
+    }
+    .level > .level-item:not(.is-narrow) {
+        flex-grow: 1;
+    }
 }

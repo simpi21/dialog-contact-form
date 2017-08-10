@@ -9,60 +9,60 @@
 
 // Response area
 .dcf-response {
-  width: 100%;
-  padding: 0 0.75rem;
+    width: 100%;
+    padding: 0 0.75rem;
 
-  .dcf-error {
-    p {
-      background-color: #ffdddd;
-      border-left: 6px solid #f44336;
-      margin: 1rem 0;
-      padding: 1rem;
+    .dcf-error {
+        p {
+            background-color: #ffdddd;
+            border-left: 6px solid #f44336;
+            margin: 1rem 0;
+            padding: 1rem;
+        }
     }
-  }
-  .dcf-success {
-    p {
-      background-color: #ddffdd;
-      border-left: 6px solid #4CAF50;
-      margin: 1rem 0;
-      padding: 1rem;
+    .dcf-success {
+        p {
+            background-color: #ddffdd;
+            border-left: 6px solid #4CAF50;
+            margin: 1rem 0;
+            padding: 1rem;
+        }
     }
-  }
 }
 
 // Required abbr color
 abbr.dcf-required {
-  color: #f44336;
+    color: #f44336;
 }
 
 // Submit button style
 .dcf-submit {
-  position: relative;
+    position: relative;
 
-  &.is-loading {
-    color: transparent !important;
-    pointer-events: none;
+    &.is-loading {
+        color: transparent !important;
+        pointer-events: none;
 
-    &:after {
-      animation: spinAround 500ms infinite linear;
-      border: 2px solid #dbdbdb;
-      border-radius: 100px;
-      border-right-color: transparent;
-      border-top-color: transparent;
-      content: "";
-      display: block;
-      height: 1em;
-      width: 1em;
-      left: calc(50% - (1em / 2));
-      top: calc(50% - (1em / 2));
-      position: absolute !important;
+        &:after {
+            animation: spinAround 500ms infinite linear;
+            border: 2px solid #dbdbdb;
+            border-radius: 100px;
+            border-right-color: transparent;
+            border-top-color: transparent;
+            content: "";
+            display: block;
+            height: 1em;
+            width: 1em;
+            left: calc(50% - (1em / 2));
+            top: calc(50% - (1em / 2));
+            position: absolute !important;
+        }
     }
-  }
 }
 
 // Footer fixed button
 .dcf-footer-btn {
-  position: fixed;
-  bottom: 0;
-  right: 2rem;
+    position: fixed;
+    bottom: 0;
+    right: 2rem;
 }
