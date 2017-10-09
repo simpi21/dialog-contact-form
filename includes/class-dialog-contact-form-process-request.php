@@ -31,7 +31,7 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 
 			add_action( 'wp_ajax_dcf_submit_form', array( $this, 'submit_form' ) );
 			add_action( 'wp_ajax_nopriv_dcf_submit_form', array( $this, 'submit_form' ) );
-			add_action( 'wp', array( $this, 'process_submited_form' ) );
+			add_action( 'template_redirect', array( $this, 'process_submited_form' ) );
 		}
 
 		/**
@@ -364,7 +364,7 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			$receiver = $mail['receiver'];
 			$receiver = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $receiver );
 
-			$senderEmail = sanitize_email( $mail['senderEmail'] );
+			$senderEmail = $mail['senderEmail'];
 			$senderEmail = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderEmail );
 
 			$senderName = esc_attr( $mail['senderName'] );
@@ -373,6 +373,7 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			$headers   = array();
 			$headers[] = 'Content-Type: text/html; charset=UTF-8';
 			$headers[] = "From: $senderName <$senderEmail>";
+			$headers[] = "Reply-To: $senderName <$senderEmail>";
 
 			return wp_mail( $receiver, $subject, $message, $headers, $attachments );
 		}

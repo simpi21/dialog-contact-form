@@ -195,21 +195,28 @@ if ( ! function_exists( 'dcf_validation_messages' ) ) {
 	 */
 	function dcf_validation_messages() {
 		$messages = [
-			'mail_sent_ok'       => esc_html__( 'Thank you for your message. It has been sent successfully.', 'dialog-contact-form' ),
-			'mail_sent_ng'       => esc_html__( 'There was an error trying to send your message. Please try again later.', 'dialog-contact-form' ),
-			'validation_error'   => esc_html__( 'One or more fields have an error. Please check and try again.', 'dialog-contact-form' ),
+			'mail_sent_ok'       => esc_html__( 'Thank you for your message. It has been sent successfully.',
+				'dialog-contact-form' ),
+			'mail_sent_ng'       => esc_html__( 'There was an error trying to send your message. Please try again later.',
+				'dialog-contact-form' ),
+			'validation_error'   => esc_html__( 'One or more fields have an error. Please check and try again.',
+				'dialog-contact-form' ),
 			'invalid_required'   => esc_html__( 'The field is required.', 'dialog-contact-form' ),
 			'invalid_too_long'   => esc_html__( 'The field is too long.', 'dialog-contact-form' ),
 			'invalid_too_short'  => esc_html__( 'The field is too short.', 'dialog-contact-form' ),
-			'number_too_small'   => esc_html__( 'The number is smaller than the minimum allowed.', 'dialog-contact-form' ),
-			'number_too_large'   => esc_html__( 'The number is larger than the maximum allowed.', 'dialog-contact-form' ),
+			'number_too_small'   => esc_html__( 'The number is smaller than the minimum allowed.',
+				'dialog-contact-form' ),
+			'number_too_large'   => esc_html__( 'The number is larger than the maximum allowed.',
+				'dialog-contact-form' ),
 			'invalid_email'      => esc_html__( 'The email address is invalid.', 'dialog-contact-form' ),
 			'invalid_url'        => esc_html__( 'The URL is invalid.', 'dialog-contact-form' ),
 			'invalid_number'     => esc_html__( 'Please enter a valid number.', 'dialog-contact-form' ),
 			'invalid_int'        => esc_html__( 'Please enter a valid integer.', 'dialog-contact-form' ),
 			'invalid_alpha'      => esc_html__( 'Please enter only alphabetic letters.', 'dialog-contact-form' ),
-			'invalid_alnum'      => esc_html__( 'Please enter only alphabetic and numeric characters.', 'dialog-contact-form' ),
-			'invalid_alnumdash'  => esc_html__( 'only alphanumeric characters, dashes and underscores are permitted.', 'dialog-contact-form' ),
+			'invalid_alnum'      => esc_html__( 'Please enter only alphabetic and numeric characters.',
+				'dialog-contact-form' ),
+			'invalid_alnumdash'  => esc_html__( 'only alphanumeric characters, dashes and underscores are permitted.',
+				'dialog-contact-form' ),
 			'invalid_date'       => esc_html__( 'The date is invalid.', 'dialog-contact-form' ),
 			'invalid_ip'         => esc_html__( 'The IP address is invalid.', 'dialog-contact-form' ),
 			'invalid_checked'    => esc_html__( 'The field must be checked.', 'dialog-contact-form' ),
@@ -264,7 +271,8 @@ if ( ! function_exists( 'dcf_default_options' ) ) {
 			'recaptcha_secret_key'     => '',
 			'recaptcha_theme'          => 'light',
 			'recaptcha_lang'           => 'en',
-			'spam_message'             => esc_html__( 'There was an error trying to send your message. Please try again later.', 'dialog-contact-form' ),
+			'spam_message'             => esc_html__( 'There was an error trying to send your message. Please try again later.',
+				'dialog-contact-form' ),
 			'invalid_recaptcha'        => esc_html__( 'Check the checkbox.', 'dialog-contact-form' ),
 			'dialog_button_text'       => esc_html__( 'Leave a message', 'dialog-contact-form' ),
 			'dialog_button_background' => '#f44336',
@@ -283,14 +291,14 @@ if ( ! function_exists( 'dcf_default_mail_template' ) ) {
 	 * @return array
 	 */
 	function dcf_default_mail_template() {
-		$blogname    = get_option( 'blogname' );
-		$siteurl     = get_option( 'siteurl' );
-		$senderEmail = str_replace( [ 'https://', 'http://', 'www.' ], '', $siteurl );
-		$senderEmail = sprintf( 'mail@%s', $senderEmail );
-		$from        = esc_html__( 'From:', 'dialog-contact-form' );
-		$subject     = esc_html__( 'Subject:', 'dialog-contact-form' );
-		$message     = esc_html__( 'Message Body:', 'dialog-contact-form' );
-		$sign        = sprintf(
+		$blogname = get_option( 'blogname' );
+		$siteurl  = get_option( 'siteurl' );
+		//$senderEmail = str_replace( [ 'https://', 'http://', 'www.' ], '', $siteurl );
+		//$senderEmail = sprintf( 'mail@%s', $senderEmail );
+		$from    = esc_html__( 'From:', 'dialog-contact-form' );
+		$subject = esc_html__( 'Subject:', 'dialog-contact-form' );
+		$message = esc_html__( 'Message Body:', 'dialog-contact-form' );
+		$sign    = sprintf(
 			esc_html__( 'This email was sent from a contact form on %s (%s)', 'dialog-contact-form' ),
 			$blogname,
 			$siteurl
@@ -298,8 +306,8 @@ if ( ! function_exists( 'dcf_default_mail_template' ) ) {
 
 		$defaults = [
 			'receiver'    => get_option( 'admin_email' ),
-			'senderEmail' => $senderEmail,
-			'senderName'  => $blogname,
+			'senderEmail' => '[your_email]',
+			'senderName'  => '[your_name]',
 			'subject'     => $blogname . ': [subject]',
 			'body'        => "$from [your_name] <[your_email]>\n$subject [subject]\n\n$message\n[your_message]\n\n--\n$sign ",
 		];

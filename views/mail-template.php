@@ -37,7 +37,7 @@ echo $name_ph;
     <tr>
         <th scope="row"><label><?php esc_html_e( 'Sender Email', 'dialog-contact-form' ); ?></label></th>
         <td>
-            <input name="mail[senderEmail]" type="email" value="<?php echo esc_attr( $mail['senderEmail'] ); ?>"
+            <input name="mail[senderEmail]" type="text" value="<?php echo esc_attr( $mail['senderEmail'] ); ?>"
                    class="regular-text" required="required">
             <p class="description"><?php esc_html_e( 'Define from what email send the message.', 'dialog-contact-form' ); ?></p>
         </td>

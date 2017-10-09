@@ -75,9 +75,6 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 			if ( in_array( $_smpt['encryption'], array( 'ssl', 'tls' ) ) ) {
 				$phpmailer->SMTPSecure = esc_attr( $_smpt['encryption'] );
 			}
-
-			$phpmailer->From     = esc_attr( $_smpt['smpt_from'] );
-			$phpmailer->FromName = esc_attr( $_smpt['smpt_from_name'] );
 		}
 
 		/**
@@ -125,14 +122,6 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 
 			if ( isset( $input['encryption'] ) ) {
 				$new_input['encryption'] = sanitize_text_field( $input['encryption'] );
-			}
-
-			if ( isset( $input['smpt_from'] ) ) {
-				$new_input['smpt_from'] = sanitize_email( $input['smpt_from'] );
-			}
-
-			if ( isset( $input['smpt_from_name'] ) ) {
-				$new_input['smpt_from_name'] = sanitize_text_field( $input['smpt_from_name'] );
 			}
 
 			if ( isset( $input['recaptcha_site_key'] ) ) {
@@ -217,12 +206,6 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				'_dcf_settings_page'
 			);
 			add_settings_section(
-				'dcf_additional_mail_section',
-				esc_html__( 'Additional Mail Settings', 'dialog-contact-form' ),
-				array( $this, 'print_section_info' ),
-				'_dcf_settings_page'
-			);
-			add_settings_section(
 				'dcf_grecaptcha_section',
 				esc_html__( 'Google reCAPTCHA', 'dialog-contact-form' ),
 				array( $this, 'print_grecaptcha_section_info' ),
@@ -287,22 +270,6 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				array( $this, 'smpt_secure_callback' ),
 				'_dcf_settings_page',
 				'dcf_smpt_server_section'
-			);
-
-			add_settings_field(
-				'smpt_from',
-				esc_html__( 'Sender Email', 'dialog-contact-form' ),
-				array( $this, 'smpt_from_callback' ),
-				'_dcf_settings_page',
-				'dcf_additional_mail_section'
-			);
-
-			add_settings_field(
-				'smpt_from_name',
-				esc_html__( 'Sender Name', 'dialog-contact-form' ),
-				array( $this, 'smpt_from_name_callback' ),
-				'_dcf_settings_page',
-				'dcf_additional_mail_section'
 			);
 
 			add_settings_field(
@@ -478,32 +445,6 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 			printf(
 				'<p class="description">%s</p>',
 				esc_html__( 'if you have SSL/TLS encryption available for that hostname, select it here', 'dialog-contact-form' )
-			);
-		}
-
-		public function smpt_from_callback() {
-			$siteurl     = get_option( 'siteurl' );
-			$senderEmail = str_replace( array( 'https://', 'http://', 'www.' ), '', $siteurl );
-			$senderEmail = sprintf( 'noreply@%s', $senderEmail );
-
-			printf(
-				'<input type="email" id="smpt_from" name="dialog_contact_form[smpt_from]" value="%s" />',
-				isset( $this->options['smpt_from'] ) ? esc_attr( $this->options['smpt_from'] ) : $senderEmail
-			);
-			printf(
-				'<p class="description">%s</p>',
-				esc_html__( 'Specify the from email address for outgoing email.', 'dialog-contact-form' )
-			);
-		}
-
-		public function smpt_from_name_callback() {
-			printf(
-				'<input type="text" id="smpt_from_name" name="dialog_contact_form[smpt_from_name]" value="%s" />',
-				isset( $this->options['smpt_from_name'] ) ? esc_attr( $this->options['smpt_from_name'] ) : get_option( 'blogname' )
-			);
-			printf(
-				'<p class="description">%s</p>',
-				esc_html__( 'Specify the from name for outgoing email.', 'dialog-contact-form' )
 			);
 		}
 
