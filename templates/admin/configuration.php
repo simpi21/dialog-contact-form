@@ -64,7 +64,8 @@ $config   = wp_parse_args( $_config, $defaults );
     <input name="config[btnLabel]" type="text" value="<?php echo esc_attr( $config['btnLabel'] ); ?>" class="widefat">
     <span class="description"><?php esc_html_e( 'Define the label of submit button.', 'dialog-contact-form' ); ?></span>
 </p>
-<p>
+
+<!-- <p>
     <label><strong><?php esc_html_e( 'Form Type', 'dialog-contact-form' ); ?></strong></label>
     <select name="config[formType]" class="widefat" required="required">
 		<?php
@@ -82,7 +83,7 @@ $config   = wp_parse_args( $_config, $defaults );
 		}
 		?>
     </select>
-</p>
+</p> -->
 
 <p>
     <label><strong><?php esc_html_e( 'Enable Google reCAPTCHA', 'dialog-contact-form' ); ?></strong></label>

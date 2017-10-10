@@ -58,9 +58,10 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 == Changelog ==
 
 = version 2.0.1 =
-*Tweak      - Remove "Additional Mail Settings" for settings
-*Tweak      - Added option to set mail from "Name" and "Email" form form value.
-*Fixed      - Fixed issue for adding slashes on message content.
+* Tweak      - Remove "Additional Mail Settings" for settings
+* Tweak      - Added option to set mail from "Name" and "Email" form form value.
+* Fixed      - Fixed issue for adding slashes on message content.
+* Tweak      - Hide form type field as it is not functional yet.
 
 = version 2.0.0 - 2017-08-10 =
 * Added     - Re-write from core.
