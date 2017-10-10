@@ -4,7 +4,7 @@ Tags: contact, contact form, email, feedback, form, modal, dialog
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3LZWQTHEVYWCY
 Requires at least: 4.0
 Tested up to: 4.8
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -57,7 +57,7 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 
 == Changelog ==
 
-= version 2.0.1 =
+= version 2.0.1 - 2017-10-10 =
 * Tweak      - Remove "Additional Mail Settings" for settings
 * Tweak      - Added option to set mail from "Name" and "Email" from user submitted value.
 * Fixed      - Fixed issue for adding slashes on message content.
