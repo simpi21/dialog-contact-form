@@ -359,7 +359,7 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			$body    = $mail['body'];
 			$body    = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $body );
 			$body    = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $body );
-			$message = wp_kses( $body, wp_kses_allowed_html( 'post' ) );
+			$message = stripslashes( wp_kses_post( $body ) );
 
 			$receiver = $mail['receiver'];
 			$receiver = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $receiver );
