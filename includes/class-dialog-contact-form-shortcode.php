@@ -60,7 +60,7 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 			$_options        = wp_parse_args( $options, $default_options );
 
 			ob_start();
-			require DIALOG_CONTACT_FORM_TEMPLATES . '/contact-form.php';
+			require DIALOG_CONTACT_FORM_TEMPLATES . '/public/contact-form.php';
 			$html = ob_get_contents();
 			ob_end_clean();
 
@@ -90,7 +90,7 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 			$shortcode = do_shortcode( $_content );
 
 			ob_start();
-			require DIALOG_CONTACT_FORM_TEMPLATES . '/dialog-form.php';
+			require DIALOG_CONTACT_FORM_TEMPLATES . '/public/dialog-form.php';
 			$html = ob_get_contents();
 			ob_end_clean();
 

@@ -148,19 +148,19 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
 		}
 
 		public function meta_box_config_cb() {
-			include_once DIALOG_CONTACT_FORM_VIEWS . '/configuration.php';
+			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/configuration.php';
 		}
 
 		public function meta_boxe_messages_cb() {
-			include_once DIALOG_CONTACT_FORM_VIEWS . '/messages.php';
+			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/messages.php';
 		}
 
 		public function meta_box_mail_template_cb() {
-			include_once DIALOG_CONTACT_FORM_VIEWS . '/mail-template.php';
+			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/mail-template.php';
 		}
 
 		public function meta_box_fields_cb() {
-			include_once DIALOG_CONTACT_FORM_VIEWS . '/fields.php';
+			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/fields.php';
 		}
 
 		public function meta_box_shortcode_cb() {
@@ -173,7 +173,7 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
                     type="text"
                     onmousedown="this.clicked = 1;"
                     onfocus="if (!this.clicked) this.select(); else this.clicked = 2;"
-                    onclick="if (this.clicked == 2) this.select(); this.clicked = 0;"
+                    onclick="if (this.clicked === 2) this.select(); this.clicked = 0;"
                     value="<?php echo $shortcode; ?>"
                     style="background-color: #f1f1f1;letter-spacing: 1px;width: 100%;padding: 5px 8px;"
             >

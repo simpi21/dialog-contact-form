@@ -67,17 +67,16 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 		 * Define constants
 		 */
 		private function define_constants() {
-			$this->define( 'DIALOG_CONTACT_FORM', $this->plugin_name );
-			$this->define( 'DIALOG_CONTACT_FORM_POST_TYPE', $this->post_type );
-			$this->define( 'DIALOG_CONTACT_FORM_VERSION', $this->version );
-			$this->define( 'DIALOG_CONTACT_FORM_FILE', __FILE__ );
-			$this->define( 'DIALOG_CONTACT_FORM_PATH', dirname( DIALOG_CONTACT_FORM_FILE ) );
-			$this->define( 'DIALOG_CONTACT_FORM_INCLUDES', DIALOG_CONTACT_FORM_PATH . '/includes' );
-			$this->define( 'DIALOG_CONTACT_FORM_TEMPLATES', DIALOG_CONTACT_FORM_PATH . '/templates' );
-			$this->define( 'DIALOG_CONTACT_FORM_VIEWS', DIALOG_CONTACT_FORM_PATH . '/views' );
-			$this->define( 'DIALOG_CONTACT_FORM_URL', plugins_url( '', DIALOG_CONTACT_FORM_FILE ) );
-			$this->define( 'DIALOG_CONTACT_FORM_ASSETS', DIALOG_CONTACT_FORM_URL . '/assets' );
-			$this->define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', 'dcf-attachments' );
+			define( 'DIALOG_CONTACT_FORM', $this->plugin_name );
+			define( 'DIALOG_CONTACT_FORM_POST_TYPE', $this->post_type );
+			define( 'DIALOG_CONTACT_FORM_VERSION', $this->version );
+			define( 'DIALOG_CONTACT_FORM_FILE', __FILE__ );
+			define( 'DIALOG_CONTACT_FORM_PATH', dirname( DIALOG_CONTACT_FORM_FILE ) );
+			define( 'DIALOG_CONTACT_FORM_INCLUDES', DIALOG_CONTACT_FORM_PATH . '/includes' );
+			define( 'DIALOG_CONTACT_FORM_TEMPLATES', DIALOG_CONTACT_FORM_PATH . '/templates' );
+			define( 'DIALOG_CONTACT_FORM_URL', plugins_url( '', DIALOG_CONTACT_FORM_FILE ) );
+			define( 'DIALOG_CONTACT_FORM_ASSETS', DIALOG_CONTACT_FORM_URL . '/assets' );
+			define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', 'dcf-attachments' );
 		}
 
 		/**
@@ -184,7 +183,7 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 				return;
 			}
 
-			include_once DIALOG_CONTACT_FORM_VIEWS . '/template-field.php';
+			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/template-field.php';
 		}
 
 		/**
