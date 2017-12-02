@@ -1,14 +1,16 @@
 <?php
-/*
- * Plugin Name:     Dialog Contact Form
- * Plugin URI:      http://wordpress.org/plugins/dialog-contact-form/
- * Description:     Just another WordPress contact form plugin. Simple but flexible.
- * Version:         2.0.1
- * Author:          Sayful Islam
- * Author URI:      https://sayfulislam.com
- * Text Domain:     dialog-contact-form
- * Domain Path:     /languages/
- * License:         GPL3
+/**
+ * Plugin Name: Dialog Contact Form
+ * Plugin URI: http://wordpress.org/plugins/dialog-contact-form/
+ * Description: Just another WordPress contact form plugin. Simple but flexible.
+ * Version: 2.0.1
+ * Author: Sayful Islam
+ * Author URI: https://sayfulislam.com
+ * Requires at least: 4.4
+ * Tested up to: 4.9
+ * Text Domain: dialog-contact-form
+ * License: GPLv3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.txt
  */
 
 // If this file is called directly, abort.
@@ -16,19 +18,38 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-if ( ! class_exists( 'DialogContactForm' ) ):
+if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 
-	class DialogContactForm {
-		protected static $instance = null;
+	final class Dialog_Contact_Form {
+
+		/**
+		 * @var object
+		 */
+		protected static $instance;
+
+		/**
+		 * Plugin name slug
+		 *
+		 * @var string
+		 */
 		protected $plugin_name = 'dialog-contact-form';
+
+		/**
+		 * Plugin custom post type
+		 *
+		 * @var string
+		 */
 		protected $post_type = 'dialog-contact-form';
+
+		/**
+		 * Plugin version
+		 *
+		 * @var string
+		 */
 		protected $version = '2.0.1';
 
 		/**
-		 * Main DialogContactForm Instance
-		 * Ensures only one instance of DialogContactForm is loaded or can be loaded.
-		 *
-		 * @return DialogContactForm - Main instance
+		 * @return Dialog_Contact_Form
 		 */
 		public static function init() {
 			if ( is_null( self::$instance ) ) {
@@ -39,7 +60,7 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 		}
 
 		/**
-		 * Plugin Constructor
+		 * DialogContactForm constructor.
 		 */
 		public function __construct() {
 			// define constants
@@ -67,28 +88,16 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 		 * Define constants
 		 */
 		private function define_constants() {
-			$this->define( 'DIALOG_CONTACT_FORM', $this->plugin_name );
-			$this->define( 'DIALOG_CONTACT_FORM_POST_TYPE', $this->post_type );
-			$this->define( 'DIALOG_CONTACT_FORM_VERSION', $this->version );
-			$this->define( 'DIALOG_CONTACT_FORM_FILE', __FILE__ );
-			$this->define( 'DIALOG_CONTACT_FORM_PATH', dirname( DIALOG_CONTACT_FORM_FILE ) );
-			$this->define( 'DIALOG_CONTACT_FORM_INCLUDES', DIALOG_CONTACT_FORM_PATH . '/includes' );
-			$this->define( 'DIALOG_CONTACT_FORM_TEMPLATES', DIALOG_CONTACT_FORM_PATH . '/templates' );
-			$this->define( 'DIALOG_CONTACT_FORM_URL', plugins_url( '', DIALOG_CONTACT_FORM_FILE ) );
-			$this->define( 'DIALOG_CONTACT_FORM_ASSETS', DIALOG_CONTACT_FORM_URL . '/assets' );
-			$this->define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', 'dcf-attachments' );
-		}
-
-		/**
-		 * Define constant if not already set.
-		 *
-		 * @param  string $name
-		 * @param  string|bool $value
-		 */
-		private function define( $name, $value ) {
-			if ( ! defined( $name ) ) {
-				define( $name, $value );
-			}
+			define( 'DIALOG_CONTACT_FORM', $this->plugin_name );
+			define( 'DIALOG_CONTACT_FORM_POST_TYPE', $this->post_type );
+			define( 'DIALOG_CONTACT_FORM_VERSION', $this->version );
+			define( 'DIALOG_CONTACT_FORM_FILE', __FILE__ );
+			define( 'DIALOG_CONTACT_FORM_PATH', dirname( DIALOG_CONTACT_FORM_FILE ) );
+			define( 'DIALOG_CONTACT_FORM_INCLUDES', DIALOG_CONTACT_FORM_PATH . '/includes' );
+			define( 'DIALOG_CONTACT_FORM_TEMPLATES', DIALOG_CONTACT_FORM_PATH . '/templates' );
+			define( 'DIALOG_CONTACT_FORM_URL', plugins_url( '', DIALOG_CONTACT_FORM_FILE ) );
+			define( 'DIALOG_CONTACT_FORM_ASSETS', DIALOG_CONTACT_FORM_URL . '/assets' );
+			define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', 'dcf-attachments' );
 		}
 
 		/**
@@ -159,19 +168,41 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 				return;
 			}
 
-			wp_enqueue_style( 'wp-color-picker' );
-			wp_enqueue_style( $this->plugin_name . '-admin', DIALOG_CONTACT_FORM_ASSETS . '/css/admin.css', array(), $this->version, 'all' );
-			wp_enqueue_script( $this->plugin_name . '-admin', DIALOG_CONTACT_FORM_ASSETS . '/js/admin.js', array(
-				'jquery',
-				'jquery-ui-sortable',
-				'wp-color-picker'
-			), $this->version, true );
+			$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
+
+			wp_enqueue_style(
+				$this->plugin_name . '-admin',
+				DIALOG_CONTACT_FORM_ASSETS . '/css/admin.css',
+				array( 'wp-color-picker' ),
+				$this->version,
+				'all'
+			);
+			wp_enqueue_script(
+				$this->plugin_name . '-admin',
+				DIALOG_CONTACT_FORM_ASSETS . '/js/admin' . $suffix . '.js',
+				array(
+					'jquery',
+					'jquery-ui-sortable',
+					'wp-color-picker'
+				),
+				$this->version,
+				true
+			);
 		}
 
 		public function frontend_scripts() {
+
+			$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
+
 			wp_enqueue_style( $this->plugin_name, DIALOG_CONTACT_FORM_ASSETS . '/css/style.css', array(), $this->version, 'all' );
-			wp_enqueue_script( $this->plugin_name, DIALOG_CONTACT_FORM_ASSETS . '/js/form.js', array(), $this->version, true );
-			wp_localize_script( $this->plugin_name, 'DialogContactForm', array(
+			wp_enqueue_script(
+				$this->plugin_name,
+				DIALOG_CONTACT_FORM_ASSETS . '/js/form' . $suffix . '.js',
+				array(),
+				$this->version,
+				true
+			);
+			wp_localize_script( $this->plugin_name, 'Dialog_Contact_Form', array(
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'dialog_contact_form_ajax' ),
 			) );
@@ -205,8 +236,7 @@ if ( ! class_exists( 'DialogContactForm' ) ):
 			flush_rewrite_rules();
 		}
 	}
-
-endif;
+}
 
 /**
  * Begins execution of the plugin.
@@ -215,4 +245,4 @@ endif;
  * then kicking off the plugin from this point in the file does
  * not affect the page life cycle.
  */
-DialogContactForm::init();
+Dialog_Contact_Form::init();

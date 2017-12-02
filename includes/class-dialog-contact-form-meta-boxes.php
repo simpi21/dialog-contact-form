@@ -28,7 +28,7 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
 		 */
 		public function __construct() {
 			add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
-			add_action( 'save_post', array( $this, 'save_meta' ), 10, 3 );
+			add_action( 'save_post', array( $this, 'save_meta' ), 10, 2 );
 		}
 
 		/**
@@ -36,9 +36,10 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
 		 *
 		 * @param int $post_id The post ID.
 		 * @param WP_Post $post The post object.
-		 * @param bool $update Whether this is an existing post being updated or not.
+		 *
+		 * @internal param bool $update Whether this is an existing post being updated or not.
 		 */
-		public function save_meta( $post_id, $post, $update ) {
+		public function save_meta( $post_id, $post ) {
 			// If this isn't a 'contact-form' post, don't update it.
 			if ( $post->post_type != $this->post_type ) {
 				return;

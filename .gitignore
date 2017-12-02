@@ -1,8 +1,10 @@
 #Folder
 .idea
 .sass-cache
+node_modules
 
 #Files
+package-lock.json
 assets/css/admin.css.map
 assets/scss/admin.css.map
 assets/css/style.css.map
