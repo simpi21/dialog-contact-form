@@ -1,12 +1,11 @@
 === Dialog Contact Form ===
 Contributors: sayful
 Tags: contact, contact form, email, feedback, form, modal, dialog
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3LZWQTHEVYWCY
 Requires at least: 4.0
-Tested up to: 4.8
-Stable tag: 2.0.1
+Tested up to: 4.9
+Stable tag: 2.1.0
 License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl-3.0.html
+License URI: https://www.gnu.org/licenses/gpl-3.0.txt
 
 Just another WordPress contact form plugin. Simple but flexible.
 
@@ -15,7 +14,6 @@ Just another WordPress contact form plugin. Simple but flexible.
 Just another WordPress contact form plugin. Simple but flexible.
 
 = Features =
-* No premium version and will never be.
 * Beginner friendly WordPress contact form plugin.
 * Very simple and lightweight.
 * No JavaScript dependency, Written in vanilla JavaScript.
@@ -57,7 +55,7 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 
 == Changelog ==
 
-= version 2.1.0 - 2017-12-04 =
+= version 2.1.0 - 2017-12-## =
 * Tweak      - Remove custom session for flash message.
 * Tweak      - Use global variable for flash message if javaScript not enabled.
 
