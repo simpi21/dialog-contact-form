@@ -47,9 +47,9 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 		/**
 		 * Configure PHPMailer for sending email over SMPT
 		 *
-		 * @param PHPMailer $phpmailer
+		 * @param PHPMailer $mailer
 		 */
-		public function phpmailer_config( PHPMailer $phpmailer ) {
+		public function phpmailer_config( PHPMailer $mailer ) {
 
 			$_smpt = get_option( 'dialog_contact_form' );
 			if ( ! $_smpt ) {
@@ -64,16 +64,16 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 				return;
 			}
 
-			$phpmailer->isSMTP();
-			$phpmailer->SMTPAuth = true;
-			$phpmailer->Host     = esc_attr( $_smpt['smpt_host'] );
-			$phpmailer->Port     = absint( $_smpt['smpt_port'] );
-			$phpmailer->Username = esc_attr( $_smpt['smpt_username'] );
-			$phpmailer->Password = esc_attr( $_smpt['smpt_password'] );
+			$mailer->isSMTP();
+			$mailer->SMTPAuth = true;
+			$mailer->Host     = esc_attr( $_smpt['smpt_host'] );
+			$mailer->Port     = absint( $_smpt['smpt_port'] );
+			$mailer->Username = esc_attr( $_smpt['smpt_username'] );
+			$mailer->Password = esc_attr( $_smpt['smpt_password'] );
 
 			// Additional settings…
 			if ( in_array( $_smpt['encryption'], array( 'ssl', 'tls' ) ) ) {
-				$phpmailer->SMTPSecure = esc_attr( $_smpt['encryption'] );
+				$mailer->SMTPSecure = esc_attr( $_smpt['encryption'] );
 			}
 		}
 

@@ -39,99 +39,6 @@ if ( ! function_exists( 'array_column' ) ) {
 	}
 }
 
-if ( ! function_exists( 'dcf_generate_random_code' ) ) {
-	/**
-	 * Generate random characters by given length
-	 *
-	 * @param  integer $characters
-	 *
-	 * @return string
-	 */
-	function dcf_generate_random_code( $characters = 6 ) {
-		/* list all possible characters, similar looking characters and vowels have been removed */
-		$possible = '23456789bcdfghjkmnpqrstvwxyz';
-		$code     = '';
-		$i        = 0;
-		while ( $i < $characters ) {
-			$code .= substr( $possible, mt_rand( 0, strlen( $possible ) - 1 ), 1 );
-			$i ++;
-		}
-
-		return $code;
-	}
-}
-
-if ( ! function_exists( 'dcf_create_captcha' ) ) {
-	/**
-	 * Create captcha image from given width, height and text
-	 *
-	 * @param $text
-	 * @param string $width
-	 * @param string $height
-	 *
-	 * @return string
-	 */
-	function dcf_create_captcha( $text, $width = '120', $height = '40' ) {
-
-		// Check if PHP GD extension is enabled
-		if ( ! function_exists( 'gd_info' ) ) {
-			return '';
-		}
-
-		// Create a new palette based image
-		$image = imagecreate( $width, $height );
-
-		// Set the colours
-		$background_color = imagecolorallocate( $image, 255, 255, 255 );
-		$text_color       = imagecolorallocate( $image, 20, 40, 100 );
-		$noise_color      = imagecolorallocate( $image, 190, 199, 224 );
-
-		// Generate random dots in background
-		for ( $i = 0; $i < ( $width * $height ) / 3; $i ++ ) {
-			$cx = mt_rand( 0, $width ); // x-coordinate of the center.
-			$cy = mt_rand( 0, $height ); // y-coordinate of the center.
-			imagefilledellipse( $image, $cx, $cy, 1, 1, $noise_color );
-		}
-
-		// Generate random lines in background
-		for ( $i = 0; $i < ( $width * $height ) / 150; $i ++ ) {
-			$x1 = mt_rand( 0, $width ); // x-coordinate for first point.
-			$y1 = mt_rand( 0, $height ); // y-coordinate for first point.
-			$x2 = $x1; // x-coordinate for second point.
-			$y2 = $y1; // y-coordinate for second point.
-			imageline( $image, $x1, $y1, $x2, $y2, $noise_color );
-		}
-
-
-		// font size will be 55% of the image height
-		$font_size = $height * 0.55;
-		// The name of the TrueType font file (can be a URL)
-		$fontfile = DIALOG_CONTACT_FORM_PATH . '/assets/fonts/ArchitectsDaughter.ttf';
-
-		// Create a bounding box of a text using TrueType fonts
-		$textbox = imagettfbbox( $font_size, 0, $fontfile, $text );
-
-		// Write text to the image using TrueType fonts
-		$x = ( $width - $textbox[4] ) / 2;
-		$y = ( $height - $textbox[5] ) / 2;
-		imagettftext( $image, $font_size, 0, $x, $y, $text_color, $fontfile, $text );
-
-		// Turn on output buffering
-		ob_start();
-		// Output image to browser or file
-		imagejpeg( $image, null, 80 );
-		// Return the contents of the output buffer
-		$image_data = ob_get_contents();
-		// Clean (erase) the output buffer and turn off output buffering
-		ob_end_clean();
-
-		// Destroy the image
-		imagedestroy( $image );
-
-		return $image_data;
-	}
-}
-
 if ( ! function_exists( 'dcf_available_field_types' ) ) {
 	/**
 	 * Available field types
@@ -293,12 +200,10 @@ if ( ! function_exists( 'dcf_default_mail_template' ) ) {
 	function dcf_default_mail_template() {
 		$blogname = get_option( 'blogname' );
 		$siteurl  = get_option( 'siteurl' );
-		//$senderEmail = str_replace( [ 'https://', 'http://', 'www.' ], '', $siteurl );
-		//$senderEmail = sprintf( 'mail@%s', $senderEmail );
-		$from    = esc_html__( 'From:', 'dialog-contact-form' );
-		$subject = esc_html__( 'Subject:', 'dialog-contact-form' );
-		$message = esc_html__( 'Message Body:', 'dialog-contact-form' );
-		$sign    = sprintf(
+		$from     = esc_html__( 'From:', 'dialog-contact-form' );
+		$subject  = esc_html__( 'Subject:', 'dialog-contact-form' );
+		$message  = esc_html__( 'Message Body:', 'dialog-contact-form' );
+		$sign     = sprintf(
 			esc_html__( 'This email was sent from a contact form on %s (%s)', 'dialog-contact-form' ),
 			$blogname,
 			$siteurl

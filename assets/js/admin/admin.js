@@ -88,7 +88,16 @@
     // WordPress ColorPicker
     $('.dcf-colorpicker').each(function () {
         $(this).wpColorPicker({
-            palettes: ['#f5f5f5', '#212121', '#00d1b2', '#009688', '#2196f3', '#4caf50', '#ffc107', '#f44336']
+            palettes: [
+                '#f5f5f5',
+                '#212121',
+                '#00d1b2',
+                '#009688',
+                '#2196f3',
+                '#4caf50',
+                '#ffc107',
+                '#f44336'
+            ]
         });
     });
 

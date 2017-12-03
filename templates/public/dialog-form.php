@@ -1,3 +1,9 @@
+<?php
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+?>
 <div id="modal-<?php echo absint( $options['dialog_form_id'] ); ?>" class="modal">
     <div class="modal-background"></div>
     <div class="modal-card">

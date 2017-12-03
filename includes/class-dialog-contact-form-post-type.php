@@ -55,7 +55,7 @@ if ( ! class_exists( 'DialogContactFormPostType' ) ):
 			$args   = array(
 				'label'               => __( 'Form', 'dialog-contact-form' ),
 				'description'         => __( 'Simple but flexible WordPress contact form.', 'dialog-contact-form' ),
-				'labels'              => $labels,
+				'labels'              => apply_filters( 'dialog_contact_form_labels', $labels ),
 				'supports'            => array( 'title', ),
 				'hierarchical'        => false,
 				'public'              => false,
@@ -74,12 +74,9 @@ if ( ! class_exists( 'DialogContactFormPostType' ) ):
 				'show_in_rest'        => false,
 			);
 
-			register_post_type( $this->post_type, $args );
+			register_post_type( $this->post_type, apply_filters( 'dialog_contact_form_args', $args ) );
 			add_filter( 'manage_edit-' . $this->post_type . '_columns', array( $this, 'columns_head' ) );
-			add_action( 'manage_' . $this->post_type . '_posts_custom_column', array(
-				$this,
-				'columns_content'
-			), 10, 2 );
+			add_action( 'manage_' . $this->post_type . '_posts_custom_column', array( $this, 'content' ), 10, 2 );
 		}
 
 		/**
@@ -103,10 +100,10 @@ if ( ! class_exists( 'DialogContactFormPostType' ) ):
 		 * Customize link column
 		 * Customize the columns in the table of all post types
 		 *
-		 * @param $column Column name
-		 * @param $post_id
+		 * @param string $column Column name
+		 * @param int $post_id
 		 */
-		public function columns_content( $column, $post_id ) {
+		public function content( $column, $post_id ) {
 			switch ( $column ) {
 				case "shortcode":
 					?>

@@ -36,8 +36,6 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
 		 *
 		 * @param int $post_id The post ID.
 		 * @param WP_Post $post The post object.
-		 *
-		 * @internal param bool $update Whether this is an existing post being updated or not.
 		 */
 		public function save_meta( $post_id, $post ) {
 			// If this isn't a 'contact-form' post, don't update it.

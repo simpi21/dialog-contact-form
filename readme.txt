@@ -57,6 +57,10 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 
 == Changelog ==
 
+= version 2.1.0 - 2017-12-04 =
+* Tweak      - Remove custom session for flash message.
+* Tweak      - Use global variable for flash message if javaScript not enabled.
+
 = version 2.0.1 - 2017-10-10 =
 * Tweak      - Remove "Additional Mail Settings" for settings
 * Tweak      - Added option to set mail from "Name" and "Email" from user submitted value.
