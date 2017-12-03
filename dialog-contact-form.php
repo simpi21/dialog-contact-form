@@ -72,14 +72,10 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			// include files
 			$this->include_files();
 
+			add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ), 30 );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 			add_action( 'admin_footer', array( $this, 'form_template' ), 0 );
-			add_action( 'init', array( $this, 'load_textdomain' ) );
-
-			add_action( 'init', array( $this, 'start_session' ), 1 );
-			add_action( 'wp_logout', array( $this, 'end_session' ) );
-			add_action( 'wp_login', array( $this, 'end_session' ) );
 
 			do_action( 'dialog_contact_form_init' );
 		}
@@ -101,43 +97,10 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		}
 
 		/**
-		 * If session is not started yet, start the session
+		 * Includes plugin files
 		 */
-		public function start_session() {
-			if ( $this->is_session_started() === false ) {
-				session_start();
-			}
-		}
-
-		/**
-		 * Destroy session when user logout or login
-		 */
-		public function end_session() {
-			if ( $this->is_session_started() === true ) {
-				session_destroy();
-			}
-		}
-
-		/**
-		 * Check if session is already started
-		 *
-		 * @return boolean
-		 */
-		private function is_session_started() {
-			if ( php_sapi_name() !== 'cli' ) {
-				if ( version_compare( phpversion(), '5.4.0', '>=' ) ) {
-					return session_status() === PHP_SESSION_ACTIVE ? true : false;
-				} else {
-					return session_id() === '' ? false : true;
-				}
-			}
-
-			return false;
-		}
-
 		private function include_files() {
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions-dialog-contact-form.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-session.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-validator.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-settings.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-post-type.php';
@@ -147,7 +110,10 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-activation.php';
 		}
 
-		public function load_textdomain() {
+		/**
+		 * Load plugin textdomain
+		 */
+		public function load_plugin_textdomain() {
 
 			// Traditional WordPress plugin locale filter
 			$locale = apply_filters( 'plugin_locale', get_locale(), 'dialog-contact-form' );
@@ -162,6 +128,11 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			}
 		}
 
+		/**
+		 * Load admin scripts
+		 *
+		 * @param $hook
+		 */
 		public function admin_scripts( $hook ) {
 			global $post_type;
 			if ( ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE ) && ( 'dialog-contact-form_page_dcf-settings' != $hook ) ) {
@@ -190,6 +161,9 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			);
 		}
 
+		/**
+		 * Load plugin front-end scripts
+		 */
 		public function frontend_scripts() {
 
 			$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
@@ -202,12 +176,15 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				$this->version,
 				true
 			);
-			wp_localize_script( $this->plugin_name, 'Dialog_Contact_Form', array(
+			wp_localize_script( $this->plugin_name, 'DialogContactForm', array(
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'dialog_contact_form_ajax' ),
 			) );
 		}
 
+		/**
+		 * Load field template on admin
+		 */
 		public function form_template() {
 			global $post_type;
 			if ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE ) {

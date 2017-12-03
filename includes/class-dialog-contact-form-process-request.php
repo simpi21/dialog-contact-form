@@ -31,22 +31,22 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 
 			add_action( 'wp_ajax_dcf_submit_form', array( $this, 'submit_form' ) );
 			add_action( 'wp_ajax_nopriv_dcf_submit_form', array( $this, 'submit_form' ) );
-			add_action( 'template_redirect', array( $this, 'process_submited_form' ) );
+			add_action( 'template_redirect', array( $this, 'process_submitted_form' ) );
 		}
 
 		/**
 		 * Process non AJAX form submit
 		 */
-		public function process_submited_form() {
+		public function process_submitted_form() {
 			if ( ! isset( $_POST['_dcf_nonce'] ) ) {
 				return;
 			}
 
-			if ( ! isset( $_POST['_user_form_id'] ) ) {
+			if ( ! wp_verify_nonce( $_POST['_dcf_nonce'], '_dcf_submit_form' ) ) {
 				return;
 			}
 
-			if ( ! wp_verify_nonce( $_POST['_dcf_nonce'], '_dcf_submit_form' ) ) {
+			if ( ! isset( $_POST['_user_form_id'] ) ) {
 				return;
 			}
 
@@ -83,9 +83,8 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 
 			// Exit if there is any error
 			if ( count( $errorData ) > 0 ) {
-				DialogContactFormSession::flash( '_dcf_errors', $errorData );
-				DialogContactFormSession::flash( '_dcf_validation_error', $messages['validation_error'] );
-
+				$GLOBALS['_dcf_errors']           = $errorData;
+				$GLOBALS['_dcf_validation_error'] = $messages['validation_error'];
 				return;
 			}
 
@@ -96,7 +95,9 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			do_action( 'dcf_after_send_mail', $mail_sent );
 
 			if ( $mail_sent ) {
-				DialogContactFormSession::flash( '_dcf_mail_sent_ok', $errorData );
+				$GLOBALS['_dcf_mail_sent_ok'] = $messages['mail_sent_ok'];
+			} else {
+				$GLOBALS['_dcf_validation_error'] = $messages['mail_sent_ng'];
 			}
 		}
 

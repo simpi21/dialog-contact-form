@@ -114,7 +114,7 @@ if ( ! class_exists( 'DialogContactFormPostType' ) ):
                             type="text"
                             onmousedown="this.clicked = 1;"
                             onfocus="if (!this.clicked) this.select(); else this.clicked = 2;"
-                            onclick="if (this.clicked == 2) this.select(); this.clicked = 0;"
+                            onclick="if (this.clicked === 2) this.select(); this.clicked = 0;"
                             value="[dialog_contact_form id='<?php echo $post_id; ?>']"
                             style="background-color: #f1f1f1;letter-spacing: 1px;min-width: 300px;padding: 5px 8px;"
                     >

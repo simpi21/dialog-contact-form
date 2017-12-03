@@ -4,18 +4,33 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+$success_message = isset( $GLOBALS['_dcf_mail_sent_ok'] ) ? $GLOBALS['_dcf_mail_sent_ok'] : null;
+$error_message   = isset( $GLOBALS['_dcf_validation_error'] ) ? $GLOBALS['_dcf_validation_error'] : null;
+$errors          = isset( $GLOBALS['_dcf_errors'] ) ? $GLOBALS['_dcf_errors'] : [];
+
 if ( $fields ): ?>
     <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" class="dcf-form columns is-multiline"
           method="POST" accept-charset="UTF-8" enctype="multipart/form-data" novalidate>
         <div class="dcf-response">
-            <div class="dcf-success"></div>
-            <div class="dcf-error"></div>
+            <div class="dcf-success">
+				<?php
+				if ( ! empty( $success_message ) ) {
+					echo '<p>' . $success_message . '</p>';
+				}
+				?>
+            </div>
+            <div class="dcf-error">
+				<?php
+				if ( ! empty( $error_message ) ) {
+					echo '<p>' . $error_message . '</p>';
+				}
+				?>
+            </div>
         </div>
 		<?php wp_nonce_field( '_dcf_submit_form', '_dcf_nonce' ); ?>
         <input type="hidden" name="_user_form_id" value="<?php echo intval( $id ); ?>">
 
 		<?php
-		$errors = DialogContactFormSession::flash( '_dcf_errors' );
 
 		foreach ( $fields as $_field ):
 
