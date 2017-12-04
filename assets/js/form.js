@@ -1,5 +1,7 @@
+/** @global DialogContactForm */
 (function () {
     "use strict";
+
     var forms,
         form,
         helpText,
@@ -99,81 +101,52 @@
     });
 })();
 
-/*
- * Modal
- */
 (function () {
     'use strict';
+
     var target,
         modal,
         modals = document.querySelectorAll('[data-toggle="modal"]'),
         dismiss = document.querySelectorAll('[data-dismiss="modal"]');
-    if (modals.length < 1) {
-        return;
-    }
+
     Array.prototype.forEach.call(modals, function (el, i) {
         el.addEventListener('click', function (event) {
             event.preventDefault();
             target = el.getAttribute('data-target');
             modal = document.querySelector(target);
-            if (!modal) {
-                return;
+            if (!!modal) {
+                modal.classList.add('is-active');
             }
-            addClass(modal, 'is-active');
         });
     });
-    if (dismiss.length < 1) {
-        return;
-    }
+
     Array.prototype.forEach.call(dismiss, function (el, i) {
         el.addEventListener('click', function (event) {
             event.preventDefault();
             var closestModal = el.closest('.modal');
-            if (!closestModal) {
-                return;
+            if (!!closestModal) {
+                closestModal.classList.remove('is-active');
             }
-            removeClass(modal, 'is-active');
         });
     });
-    // polyfill for closest
-    if (window.Element && !Element.prototype.closest) {
-        Element.prototype.closest =
-            function (s) {
-                var matches = (this.document || this.ownerDocument).querySelectorAll(s),
-                    i,
-                    el = this;
-                do {
-                    i = matches.length;
-                    while (--i >= 0 && matches.item(i) !== el) {
-                    }
-                } while ((i < 0) && (el = el.parentElement));
-                return el;
-            };
-    }
-
-    function hasClass(el, className) {
-        if (el.classList) {
-            return el.classList.contains(className);
-        }
-        return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
-    }
-
-    function addClass(el, className) {
-        if (el.classList) {
-            el.classList.add(className)
-        }
-        else if (!hasClass(el, className)) {
-            el.className += " " + className;
-        }
-    }
-
-    function removeClass(el, className) {
-        if (el.classList) {
-            el.classList.remove(className)
-        }
-        else if (hasClass(el, className)) {
-            var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
-            el.className = el.className.replace(reg, ' ');
-        }
-    }
 })();
+/**
+ * Polyfill for browsers that do not support Element.closest(), but
+ * carry support for element.matches()
+ * (or a prefixed equivalent, meaning IE9+)
+ */
+if (!Element.prototype.matches) {
+    Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+}
+
+if (!Element.prototype.closest) {
+    Element.prototype.closest = function (s) {
+        var el = this;
+        if (!document.documentElement.contains(el)) return null;
+        do {
+            if (el.matches(s)) return el;
+            el = el.parentElement;
+        } while (el !== null);
+        return null;
+    };
+}

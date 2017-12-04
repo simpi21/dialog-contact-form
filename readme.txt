@@ -55,7 +55,7 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 
 == Changelog ==
 
-= version 2.1.0 - 2017-12-## =
+= version 2.1.0 - 2017-12-05 =
 * Tweak      - Remove custom session for flash message.
 * Tweak      - Use global variable for flash message if javaScript not enabled.
 
