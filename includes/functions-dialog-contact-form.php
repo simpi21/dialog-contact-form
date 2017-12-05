@@ -46,7 +46,7 @@ if ( ! function_exists( 'dcf_available_field_types' ) ) {
 	 * @return array
 	 */
 	function dcf_available_field_types() {
-		$fieldType = [
+		$fieldType = array(
 			'text'     => esc_html__( 'Single Line Text', 'dialog-contact-form' ),
 			'email'    => esc_html__( 'Email Address', 'dialog-contact-form' ),
 			'url'      => esc_html__( 'Web Address (URL)', 'dialog-contact-form' ),
@@ -60,7 +60,7 @@ if ( ! function_exists( 'dcf_available_field_types' ) ) {
 			'select'   => esc_html__( 'Dropdown', 'dialog-contact-form' ),
 			'checkbox' => esc_html__( 'Checkbox', 'dialog-contact-form' ),
 			// 'file'     => esc_html__( 'File', 'dialog-contact-form' ),
-		];
+		);
 
 		return $fieldType;
 	}
@@ -73,7 +73,7 @@ if ( ! function_exists( 'dcf_validation_rules' ) ) {
 	 * @return array
 	 */
 	function dcf_validation_rules() {
-		$validationField = [
+		$validationField = array(
 			'required'   => esc_html__( 'Required', 'dialog-contact-form' ),
 			'email'      => esc_html__( 'Email', 'dialog-contact-form' ),
 			'url'        => esc_html__( 'URL', 'dialog-contact-form' ),
@@ -88,7 +88,7 @@ if ( ! function_exists( 'dcf_validation_rules' ) ) {
 			'date'       => esc_html__( 'Date', 'dialog-contact-form' ),
 			'checked'    => esc_html__( 'Checked', 'dialog-contact-form' ),
 			'ip'         => esc_html__( 'IP Address', 'dialog-contact-form' ),
-		];
+		);
 
 		return $validationField;
 	}
@@ -101,7 +101,7 @@ if ( ! function_exists( 'dcf_validation_messages' ) ) {
 	 * @return array
 	 */
 	function dcf_validation_messages() {
-		$messages = [
+		$messages = array(
 			'mail_sent_ok'       => esc_html__( 'Thank you for your message. It has been sent successfully.',
 				'dialog-contact-form' ),
 			'mail_sent_ng'       => esc_html__( 'There was an error trying to send your message. Please try again later.',
@@ -131,7 +131,7 @@ if ( ! function_exists( 'dcf_validation_messages' ) ) {
 			'invalid_username'   => esc_html__( 'The username does not exists.', 'dialog-contact-form' ),
 			'invalid_user_email' => esc_html__( 'The email does not exists.', 'dialog-contact-form' ),
 			'invalid_recaptcha'  => esc_html__( 'Check the checkbox.', 'dialog-contact-form' ),
-		];
+		);
 
 		return $messages;
 	}
@@ -145,11 +145,11 @@ if ( ! function_exists( 'dcf_default_configuration' ) ) {
 	 * @return array
 	 */
 	function dcf_default_configuration() {
-		$defaults = [
+		$defaults = array(
 			'labelPosition' => 'both',
 			'btnAlign'      => 'left',
 			'btnLabel'      => esc_html__( 'Send', 'dialog-contact-form' ),
-		];
+		);
 
 		return $defaults;
 	}
@@ -165,7 +165,7 @@ if ( ! function_exists( 'dcf_default_options' ) ) {
 		$siteurl     = get_option( 'siteurl' );
 		$senderEmail = str_replace( array( 'https://', 'http://', 'www.' ), '', $siteurl );
 		$senderEmail = sprintf( 'noreply@%s', $senderEmail );
-		$options     = [
+		$options     = array(
 			'mailer'                   => 0,
 			'smpt_host'                => '',
 			'smpt_username'            => '',
@@ -185,7 +185,7 @@ if ( ! function_exists( 'dcf_default_options' ) ) {
 			'dialog_button_background' => '#f44336',
 			'dialog_button_color'      => '#f5f5f5',
 			'dialog_form_id'           => '',
-		];
+		);
 
 		return $options;
 	}
@@ -209,13 +209,13 @@ if ( ! function_exists( 'dcf_default_mail_template' ) ) {
 			$siteurl
 		);
 
-		$defaults = [
+		$defaults = array(
 			'receiver'    => get_option( 'admin_email' ),
 			'senderEmail' => '[your_email]',
 			'senderName'  => '[your_name]',
 			'subject'     => $blogname . ': [subject]',
 			'body'        => "$from [your_name] <[your_email]>\n$subject [subject]\n\n$message\n[your_message]\n\n--\n$sign ",
-		];
+		);
 
 		return $defaults;
 	}
@@ -230,7 +230,7 @@ if ( ! function_exists( 'dcf_google_recaptcha_lang' ) ) {
 	 * @return array
 	 */
 	function dcf_google_recaptcha_lang() {
-		return [
+		return array(
 			"ar"     => esc_html__( "Arabic", 'dialog-contact-form' ),
 			"af"     => esc_html__( "Afrikaans", 'dialog-contact-form' ),
 			"am"     => esc_html__( "Amharic", 'dialog-contact-form' ),
@@ -301,7 +301,7 @@ if ( ! function_exists( 'dcf_google_recaptcha_lang' ) ) {
 			"ur"     => esc_html__( "Urdu", 'dialog-contact-form' ),
 			"vi"     => esc_html__( "Vietnamese", 'dialog-contact-form' ),
 			"zu"     => esc_html__( "Zulu", 'dialog-contact-form' ),
-		];
+		);
 	}
 }
 

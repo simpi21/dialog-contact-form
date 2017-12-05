@@ -100,6 +100,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * Includes plugin files
 		 */
 		private function include_files() {
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-system-info.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions-dialog-contact-form.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-validator.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-settings.php';
