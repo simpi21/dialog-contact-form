@@ -5,12 +5,21 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-if ( ! class_exists( 'DialogContactFormPostType' ) ):
+if ( ! class_exists( 'Dialog_Contact_Form_PostType' ) ) {
 
-	class DialogContactFormPostType {
+	class Dialog_Contact_Form_PostType {
 
+		/**
+		 * Dialog contact form post-type
+		 *
+		 * @var string
+		 */
 		private $post_type = DIALOG_CONTACT_FORM_POST_TYPE;
-		private static $instance = null;
+
+		/**
+		 * @var object
+		 */
+		private static $instance;
 
 		/**
 		 * Ensures only one instance of this class is loaded or can be loaded.
@@ -123,7 +132,6 @@ if ( ! class_exists( 'DialogContactFormPostType' ) ):
 			}
 		}
 	}
+}
 
-endif;
-
-DialogContactFormPostType::init();
+Dialog_Contact_Form_PostType::init();

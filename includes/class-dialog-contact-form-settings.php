@@ -2,9 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
-if ( ! class_exists( 'DialogContactFormSettings' ) ):
+if ( ! class_exists( 'Dialog_Contact_Form_Settings' ) ) {
 
-	class DialogContactFormSettings {
+	class Dialog_Contact_Form_Settings {
 
 		private $plugin_name = 'dcf-settings';
 
@@ -12,15 +12,24 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 		 * Holds the values to be used in the fields callbacks
 		 */
 		private $options;
-		private $default_options;
 
-		protected static $instance = null;
+		/**
+		 * Default options
+		 *
+		 * @var array
+		 */
+		private $default_options = array();
+
+		/**
+		 * @var object
+		 */
+		protected static $instance;
 
 		/**
 		 * Main DialogContactFormSettings Instance
 		 * Ensures only one instance of DialogContactFormSettings is loaded or can be loaded.
 		 *
-		 * @return DialogContactFormSettings - Main instance
+		 * @return Dialog_Contact_Form_Settings - Main instance
 		 */
 		public static function init() {
 			if ( is_null( self::$instance ) ) {
@@ -561,7 +570,6 @@ if ( ! class_exists( 'DialogContactFormSettings' ) ):
 			echo '</select>';
 		}
 	}
+}
 
-endif;
-
-DialogContactFormSettings::init();
+Dialog_Contact_Form_Settings::init();

@@ -5,12 +5,21 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
+if ( ! class_exists( 'Dialog_Contact_Form_Meta_Boxes' ) ) {
 
-	class DialogContactFormMetaBoxes {
+	class Dialog_Contact_Form_Meta_Boxes {
 
+		/**
+		 * Dialog Contact Form post-type
+		 *
+		 * @var string
+		 */
 		private $post_type = DIALOG_CONTACT_FORM;
-		private static $instance = null;
+
+		/**
+		 * @var object
+		 */
+		private static $instance;
 
 		/**
 		 * Ensures only one instance of this class is loaded or can be loaded.
@@ -45,11 +54,11 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
 
 			// - Update the post's metadata.
 			if ( isset( $_POST['config'] ) ) {
-				update_post_meta( $post_id, '_contact_form_config', $_POST['config'] );
+				update_post_meta( $post_id, '_contact_form_config', self::sanitize_value( $_POST['config'] ) );
 			}
 
 			if ( isset( $_POST['messages'] ) ) {
-				update_post_meta( $post_id, '_contact_form_messages', $_POST['messages'] );
+				update_post_meta( $post_id, '_contact_form_messages', self::sanitize_value( $_POST['messages'] ) );
 			}
 
 			if ( isset( $_POST['mail'] ) ) {
@@ -146,22 +155,37 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
 
 		}
 
+		/**
+		 * Metabox configuration callback
+		 */
 		public function meta_box_config_cb() {
 			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/configuration.php';
 		}
 
+		/**
+		 * Metabox message callback
+		 */
 		public function meta_boxe_messages_cb() {
 			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/messages.php';
 		}
 
+		/**
+		 * Metabox mail template callback
+		 */
 		public function meta_box_mail_template_cb() {
 			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/mail-template.php';
 		}
 
+		/**
+		 * Metabox fields callback
+		 */
 		public function meta_box_fields_cb() {
 			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/fields.php';
 		}
 
+		/**
+		 * Metabox shortcode callback
+		 */
 		public function meta_box_shortcode_cb() {
 			global $post;
 			$shortcode = sprintf( '[dialog_contact_form id=\'%s\']', $post->ID );
@@ -178,8 +202,35 @@ if ( ! class_exists( 'DialogContactFormMetaBoxes' ) ):
             >
 			<?php
 		}
+
+
+		/**
+		 * Sanitize meta value
+		 *
+		 * @param $input
+		 *
+		 * @return array|string
+		 */
+		private static function sanitize_value( $input ) {
+			// Initialize the new array that will hold the sanitize values
+			$new_input = array();
+
+			if ( is_array( $input ) ) {
+				// Loop through the input and sanitize each of the values
+				foreach ( $input as $key => $value ) {
+					if ( is_array( $value ) ) {
+						$new_input[ $key ] = self::sanitize_value( $value );
+					} else {
+						$new_input[ $key ] = sanitize_text_field( $value );
+					}
+				}
+			} else {
+				return sanitize_text_field( $input );
+			}
+
+			return $new_input;
+		}
 	}
+}
 
-endif;
-
-DialogContactFormMetaBoxes::init();
+Dialog_Contact_Form_Meta_Boxes::init();

@@ -5,16 +5,37 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-if ( ! class_exists( 'DialogContactFormActivation' ) ):
+if ( ! class_exists( 'Dialog_Contact_Form_Activation' ) ) {
 
-	class DialogContactFormActivation {
+	class Dialog_Contact_Form_Activation {
 
+		/**
+		 * @var object
+		 */
+		protected static $instance;
+
+		/**
+		 * @return Dialog_Contact_Form_Activation
+		 */
+		public static function init() {
+			if ( is_null( self::$instance ) ) {
+				self::$instance = new self();
+			}
+
+			return self::$instance;
+		}
+
+		/**
+		 * Dialog_Contact_Form_Activation constructor.
+		 */
 		public function __construct() {
 			add_action( 'dialog_contact_form_activation', array( $this, 'add_default_form' ) );
 		}
 
+		/**
+		 * Add sample form on plugin activation
+		 */
 		public function add_default_form() {
-
 			$contact_forms = get_posts( array(
 				'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
 				'posts_per_page' => 5,
@@ -36,30 +57,13 @@ if ( ! class_exists( 'DialogContactFormActivation' ) ):
 			) );
 
 			if ( is_int( $post_id ) ) {
-				update_post_meta( $post_id, '_contact_form_fields', $this->form_field() );
-				update_post_meta( $post_id, '_contact_form_messages', $this->form_message() );
-				update_post_meta( $post_id, '_contact_form_config', $this->form_config() );
-				update_post_meta( $post_id, '_contact_form_mail', $this->form_mail() );
+				update_post_meta( $post_id, '_contact_form_fields', dcf_default_fields() );
+				update_post_meta( $post_id, '_contact_form_messages', dcf_validation_messages() );
+				update_post_meta( $post_id, '_contact_form_config', dcf_default_configuration() );
+				update_post_meta( $post_id, '_contact_form_mail', dcf_default_mail_template() );
 
 				$this->upgrade_to_version_2( $post_id );
 			}
-
-		}
-
-		private function form_field() {
-			return dcf_default_fields();
-		}
-
-		private function form_config() {
-			return dcf_default_configuration();
-		}
-
-		private function form_message() {
-			return dcf_validation_messages();
-		}
-
-		private function form_mail() {
-			return dcf_default_mail_template();
 		}
 
 
@@ -87,7 +91,6 @@ if ( ! class_exists( 'DialogContactFormActivation' ) ):
 			return update_option( 'dialog_contact_form', $option );
 		}
 	}
+}
 
-endif;
-
-new DialogContactFormActivation();
+Dialog_Contact_Form_Activation::init();

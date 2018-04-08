@@ -5,15 +5,19 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
+if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
-	class DialogContactFormProcessRequest {
+	class Dialog_Contact_Form_Process_Request {
 
-		protected static $instance = null;
+		/**
+		 * @var object
+		 */
+		protected static $instance;
+
 		protected $validate;
 
 		/**
-		 * @return null|DialogContactFormProcessRequest
+		 * @return null|Dialog_Contact_Form_Process_Request
 		 */
 		public static function init() {
 			if ( is_null( self::$instance ) ) {
@@ -85,6 +89,7 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			if ( count( $errorData ) > 0 ) {
 				$GLOBALS['_dcf_errors']           = $errorData;
 				$GLOBALS['_dcf_validation_error'] = $messages['validation_error'];
+
 				return;
 			}
 
@@ -481,7 +486,6 @@ if ( ! class_exists( 'DialogContactFormProcessRequest' ) ):
 			return $attachments;
 		}
 	}
+}
 
-endif;
-
-DialogContactFormProcessRequest::init();
+Dialog_Contact_Form_Process_Request::init();

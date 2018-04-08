@@ -115,7 +115,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * Load plugin textdomain
 		 */
 		public function load_plugin_textdomain() {
-
 			// Traditional WordPress plugin locale filter
 			$locale = apply_filters( 'plugin_locale', get_locale(), 'dialog-contact-form' );
 			$mofile = sprintf( '%1$s-%2$s.mo', 'dialog-contact-form', $locale );
@@ -123,8 +122,8 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			// Setup paths to current locale file
 			$mofile_global = WP_LANG_DIR . '/dialog-contact-form/' . $mofile;
 
+			// Look in global /wp-content/languages/dialog-contact-form folder
 			if ( file_exists( $mofile_global ) ) {
-				// Look in global /wp-content/languages/dialog-contact-form folder
 				load_textdomain( $this->plugin_name, $mofile_global );
 			}
 		}
@@ -166,23 +165,16 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * Load plugin front-end scripts
 		 */
 		public function frontend_scripts() {
-
 			$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-			wp_enqueue_style(
-				$this->plugin_name,
+			wp_enqueue_style( $this->plugin_name,
 				DIALOG_CONTACT_FORM_ASSETS . '/css/style.css',
-				array(),
-				DIALOG_CONTACT_FORM_VERSION,
-				'all'
-			);
-			wp_enqueue_script(
-				$this->plugin_name,
+				array(), DIALOG_CONTACT_FORM_VERSION, 'all' );
+
+			wp_enqueue_script( $this->plugin_name,
 				DIALOG_CONTACT_FORM_ASSETS . '/js/form' . $suffix . '.js',
-				array(),
-				DIALOG_CONTACT_FORM_VERSION,
-				true
-			);
+				array(), DIALOG_CONTACT_FORM_VERSION, true );
+
 			wp_localize_script( $this->plugin_name, 'DialogContactForm', array(
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'dialog_contact_form_ajax' ),
