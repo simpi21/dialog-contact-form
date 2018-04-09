@@ -76,6 +76,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ), 30 );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 			add_action( 'admin_footer', array( $this, 'form_template' ), 0 );
+			add_action( 'phpmailer_init', array( $this, 'phpmailer_config' ) );
 
 			do_action( 'dialog_contact_form_init' );
 		}
@@ -100,11 +101,10 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * Includes plugin files
 		 */
 		private function include_files() {
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions-dialog-contact-form.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-validator.php';
-			// include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-settings-api.php';
-			// include_once DIALOG_CONTACT_FORM_INCLUDES . '/settings/settings.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-settings.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-settings-api.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/settings/settings.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-post-type.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-meta-boxes.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-process-request.php';
@@ -212,6 +212,46 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		public function plugin_deactivate() {
 			do_action( 'dialog_contact_form_deactivate' );
 			flush_rewrite_rules();
+		}
+
+		/**
+		 * Configure PHPMailer for sending email over SMTP
+		 *
+		 * @param PHPMailer $mailer
+		 */
+		public function phpmailer_config( &$mailer ) {
+
+			$options = get_option( 'dialog_contact_form' );
+
+			if ( ! isset( $options['mailer'] ) ) {
+				return;
+			}
+
+			if ( ! Dialog_Contact_Form_Validator::checked( $options['mailer'] ) ) {
+				return;
+			}
+
+			$host       = ! empty( $options['smpt_host'] ) ? sanitize_text_field( $options['smpt_host'] ) : '';
+			$username   = ! empty( $options['smpt_username'] ) ? sanitize_text_field( $options['smpt_username'] ) : '';
+			$password   = ! empty( $options['smpt_password'] ) ? sanitize_text_field( $options['smpt_password'] ) : '';
+			$port       = ! empty( $options['smpt_port'] ) ? absint( $options['smpt_port'] ) : '';
+			$encryption = ! empty( $options['encryption'] ) ? sanitize_text_field( $options['encryption'] ) : '';
+
+			if ( empty( $host ) || empty( $username ) || empty( $password ) || empty( $port ) ) {
+				return;
+			}
+
+			$mailer->isSMTP();
+			$mailer->SMTPAuth = true;
+			$mailer->Host     = $host;
+			$mailer->Port     = $port;
+			$mailer->Username = $username;
+			$mailer->Password = $password;
+
+			// Additional settings…
+			if ( in_array( $encryption, array( 'ssl', 'tls' ) ) ) {
+				$mailer->SMTPSecure = $encryption;
+			}
 		}
 	}
 }

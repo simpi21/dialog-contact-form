@@ -38,23 +38,28 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 * Process non AJAX form submit
 		 */
 		public function process_submitted_form() {
-			if ( ! isset( $_POST['_dcf_nonce'] ) ) {
+			$nonce   = isset( $_POST['_dcf_nonce'] ) && wp_verify_nonce( $_POST['_dcf_nonce'], '_dcf_submit_form' );
+			$form_id = isset( $_POST['_user_form_id'] ) ? intval( $_POST['_user_form_id'] ) : 0;
+
+			// Check if nonce is valid
+			if ( ! $nonce ) {
 				return;
 			}
 
-			if ( ! wp_verify_nonce( $_POST['_dcf_nonce'], '_dcf_submit_form' ) ) {
+			// Check if form ID is valid
+			$form = get_post( $form_id );
+			if ( ! $form instanceof \WP_Post ) {
 				return;
 			}
 
-			if ( ! isset( $_POST['_user_form_id'] ) ) {
+			// Check if form post type and register post type is same
+			if ( DIALOG_CONTACT_FORM_POST_TYPE !== $form->post_type ) {
 				return;
 			}
 
-			$form_id  = intval( $_POST['_user_form_id'] );
-			$mail     = get_post_meta( $form_id, '_contact_form_mail', true );
-			$messages = get_post_meta( $form_id, '_contact_form_messages', true );
-			$fields   = get_post_meta( $form_id, '_contact_form_fields', true );
-
+			$mail       = get_post_meta( $form_id, '_contact_form_mail', true );
+			$messages   = get_post_meta( $form_id, '_contact_form_messages', true );
+			$fields     = get_post_meta( $form_id, '_contact_form_fields', true );
 			$field_name = array_column( $fields, 'field_name' );
 
 			do_action( 'dcf_before_validation', $form_id, $mail, $fields, $messages );
@@ -66,16 +71,18 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			// Validate Form Data
 			$errorData = array();
 			foreach ( $_POST as $field => $value ) {
-				if ( in_array( $field, $field_name ) ) {
+				// If submitted field is not in form field list, then ignore it
+				if ( ! in_array( $field, $field_name ) ) {
+					continue;
+				}
 
-					$indexNumber = array_search( $field, $field_name );
-					$_field      = $fields[ $indexNumber ];
+				$indexNumber = array_search( $field, $field_name );
+				$_field      = $fields[ $indexNumber ];
 
-					$message = $this->validate_field( $value, $_field, $messages );
+				$message = $this->validate_field( $value, $_field, $messages );
 
-					if ( count( $message ) > 0 ) {
-						$errorData[ $field ] = $message;
-					}
+				if ( count( $message ) > 0 ) {
+					$errorData[ $field ] = $message;
 				}
 			}
 
@@ -131,6 +138,15 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 				wp_send_json( $response, 403 );
 			}
 
+			// Check if form post type and register post type is same
+			if ( DIALOG_CONTACT_FORM_POST_TYPE !== $form->post_type ) {
+				$response = array(
+					'status'  => 'fail',
+					'message' => esc_attr( $options['spam_message'] ),
+				);
+				wp_send_json( $response, 403 );
+			}
+
 			$mail       = get_post_meta( $form_id, '_contact_form_mail', true );
 			$fields     = get_post_meta( $form_id, '_contact_form_fields', true );
 			$messages   = get_post_meta( $form_id, '_contact_form_messages', true );
@@ -156,19 +172,21 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
 			// Loop through form fields and validate its data
 			foreach ( $_POST as $field => $value ) {
-				if ( in_array( $field, $field_name ) ) {
+				// If submitted field is not in form field list, then ignore it
+				if ( ! in_array( $field, $field_name ) ) {
+					continue;
+				}
 
-					$indexNumber = array_search( $field, $field_name );
-					$_field      = $fields[ $indexNumber ];
+				$indexNumber = array_search( $field, $field_name );
+				$_field      = $fields[ $indexNumber ];
 
-					$message = $this->validate_field( $value, $_field, $messages );
+				$message = $this->validate_field( $value, $_field, $messages );
 
-					if ( count( $message ) > 0 ) {
-						$errorData[] = array(
-							'field'   => $field,
-							'message' => $message,
-						);
-					}
+				if ( count( $message ) > 0 ) {
+					$errorData[] = array(
+						'field'   => $field,
+						'message' => $message,
+					);
 				}
 			}
 
@@ -221,18 +239,17 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 * @return array
 		 */
 		public function validate_field( $value, $field, $messages ) {
-
 			$defaults = dcf_validation_messages();
 			$messages = wp_parse_args( $messages, $defaults );
 
 			$message        = array();
 			$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
 
-			// If field type is email, url or number
-			// Add appropriate validation rule
+			// If field type is email, url or number then add appropriate validation rule
 			if ( in_array( $field['field_type'], array( 'email', 'url', 'number', 'date' ) ) ) {
 				$validate_rules[] = $field['field_type'];
 			}
+
 			// Make sure, validation rules are unique
 			$validate_rules = array_unique( $validate_rules );
 
@@ -315,8 +332,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 				}
 			}
 
-			// If field is not required
-			// Hide message if field is empty
+			// If field is not required, hide message if field is empty
 			if ( ! in_array( 'required', $validate_rules ) &&
 			     ! Dialog_Contact_Form_Validator::required( $value ) ) {
 				$message = array();
@@ -343,13 +359,15 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 */
 		private function send_mail( $field_name, $mail, $attachments = array() ) {
 			$placeholder = array();
-			foreach ( $field_name as $key => $_name ) {
-				$placeholder[ "[" . $_name . "]" ] = $_POST[ $_name ];
+			foreach ( $field_name as $_name ) {
+				$value = isset( $_POST[ $_name ] ) ? $_POST[ $_name ] : '';
+
+				$placeholder[ "[" . $_name . "]" ] = $value;
 			}
 
 			$subject = $mail['subject'];
 			$subject = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $subject );
-			$subject = esc_attr( $subject );
+			$subject = sanitize_text_field( $subject );
 
 			$body    = $mail['body'];
 			$body    = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $body );
@@ -358,12 +376,20 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
 			$receiver = $mail['receiver'];
 			$receiver = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $receiver );
+			if ( false !== strpos( $receiver, ',' ) ) {
+				$receivers = explode( ',', $receiver );
+				$receiver  = array_map( 'sanitize_email', $receivers );
+			} else {
+				$receiver = sanitize_email( $receiver );
+			}
 
 			$senderEmail = $mail['senderEmail'];
 			$senderEmail = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderEmail );
+			$senderEmail = sanitize_email( $senderEmail );
 
 			$senderName = esc_attr( $mail['senderName'] );
 			$senderName = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderName );
+			$senderName = sanitize_text_field( $senderName );
 
 			$headers   = array();
 			$headers[] = 'Content-Type: text/html; charset=UTF-8';

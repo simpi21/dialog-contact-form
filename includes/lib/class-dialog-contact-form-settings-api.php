@@ -264,6 +264,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Settings_API' ) ) {
 		 * Load page content
 		 */
 		public function page_content() {
+			$this->get_options();
 			ob_start(); ?>
 
             <div class="wrap">
@@ -517,7 +518,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Settings_API' ) ) {
 		protected function color( $field, $name, $value ) {
 			$default_color = ( isset( $field['std'] ) ) ? $field['std'] : "";
 
-			return sprintf( '<input type="text" class="color-picker" value="%1$s" id="%2$s" name="%3$s" data-default-color="%4$s">', $value, $field['id'], $name, $default_color );
+			return sprintf( '<input type="text" class="color-picker dcf-colorpicker" value="%1$s" id="%2$s" name="%3$s" data-default-color="%4$s">', $value, $field['id'], $name, $default_color );
 		}
 
 		/**
@@ -627,7 +628,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Settings_API' ) ) {
 		 * @return string
 		 */
 		protected function select( $field, $name, $value ) {
-			$table = sprintf( '<select id="%1$s" name="%2$s">', $field['id'], $name );
+			$table = sprintf( '<select id="%1$s" name="%2$s" class="regular-text">', $field['id'], $name );
 			foreach ( $field['options'] as $key => $select_label ) {
 				$selected = ( $value == $key ) ? 'selected="selected"' : '';
 				$table    .= sprintf( '<option value="%1$s" %2$s>%3$s</option>', $key, $selected, $select_label );
@@ -635,6 +636,43 @@ if ( ! class_exists( 'Dialog_Contact_Form_Settings_API' ) ) {
 			$table .= "</select>";
 
 			return $table;
+		}
+
+		/**
+		 * select input field
+		 *
+		 * @param  array $field
+		 * @param  string $name
+		 * @param  string $value
+		 *
+		 * @return string
+		 */
+		protected function form_list( $field, $name, $value ) {
+			$contact_forms = get_posts( array(
+				'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
+				'posts_per_page' => - 1,
+				'post_status'    => 'publish'
+			) );
+
+			if ( count( $contact_forms ) < 1 ) {
+				printf(
+					'<p>%s</p>',
+					esc_html__( 'Yor did not add any form yet. Please add a form first.', 'dialog-contact-form' )
+				);
+			}
+
+			$options = array(
+				'' => __( 'Choose Form', 'dialog-contact-form' ),
+			);
+
+			/** @var \WP_Post $contact_form */
+			foreach ( $contact_forms as $contact_form ) {
+				$options[ $contact_form->ID ] = $contact_form->post_title;
+			}
+
+			$field['options'] = $options;
+
+			return $this->select( $field, $name, $value );
 		}
 
 		/**
