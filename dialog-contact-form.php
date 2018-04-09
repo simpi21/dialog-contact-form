@@ -102,12 +102,15 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		private function include_files() {
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions-dialog-contact-form.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-validator.php';
+			// include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-settings-api.php';
+			// include_once DIALOG_CONTACT_FORM_INCLUDES . '/settings/settings.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-settings.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-post-type.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-meta-boxes.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-process-request.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-shortcode.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-activation.php';
+
 		}
 
 		/**
