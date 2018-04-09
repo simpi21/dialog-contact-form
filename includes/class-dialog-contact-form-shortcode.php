@@ -5,17 +5,20 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-if ( ! class_exists( 'DialogContactFormShortcode' ) ):
+if ( ! class_exists( 'Dialog_Contact_Form_Shortcode' ) ) {
 
-	class DialogContactFormShortcode {
+	class Dialog_Contact_Form_Shortcode {
 
-		protected static $instance = null;
+		/**
+		 * @var object
+		 */
+		private static $instance;
 
 		/**
 		 * Main DialogContactFormShortcode Instance
 		 * Ensures only one instance of DialogContactFormShortcode is loaded or can be loaded.
 		 *
-		 * @return DialogContactFormShortcode - Main instance
+		 * @return Dialog_Contact_Form_Shortcode - Main instance
 		 */
 		public static function init() {
 			if ( is_null( self::$instance ) ) {
@@ -26,7 +29,7 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 		}
 
 		/**
-		 * DialogContactFormShortcode constructor.
+		 * Dialog_Contact_Form_Shortcode constructor.
 		 */
 		public function __construct() {
 			add_shortcode( 'dialog_contact_form', array( $this, 'contact_form' ) );
@@ -35,7 +38,7 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 		}
 
 		/**
-		 * Filterable Portfolio shortcode.
+		 * Dialog Contact Form Shortcode
 		 *
 		 * @param  array $atts
 		 * @param  null $content
@@ -43,15 +46,15 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 		 * @return string
 		 */
 		public function contact_form( $atts, $content = null ) {
-			extract( shortcode_atts( array( 'id' => 0 ), $atts ) );
-
-			if ( ! $id ) {
+			if ( empty( $atts['id'] ) ) {
 				if ( current_user_can( 'manage_options' ) ) {
 					return esc_html__( 'Dialog Contact form now required a form ID attribute. Please update your shortcode.', 'dialog-contact-form' );
 				}
 
 				return '';
 			}
+
+			$id     = intval( $atts['id'] );
 			$fields = get_post_meta( $id, '_contact_form_fields', true );
 			$config = get_post_meta( $id, '_contact_form_config', true );
 
@@ -97,7 +100,6 @@ if ( ! class_exists( 'DialogContactFormShortcode' ) ):
 			echo $html;
 		}
 	}
+}
 
-endif;
-
-DialogContactFormShortcode::init();
+Dialog_Contact_Form_Shortcode::init();

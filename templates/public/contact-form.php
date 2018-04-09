@@ -28,7 +28,7 @@ if ( $fields ): ?>
             </div>
         </div>
 		<?php wp_nonce_field( '_dcf_submit_form', '_dcf_nonce' ); ?>
-        <input type="hidden" name="_user_form_id" value="<?php echo intval( $id ); ?>">
+        <input type="hidden" name="_user_form_id" value="<?php echo $id; ?>">
 
 		<?php
 

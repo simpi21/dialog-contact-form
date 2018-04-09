@@ -3,9 +3,10 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
-if ( ! class_exists( 'DialogContactFormValidator' ) ):
 
-	class DialogContactFormValidator {
+if ( ! class_exists( 'Dialog_Contact_Form_Validator' ) ) {
+
+	class Dialog_Contact_Form_Validator {
 
 		/**
 		 * Check if the value is present.
@@ -14,7 +15,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function required( $value ) {
+		public static function required( $value ) {
 			$value = preg_replace( '/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $value );
 
 			return ! empty( $value );
@@ -27,7 +28,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function url( $value ) {
+		public static function url( $value ) {
 			return filter_var( $value, FILTER_VALIDATE_URL ) !== false;
 		}
 
@@ -38,7 +39,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function email( $value ) {
+		public static function email( $value ) {
 			return filter_var( $value, FILTER_VALIDATE_EMAIL ) !== false;
 		}
 
@@ -50,7 +51,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function int( $value ) {
+		public static function int( $value ) {
 			return is_numeric( $value ) && (int) $value == $value;
 		}
 
@@ -69,7 +70,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function number( $value ) {
+		public static function number( $value ) {
 			return is_numeric( $value );
 		}
 
@@ -80,7 +81,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function alpha( $value ) {
+		public static function alpha( $value ) {
 			return (bool) preg_match( '/^[\pL\pM]+$/u', $value );
 		}
 
@@ -91,7 +92,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function alnum( $value ) {
+		public static function alnum( $value ) {
 			return (bool) preg_match( '/^[\pL\pM\pN]+$/u', $value );
 		}
 
@@ -103,7 +104,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function alnumdash( $value ) {
+		public static function alnumdash( $value ) {
 			return (bool) preg_match( '/^[\pL\pM\pN_-]+$/u', $value );
 		}
 
@@ -114,7 +115,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function is_array( $value ) {
+		public static function is_array( $value ) {
 			return is_array( $value );
 		}
 
@@ -128,7 +129,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function min( $value, $min_value, $is_number = false ) {
+		public static function min( $value, $min_value, $is_number = false ) {
 			if ( $is_number ) {
 				return (float) $value >= (float) $min_value;
 			}
@@ -146,7 +147,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function max( $value, $max_value, $is_number = false ) {
+		public static function max( $value, $max_value, $is_number = false ) {
 			if ( $is_number ) {
 				return (float) $value <= (float) $max_value;
 			}
@@ -164,7 +165,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function between( $value, $min_value, $max_value ) {
+		public static function between( $value, $min_value, $max_value ) {
 			return ( $value >= $min_value && $value <= $max_value ) ? true : false;
 		}
 
@@ -175,7 +176,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function date( $value ) {
+		public static function date( $value ) {
 			if ( $value instanceof \DateTime ) {
 				return true;
 			}
@@ -189,7 +190,14 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 			return checkdate( $date['month'], $date['day'], $date['year'] );
 		}
 
-		public function time( $value ) {
+		/**
+		 * Check if the given input is a valid time.
+		 *
+		 * @param mixed $value
+		 *
+		 * @return bool
+		 */
+		public static function time( $value ) {
 			return (bool) preg_match( '/^(1[0-2]|0?[1-9]):[0-5][0-9] (AM|PM)$/i', $value );
 		}
 
@@ -201,7 +209,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function regex( $value, $regex ) {
+		public static function regex( $value, $regex ) {
 			return (bool) preg_match( $regex, $value );
 		}
 
@@ -214,7 +222,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function checked( $value ) {
+		public static function checked( $value ) {
 			return in_array( $value, [ 'yes', 'on', '1', 1, true, 'true' ], true );
 		}
 
@@ -225,7 +233,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function ip( $value ) {
+		public static function ip( $value ) {
 			return filter_var( $value, FILTER_VALIDATE_IP ) !== false;
 		}
 
@@ -236,7 +244,7 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function bool( $value ) {
+		public static function bool( $value ) {
 			return is_bool( $value );
 		}
 
@@ -249,9 +257,8 @@ if ( ! class_exists( 'DialogContactFormValidator' ) ):
 		 *
 		 * @return boolean
 		 */
-		public function matches( $value, $match_value ) {
+		public static function matches( $value, $match_value ) {
 			return $value === $match_value;
 		}
 	}
-
-endif;
+}

@@ -14,8 +14,6 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 */
 		protected static $instance;
 
-		protected $validate;
-
 		/**
 		 * @return null|Dialog_Contact_Form_Process_Request
 		 */
@@ -31,8 +29,6 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 * DialogContactFormProcessRequest constructor.
 		 */
 		public function __construct() {
-			$this->validate = new DialogContactFormValidator();
-
 			add_action( 'wp_ajax_dcf_submit_form', array( $this, 'submit_form' ) );
 			add_action( 'wp_ajax_nopriv_dcf_submit_form', array( $this, 'submit_form' ) );
 			add_action( 'template_redirect', array( $this, 'process_submitted_form' ) );
@@ -63,7 +59,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
 			do_action( 'dcf_before_validation', $form_id, $mail, $fields, $messages );
 
-			if ( ! $this->validate->is_array( $fields ) ) {
+			if ( ! Dialog_Contact_Form_Validator::is_array( $fields ) ) {
 				return;
 			}
 
@@ -113,7 +109,11 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			$default_options = dcf_default_options();
 			$options         = get_option( 'dialog_contact_form' );
 			$options         = wp_parse_args( $options, $default_options );
-			if ( ! isset( $_POST['nonce'] ) ) {
+
+			$nonce   = isset( $_POST['nonce'] ) && wp_verify_nonce( $_POST['nonce'], 'dialog_contact_form_ajax' );
+			$form_id = isset( $_POST['_user_form_id'] ) ? intval( $_POST['_user_form_id'] ) : 0;
+
+			if ( ! $nonce ) {
 				$response = array(
 					'status'  => 'fail',
 					'message' => esc_attr( $options['spam_message'] ),
@@ -121,7 +121,9 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 				wp_send_json( $response, 403 );
 			}
 
-			if ( ! wp_verify_nonce( $_POST['nonce'], 'dialog_contact_form_ajax' ) ) {
+			$form = get_post( $form_id );
+
+			if ( ! $form instanceof \WP_Post ) {
 				$response = array(
 					'status'  => 'fail',
 					'message' => esc_attr( $options['spam_message'] ),
@@ -129,27 +131,15 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 				wp_send_json( $response, 403 );
 			}
 
-			if ( ! isset( $_POST['_user_form_id'] ) ) {
-				$response = array(
-					'status'  => 'fail',
-					'message' => esc_attr( $options['spam_message'] ),
-				);
-				wp_send_json( $response, 403 );
-			}
-
-			$form_id         = intval( $_POST['_user_form_id'] );
-			$mail            = get_post_meta( $form_id, '_contact_form_mail', true );
-			$fields          = get_post_meta( $form_id, '_contact_form_fields', true );
-			$messages        = get_post_meta( $form_id, '_contact_form_messages', true );
-			$config          = get_post_meta( $form_id, '_contact_form_config', true );
-			$default_options = dcf_default_options();
-			$options         = get_option( 'dialog_contact_form' );
-			$_options        = wp_parse_args( $options, $default_options );
-			$field_name      = array_column( $fields, 'field_name' );
+			$mail       = get_post_meta( $form_id, '_contact_form_mail', true );
+			$fields     = get_post_meta( $form_id, '_contact_form_fields', true );
+			$messages   = get_post_meta( $form_id, '_contact_form_messages', true );
+			$config     = get_post_meta( $form_id, '_contact_form_config', true );
+			$field_name = array_column( $fields, 'field_name' );
 
 			do_action( 'dcf_before_ajax_validation', $form_id, $mail, $fields, $messages );
 
-			if ( ! $this->validate->is_array( $fields ) ) {
+			if ( ! Dialog_Contact_Form_Validator::is_array( $fields ) ) {
 				return;
 			}
 
@@ -157,7 +147,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			$errorData = array();
 
 			// If Google reCAPTCHA enabled, verify it
-			if ( ! $this->validate_google_recaptcha( $config, $_options ) ) {
+			if ( ! $this->validate_google_recaptcha( $config, $options ) ) {
 				$errorData[] = array(
 					'field'   => 'dcf_recaptcha',
 					'message' => array( $messages['invalid_recaptcha'] ),
@@ -205,7 +195,6 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			do_action( 'dcf_after_ajax_send_mail', $mail_sent );
 
 			if ( $mail_sent ) {
-
 				$response = array(
 					'status'  => 'success',
 					'message' => esc_attr( $messages['mail_sent_ok'] ),
@@ -252,57 +241,57 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			foreach ( $validate_rules as $rule ) {
 				switch ( $rule ) {
 					case 'required':
-						if ( ! $this->validate->required( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::required( $value ) ) {
 							$message[] = $messages['invalid_required'];
 						}
 						break;
 					case 'email':
-						if ( ! $this->validate->email( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::email( $value ) ) {
 							$message[] = $messages['invalid_email'];
 						}
 						break;
 					case 'url':
-						if ( ! $this->validate->url( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::url( $value ) ) {
 							$message[] = $messages['invalid_url'];
 						}
 						break;
 					case 'number':
-						if ( ! $this->validate->number( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::number( $value ) ) {
 							$message[] = $messages['invalid_number'];
 						}
 						break;
 					case 'int':
-						if ( ! $this->validate->int( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::int( $value ) ) {
 							$message[] = $messages['invalid_int'];
 						}
 						break;
 					case 'alpha':
-						if ( ! $this->validate->alpha( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::alpha( $value ) ) {
 							$message[] = $messages['invalid_alpha'];
 						}
 						break;
 					case 'alnum':
-						if ( ! $this->validate->alnum( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::alnum( $value ) ) {
 							$message[] = $messages['invalid_alnum'];
 						}
 						break;
 					case 'alnumdash':
-						if ( ! $this->validate->alnumdash( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::alnumdash( $value ) ) {
 							$message[] = $messages['invalid_alnumdash'];
 						}
 						break;
 					case 'date':
-						if ( ! $this->validate->date( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::date( $value ) ) {
 							$message[] = $messages['invalid_date'];
 						}
 						break;
 					case 'checked':
-						if ( ! $this->validate->checked( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::checked( $value ) ) {
 							$message[] = $messages['invalid_checked'];
 						}
 						break;
 					case 'ip':
-						if ( ! $this->validate->ip( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::ip( $value ) ) {
 							$message[] = $messages['invalid_ip'];
 						}
 						break;
@@ -329,7 +318,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			// If field is not required
 			// Hide message if field is empty
 			if ( ! in_array( 'required', $validate_rules ) &&
-			     ! $this->validate->required( $value ) ) {
+			     ! Dialog_Contact_Form_Validator::required( $value ) ) {
 				$message = array();
 			}
 
@@ -400,13 +389,13 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 					$recaptcha = isset( $_POST['g-recaptcha-response'] ) ? $_POST['g-recaptcha-response'] : null;
 					$_response = wp_remote_post(
 						'https://www.google.com/recaptcha/api/siteverify',
-						[
-							'body' => [
+						array(
+							'body' => array(
 								'secret'   => esc_attr( $options['recaptcha_secret_key'] ),
 								'response' => $recaptcha,
 								'remoteip' => $this->get_remote_ip_addr(),
-							]
-						]
+							)
+						)
 					);
 					$body      = json_decode( wp_remote_retrieve_body( $_response ), true );
 
@@ -452,10 +441,10 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
 				$upload_dir = wp_upload_dir();
 
-				$attachment_dir = join( DIRECTORY_SEPARATOR, [
+				$attachment_dir = join( DIRECTORY_SEPARATOR, array(
 					$upload_dir['basedir'],
 					DIALOG_CONTACT_FORM_UPLOAD_DIR
-				] );
+				) );
 
 
 				if ( ! file_exists( $attachment_dir ) ) {
