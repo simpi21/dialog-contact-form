@@ -94,6 +94,47 @@ if ( ! class_exists( 'Dialog_Contact_Form_Metabox' ) ) {
 		}
 
 		/**
+		 * Generate checkbox field
+		 *
+		 * @param array $args
+		 */
+		public static function checkbox( array $args ) {
+			list( $name, $value, $input_id ) = self::field_common( $args );
+
+			echo self::field_before( $args );
+
+			if ( isset( $args['options'] ) ) {
+				$name = $name . '[]';
+				foreach ( $args['options'] as $key => $option ) {
+					$input_id = $input_id . '_' . $key;
+					$checked  = in_array( $key, $value ) ? 'checked="checked"' : '';
+					echo sprintf(
+						'<label><input type="checkbox" class="input-validate" name="%1$s" value="%2$s" %4$s>%3$s </label>',
+						$name, $key, $option, $checked
+					);
+				}
+			} else {
+				$label   = isset( $args['label'] ) ? $args['label'] : '';
+				$checked = ( 'on' == $value ) ? ' checked="checked"' : '';
+				echo sprintf( '<input type="hidden" name="%1$s" value="off">', $name );
+				echo sprintf( '<label for="%2$s"><input type="checkbox" ' . $checked . ' value="on" id="%2$s" name="%1$s">%3$s</label>', $name, $args['id'], $label );
+			}
+
+			echo self::field_after();
+		}
+
+		public static function number_options( array $config ) {
+			list( $name, $value, $input_id ) = self::field_common( $config );
+			$class = isset( $config['input_class'] ) ? esc_attr( $config['input_class'] ) : 'dcf-input-text';
+
+			echo self::field_before( $config );
+
+			echo sprintf( '<input type="text" class="' . $class . '" value="%1$s" id="' . $input_id . '" name="%3$s">', $value, $config['id'], $name );
+
+			echo self::field_after();
+		}
+
+		/**
 		 * Generate field name and field value
 		 *
 		 * @param $args
@@ -148,7 +189,9 @@ if ( ! class_exists( 'Dialog_Contact_Form_Metabox' ) ) {
 				$input_id = sprintf( '%s_%s_%s', $group, $options['id'], $options['position'] );
 			}
 
-			$html = sprintf( '<div class="dcf-input-group" id="field-%s">', $options['id'] );
+			$group_class = isset( $options['group_class'] ) ? $options['group_class'] : 'dcf-input-group';
+
+			$html = sprintf( '<div class="%s" id="field-%s">', esc_attr( $group_class ), $input_id );
 			$html .= sprintf( '<div class="dcf-input-label">' );
 			$html .= sprintf( '<label for="%1$s">%2$s</label>', $input_id, $options['label'] );
 			if ( ! empty( $options['description'] ) ) {
