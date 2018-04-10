@@ -518,7 +518,8 @@ if ( ! class_exists( 'Dialog_Contact_Form_Settings_API' ) ) {
 		protected function color( $field, $name, $value ) {
 			$default_color = ( isset( $field['std'] ) ) ? $field['std'] : "";
 
-			return sprintf( '<input type="text" class="color-picker dcf-colorpicker" value="%1$s" id="%2$s" name="%3$s" data-default-color="%4$s">', $value, $field['id'], $name, $default_color );
+			return sprintf( '<input type="text" class="color-picker dcf-colorpicker" value="%1$s" id="%2$s" name="%3$s" data-default-color="%4$s" data-alpha="true">',
+				$value, $field['id'], $name, $default_color );
 		}
 
 		/**
