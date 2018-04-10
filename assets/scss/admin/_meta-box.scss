@@ -1,0 +1,133 @@
+// Meta box fields
+.dcf {
+	&-input-group {
+		border-bottom: 1px solid rgba(#000, 0.02);
+		margin-bottom: 15px;
+		padding-bottom: 15px;
+
+		&:last-child {
+			border-bottom: none;
+			margin-bottom: 0;
+			padding-bottom: 0;
+		}
+
+		&:before,
+		&:after {
+			content: "";
+			display: table;
+		}
+		&:after {
+			clear: both
+		}
+	}
+
+	&-input-label,
+	&-input-field {
+		float: left;
+		width: 100%;
+	}
+
+	&-input-label {
+		label {
+			font-weight: 600;
+			margin-right: 30px;
+		}
+	}
+
+	&-input-field {
+	}
+
+	&-input-desc {
+		color: #999;
+		font-size: 0.9em;
+		line-height: 1.5em;
+		margin: 10px 30px 0 0;
+	}
+
+	&-input-text {
+		width: 100%;
+		padding: 8px 8px 8px 16px;
+		height: 35px !important;
+
+		option {
+			padding: 8px 4px;
+		}
+	}
+
+	&-spacing-text {
+		width: 62px;
+	}
+
+	@media only screen and (min-width: 600px) {
+		&-input-label {
+			width: 40%;
+		}
+		&-input-field {
+			width: 60%;
+		}
+	}
+
+	@media only screen and (min-width: 783px) {
+		&-input-label {
+			width: 30%;
+		}
+		&-input-field {
+			width: 70%;
+		}
+		&-input-text {
+			width: 25em;
+		}
+	}
+
+	@media only screen and (min-width: 851px) {
+		&-input-label,
+		&-input-field {
+			width: 100%;
+		}
+	}
+
+	@media only screen and (min-width: 1200px) {
+		&-input-label {
+			width: 40%;
+		}
+		&-input-field {
+			width: 60%;
+		}
+	}
+
+	@media only screen and (min-width: 1600px) {
+		&-input-label {
+			width: 30%;
+		}
+		&-input-field {
+			width: 70%;
+		}
+	}
+}
+
+#side-sortables {
+	.dcf {
+		&-input-group {
+		}
+
+		&-input-label,
+		&-input-field {
+			width: 100%;
+		}
+
+		&-input-label {
+			label {
+				margin: 0 0 10px 0;
+				display: block;
+			}
+		}
+
+		&-input-desc {
+			margin: -5px 0 5px 0;
+		}
+
+		&-input-text {
+			width: 100%;
+		}
+	}
+}

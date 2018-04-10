@@ -9,16 +9,18 @@ $defaults = dcf_validation_messages();
 global $post;
 $_messages = get_post_meta( $post->ID, '_contact_form_messages', true );
 $messages  = wp_parse_args( $_messages, $defaults );
+
+Dialog_Contact_Form_Metabox::text( array(
+	'id'          => 'mail_sent_ok',
+	'group'       => 'messages',
+	'meta_key'    => '_contact_form_messages',
+	'input_class' => 'widefat',
+	'label'       => __( 'Message sent successfully', 'dialog-contact-form' ),
+	'default'     => $messages['mail_sent_ok'],
+) );
+
 ?>
 <table class="form-table">
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Message sent successfully', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[mail_sent_ok]" type="text"
-                   value="<?php echo esc_attr( $messages['mail_sent_ok'] ); ?>" class="widefat">
-            <p class="description"><?php esc_html_e( 'Message was sent successfully', 'dialog-contact-form' ); ?></p>
-        </td>
-    </tr>
     <tr>
         <th scope="row"><label><?php esc_html_e( 'Message failed to sent', 'dialog-contact-form' ); ?></label></th>
         <td>

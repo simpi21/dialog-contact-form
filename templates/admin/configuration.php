@@ -4,103 +4,61 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-global $post;
-$defaults = array(
-	'labelPosition' => 'both',
-	'btnAlign'      => 'left',
-	'btnLabel'      => esc_html__( 'Send', 'dialog-contact-form' ),
-	'formType'      => 'internal',
-	'recaptcha'     => 'no',
-);
-$_config  = get_post_meta( $post->ID, '_contact_form_config', true );
-$config   = wp_parse_args( $_config, $defaults );
+Dialog_Contact_Form_Metabox::select( array(
+	'id'          => 'labelPosition',
+	'group'       => 'config',
+	'meta_key'    => '_contact_form_config',
+	'label'       => __( 'Position of the field title', 'dialog-contact-form' ),
+	'description' => __( 'choose the position of the field title', 'dialog-contact-form' ),
+	'default'     => 'both',
+	'options'     => array(
+		'label'       => esc_html__( 'Label', 'dialog-contact-form' ),
+		'placeholder' => esc_html__( 'Placeholder', 'dialog-contact-form' ),
+		'both'        => esc_html__( 'Both label and placeholder', 'dialog-contact-form' ),
+	),
+) );
+Dialog_Contact_Form_Metabox::buttonset( array(
+	'id'          => 'btnAlign',
+	'group'       => 'config',
+	'meta_key'    => '_contact_form_config',
+	'label'       => __( 'Submit Button Alignment', 'dialog-contact-form' ),
+	'description' => __( 'Set the alignment of submit button.', 'dialog-contact-form' ),
+	'default'     => 'left',
+	'options'     => array(
+		'left'  => esc_html__( 'Left', 'dialog-contact-form' ),
+		'right' => esc_html__( 'Right', 'dialog-contact-form' ),
+	),
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'          => 'btnLabel',
+	'group'       => 'config',
+	'meta_key'    => '_contact_form_config',
+	'label'       => __( 'Submit Button Label', 'dialog-contact-form' ),
+	'description' => __( 'Define the label of submit button.', 'dialog-contact-form' ),
+	'default'     => esc_html__( 'Send', 'dialog-contact-form' ),
+) );
+Dialog_Contact_Form_Metabox::buttonset( array(
+	'id'       => 'recaptcha',
+	'group'    => 'config',
+	'meta_key' => '_contact_form_config',
+	'label'    => __( 'Enable Google reCAPTCHA', 'dialog-contact-form' ),
+	'default'  => 'no',
+	'options'  => array(
+		'no'  => esc_html__( 'No', 'dialog-contact-form' ),
+		'yes' => esc_html__( 'Yes', 'dialog-contact-form' ),
+	),
+) );
 
-?>
-<p>
-    <label for="labelPosition">
-        <strong><?php esc_html_e( 'Position of the field title', 'dialog-contact-form' ); ?></strong>
-    </label>
-    <select name="config[labelPosition]" id="labelPosition" class="widefat">
-		<?php
-		$labelPosition = array(
-			'label'       => esc_html__( 'Label', 'dialog-contact-form' ),
-			'placeholder' => esc_html__( 'Placeholder', 'dialog-contact-form' ),
-			'both'        => esc_html__( 'Both label and placeholder', 'dialog-contact-form' ),
-		);
-		foreach ( $labelPosition as $key => $value ) {
-			$selected = ( $config['labelPosition'] == $key ) ? 'selected' : '';
-			echo sprintf( '<option value="%1$s" %3$s>%2$s</option>',
-				esc_attr( $key ),
-				esc_attr( $value ),
-				$selected
-			);
-		}
-		?>
-    </select>
-    <span class="description"><?php esc_html_e( 'Select the position of the field title', 'dialog-contact-form' ); ?></span>
-</p>
-<p>
-    <label><strong><?php esc_html_e( 'Submit Button Alignment', 'dialog-contact-form' ); ?></strong></label>
-    <select name="config[btnAlign]" class="widefat" required="required">
-		<?php
-		$btnAlign = array(
-			'left'  => esc_html__( 'Left', 'dialog-contact-form' ),
-			'right' => esc_html__( 'Right', 'dialog-contact-form' ),
-		);
-		foreach ( $btnAlign as $key => $value ) {
-			$selected = ( $config['btnAlign'] == $key ) ? 'selected' : '';
-			echo sprintf( '<option value="%1$s" %3$s>%2$s</option>',
-				esc_attr( $key ),
-				esc_attr( $value ),
-				$selected
-			);
-		}
-		?>
-    </select>
-    <span class="description"><?php esc_html_e( 'Set the alignment of submit button.', 'dialog-contact-form' ); ?></span>
-</p>
-<p>
-    <label><strong><?php esc_html_e( 'Submit Button Label', 'dialog-contact-form' ); ?></strong></label>
-    <input name="config[btnLabel]" type="text" value="<?php echo esc_attr( $config['btnLabel'] ); ?>" class="widefat">
-    <span class="description"><?php esc_html_e( 'Define the label of submit button.', 'dialog-contact-form' ); ?></span>
-</p>
-
-<!-- <p>
-    <label><strong><?php esc_html_e( 'Form Type', 'dialog-contact-form' ); ?></strong></label>
-    <select name="config[formType]" class="widefat" required="required">
-		<?php
-$btnAlign = array(
-	'internal' => esc_html__( 'Internal', 'dialog-contact-form' ),
-	'popup'    => esc_html__( 'External popup window', 'dialog-contact-form' ),
-);
-foreach ( $btnAlign as $key => $value ) {
-	$selected = ( $config['formType'] == $key ) ? 'selected' : '';
-	echo sprintf( '<option value="%1$s" %3$s>%2$s</option>',
-		esc_attr( $key ),
-		esc_attr( $value ),
-		$selected
-	);
-}
-?>
-    </select>
-</p> -->
-
-<p>
-    <label><strong><?php esc_html_e( 'Enable Google reCAPTCHA', 'dialog-contact-form' ); ?></strong></label>
-    <select name="config[recaptcha]" class="widefat">
-		<?php
-		$btnAlign = array(
-			'no'  => esc_html__( 'No', 'dialog-contact-form' ),
-			'yes' => esc_html__( 'Yes', 'dialog-contact-form' ),
-		);
-		foreach ( $btnAlign as $key => $value ) {
-			$selected = ( $config['recaptcha'] == $key ) ? 'selected' : '';
-			echo sprintf( '<option value="%1$s" %3$s>%2$s</option>',
-				esc_attr( $key ),
-				esc_attr( $value ),
-				$selected
-			);
-		}
-		?>
-    </select>
-</p>
+/*
+Dialog_Contact_Form_Metabox::buttonset( array(
+	'id'       => 'formType',
+	'group'    => 'config',
+	'meta_key' => '_contact_form_config',
+	'label'    => __( 'Form Type', 'dialog-contact-form' ),
+	'default'  => 'internal',
+	'options'  => array(
+		'internal' => esc_html__( 'Internal', 'dialog-contact-form' ),
+		'popup'    => esc_html__( 'External popup window', 'dialog-contact-form' ),
+	),
+) );
+*/
