@@ -5,13 +5,13 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 global $post;
-$defaults = [
+$defaults = array(
 	'labelPosition' => 'both',
 	'btnAlign'      => 'left',
 	'btnLabel'      => esc_html__( 'Send', 'dialog-contact-form' ),
 	'formType'      => 'internal',
 	'recaptcha'     => 'no',
-];
+);
 $_config  = get_post_meta( $post->ID, '_contact_form_config', true );
 $config   = wp_parse_args( $_config, $defaults );
 
@@ -69,19 +69,19 @@ $config   = wp_parse_args( $_config, $defaults );
     <label><strong><?php esc_html_e( 'Form Type', 'dialog-contact-form' ); ?></strong></label>
     <select name="config[formType]" class="widefat" required="required">
 		<?php
-		$btnAlign = array(
-			'internal' => esc_html__( 'Internal', 'dialog-contact-form' ),
-			'popup'    => esc_html__( 'External popup window', 'dialog-contact-form' ),
-		);
-		foreach ( $btnAlign as $key => $value ) {
-			$selected = ( $config['formType'] == $key ) ? 'selected' : '';
-			echo sprintf( '<option value="%1$s" %3$s>%2$s</option>',
-				esc_attr( $key ),
-				esc_attr( $value ),
-				$selected
-			);
-		}
-		?>
+$btnAlign = array(
+	'internal' => esc_html__( 'Internal', 'dialog-contact-form' ),
+	'popup'    => esc_html__( 'External popup window', 'dialog-contact-form' ),
+);
+foreach ( $btnAlign as $key => $value ) {
+	$selected = ( $config['formType'] == $key ) ? 'selected' : '';
+	echo sprintf( '<option value="%1$s" %3$s>%2$s</option>',
+		esc_attr( $key ),
+		esc_attr( $value ),
+		$selected
+	);
+}
+?>
     </select>
 </p> -->
 

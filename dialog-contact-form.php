@@ -143,24 +143,22 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 
 			$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-			wp_enqueue_style(
-				$this->plugin_name . '-admin',
+			wp_enqueue_style( $this->plugin_name . '-admin',
 				DIALOG_CONTACT_FORM_ASSETS . '/css/admin.css',
-				array( 'wp-color-picker' ),
-				DIALOG_CONTACT_FORM_VERSION,
-				'all'
-			);
-			wp_enqueue_script(
-				$this->plugin_name . '-admin',
+				array( 'wp-color-picker' ), DIALOG_CONTACT_FORM_VERSION, 'all' );
+
+			wp_enqueue_script( 'wp-color-picker-alpha',
+				DIALOG_CONTACT_FORM_ASSETS . '/lib/wp-color-picker-alpha/wp-color-picker-alpha' . $suffix . '.js',
+				array( 'wp-color-picker' ), '2.1.3', true );
+
+			wp_enqueue_script( $this->plugin_name . '-admin',
 				DIALOG_CONTACT_FORM_ASSETS . '/js/admin' . $suffix . '.js',
 				array(
 					'jquery',
 					'jquery-ui-sortable',
-					'wp-color-picker'
+					'wp-color-picker-alpha'
 				),
-				DIALOG_CONTACT_FORM_VERSION,
-				true
-			);
+				DIALOG_CONTACT_FORM_VERSION, true );
 		}
 
 		/**
