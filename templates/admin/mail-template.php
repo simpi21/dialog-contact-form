@@ -10,8 +10,8 @@ $mail     = get_post_meta( $post->ID, '_contact_form_mail', true );
 $mail     = wp_parse_args( $mail, $defaults );
 
 ?>
-<h1><?php esc_attr_e( 'Mail', 'dialog-contact-form' ); ?></h1>
-<p class="description"><?php esc_html_e( 'In the following fields, you can use these mail-tags::', 'dialog-contact-form' ); ?></p>
+    <h1><?php esc_attr_e( 'Mail', 'dialog-contact-form' ); ?></h1>
+    <p class="description"><?php esc_html_e( 'In the following fields, you can use these mail-tags::', 'dialog-contact-form' ); ?></p>
 <?php
 $fields     = get_post_meta( $post->ID, '_contact_form_fields', true );
 $fields     = is_array( $fields ) ? $fields : array();
@@ -23,46 +23,46 @@ $name_ph = array_map( function ( $n ) {
 	return "[" . $n . "]";
 }, $field_name );
 $name_ph = "<code class='mailtag code'>" . implode( "</code><code class='mailtag code'>", $name_ph ) . "</code>";
-echo $name_ph;
-?>
-<table class="form-table">
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Receiver(s)', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="mail[receiver]" type="text" value="<?php echo esc_attr( $mail['receiver'] ); ?>"
-                   class="regular-text">
-            <p class="description"><?php esc_html_e( 'Define the emails used (separeted by comma) to receive emails.', 'dialog-contact-form' ); ?></p>
-        </td>
-    </tr><!-- Receiver(s) -->
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Sender Email', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="mail[senderEmail]" type="text" value="<?php echo esc_attr( $mail['senderEmail'] ); ?>"
-                   class="regular-text" required="required">
-            <p class="description"><?php esc_html_e( 'Define from what email send the message.', 'dialog-contact-form' ); ?></p>
-        </td>
-    </tr><!-- Sender Email -->
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Sender Name', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="mail[senderName]" type="text" value="<?php echo esc_attr( $mail['senderName'] ); ?>"
-                   class="regular-text" required="required">
-            <p class="description"><?php esc_html_e( 'Define the name of email that send the message.', 'dialog-contact-form' ); ?></p>
-        </td>
-    </tr><!-- Sender Name -->
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Message Subject', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="mail[subject]" type="text" value="<?php echo esc_attr( $mail['subject'] ); ?>"
-                   class="regular-text" required="required">
-            <p class="description"><?php esc_html_e( 'Define the subject of the email sent to you.', 'dialog-contact-form' ); ?></p>
-        </td>
-    </tr><!-- Subject -->
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Message Body', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <textarea name="mail[body]" cols="30" rows="10" class="widefat"
-                      required="required"><?php echo esc_textarea( $mail['body'] ); ?></textarea>
-        </td>
-    </tr><!-- Body -->
-</table>
+echo $name_ph . '<br><hr>';
+
+Dialog_Contact_Form_Metabox::text( array(
+	'id'          => 'receiver',
+	'group'       => 'mail',
+	'meta_key'    => '_contact_form_mail',
+	'label'       => __( 'Receiver(s)', 'dialog-contact-form' ),
+	'description' => __( 'Define the emails used (separeted by comma) to receive emails.', 'dialog-contact-form' ),
+	'default'     => $mail['receiver'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'          => 'senderEmail',
+	'group'       => 'mail',
+	'meta_key'    => '_contact_form_mail',
+	'label'       => __( 'Sender Email', 'dialog-contact-form' ),
+	'description' => __( 'Define from what email send the message.', 'dialog-contact-form' ),
+	'default'     => $mail['senderEmail'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'          => 'senderName',
+	'group'       => 'mail',
+	'meta_key'    => '_contact_form_mail',
+	'label'       => __( 'Sender Email', 'dialog-contact-form' ),
+	'description' => __( 'Define the name of email that send the message.', 'dialog-contact-form' ),
+	'default'     => $mail['senderName'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'          => 'subject',
+	'group'       => 'mail',
+	'meta_key'    => '_contact_form_mail',
+	'label'       => __( 'Message Subject', 'dialog-contact-form' ),
+	'description' => __( 'Define the subject of the email sent to you.', 'dialog-contact-form' ),
+	'default'     => $mail['subject'],
+) );
+Dialog_Contact_Form_Metabox::textarea( array(
+	'id'          => 'body',
+	'group'       => 'mail',
+	'meta_key'    => '_contact_form_mail',
+	'label'       => __( 'Message Body', 'dialog-contact-form' ),
+	'default'     => $mail['body'],
+	'rows'        => 10,
+	'input_class' => 'widefat',
+) );

@@ -146,7 +146,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Meta_Boxes' ) ) {
 			);
 			add_meta_box(
 				"dialog-cf-messages",
-				__( "Messages", 'dialog-contact-form' ),
+				__( "Validation Messages", 'dialog-contact-form' ),
 				array( $this, 'meta_boxe_messages_cb' ),
 				$this->post_type,
 				"normal",

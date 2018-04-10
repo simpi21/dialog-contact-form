@@ -22,6 +22,30 @@ if ( ! class_exists( 'Dialog_Contact_Form_Metabox' ) ) {
 		}
 
 		/**
+		 * Generate textarea field
+		 *
+		 * @param array $args
+		 */
+		public static function textarea( array $args ) {
+			list( $name, $value, $input_id ) = self::field_common( $args );
+			$cols = isset( $args['cols'] ) ? $args['cols'] : 35;
+			$rows = isset( $args['rows'] ) ? $args['rows'] : 2;
+
+			$class = empty( $args['input_class'] ) ? 'dcf-input-textarea' : 'dcf-input-textarea ' . esc_attr( $args['input_class'] );
+
+			echo self::field_before( $args );
+			echo sprintf(
+				'<textarea class="' . $class . '" id="' . $input_id . '" name="%3$s" cols="%4$d" rows="%5$d">%1$s</textarea>',
+				esc_textarea( $value ),
+				$args['id'],
+				$name,
+				$cols,
+				$rows
+			);
+			echo self::field_after();
+		}
+
+		/**
 		 * Generate select field
 		 *
 		 * @param $args

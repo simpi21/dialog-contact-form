@@ -4,165 +4,152 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-$defaults = dcf_validation_messages();
+$messages = dcf_validation_messages();
 
-global $post;
-$_messages = get_post_meta( $post->ID, '_contact_form_messages', true );
-$messages  = wp_parse_args( $_messages, $defaults );
-
-Dialog_Contact_Form_Metabox::text( array(
-	'id'          => 'mail_sent_ok',
-	'group'       => 'messages',
-	'meta_key'    => '_contact_form_messages',
-	'input_class' => 'widefat',
-	'label'       => __( 'Message sent successfully', 'dialog-contact-form' ),
-	'default'     => $messages['mail_sent_ok'],
+Dialog_Contact_Form_Metabox::textarea( array(
+	'id'       => 'mail_sent_ok',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Message sent successfully', 'dialog-contact-form' ),
+	'default'  => $messages['mail_sent_ok'],
 ) );
-
-?>
-<table class="form-table">
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Message failed to sent', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[mail_sent_ng]" type="text"
-                   value="<?php echo esc_attr( $messages['mail_sent_ng'] ); ?>" class="widefat">
-            <p class="description"><?php esc_html_e( 'Message failed to send', 'dialog-contact-form' ); ?></p>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Validation errors occurred', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[validation_error]" type="text"
-                   value="<?php echo esc_attr( $messages['validation_error'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Required field', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_required]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_required'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid email', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_email]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_email'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid URL', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_url]" type="text" value="<?php echo esc_attr( $messages['invalid_url'] ); ?>"
-                   class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Exceed max length', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_too_long]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_too_long'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Too short', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_too_short]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_too_short'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid number', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_number]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_number'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Number too short', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[number_too_small]" type="text"
-                   value="<?php echo esc_attr( $messages['number_too_small'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Number too large', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[number_too_large]" type="text"
-                   value="<?php echo esc_attr( $messages['number_too_large'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid integer', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_int]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_int'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid alphabetic letters', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_alpha]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_alpha'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid alphanumeric characters', 'dialog-contact-form' ); ?></label>
-        </th>
-        <td>
-            <input name="messages[invalid_alnum]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_alnum'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">
-            <label><?php esc_html_e( 'Invalid alphanumeric characters, dashes and underscores', 'dialog-contact-form' ); ?></label>
-        </th>
-        <td>
-            <input name="messages[invalid_alnumdash]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_alnumdash'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid date', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_date]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_date'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid IP address', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_ip]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_ip'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid user login', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_user_login]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_user_login'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid username', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_username]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_username'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid user email', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_user_email]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_user_email'] ); ?>" class="widefat">
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label><?php esc_html_e( 'Invalid reCAPTCHA', 'dialog-contact-form' ); ?></label></th>
-        <td>
-            <input name="messages[invalid_recaptcha]" type="text"
-                   value="<?php echo esc_attr( $messages['invalid_recaptcha'] ); ?>" class="widefat">
-        </td>
-    </tr>
-</table>
+Dialog_Contact_Form_Metabox::textarea( array(
+	'id'       => 'mail_sent_ng',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Message failed to sent', 'dialog-contact-form' ),
+	'default'  => $messages['mail_sent_ng'],
+) );
+Dialog_Contact_Form_Metabox::textarea( array(
+	'id'       => 'validation_error',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Validation errors occurred', 'dialog-contact-form' ),
+	'default'  => $messages['validation_error'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_required',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Required field', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_required'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_email',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid email', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_email'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_url',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid URL', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_url'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_too_long',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Exceed max length', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_too_long'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_too_short',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Too short', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_too_short'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_number',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid number', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_number'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'number_too_small',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Number too short', 'dialog-contact-form' ),
+	'default'  => $messages['number_too_small'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'number_too_large',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Number too large', 'dialog-contact-form' ),
+	'default'  => $messages['number_too_large'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_int',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid integer', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_int'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_alpha',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid alphabetic letters', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_alpha'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_alnum',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid alphanumeric characters', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_alnum'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_alnumdash',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid alphanumeric characters, dashes and underscores', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_alnumdash'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_date',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid date', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_date'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_ip',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid IP address', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_ip'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_user_login',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid user login', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_user_login'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_username',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid username', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_username'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_user_email',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid user email', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_user_email'],
+) );
+Dialog_Contact_Form_Metabox::text( array(
+	'id'       => 'invalid_recaptcha',
+	'group'    => 'messages',
+	'meta_key' => '_contact_form_messages',
+	'label'    => __( 'Invalid reCAPTCHA', 'dialog-contact-form' ),
+	'default'  => $messages['invalid_recaptcha'],
+) );
