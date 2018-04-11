@@ -2,17 +2,37 @@
     'use strict';
 
     var fieldList = $('#shaplaFieldList');
-    var fieldTemplate = $('#shaplaFieldTemplate');
+
+    /**
+     * Update validation field name
+     */
+    function updateValidationFieldName() {
+        fieldList.find('.accordion').each(function (index) {
+            $(this).find('input,textarea,select').each(function () {
+                $(this).attr('name', $(this).attr('name').replace(/\[\d+\]/g, '[' + index + ']'));
+            });
+        });
+    }
 
     // Add Form Field from Field Template
     $('#addFormField').on('click', function (event) {
         event.preventDefault();
-        fieldList.append(fieldTemplate.html());
+        fieldList.append($('#shaplaFieldTemplate').html());
         updateValidationFieldName();
     });
 
+    // Delete Field
+    fieldList.on('click', '.deleteField', function (event) {
+        event.preventDefault();
+        var r = confirm("Are you sure to delete this field?");
+        if (r === true) {
+            $(this).closest('.accordion').remove();
+            updateValidationFieldName();
+        }
+    });
+
     // Update field title
-    fieldList.on('keydown keyup', '[name="field[field_title][]"]', function () {
+    fieldList.on('keydown keyup', '.dcf-field-title', function () {
         var _this = $(this);
         var _value = _this.val();
         var _accordion = _this.closest('.accordion');
@@ -25,17 +45,8 @@
             .val(_value.replace(/[\W_]+/g, "_").toLowerCase())
     });
 
-    // Delete Field
-    fieldList.on('click', '.deleteField', function (event) {
-        event.preventDefault();
-        var r = confirm("Are you sure to delete this field?");
-        if (r === true) {
-            $(this).closest('.accordion').remove();
-        }
-    });
-
     // Show Option for Select, Radio and Checkbox
-    fieldList.on('change', '[name="field[field_type][]"]', function () {
+    fieldList.on('change', '.dcf-field-type', function () {
         var _this;
         _this = $(this);
         var _accordion = _this.closest('.accordion');
@@ -68,22 +79,15 @@
         var panel = $(this).next();
 
         if (parseInt(panel.css('max-height')) > 0) {
-            panel.css('max-height', '0');
+            panel
+                .removeClass('is-open')
+                .css('max-height', '0');
         } else {
-            panel.css('max-height', panel.prop('scrollHeight') + "px");
+            panel
+                .addClass('is-open')
+                .css('max-height', panel.prop('scrollHeight') + "px");
         }
     });
-
-    /**
-     * Update validation field name
-     */
-    function updateValidationFieldName() {
-        fieldList.find('.accordion').each(function (index) {
-            $(this).find('.input-validate').each(function () {
-                $(this).attr('name', 'field[validation][' + index + '][]');
-            });
-        });
-    }
 
     // WordPress ColorPicker
     $('.dcf-colorpicker').each(function () {

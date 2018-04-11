@@ -9,6 +9,10 @@
 			border-bottom: none;
 			margin-bottom: 0;
 			padding-bottom: 0;
+
+			.accordion-content & {
+				padding-bottom: 15px;
+			}
 		}
 
 		&:before,

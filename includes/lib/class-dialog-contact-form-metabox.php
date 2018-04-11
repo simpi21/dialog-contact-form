@@ -86,7 +86,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Metabox' ) ) {
 				$label_class = ( $value == $key ) ? 'switch-label switch-label-on' : 'switch-label switch-label-off';
 				echo '<input class="' . $input_class . '" id="' . $input_id . '" type="radio" value="' . $key . '"
                        name="' . $name . '" ' . $checked . '>';
-				echo '<label class="' . $label_class . '" for="' . $input_id . '">' . $option . '</label></input>';
+				echo '<label class="' . $label_class . '" for="' . $input_id . '">' . $option . '</label>';
 			}
 			echo '</div>';
 
@@ -107,6 +107,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Metabox' ) ) {
 				$name = $name . '[]';
 				foreach ( $args['options'] as $key => $option ) {
 					$input_id = $input_id . '_' . $key;
+					$value    = is_array( $value ) ? $value : array();
 					$checked  = in_array( $key, $value ) ? 'checked="checked"' : '';
 					echo sprintf(
 						'<label><input type="checkbox" class="input-validate" name="%1$s" value="%2$s" %4$s>%3$s </label>',
@@ -123,13 +124,38 @@ if ( ! class_exists( 'Dialog_Contact_Form_Metabox' ) ) {
 			echo self::field_after();
 		}
 
+		/**
+		 * Options for input type number
+		 *
+		 * @param array $config
+		 */
 		public static function number_options( array $config ) {
-			list( $name, $value, $input_id ) = self::field_common( $config );
-			$class = isset( $config['input_class'] ) ? esc_attr( $config['input_class'] ) : 'dcf-input-text';
+			$config['id'] = 'number_min';
+			list( $number_min_name, $number_min_value, $number_min_input_id ) = self::field_common( $config );
+			$config['id'] = 'number_max';
+			list( $number_max_name, $number_max_value, $number_max_input_id ) = self::field_common( $config );
+			$config['id'] = 'number_step';
+			list( $number_step_name, $number_step_value, $number_step_input_id ) = self::field_common( $config );
 
 			echo self::field_before( $config );
 
-			echo sprintf( '<input type="text" class="' . $class . '" value="%1$s" id="' . $input_id . '" name="%3$s">', $value, $config['id'], $name );
+			?>
+            <label>
+				<?php esc_html_e( 'Min Value:', 'dialog-contact-form' ); ?>
+                <input type="number" name="<?php esc_attr_e( $number_min_name ); ?>"
+                       value="<?php esc_attr_e( $number_min_value ); ?>"
+                       step="0.01" class="small-text"></label>
+            <label>
+				<?php esc_html_e( 'Max Value:', 'dialog-contact-form' ); ?>
+                <input type="number" name="<?php esc_attr_e( $number_max_name ); ?>"
+                       value="<?php esc_attr_e( $number_max_value ); ?>"
+                       step="0.01" class="small-text"></label>
+            <label>
+				<?php esc_html_e( 'Step:', 'dialog-contact-form' ); ?>
+                <input type="number" name="<?php esc_attr_e( $number_step_name ); ?>"
+                       value="<?php esc_attr_e( $number_step_value ); ?>"
+                       step="0.01" class="small-text"></label>
+			<?php
 
 			echo self::field_after();
 		}
@@ -209,7 +235,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Metabox' ) ) {
 		 * @return string
 		 */
 		private static function field_after() {
-			return '</div></div>';
+			return '</div></div>' . PHP_EOL;
 		}
 	}
 }

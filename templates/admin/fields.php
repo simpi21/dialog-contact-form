@@ -21,7 +21,6 @@ if ( ! defined( 'WPINC' ) ) {
 	}
 
 	foreach ( $_fields as $_field_number => $_field ) { ?>
-
         <div class="accordion">
             <div class="accordion-header"><?php esc_html_e( $_field['field_title'] ); ?></div>
             <div class="accordion-content">
@@ -36,6 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
 					'group'       => 'field',
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
+					'input_class' => 'dcf-input-text dcf-field-title',
 					'label'       => __( 'Field Title', 'dialog-contact-form' ),
 					'description' => __( 'Insert the title for the field.', 'dialog-contact-form' ),
 				) );
@@ -54,6 +54,7 @@ if ( ! defined( 'WPINC' ) ) {
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Field Type', 'dialog-contact-form' ),
 					'description' => __( 'Select the type for this field.', 'dialog-contact-form' ),
+					'input_class' => 'select2 dcf-field-type dcf-input-text',
 					'options'     => dcf_available_field_types(),
 				) );
 				Dialog_Contact_Form_Metabox::textarea( array(
@@ -72,6 +73,24 @@ if ( ! defined( 'WPINC' ) ) {
 								'meta_key'   => '_contact_form_fields',
 								'meta_value' => array( 'radio', 'select', 'checkbox' ),
 								'compare'    => 'IN',
+							)
+						),
+					),
+				) );
+				Dialog_Contact_Form_Metabox::number_options( array(
+					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-numberOption',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'label'       => __( 'Number Option', 'dialog-contact-form' ),
+					'description' => __( 'This fields is optional but you can set min value, max value and step. For allowing decimal values set step value (e.g. step="0.01" to allow decimals to two decimal places).', 'dialog-contact-form' ),
+					'condition'   => array(
+						'action' => 'show',
+						'rules'  => array(
+							array(
+								'meta_key'   => '_contact_form_fields',
+								'meta_value' => 'number',
+								'compare'    => '=',
 							)
 						),
 					),
@@ -108,6 +127,14 @@ if ( ! defined( 'WPINC' ) ) {
 						'is-3'  => esc_html__( 'One Quarter', 'dialog-contact-form' ),
 					),
 				) );
+				Dialog_Contact_Form_Metabox::checkbox( array(
+					'id'       => 'validation',
+					'group'    => 'field',
+					'position' => $_field_number,
+					'meta_key' => '_contact_form_fields',
+					'label'    => __( 'Validation', 'dialog-contact-form' ),
+					'options'  => dcf_validation_rules(),
+				) );
 				Dialog_Contact_Form_Metabox::text( array(
 					'id'          => 'placeholder',
 					'group'       => 'field',
@@ -124,44 +151,8 @@ if ( ! defined( 'WPINC' ) ) {
 					'label'       => __( 'Error Message', 'dialog-contact-form' ),
 					'description' => __( 'Insert the error message for validation. The length of message must be 10 characters or more. Leave blank for default message.', 'dialog-contact-form' ),
 				) );
-				Dialog_Contact_Form_Metabox::checkbox( array(
-					'id'       => 'validation',
-					'group'    => 'field',
-					'position' => $_field_number,
-					'meta_key' => '_contact_form_fields',
-					'label'    => __( 'Validation', 'dialog-contact-form' ),
-					'options'  => dcf_validation_rules(),
-				) );
 				?>
-                <table class="form-table">
-                    <tr class="col-numberOption" style="<?php if ( $_field['field_type'] == 'number' ) {
-						echo 'display: table-row';
-					} ?>">
-                        <th scope="row">
-                            <label><?php esc_html_e( 'Number Option', 'dialog-contact-form' ); ?></label></th>
-                        <td>
-                            <label>
-								<?php esc_html_e( 'Min Value:', 'dialog-contact-form' ); ?>
-                                <input type="number" name="field[number_min][]"
-                                       value="<?php echo esc_attr( $_field['number_min'] ); ?>"
-                                       step="0.01" class="small-text"></label>
-                            <label>
-								<?php esc_html_e( 'Max Value:', 'dialog-contact-form' ); ?>
-                                <input type="number" name="field[number_max][]"
-                                       value="<?php echo esc_attr( $_field['number_max'] ); ?>"
-                                       step="0.01" class="small-text"></label>
-                            <label>
-								<?php esc_html_e( 'Step:', 'dialog-contact-form' ); ?>
-                                <input type="number" name="field[number_step][]"
-                                       value="<?php echo esc_attr( $_field['number_step'] ); ?>"
-                                       step="0.01" class="small-text"></label>
-                            <p class="description"><?php esc_html_e( 'This fields is optional but you can set min value, max value and
-                            step. For allowing decimal values set step value (e.g. step="0.01" to allow decimals to two decimal places).', 'dialog-contact-form' ); ?></p>
-                        </td>
-                    </tr><!-- Number Option -->
-                </table>
             </div>
         </div>
-
 	<?php } ?>
 </div>
