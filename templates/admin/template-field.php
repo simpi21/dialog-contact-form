@@ -31,6 +31,7 @@ $_field_number = 100;
 				'group'       => 'field',
 				'position'    => $_field_number,
 				'meta_key'    => '_contact_form_fields',
+				'input_class' => 'dcf-input-text dcf-field-id',
 				'label'       => __( 'Field ID', 'dialog-contact-form' ),
 				'description' => __( 'REQUIRED: Field identification name to be entered into email body. Note: Use only lowercase characters, hyphens and underscores.', 'dialog-contact-form' ),
 			) );
@@ -127,6 +128,7 @@ $_field_number = 100;
 				'group'       => 'field',
 				'position'    => $_field_number,
 				'meta_key'    => '_contact_form_fields',
+				'input_class' => 'dcf-input-text dcf-field-placeholder',
 				'label'       => __( 'Placeholder Text', 'dialog-contact-form' ),
 				'description' => __( 'Insert placeholder message.', 'dialog-contact-form' ),
 			) );

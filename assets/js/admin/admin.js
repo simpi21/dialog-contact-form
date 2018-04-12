@@ -1,7 +1,13 @@
 (function ($) {
     'use strict';
 
-    var fieldList = $('#shaplaFieldList');
+    var fieldList = $('#shaplaFieldList'),
+        whiteList = ['checkbox', 'radio', 'select'],
+        confirmDelete,
+        _this,
+        _value,
+        _accordion,
+        panel;
 
     /**
      * Update validation field name
@@ -24,8 +30,8 @@
     // Delete Field
     fieldList.on('click', '.deleteField', function (event) {
         event.preventDefault();
-        var r = confirm("Are you sure to delete this field?");
-        if (r === true) {
+        confirmDelete = confirm("Are you sure to delete this field?");
+        if (confirmDelete === true) {
             $(this).closest('.accordion').remove();
             updateValidationFieldName();
         }
@@ -33,24 +39,22 @@
 
     // Update field title
     fieldList.on('keydown keyup', '.dcf-field-title', function () {
-        var _this = $(this);
-        var _value = _this.val();
-        var _accordion = _this.closest('.accordion');
+        _this = $(this);
+        _value = _this.val();
+        _accordion = _this.closest('.accordion');
         // Set field title as accordion header
         _accordion.find('.accordion-header').text(_value);
         // Set field title as placeholder text
-        _accordion.find('[name="field[placeholder][]"]').val(_value);
+        _accordion.find('.dcf-field-placeholder').val(_value);
         // Set field title as field id
-        _accordion.find('[name="field[field_id][]"]')
+        _accordion.find('.dcf-field-id')
             .val(_value.replace(/[\W_]+/g, "_").toLowerCase())
     });
 
     // Show Option for Select, Radio and Checkbox
     fieldList.on('change', '.dcf-field-type', function () {
-        var _this;
         _this = $(this);
-        var _accordion = _this.closest('.accordion');
-        var whiteList = ['checkbox', 'radio', 'select'];
+        _accordion = _this.closest('.accordion');
 
         if ($.inArray(_this.val(), whiteList) >= 0) {
             _accordion.find('.col-addOptions').slideDown('fast');
@@ -76,7 +80,7 @@
     // Accordion
     fieldList.on("click", ".accordion-header", function () {
         $(this).toggleClass('active');
-        var panel = $(this).next();
+        panel = $(this).next();
 
         if (parseInt(panel.css('max-height')) > 0) {
             panel

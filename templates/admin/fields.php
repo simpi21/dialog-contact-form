@@ -4,9 +4,10 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 ?>
-<button id="addFormField" class="button button-default">Add Field</button>
+<button id="addFormField" class="button button-default">
+	<?php esc_html_e( 'Add Field', 'dialog-contact-form' ); ?>
+</button>
 <div id="shaplaFieldList">
-
 	<?php
 	global $post;
 	$_fields = get_post_meta( $post->ID, '_contact_form_fields', true );
@@ -38,14 +39,17 @@ if ( ! defined( 'WPINC' ) ) {
 					'input_class' => 'dcf-input-text dcf-field-title',
 					'label'       => __( 'Field Title', 'dialog-contact-form' ),
 					'description' => __( 'Insert the title for the field.', 'dialog-contact-form' ),
+					'default'     => $_field['field_title'],
 				) );
 				Dialog_Contact_Form_Metabox::text( array(
 					'id'          => 'field_id',
 					'group'       => 'field',
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
+					'input_class' => 'dcf-input-text dcf-field-id',
 					'label'       => __( 'Field ID', 'dialog-contact-form' ),
 					'description' => __( 'REQUIRED: Field identification name to be entered into email body. Note: Use only lowercase characters, hyphens and underscores.', 'dialog-contact-form' ),
+					'default'     => $_field['field_id'],
 				) );
 				Dialog_Contact_Form_Metabox::select( array(
 					'id'          => 'field_type',
@@ -56,6 +60,7 @@ if ( ! defined( 'WPINC' ) ) {
 					'description' => __( 'Select the type for this field.', 'dialog-contact-form' ),
 					'input_class' => 'select2 dcf-field-type dcf-input-text',
 					'options'     => dcf_available_field_types(),
+					'default'     => $_field['field_type'],
 				) );
 				Dialog_Contact_Form_Metabox::textarea( array(
 					'id'          => 'options',
@@ -65,6 +70,7 @@ if ( ! defined( 'WPINC' ) ) {
 					'label'       => __( 'Add options', 'dialog-contact-form' ),
 					'description' => __( 'One option per line.', 'dialog-contact-form' ),
 					'group_class' => 'dcf-input-group col-addOptions',
+					'default'     => $_field['options'],
 					'rows'        => 8,
 					'condition'   => array(
 						'action' => 'show',
@@ -102,6 +108,7 @@ if ( ! defined( 'WPINC' ) ) {
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Default Value', 'dialog-contact-form' ),
 					'description' => __( 'Define field default value.', 'dialog-contact-form' ),
+					'default'     => $_field['field_value'],
 				) );
 				Dialog_Contact_Form_Metabox::text( array(
 					'id'          => 'field_class',
@@ -110,6 +117,7 @@ if ( ! defined( 'WPINC' ) ) {
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Field Class', 'dialog-contact-form' ),
 					'description' => __( 'Insert additional class(es) (separated by blank space) for more personalization.', 'dialog-contact-form' ),
+					'default'     => $_field['field_class'],
 				) );
 				Dialog_Contact_Form_Metabox::select( array(
 					'id'          => 'field_width',
@@ -118,6 +126,7 @@ if ( ! defined( 'WPINC' ) ) {
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Field Width', 'dialog-contact-form' ),
 					'description' => __( 'Set field length.', 'dialog-contact-form' ),
+					'default'     => $_field['field_width'],
 					'options'     => array(
 						'is-12' => esc_html__( 'Full', 'dialog-contact-form' ),
 						'is-9'  => esc_html__( 'Three Quarters', 'dialog-contact-form' ),
@@ -134,14 +143,17 @@ if ( ! defined( 'WPINC' ) ) {
 					'meta_key' => '_contact_form_fields',
 					'label'    => __( 'Validation', 'dialog-contact-form' ),
 					'options'  => dcf_validation_rules(),
+					'default'  => $_field['validation'],
 				) );
 				Dialog_Contact_Form_Metabox::text( array(
 					'id'          => 'placeholder',
 					'group'       => 'field',
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
+					'input_class' => 'dcf-input-text dcf-field-placeholder',
 					'label'       => __( 'Placeholder Text', 'dialog-contact-form' ),
 					'description' => __( 'Insert placeholder message.', 'dialog-contact-form' ),
+					'default'     => $_field['placeholder'],
 				) );
 				Dialog_Contact_Form_Metabox::text( array(
 					'id'          => 'error_message',
@@ -150,6 +162,7 @@ if ( ! defined( 'WPINC' ) ) {
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Error Message', 'dialog-contact-form' ),
 					'description' => __( 'Insert the error message for validation. The length of message must be 10 characters or more. Leave blank for default message.', 'dialog-contact-form' ),
+					'default'     => $_field['error_message'],
 				) );
 				?>
             </div>
