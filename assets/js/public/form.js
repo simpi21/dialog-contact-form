@@ -3,7 +3,6 @@
     "use strict";
 
     var forms,
-        form,
         helpText,
         formData,
         request,
@@ -15,6 +14,9 @@
         dcfSuccess,
         dcfError,
         submitBtn,
+        validationMessages,
+        field_name,
+        messages,
         i;
 
     // Stop working if formData is not supported
@@ -24,12 +26,11 @@
 
     // Get all contact form
     forms = document.querySelectorAll('.dcf-form');
-    Array.prototype.forEach.call(forms, function (el) {
-        el.addEventListener('submit', function (e) {
+    Array.prototype.forEach.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
             // Prevent default form behavior
-            e.preventDefault();
+            event.preventDefault();
 
-            form = this;
             dcfSuccess = form.querySelector('.dcf-response > .dcf-success');
             dcfError = form.querySelector('.dcf-response > .dcf-error');
             submitBtn = form.querySelector('.dcf-submit');
@@ -83,12 +84,13 @@
                     }
 
                     // Loop through all fields and print field error message if any
-                    if (errors.validation) {
-                        for (i = 0; i < errors.validation.length; i++) {
-                            fields = form.querySelector('[name="' + errors.validation[i].field + '"]');
-
-                            if (errors.validation[i].message[0]) {
-                                error = '<span class="help is-danger">' + errors.validation[i].message[0] + '</span>';
+                    validationMessages = errors.validation && typeof errors.validation === 'object' ? errors.validation : {};
+                    for (field_name in validationMessages) {
+                        if (validationMessages.hasOwnProperty(field_name)) {
+                            fields = form.querySelector('[name="' + field_name + '"]');
+                            messages = validationMessages[field_name];
+                            if (messages[0]) {
+                                error = '<span class="help is-danger">' + messages[0] + '</span>';
                                 fields.style.borderColor = '#f44336';
                                 fields.insertAdjacentHTML('afterend', error);
                             }

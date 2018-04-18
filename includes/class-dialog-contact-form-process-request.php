@@ -29,61 +29,36 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 * DialogContactFormProcessRequest constructor.
 		 */
 		public function __construct() {
-			add_action( 'wp_ajax_dcf_submit_form', array( $this, 'submit_form' ) );
-			add_action( 'wp_ajax_nopriv_dcf_submit_form', array( $this, 'submit_form' ) );
-			add_action( 'template_redirect', array( $this, 'process_submitted_form' ) );
+			add_action( 'wp_ajax_dcf_submit_form', array( $this, 'process_ajax_form_submission' ) );
+			add_action( 'wp_ajax_nopriv_dcf_submit_form', array( $this, 'process_ajax_form_submission' ) );
+			add_action( 'template_redirect', array( $this, 'process_non_ajax_form_submission' ) );
 		}
 
 		/**
-		 * Process non AJAX form submit
+		 * Process non AJAX form submission
 		 */
-		public function process_submitted_form() {
-			$nonce   = isset( $_POST['_dcf_nonce'] ) && wp_verify_nonce( $_POST['_dcf_nonce'], '_dcf_submit_form' );
+		public function process_non_ajax_form_submission() {
 			$form_id = isset( $_POST['_user_form_id'] ) ? intval( $_POST['_user_form_id'] ) : 0;
-
-			// Check if nonce is valid
-			if ( ! $nonce ) {
+			// If it is spam, do nothing
+			if ( $this->is_spam( $form_id ) ) {
 				return;
 			}
 
-			// Check if form ID is valid
-			$form = get_post( $form_id );
-			if ( ! $form instanceof \WP_Post ) {
-				return;
-			}
-
-			// Check if form post type and register post type is same
-			if ( DIALOG_CONTACT_FORM_POST_TYPE !== $form->post_type ) {
-				return;
-			}
-
-			$mail       = get_post_meta( $form_id, '_contact_form_mail', true );
-			$messages   = get_post_meta( $form_id, '_contact_form_messages', true );
-			$fields     = get_post_meta( $form_id, '_contact_form_fields', true );
-			$field_name = array_column( $fields, 'field_name' );
+			$default_options = dcf_default_options();
+			$options         = wp_parse_args( get_option( 'dialog_contact_form' ), $default_options );
+			$mail            = get_post_meta( $form_id, '_contact_form_mail', true );
+			$fields          = get_post_meta( $form_id, '_contact_form_fields', true );
+			$messages        = get_post_meta( $form_id, '_contact_form_messages', true );
+			$config          = get_post_meta( $form_id, '_contact_form_config', true );
+			$field_name      = array_column( $fields, 'field_name' );
 
 			do_action( 'dcf_before_validation', $form_id, $mail, $fields, $messages );
 
-			if ( ! Dialog_Contact_Form_Validator::is_array( $fields ) ) {
-				return;
-			}
+			$errorData = $this->validate_form_data( $field_name, $fields, $messages );
 
-			// Validate Form Data
-			$errorData = array();
-			foreach ( $_POST as $field => $value ) {
-				// If submitted field is not in form field list, then ignore it
-				if ( ! in_array( $field, $field_name ) ) {
-					continue;
-				}
-
-				$indexNumber = array_search( $field, $field_name );
-				$_field      = $fields[ $indexNumber ];
-
-				$message = $this->validate_field( $value, $_field, $messages );
-
-				if ( count( $message ) > 0 ) {
-					$errorData[ $field ] = $message;
-				}
+			// If Google reCAPTCHA enabled, verify it
+			if ( ! $this->validate_google_recaptcha( $config, $options ) ) {
+				$errorData['dcf_recaptcha'] = array( $messages['invalid_recaptcha'] );
 			}
 
 			do_action( 'dcf_after_validation', $errorData );
@@ -110,36 +85,14 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		}
 
 		/**
-		 * Process AJAX form Submit
+		 * Process AJAX form submission
 		 */
-		public function submit_form() {
+		public function process_ajax_form_submission() {
 			$default_options = dcf_default_options();
-			$options         = get_option( 'dialog_contact_form' );
-			$options         = wp_parse_args( $options, $default_options );
+			$options         = wp_parse_args( get_option( 'dialog_contact_form' ), $default_options );
+			$form_id         = isset( $_POST['_user_form_id'] ) ? intval( $_POST['_user_form_id'] ) : 0;
 
-			$nonce   = isset( $_POST['nonce'] ) && wp_verify_nonce( $_POST['nonce'], 'dialog_contact_form_ajax' );
-			$form_id = isset( $_POST['_user_form_id'] ) ? intval( $_POST['_user_form_id'] ) : 0;
-
-			if ( ! $nonce ) {
-				$response = array(
-					'status'  => 'fail',
-					'message' => esc_attr( $options['spam_message'] ),
-				);
-				wp_send_json( $response, 403 );
-			}
-
-			$form = get_post( $form_id );
-
-			if ( ! $form instanceof \WP_Post ) {
-				$response = array(
-					'status'  => 'fail',
-					'message' => esc_attr( $options['spam_message'] ),
-				);
-				wp_send_json( $response, 403 );
-			}
-
-			// Check if form post type and register post type is same
-			if ( DIALOG_CONTACT_FORM_POST_TYPE !== $form->post_type ) {
+			if ( $this->is_spam( $form_id ) ) {
 				$response = array(
 					'status'  => 'fail',
 					'message' => esc_attr( $options['spam_message'] ),
@@ -155,39 +108,12 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
 			do_action( 'dcf_before_ajax_validation', $form_id, $mail, $fields, $messages );
 
-			if ( ! Dialog_Contact_Form_Validator::is_array( $fields ) ) {
-				return;
-			}
-
-			// Validate Form Data
-			$errorData = array();
+			// Loop through form fields and validate its data
+			$errorData = $this->validate_form_data( $field_name, $fields, $messages );
 
 			// If Google reCAPTCHA enabled, verify it
 			if ( ! $this->validate_google_recaptcha( $config, $options ) ) {
-				$errorData[] = array(
-					'field'   => 'dcf_recaptcha',
-					'message' => array( $messages['invalid_recaptcha'] ),
-				);
-			}
-
-			// Loop through form fields and validate its data
-			foreach ( $_POST as $field => $value ) {
-				// If submitted field is not in form field list, then ignore it
-				if ( ! in_array( $field, $field_name ) ) {
-					continue;
-				}
-
-				$indexNumber = array_search( $field, $field_name );
-				$_field      = $fields[ $indexNumber ];
-
-				$message = $this->validate_field( $value, $_field, $messages );
-
-				if ( count( $message ) > 0 ) {
-					$errorData[] = array(
-						'field'   => $field,
-						'message' => $message,
-					);
-				}
+				$errorData['dcf_recaptcha'] = array( $messages['invalid_recaptcha'] );
 			}
 
 			do_action( 'dcf_after_ajax_validation', $errorData );
@@ -219,14 +145,13 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 				);
 
 				wp_send_json( $response, 200 );
-			} else {
-
-				$response = array(
-					'status'  => 'fail',
-					'message' => esc_attr( $messages['mail_sent_ng'] ),
-				);
-				wp_send_json( $response, 500 );
 			}
+
+			$response = array(
+				'status'  => 'fail',
+				'message' => esc_attr( $messages['mail_sent_ng'] ),
+			);
+			wp_send_json( $response, 500 );
 		}
 
 		/**
@@ -245,7 +170,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			$message        = array();
 			$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
 
-			// If field type is email, url or number then add appropriate validation rule
+			// If field type is email, url, number or date then add appropriate validation rule
 			if ( in_array( $field['field_type'], array( 'email', 'url', 'number', 'date' ) ) ) {
 				$validate_rules[] = $field['field_type'];
 			}
@@ -408,32 +333,37 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 * @return bool
 		 */
 		private function validate_google_recaptcha( $config, $options ) {
-			if ( isset( $config['recaptcha'] ) && $config['recaptcha'] == 'yes' ) {
-				if ( ! empty( $options['recaptcha_site_key'] ) &&
-				     ! empty( $options['recaptcha_secret_key'] ) ) {
-
-					$recaptcha = isset( $_POST['g-recaptcha-response'] ) ? $_POST['g-recaptcha-response'] : null;
-					$_response = wp_remote_post(
-						'https://www.google.com/recaptcha/api/siteverify',
-						array(
-							'body' => array(
-								'secret'   => esc_attr( $options['recaptcha_secret_key'] ),
-								'response' => $recaptcha,
-								'remoteip' => $this->get_remote_ip_addr(),
-							)
-						)
-					);
-					$body      = json_decode( wp_remote_retrieve_body( $_response ), true );
-
-					if ( isset( $body['success'] ) && ! $body['success'] ) {
-						return false;
-
-					}
-
-				}
+			// If reCAPTCHA is not enabled, return true
+			if ( ! ( isset( $config['recaptcha'] ) && $config['recaptcha'] == 'yes' ) ) {
+				return true;
 			}
 
-			return true;
+			// If reCAPTCHA key or secret is empty, return true
+			if ( empty( $options['recaptcha_site_key'] ) || empty( $options['recaptcha_secret_key'] ) ) {
+				return true;
+			}
+
+			$captcha_code = isset( $_POST['g-recaptcha-response'] ) ? $_POST['g-recaptcha-response'] : null;
+			if ( empty( $captcha_code ) ) {
+				return false;
+			}
+
+			$_response = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify',
+				array(
+					'body' => array(
+						'secret'   => esc_attr( $options['recaptcha_secret_key'] ),
+						'response' => $captcha_code,
+						'remoteip' => $this->get_remote_ip_addr(),
+					)
+				)
+			);
+			$body      = json_decode( wp_remote_retrieve_body( $_response ), true );
+
+			if ( isset( $body['success'] ) && ! $body['success'] ) {
+				return false;
+			}
+
+			return false;
 		}
 
 		/**
@@ -442,8 +372,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 * @return string
 		 */
 		private function get_remote_ip_addr() {
-			if ( isset( $_SERVER['REMOTE_ADDR'] )
-			     && WP_Http::is_ip_address( $_SERVER['REMOTE_ADDR'] ) ) {
+			if ( isset( $_SERVER['REMOTE_ADDR'] ) && WP_Http::is_ip_address( $_SERVER['REMOTE_ADDR'] ) ) {
 				return $_SERVER['REMOTE_ADDR'];
 			}
 
@@ -499,6 +428,81 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			}
 
 			return $attachments;
+		}
+
+		/**
+		 * Validate user submitted form data
+		 *
+		 * @param array $field_name
+		 * @param array $fields
+		 * @param array $messages
+		 *
+		 * @return mixed
+		 */
+		private function validate_form_data( $field_name, $fields, $messages ) {
+			// Validate Form Data
+			$errorData = array();
+
+			foreach ( $_POST as $field => $value ) {
+				// If submitted field is not in form field list, then ignore it
+				if ( ! in_array( $field, $field_name ) ) {
+					continue;
+				}
+
+				$indexNumber = array_search( $field, $field_name );
+				$_field      = $fields[ $indexNumber ];
+
+				$message = $this->validate_field( $value, $_field, $messages );
+
+				if ( count( $message ) > 0 ) {
+					$errorData[ $field ] = $message;
+				}
+			}
+
+			return $errorData;
+		}
+
+		/**
+		 * Check if current submitted form is spam
+		 *
+		 * @param int $form_id
+		 *
+		 * @return bool
+		 */
+		private function is_spam( $form_id = 0 ) {
+
+			$nonce_field_name  = '_dcf_nonce';
+			$nonce_action_name = '_dcf_submit_form';
+
+			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				$nonce_field_name  = 'nonce';
+				$nonce_action_name = 'dialog_contact_form_ajax';
+			}
+
+			if ( ! isset( $_POST[ $nonce_field_name ] ) ) {
+				return true;
+			}
+
+			if ( ! wp_verify_nonce( $_POST[ $nonce_field_name ], $nonce_action_name ) ) {
+				return true;
+			}
+
+			$form = get_post( $form_id );
+			if ( ! $form instanceof \WP_Post ) {
+				return true;
+			}
+
+			// Check if form post type and register post type is same
+			if ( DIALOG_CONTACT_FORM_POST_TYPE !== $form->post_type ) {
+				return true;
+			}
+
+			$fields = get_post_meta( $form_id, '_contact_form_fields', true );
+			if ( ! is_array( $fields ) ) {
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
