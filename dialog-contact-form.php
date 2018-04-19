@@ -105,6 +105,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-validator.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-metabox.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-settings-api.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-form.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/settings/settings.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-post-type.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-meta-boxes.php';
