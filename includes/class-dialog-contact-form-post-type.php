@@ -86,6 +86,8 @@ if ( ! class_exists( 'Dialog_Contact_Form_PostType' ) ) {
 			register_post_type( $this->post_type, apply_filters( 'dialog_contact_form_args', $args ) );
 			add_filter( 'manage_edit-' . $this->post_type . '_columns', array( $this, 'columns_head' ) );
 			add_action( 'manage_' . $this->post_type . '_posts_custom_column', array( $this, 'content' ), 10, 2 );
+			// Remove Quick Edit from list table
+			add_filter( 'post_row_actions', array( $this, 'post_row_actions' ), 10, 2 );
 		}
 
 		/**
@@ -130,6 +132,22 @@ if ( ! class_exists( 'Dialog_Contact_Form_PostType' ) ) {
 				default:
 					break;
 			}
+		}
+
+		/**
+		 * Hide view and quick edit from carousel slider admin
+		 *
+		 * @param array $actions
+		 * @param WP_Post $post
+		 *
+		 * @return mixed
+		 */
+		public function post_row_actions( $actions, $post ) {
+			if ( $post->post_type == $this->post_type ) {
+				unset( $actions['inline hide-if-no-js'] );
+			}
+
+			return $actions;
 		}
 	}
 }
