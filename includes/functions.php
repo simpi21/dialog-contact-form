@@ -189,6 +189,7 @@ if ( ! function_exists( 'dcf_default_options' ) ) {
 			'dialog_button_background' => '#f44336',
 			'dialog_button_color'      => '#f5f5f5',
 			'dialog_form_id'           => '',
+			'default_style'            => 'enable',
 		);
 
 		return $options;
@@ -382,5 +383,38 @@ if ( ! function_exists( 'dcf_default_fields' ) ) {
 				'error_message' => '',
 			),
 		);
+	}
+}
+
+if ( ! function_exists( 'get_dialog_contact_form_option' ) ) {
+	/**
+	 * Get contact form option
+	 *
+	 * @param null $option
+	 * @param bool $default
+	 *
+	 * @return mixed
+	 */
+	function get_dialog_contact_form_option( $option = null, $default = false ) {
+		$default_options = dcf_default_options();
+		$options         = get_option( 'dialog_contact_form', $default_options );
+
+		$option = trim( $option );
+		if ( empty( $option ) ) {
+			return $options;
+		}
+
+		$value = null;
+
+		// Distinguish between `false` as a default, and not passing one.
+		if ( func_num_args() > 1 ) {
+			$value = $default;
+		}
+
+		if ( isset( $options[ $option ] ) ) {
+			$value = $options[ $option ];
+		}
+
+		return $value;
 	}
 }

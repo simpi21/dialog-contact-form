@@ -33,8 +33,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Shortcode' ) ) {
 		 */
 		public function __construct() {
 			add_shortcode( 'dialog_contact_form', array( $this, 'contact_form' ) );
-
-			add_action( 'wp_footer', array( $this, 'dcf_button' ), 5 );
+			add_action( 'wp_footer', array( $this, 'dialog_button' ), 5 );
 		}
 
 		/**
@@ -54,32 +53,19 @@ if ( ! class_exists( 'Dialog_Contact_Form_Shortcode' ) ) {
 				return '';
 			}
 
-			$id     = intval( $atts['id'] );
-			$fields = get_post_meta( $id, '_contact_form_fields', true );
-			$config = get_post_meta( $id, '_contact_form_config', true );
-
-			$default_options = dcf_default_options();
-			$options         = get_option( 'dialog_contact_form' );
-			$_options        = wp_parse_args( $options, $default_options );
-
-			ob_start();
-			require DIALOG_CONTACT_FORM_TEMPLATES . '/public/contact-form.php';
-			$html = ob_get_contents();
-			ob_end_clean();
-
-			return $html;
+			return Dialog_Contact_Form_Form::instance( intval( $atts['id'] ) )->form();
 		}
 
-		public function dcf_button() {
-			$default_option = dcf_default_options();
-			$options        = get_option( 'dialog_contact_form' );
-			$options        = wp_parse_args( $options, $default_option );
+		/**
+		 * Display dialog button
+		 */
+		public function dialog_button() {
+			$options = get_dialog_contact_form_option();
+			$form_id = isset( $options['dialog_form_id'] ) ? intval( $options['dialog_form_id'] ) : 0;
 
-			if ( intval( $options['dialog_form_id'] ) < 1 ) {
+			if ( $form_id < 1 ) {
 				return;
 			}
-
-			$config = get_post_meta( $options['dialog_form_id'], '_contact_form_config', true );
 
 			printf(
 				'<button class="button dcf-footer-btn" style="background-color: %2$s;color: %3$s" data-toggle="modal" data-target="#modal-%4$s">%1$s</button>',
@@ -89,11 +75,25 @@ if ( ! class_exists( 'Dialog_Contact_Form_Shortcode' ) ) {
 				$options['dialog_form_id']
 			);
 
-			$_content  = sprintf( '[dialog_contact_form id="%s"]', $options['dialog_form_id'] );
-			$shortcode = do_shortcode( $_content );
-
 			ob_start();
-			require DIALOG_CONTACT_FORM_TEMPLATES . '/public/dialog-form.php';
+			?>
+            <div id="modal-<?php echo absint( $options['dialog_form_id'] ); ?>" class="modal">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <div class="modal-card-head">
+                        <p class="modal-card-title">
+							<?php echo esc_html( get_the_title( $options['dialog_form_id'] ) ); ?>
+                        </p>
+                        <button class="delete-icon" data-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-card-body">
+                        <div class="content">
+							<?php echo Dialog_Contact_Form_Form::instance( $form_id )->form(); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<?php
 			$html = ob_get_contents();
 			ob_end_clean();
 

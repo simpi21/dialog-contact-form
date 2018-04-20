@@ -169,13 +169,22 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		public function frontend_scripts() {
 			$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-			wp_enqueue_style( $this->plugin_name,
-				DIALOG_CONTACT_FORM_ASSETS . '/css/style.css',
-				array(), DIALOG_CONTACT_FORM_VERSION, 'all' );
+			$enabled_style = get_dialog_contact_form_option( 'default_style', 'enable' );
+			$hl            = get_dialog_contact_form_option( 'recaptcha_lang', 'en' );
+			$hl            = in_array( $hl, array_keys( dcf_google_recaptcha_lang() ) ) ? $hl : 'en';
+			$captcha_url   = add_query_arg( array( 'hl' => $hl ), 'https://www.google.com/recaptcha/api.js' );
+
+			if ( 'disable' != $enabled_style ) {
+				wp_enqueue_style( $this->plugin_name,
+					DIALOG_CONTACT_FORM_ASSETS . '/css/style.css',
+					array(), DIALOG_CONTACT_FORM_VERSION, 'all' );
+			}
 
 			wp_enqueue_script( $this->plugin_name,
 				DIALOG_CONTACT_FORM_ASSETS . '/js/form' . $suffix . '.js',
 				array(), DIALOG_CONTACT_FORM_VERSION, true );
+
+			wp_register_script( 'dialog-contact-form-recaptcha', $captcha_url, '', null, true );
 
 			wp_localize_script( $this->plugin_name, 'DialogContactForm', array(
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),

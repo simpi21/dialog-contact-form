@@ -33,6 +33,11 @@ $option_page->add_panel( array(
 	'title'    => __( 'SMTP Settings', 'dialog-contact-form' ),
 	'priority' => 40,
 ) );
+$option_page->add_panel( array(
+	'id'       => 'dcf_style_panel',
+	'title'    => __( 'Form Style', 'dialog-contact-form' ),
+	'priority' => 50,
+) );
 
 // Add Sections
 $option_page->add_section( array(
@@ -61,6 +66,13 @@ $option_page->add_section( array(
 	'title'       => __( 'Validation Messages', 'dialog-contact-form' ),
 	'description' => __( 'Define default validation message. This message can be overwrite from each form.', 'dialog-contact-form' ),
 	'panel'       => 'dcf_message_panel',
+	'priority'    => 40,
+) );
+$option_page->add_section( array(
+	'id'          => 'dcf_style_section',
+	'title'       => __( 'Style', 'dialog-contact-form' ),
+	'description' => __( 'Define form style.', 'dialog-contact-form' ),
+	'panel'       => 'dcf_style_panel',
 	'priority'    => 40,
 ) );
 
@@ -201,4 +213,18 @@ $option_page->add_field( array(
 	'std'     => '',
 	'section' => 'dcf_dialog_section',
 	'options' => array(),
+) );
+
+// Add Style section fields
+$option_page->add_field( array(
+	'id'      => 'default_style',
+	'type'    => 'radio',
+	'name'    => __( 'Default Style', 'dialog-contact-form' ),
+	'desc'    => __( 'Disable plugin default style if you want to style by yourself.', 'dialog-contact-form' ),
+	'std'     => 'enable',
+	'section' => 'dcf_style_section',
+	'options' => array(
+		'enable'  => esc_html__( 'Enable', 'dialog-contact-form' ),
+		'disable' => esc_html__( 'Disable', 'dialog-contact-form' ),
+	)
 ) );

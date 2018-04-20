@@ -8,25 +8,87 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 	class Dialog_Contact_Form_Form {
 
+		/**
+		 * Form ID
+		 * @var int
+		 */
 		private $form_id = 0;
 
+		/**
+		 * List of errors after validation
+		 * @var array
+		 */
 		private $errors = array();
 
-		private $success_message = array();
+		/**
+		 * Success message after form submission
+		 * @var string|null
+		 */
+		private $success_message;
 
-		private $error_message = array();
+		/**
+		 * Error message after form submission
+		 * @var string|null
+		 */
+		private $error_message;
 
+		/**
+		 * Configuration for current form
+		 * @var array
+		 */
 		private $configuration = array();
 
-		public function __construct( $form_id = 0 ) {
-			$this->form_id         = $form_id;
-			$this->errors          = isset( $GLOBALS['_dcf_errors'] ) ? $GLOBALS['_dcf_errors'] : array();
-			$this->success_message = isset( $GLOBALS['_dcf_mail_sent_ok'] ) ? $GLOBALS['_dcf_mail_sent_ok'] : null;
-			$this->error_message   = isset( $GLOBALS['_dcf_validation_error'] ) ? $GLOBALS['_dcf_validation_error'] : null;
-			$this->configuration   = get_post_meta( $form_id, '_contact_form_config', true );
+		/**
+		 * List of fields for current form
+		 * @var array
+		 */
+		private $fields = array();
+
+		/**
+		 * Plugin global options for all forms
+		 * @var array
+		 */
+		private $options = array();
+
+		/**
+		 * @var object|null
+		 */
+		private static $instance = null;
+
+		/**
+		 * @param int $form_id
+		 *
+		 * @return Dialog_Contact_Form_Form
+		 */
+		public static function instance( $form_id = 0 ) {
+			if ( is_null( self::$instance ) ) {
+				self::$instance = new self( $form_id );
+			}
+
+			return self::$instance;
 		}
 
 		/**
+		 * Dialog_Contact_Form_Form constructor.
+		 *
+		 * @param int $form_id
+		 */
+		public function __construct( $form_id = 0 ) {
+			$this->options         = get_dialog_contact_form_option();
+			$this->errors          = isset( $GLOBALS['_dcf_errors'] ) ? $GLOBALS['_dcf_errors'] : array();
+			$this->success_message = isset( $GLOBALS['_dcf_mail_sent_ok'] ) ? $GLOBALS['_dcf_mail_sent_ok'] : null;
+			$this->error_message   = isset( $GLOBALS['_dcf_validation_error'] ) ? $GLOBALS['_dcf_validation_error'] : null;
+
+			if ( $form_id ) {
+				$this->form_id       = $form_id;
+				$this->configuration = get_post_meta( $form_id, '_contact_form_config', true );
+				$this->fields        = get_post_meta( $form_id, '_contact_form_fields', true );
+			}
+		}
+
+		/**
+		 * Print field html
+		 *
 		 * @param string $html
 		 * @param bool $echo
 		 *
@@ -41,6 +103,8 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 		}
 
 		/**
+		 * Get field class
+		 *
 		 * @param array $setting
 		 * @param string $default_class
 		 *
@@ -204,6 +268,14 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			return self::print_html( $html, $echo );
 		}
 
+		/**
+		 * Generate checkbox field
+		 *
+		 * @param array $setting
+		 * @param bool $echo
+		 *
+		 * @return string
+		 */
 		public function checkbox( $setting, $echo = true ) {
 			$options       = empty( $setting['options'] ) ? array() : explode( PHP_EOL, $setting['options'] );
 			$required_attr = $this->get_required_attribute_text( $setting );
@@ -247,6 +319,14 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			return self::print_html( $html, $echo );
 		}
 
+		/**
+		 * Generate file field
+		 *
+		 * @param array $setting
+		 * @param bool $echo
+		 *
+		 * @return string
+		 */
 		public function file( $setting, $echo = true ) {
 			$has_error     = $this->has_field_error( $setting );
 			$required_attr = $this->get_required_attribute_text( $setting );
@@ -281,6 +361,8 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 				return;
 			}
 
+			wp_enqueue_script( 'dialog-contact-form-recaptcha' );
+
 			echo '<div class="field column is-12">';
 			printf(
 				'<div class="g-recaptcha" data-sitekey="%1$s" data-theme="%2$s"></div>',
@@ -295,15 +377,11 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			}
 
 			echo '</div>';
-
-			add_action( 'wp_footer', function () use ( $options ) {
-				$hl = isset( $options['recaptcha_lang'] ) ? $options['recaptcha_lang'] : 'en';
-				$hl = in_array( $hl, array_keys( dcf_google_recaptcha_lang() ) ) ? $hl : 'en';
-				echo sprintf( '<script src="https://www.google.com/recaptcha/api.js?hl=%s"></script>', $hl );
-			} );
 		}
 
 		/**
+		 * Generate placeholder for current field
+		 *
 		 * @param $setting
 		 *
 		 * @return string
@@ -362,6 +440,115 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			}
 
 			return $required_attr;
+		}
+
+		/**
+		 * Get success message
+		 *
+		 * @return null|string
+		 */
+		public function get_success_message() {
+			if ( empty( $this->success_message ) ) {
+				return null;
+			}
+
+			return '<p>' . $this->success_message . '</p>';
+		}
+
+		/**
+		 * Get error Message
+		 *
+		 * @return null|string
+		 */
+		public function get_error_message() {
+			if ( empty( $this->error_message ) ) {
+				return null;
+			}
+
+			return '<p>' . $this->error_message . '</p>';
+		}
+
+		/**
+		 * Contact form
+		 *
+		 * @return string|null
+		 */
+		public function form() {
+			// If there is no field, exist
+			if ( ! ( is_array( $this->fields ) && count( $this->fields ) > 0 ) ) {
+				return null;
+			}
+			ob_start();
+			?>
+            <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" class="dcf-form columns is-multiline"
+                  method="POST" accept-charset="UTF-8" enctype="multipart/form-data" novalidate>
+                <div class="dcf-response">
+                    <div class="dcf-success">
+						<?php echo $this->get_success_message(); ?>
+                    </div>
+                    <div class="dcf-error">
+						<?php $this->get_error_message(); ?>
+                    </div>
+                </div>
+				<?php wp_nonce_field( '_dcf_submit_form', '_dcf_nonce' ); ?>
+                <input type="hidden" name="_user_form_id" value="<?php echo $this->form_id; ?>">
+
+				<?php
+				foreach ( $this->fields as $_field ) {
+					echo sprintf( '<div class="field column %s">', $_field['field_width'] );
+
+					$this->label( $_field );
+
+					echo '<p class="control">';
+
+					switch ( $_field['field_type'] ) {
+						case 'textarea':
+							$this->textarea( $_field );
+							break;
+						case 'radio':
+							$this->radio( $_field );
+							break;
+						case 'checkbox':
+							$this->checkbox( $_field );
+							break;
+						case 'select':
+							$this->select( $_field );
+							break;
+						case 'file':
+							$this->file( $_field );
+							break;
+						case 'number':
+							$this->number( $_field );
+							break;
+						default:
+							$this->text( $_field );
+							break;
+					}
+
+					// Show error message if any
+					if ( isset( $errors[ $_field['field_name'] ][0] ) ) {
+						echo '<span class="help is-danger">' . esc_attr( $this->errors[ $_field['field_name'] ][0] ) . '</span>';
+					}
+
+					echo '</p>';
+					echo '</div>';
+				}
+
+				// If Google reCAPTCHA, add here
+				$this->reCAPTCHA( $this->options );
+
+				// Submit button
+				printf( '<div class="field column is-12"><p class="%s"><button type="submit" class="button dcf-submit">%s</button></p></div>',
+					( isset( $this->configuration['btnAlign'] ) && $this->configuration['btnAlign'] == 'right' ) ? 'control level-right' : 'control level-left',
+					esc_attr( $this->configuration['btnLabel'] )
+				);
+				?>
+            </form>
+			<?php
+			$html = ob_get_contents();
+			ob_end_clean();
+
+			return $html;
 		}
 	}
 }
