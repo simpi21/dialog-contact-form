@@ -260,5 +260,38 @@ if ( ! class_exists( 'Dialog_Contact_Form_Validator' ) ) {
 		public static function matches( $value, $match_value ) {
 			return $value === $match_value;
 		}
+
+		/**
+		 * Check if the value is user username or email address
+		 *
+		 * @param mixed $value
+		 *
+		 * @return bool
+		 */
+		public static function user_login( $value ) {
+			return username_exists( $value ) || email_exists( $value );
+		}
+
+		/**
+		 * Check if the value is user username
+		 *
+		 * @param mixed $value
+		 *
+		 * @return bool
+		 */
+		public static function username( $value ) {
+			return username_exists( $value );
+		}
+
+		/**
+		 * Check if the value is user email address
+		 *
+		 * @param mixed $value
+		 *
+		 * @return bool
+		 */
+		public static function user_email( $value ) {
+			return email_exists( $value );
+		}
 	}
 }

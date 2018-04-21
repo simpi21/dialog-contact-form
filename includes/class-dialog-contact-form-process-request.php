@@ -193,23 +193,15 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 * @return mixed
 		 */
 		private function validate_form_data( $fields, $messages, $config, $options ) {
-			$field_names = array_column( $fields, 'field_name' );
 			// Validate Form Data
 			$errorData = array();
-
-			foreach ( $_POST as $field => $value ) {
-				// If submitted field is not in form field list, then ignore it
-				if ( ! in_array( $field, $field_names ) ) {
-					continue;
-				}
-
-				$indexNumber = array_search( $field, $field_names );
-				$_field      = $fields[ $indexNumber ];
-
-				$message = $this->validate_field( $value, $_field, $messages );
+			foreach ( $fields as $field ) {
+				$field_name = isset( $field['field_name'] ) ? $field['field_name'] : '';
+				$value      = isset( $_POST[ $field_name ] ) ? $_POST[ $field_name ] : null;
+				$message    = $this->validate_field( $value, $field, $messages );
 
 				if ( count( $message ) > 0 ) {
-					$errorData[ $field ] = $message;
+					$errorData[ $field_name ] = $message;
 				}
 			}
 
@@ -307,17 +299,17 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 						}
 						break;
 					case 'user_login':
-						if ( ! username_exists( $value ) && ! email_exists( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::user_login( $value ) ) {
 							$message[] = $messages['invalid_user_login'];
 						}
 						break;
 					case 'username':
-						if ( ! username_exists( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::username( $value ) ) {
 							$message[] = $messages['invalid_username'];
 						}
 						break;
 					case 'user_email':
-						if ( ! email_exists( $value ) ) {
+						if ( ! Dialog_Contact_Form_Validator::user_email( $value ) ) {
 							$message[] = $messages['invalid_user_email'];
 						}
 						break;

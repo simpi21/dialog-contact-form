@@ -499,7 +499,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 					$this->label( $field );
 
-					echo '<p class="control">';
+					echo '<div class="control">';
 
 					$field_type = isset( $field['field_type'] ) ? esc_attr( $field['field_type'] ) : 'text';
 
@@ -510,11 +510,11 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 					}
 
 					// Show error message if any
-					if ( isset( $errors[ $field['field_name'] ][0] ) ) {
+					if ( isset( $this->errors[ $field['field_name'] ][0] ) ) {
 						echo '<span class="help is-danger">' . esc_attr( $this->errors[ $field['field_name'] ][0] ) . '</span>';
 					}
 
-					echo '</p>';
+					echo '</div>';
 					echo '</div>';
 				}
 
