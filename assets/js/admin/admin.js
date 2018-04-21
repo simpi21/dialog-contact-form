@@ -7,23 +7,53 @@
         _this,
         _value,
         _accordion,
-        panel;
+        template;
 
     /**
      * Update validation field name
      */
     function updateValidationFieldName() {
-        fieldList.find('.accordion').each(function (index) {
+        fieldList.find('.dcf-toggle').each(function (index) {
             $(this).find('input,textarea,select').each(function () {
                 $(this).attr('name', $(this).attr('name').replace(/\[\d+\]/g, '[' + index + ']'));
             });
         });
     }
 
+    /**
+     * Show or Hide field as per field type
+     */
+    function showConditionalFields() {
+        _this = $(this);
+        _value = _this.find(":selected").val();
+        _accordion = _this.closest('.dcf-toggle');
+
+        if ($.inArray(_value, whiteList) >= 0) {
+            _accordion.find('.col-addOptions').slideDown('fast');
+        } else {
+            _accordion.find('.col-addOptions').slideUp('fast');
+        }
+
+        if (_value === 'number') {
+            _accordion.find('.col-numberOption').slideDown('fast');
+        } else {
+            _accordion.find('.col-numberOption').slideUp('fast');
+        }
+    }
+
     // Add Form Field from Field Template
     $('#addFormField').on('click', function (event) {
         event.preventDefault();
-        fieldList.append($('#shaplaFieldTemplate').html());
+        template = $('#shaplaFieldTemplate').html();
+        fieldList.append(template);
+        fieldList.find(".dcf-toggle").each(function () {
+            $(this).accordion({
+                header: '.dcf-toggle-title',
+                collapsible: true,
+                heightStyle: "content",
+                active: false
+            });
+        });
         updateValidationFieldName();
     });
 
@@ -32,7 +62,7 @@
         event.preventDefault();
         confirmDelete = confirm("Are you sure to delete this field?");
         if (confirmDelete === true) {
-            $(this).closest('.accordion').remove();
+            $(this).closest('.dcf-toggle').remove();
             updateValidationFieldName();
         }
     });
@@ -41,9 +71,9 @@
     fieldList.on('keydown keyup', '.dcf-field-title', function () {
         _this = $(this);
         _value = _this.val();
-        _accordion = _this.closest('.accordion');
+        _accordion = _this.closest('.dcf-toggle');
         // Set field title as accordion header
-        _accordion.find('.accordion-header').text(_value);
+        _accordion.find('.dcf-toggle-title').text(_value);
         // Set field title as placeholder text
         _accordion.find('.dcf-field-placeholder').val(_value);
         // Set field title as field id
@@ -53,20 +83,13 @@
 
     // Show Option for Select, Radio and Checkbox
     fieldList.on('change', '.dcf-field-type', function () {
-        _this = $(this);
-        _accordion = _this.closest('.accordion');
+        showConditionalFields.call(this);
+    });
 
-        if ($.inArray(_this.val(), whiteList) >= 0) {
-            _accordion.find('.col-addOptions').slideDown('fast');
-        } else {
-            _accordion.find('.col-addOptions').slideUp('fast');
-        }
-
-        if (_this.val() === 'number') {
-            _accordion.find('.col-numberOption').slideDown('fast');
-        } else {
-            _accordion.find('.col-numberOption').slideUp('fast');
-        }
+    $(document).ready(function () {
+        fieldList.find('.dcf-field-type').each(function () {
+            showConditionalFields.call(this);
+        });
     });
 
     // Make Form Fields Sortable
@@ -78,18 +101,20 @@
     });
 
     // Accordion
-    fieldList.on("click", ".accordion-header", function () {
-        $(this).toggleClass('active');
-        panel = $(this).next();
-
-        if (parseInt(panel.css('max-height')) > 0) {
-            panel
-                .removeClass('is-open')
-                .css('max-height', '0');
+    fieldList.find(".dcf-toggle").each(function () {
+        if ($(this).data('id') === 'closed') {
+            $(this).accordion({
+                header: '.dcf-toggle-title',
+                collapsible: true,
+                heightStyle: "content",
+                active: false
+            });
         } else {
-            panel
-                .addClass('is-open')
-                .css('max-height', panel.prop('scrollHeight') + "px");
+            $(this).accordion({
+                header: '.dcf-toggle-title',
+                collapsible: true,
+                heightStyle: "content"
+            });
         }
     });
 

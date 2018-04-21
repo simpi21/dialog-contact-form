@@ -1,0 +1,60 @@
+/* Toggle */
+$accent: #E0E0E0;
+
+.dcf-toggle {
+	margin: 1rem 0;
+
+	&-title {
+		display: block;
+		padding: 1rem;
+		outline: 0;
+		cursor: pointer;
+		position: relative;
+		font-size: 1rem;
+		font-weight: normal;
+		line-height: 1;
+
+		&:after {
+			position: absolute;
+			right: 1rem;
+			font-family: dashicons;
+			font-weight: 400;
+			font-size: 1rem;
+			line-height: 1;
+			vertical-align: top;
+			content: "\f132";
+		}
+
+		&.ui-state-active:after {
+			content: "\f460";
+		}
+	}
+
+	&-content {
+		padding: 1rem;
+		background-color: #f1f1f1;
+	}
+
+	&--normal {
+		.dcf-toggle-title {
+			background: #ffffff;
+			border: 1px solid $accent;
+			color: #000;
+		}
+
+		.dcf-toggle-content {
+			background: #ffffff;
+			border: 1px solid $accent;
+			border-top-width: 0;
+			color: #444444;
+		}
+	}
+
+	&--stroke .dcf-toggle-title {
+		border: 1px solid $accent;
+
+		&:after {
+			color: $accent;
+		}
+	}
+}

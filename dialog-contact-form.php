@@ -158,6 +158,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				array(
 					'jquery',
 					'jquery-ui-sortable',
+					'jquery-ui-accordion',
 					'wp-color-picker-alpha'
 				),
 				DIALOG_CONTACT_FORM_VERSION, true );

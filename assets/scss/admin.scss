@@ -1,7 +1,7 @@
 // sass --watch assets/scss/admin.scss:assets/css/admin.css --style compressed
-@import 'components/accordion';
 @import 'admin/meta-box';
 @import 'admin/buttonset';
+@import 'admin/toggle';
 
 .sp-card {
 	box-sizing: border-box;
