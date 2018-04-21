@@ -13,15 +13,20 @@ $mail     = wp_parse_args( $mail, $defaults );
     <h1><?php esc_attr_e( 'Mail', 'dialog-contact-form' ); ?></h1>
     <p class="description"><?php esc_html_e( 'In the following fields, you can use these mail-tags::', 'dialog-contact-form' ); ?></p>
 <?php
-$fields     = get_post_meta( $post->ID, '_contact_form_fields', true );
-$fields     = is_array( $fields ) ? $fields : array();
-$field_name = array_column( $fields, 'field_name' );
-if ( ! isset( $_GET['action'] ) && count( $field_name ) === 0 ) {
-	$field_name = array( 'your_name', 'your_email', 'subject', 'your_message' );
+$fields = get_post_meta( $post->ID, '_contact_form_fields', true );
+$fields = is_array( $fields ) ? $fields : array();
+if ( ! isset( $_GET['action'] ) && count( $fields ) < 1 ) {
+	$fields = dcf_default_fields();
 }
-$name_ph = array_map( function ( $n ) {
-	return "[" . $n . "]";
-}, $field_name );
+
+$name_ph = array();
+foreach ( $fields as $field ) {
+	if ( 'file' == $field['field_type'] ) {
+		continue;
+	}
+	$name_ph[] = $field['field_name'];
+}
+
 $name_ph = "<code class='mailtag code'>" . implode( "</code><code class='mailtag code'>", $name_ph ) . "</code>";
 echo $name_ph . '<br><hr>';
 

@@ -3,7 +3,7 @@ Contributors: sayful
 Tags: contact, contact form, email, feedback, form, modal, dialog
 Requires at least: 4.0
 Tested up to: 4.9
-Stable tag: 2.1.0
+Stable tag: 2.2.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -54,6 +54,18 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 3. Screenshot of Dialog Contact Form of Setting Page.
 
 == Changelog ==
+
+= version 2.2.0 - 2018-04-21 =
+* Added     - Add alpha color picker.
+* Added     - Add File attachment option.
+* Added     - Add option to disable plugin default styles.
+* Fixed     - Google reCAPTCHA script is loading multiple times when use multiple form on same page.
+* Fixed     - Fix extra space on select, radio and checkbox field.
+* Dev       - Update send mail data validation rules.
+* Dev       - Change validator methods to static mode.
+* Dev       - Add Dialog_Contact_Form_Metabox class for adding metabox fields.
+* Dev       - Add Dialog_Contact_Form_Settings_API class for adding setting page fields.
+* Dev       - Add Dialog_Contact_Form_Form class for adding public facing form.
 
 = version 2.1.0 - 2017-12-05 =
 * Tweak      - Remove custom session for flash message.

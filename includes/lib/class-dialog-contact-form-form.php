@@ -456,7 +456,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 		}
 
 		/**
-		 * Get error Message
+		 * Get error message
 		 *
 		 * @return null|string
 		 */
@@ -494,40 +494,24 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
                 <input type="hidden" name="_user_form_id" value="<?php echo $this->form_id; ?>">
 
 				<?php
-				foreach ( $this->fields as $_field ) {
-					echo sprintf( '<div class="field column %s">', $_field['field_width'] );
+				foreach ( $this->fields as $field ) {
+					echo sprintf( '<div class="field column %s">', $field['field_width'] );
 
-					$this->label( $_field );
+					$this->label( $field );
 
 					echo '<p class="control">';
 
-					switch ( $_field['field_type'] ) {
-						case 'textarea':
-							$this->textarea( $_field );
-							break;
-						case 'radio':
-							$this->radio( $_field );
-							break;
-						case 'checkbox':
-							$this->checkbox( $_field );
-							break;
-						case 'select':
-							$this->select( $_field );
-							break;
-						case 'file':
-							$this->file( $_field );
-							break;
-						case 'number':
-							$this->number( $_field );
-							break;
-						default:
-							$this->text( $_field );
-							break;
+					$field_type = isset( $field['field_type'] ) ? esc_attr( $field['field_type'] ) : 'text';
+
+					if ( method_exists( $this, $field_type ) ) {
+						$this->$field_type( $field );
+					} else {
+						$this->text( $field );
 					}
 
 					// Show error message if any
-					if ( isset( $errors[ $_field['field_name'] ][0] ) ) {
-						echo '<span class="help is-danger">' . esc_attr( $this->errors[ $_field['field_name'] ][0] ) . '</span>';
+					if ( isset( $errors[ $field['field_name'] ][0] ) ) {
+						echo '<span class="help is-danger">' . esc_attr( $this->errors[ $field['field_name'] ][0] ) . '</span>';
 					}
 
 					echo '</p>';
