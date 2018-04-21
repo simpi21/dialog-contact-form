@@ -24,7 +24,7 @@ foreach ( $fields as $field ) {
 	if ( 'file' == $field['field_type'] ) {
 		continue;
 	}
-	$name_ph[] = $field['field_name'];
+	$name_ph[] = '[' . $field['field_name'] . ']';
 }
 
 $name_ph = "<code class='mailtag code'>" . implode( "</code><code class='mailtag code'>", $name_ph ) . "</code>";

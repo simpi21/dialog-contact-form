@@ -32,6 +32,49 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			add_action( 'wp_ajax_dcf_submit_form', array( $this, 'process_ajax_form_submission' ) );
 			add_action( 'wp_ajax_nopriv_dcf_submit_form', array( $this, 'process_ajax_form_submission' ) );
 			add_action( 'template_redirect', array( $this, 'process_non_ajax_form_submission' ) );
+
+			// Remove mail attachment
+			add_action( 'dcf_after_send_mail', array( $this, 'remove_attachment_file' ), 0, 2 );
+			add_action( 'dcf_after_ajax_send_mail', array( $this, 'remove_attachment_file' ), 0, 2 );
+		}
+
+		/**
+		 * Get for all configurations data
+		 *
+		 * @param array $options options for all form
+		 * @param int $form_id
+		 * @param array $fields
+		 * @param array $config
+		 * @param array $messages
+		 * @param array $mail
+		 *
+		 * @return array
+		 */
+		private static function get_form_data( $options, $form_id, $fields, $config, $messages, $mail ) {
+			$data = array(
+				'global_options' => $options,
+				'form_id'        => $form_id,
+				'form_fields'    => $fields,
+				'form_options'   => $config,
+				'form_messages'  => $messages,
+				'form_mail'      => $mail,
+			);
+
+			return $data;
+		}
+
+		/**
+		 * @param $form_id
+		 *
+		 * @return array
+		 */
+		private static function get_form_settings( $form_id ) {
+			$config   = get_post_meta( $form_id, '_contact_form_config', true );
+			$mail     = get_post_meta( $form_id, '_contact_form_mail', true );
+			$fields   = get_post_meta( $form_id, '_contact_form_fields', true );
+			$messages = get_post_meta( $form_id, '_contact_form_messages', true );
+
+			return array( $config, $mail, $fields, $messages );
 		}
 
 		/**
@@ -46,20 +89,25 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
 			$default_options = dcf_default_options();
 			$options         = wp_parse_args( get_option( 'dialog_contact_form' ), $default_options );
-			$config          = get_post_meta( $form_id, '_contact_form_config', true );
-			$mail            = get_post_meta( $form_id, '_contact_form_mail', true );
-			$fields          = get_post_meta( $form_id, '_contact_form_fields', true );
-			$messages        = get_post_meta( $form_id, '_contact_form_messages', true );
-			$field_names     = array_column( $fields, 'field_name' );
+			list( $config, $mail, $fields, $messages ) = self::get_form_settings( $form_id );
+			$form_options = self::get_form_data( $options, $form_id, $fields, $config, $messages, $mail );
 
-			// Validate form data
-			do_action( 'dcf_before_validation', $form_id, $mail, $fields, $messages );
-			$errorData = $this->validate_form_data( $fields, $messages, $config, $options );
-			do_action( 'dcf_after_validation', $form_id, $mail, $fields, $messages, $errorData );
+			/**
+			 * @var array $form_options
+			 */
+			do_action( 'dcf_before_validation', $form_options );
+
+			$error_data = $this->validate_form_data( $fields, $messages, $config, $options );
+
+			/**
+			 * @var array $form_options
+			 * @var array $error_data
+			 */
+			do_action( 'dcf_after_validation', $form_options, $error_data );
 
 			// Exit if there is any error
-			if ( count( $errorData ) > 0 ) {
-				$GLOBALS['_dcf_errors']           = $errorData;
+			if ( count( $error_data ) > 0 ) {
+				$GLOBALS['_dcf_errors']           = $error_data;
 				$GLOBALS['_dcf_validation_error'] = $messages['validation_error'];
 
 				return;
@@ -68,11 +116,9 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			// If form upload a file, handle here
 			$attachments = $this->upload_attachments( $fields );
 
-			do_action( 'dcf_before_send_mail' );
-
-			$mail_sent = $this->send_mail( $field_names, $mail, $attachments );
-
-			do_action( 'dcf_after_send_mail', $mail_sent );
+			do_action( 'dcf_before_send_mail', $form_options, $attachments );
+			$mail_sent = $this->send_mail( $fields, $mail, $attachments );
+			do_action( 'dcf_after_send_mail', $form_options, $attachments, $mail_sent );
 
 			if ( $mail_sent ) {
 				$GLOBALS['_dcf_mail_sent_ok'] = $messages['mail_sent_ok'];
@@ -96,35 +142,32 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 				), 403 );
 			}
 
-			$mail        = get_post_meta( $form_id, '_contact_form_mail', true );
-			$fields      = get_post_meta( $form_id, '_contact_form_fields', true );
-			$messages    = get_post_meta( $form_id, '_contact_form_messages', true );
-			$config      = get_post_meta( $form_id, '_contact_form_config', true );
-			$field_names = array_column( $fields, 'field_name' );
+			list( $config, $mail, $fields, $messages ) = self::get_form_settings( $form_id );
+			$form_options = self::get_form_data( $options, $form_id, $fields, $config, $messages, $mail );
 
 			// Validate form data
-			do_action( 'dcf_before_ajax_validation', $form_id, $mail, $fields, $messages );
-			$errorData = $this->validate_form_data( $fields, $messages, $config, $options );
-			do_action( 'dcf_after_ajax_validation', $form_id, $mail, $fields, $messages, $errorData );
+			do_action( 'dcf_before_ajax_validation', $form_options );
+			$error_data = $this->validate_form_data( $fields, $messages, $config, $options );
+			do_action( 'dcf_after_ajax_validation', $form_options, $error_data );
 
 			// If there is a error, send error response
-			if ( $errorData ) {
+			if ( $error_data ) {
 				wp_send_json( array(
 					'status'     => 'fail',
 					'message'    => esc_attr( $messages['validation_error'] ),
-					'validation' => $errorData,
+					'validation' => $error_data,
 				), 422 );
 			}
 
 			// If form upload a file, handle here
 			$attachments = $this->upload_attachments( $fields );
 
-			do_action( 'dcf_before_ajax_send_mail' );
+			do_action( 'dcf_before_ajax_send_mail', $form_options, $attachments );
 
 			// Send mail to user
-			$mail_sent = $this->send_mail( $field_names, $mail, $attachments );
+			$mail_sent = $this->send_mail( $fields, $mail, $attachments );
 
-			do_action( 'dcf_after_ajax_send_mail', $mail_sent );
+			do_action( 'dcf_after_ajax_send_mail', $form_options, $attachments, $mail_sent );
 
 			if ( $mail_sent ) {
 				wp_send_json( array(
@@ -350,17 +393,20 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		/**
 		 * Send Mail to User
 		 *
-		 * @param $field_names
+		 * @param $fields
 		 * @param $mail
 		 * @param array $attachments
 		 *
 		 * @return bool
 		 * @internal param $headers
 		 */
-		private function send_mail( $field_names, $mail, $attachments = array() ) {
+		private function send_mail( $fields, $mail, $attachments = array() ) {
 			$placeholder = array();
-			foreach ( $field_names as $_name ) {
-				$placeholder[ "[" . $_name . "]" ] = isset( $_POST[ $_name ] ) ? $_POST[ $_name ] : '';
+			foreach ( $fields as $field ) {
+				if ( 'file' == $field['field_type'] ) {
+					continue;
+				}
+				$placeholder[ "[" . $field['field_name'] . "]" ] = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
 			}
 
 			$subject = $mail['subject'];
@@ -409,42 +455,102 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			$field_names = array_column( $fields, 'field_name' );
 			$field_types = array_column( $fields, 'field_type' );
 
-			if ( in_array( 'file', $field_types ) && isset( $_FILES ) ) {
+			// Check if global $_FILES exists
+			if ( ! isset( $_FILES ) ) {
+				return $attachments;
+			}
 
-				$upload_dir = wp_upload_dir();
+			// Check if current form has any file field
+			if ( ! in_array( 'file', $field_types ) ) {
+				return $attachments;
+			}
 
-				$attachment_dir = join( DIRECTORY_SEPARATOR, array(
-					$upload_dir['basedir'],
-					DIALOG_CONTACT_FORM_UPLOAD_DIR
-				) );
+			$upload_dir = wp_upload_dir();
 
+			$attachment_dir = join( DIRECTORY_SEPARATOR, array(
+				$upload_dir['basedir'],
+				DIALOG_CONTACT_FORM_UPLOAD_DIR
+			) );
 
-				if ( ! file_exists( $attachment_dir ) ) {
-					wp_mkdir_p( $attachment_dir );
+			// Make attachment directory in upload directory if not already exists
+			if ( ! file_exists( $attachment_dir ) ) {
+				wp_mkdir_p( $attachment_dir );
+			}
+
+			foreach ( $_FILES as $input_name => $file ) {
+
+				// Check if file field exists in our field list
+				if ( ! in_array( $input_name, $field_names ) ) {
+					continue;
 				}
 
+				$name     = $_FILES[ $input_name ]['name'];
+				$tmp_name = $_FILES[ $input_name ]['tmp_name'];
+				$size     = $_FILES[ $input_name ]['size'];
 
-				foreach ( $_FILES as $input_name => $file ) {
-					if ( in_array( $input_name, $field_names ) ) {
-						$name     = $_FILES[ $input_name ]['name'];
-						$tmp_name = $_FILES[ $input_name ]['tmp_name'];
-						// $type     = $_FILES[ $input_name ]['type'];
-						// $size     = $_FILES[ $input_name ]['size'];
+				// $type     = $_FILES[ $input_name ]['type'];
 
-						$safe_filename = sanitize_file_name( $name );
-						// $file_ext      = strtolower( end( explode( '.', $safe_filename ) ) );
+				if ( empty( $tmp_name ) || empty( $name ) ) {
+					continue;
+				}
 
-						$file_path = $attachment_dir . DIRECTORY_SEPARATOR . $safe_filename;
-						$response  = move_uploaded_file( $tmp_name, $file_path );
+				// Generate unique file name
+				$filename = wp_unique_filename( $attachment_dir, $name );
 
-						if ( $response ) {
-							$attachments[] = $file_path;
-						}
-					}
+				// Get file mime type for uploaded file
+				$finfo     = new \finfo( FILEINFO_MIME_TYPE );
+				$file_type = $finfo->file( $tmp_name );
+
+				// Get file extension from uploaded file name
+				$temp_ext           = explode( '.', $name );
+				$original_extension = strtolower( end( $temp_ext ) );
+
+				// Get file extension from allowed mime types
+				$ext = array_search( $file_type, get_allowed_mime_types(), true );
+
+				// Check if uploaded file mime type is allowed
+				if ( false === strpos( $ext, $original_extension ) ) {
+					continue;
+				}
+
+				// check file size here.
+				$max_upload_size = wp_max_upload_size();
+				if ( $size > $max_upload_size ) {
+					continue;
+				}
+
+				// Generate new file path
+				$new_file = $attachment_dir . DIRECTORY_SEPARATOR . $filename;
+
+				// Upload file
+				$response = @move_uploaded_file( $tmp_name, $new_file );
+
+				if ( $response ) {
+					// Set correct file permissions.
+					$stat  = stat( dirname( $new_file ) );
+					$perms = $stat['mode'] & 0000666;
+					@ chmod( $new_file, $perms );
+
+					// Save uploaded file path for later use
+					$attachments[] = $new_file;
 				}
 			}
 
 			return $attachments;
+		}
+
+		/**
+		 * Remove attachment after mail sent
+		 *
+		 * @param array $form_options
+		 * @param array $attachments
+		 */
+		public function remove_attachment_file( $form_options, $attachments ) {
+			foreach ( $attachments as $attachment ) {
+				if ( file_exists( $attachment ) ) {
+					unlink( $attachment );
+				}
+			}
 		}
 
 		/**
