@@ -3,7 +3,7 @@
     "use strict";
 
     var forms, helpText, formData, request, allFields, fields,
-        errors, error, success, dcfSuccess, dcfError,
+        control, errors, error, success, dcfSuccess, dcfError,
         submitBtn, validationMessages, field_name, messages, i,
         config = DialogContactForm || {
             ajaxurl: '',
@@ -36,7 +36,7 @@
             dcfError.innerHTML = '';
 
             // Hide field help message if any
-            helpText = form.querySelectorAll('.help');
+            helpText = form.querySelectorAll('.help.is-danger');
             for (i = 0; i < helpText.length; i++) {
                 helpText[i].parentNode.removeChild(helpText[i]);
             }
@@ -80,11 +80,12 @@
                     for (field_name in validationMessages) {
                         if (validationMessages.hasOwnProperty(field_name)) {
                             fields = form.querySelector('[name="' + field_name + '"]');
+                            control = fields.closest('.control');
                             messages = validationMessages[field_name];
                             if (messages[0]) {
                                 error = '<span class="help is-danger">' + messages[0] + '</span>';
                                 fields.style.borderColor = config.errorColor;
-                                fields.insertAdjacentHTML('afterend', error);
+                                control.insertAdjacentHTML('beforeend', error);
                             }
                         }
                     }

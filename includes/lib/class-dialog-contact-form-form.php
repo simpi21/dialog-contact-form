@@ -376,7 +376,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 				echo '<span class="help is-danger">' . esc_attr( $this->errors['dcf_recaptcha'][0] ) . '</span>';
 			}
 
-			echo '</div>';
+			echo '</div>' . PHP_EOL;
 		}
 
 		/**
@@ -469,68 +469,117 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 		}
 
 		/**
-		 * Contact form
+		 * Form Opening tag
+		 *
+		 * @param array $options
+		 *
+		 * @return string
+		 */
+		public function form_open( $options = array() ) {
+			$action = isset( $options['action'] ) ? $options['action'] : $_SERVER['REQUEST_URI'];
+			$class  = isset( $options['class'] ) ? $options['class'] : 'dcf-form columns is-multiline';
+
+			return '<form action="' . $action . '" class="' . $class . '" method="POST" accept-charset="UTF-8" enctype="multipart/form-data" novalidate>';
+		}
+
+		/**
+		 * Form Closing tag
+		 *
+		 * @return string
+		 */
+		public function form_close() {
+			return '</form>';
+		}
+
+		/**
+		 * Form content
+		 *
+		 * @param bool $submit_button
 		 *
 		 * @return string|null
 		 */
-		public function form() {
+		public function form_content( $submit_button = true ) {
 			// If there is no field, exist
 			if ( ! ( is_array( $this->fields ) && count( $this->fields ) > 0 ) ) {
 				return null;
 			}
 			ob_start();
 			?>
-            <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" class="dcf-form columns is-multiline"
-                  method="POST" accept-charset="UTF-8" enctype="multipart/form-data" novalidate>
-                <div class="dcf-response">
-                    <div class="dcf-success">
-						<?php echo $this->get_success_message(); ?>
-                    </div>
-                    <div class="dcf-error">
-						<?php $this->get_error_message(); ?>
-                    </div>
+            <div class="dcf-response">
+                <div class="dcf-success">
+					<?php echo $this->get_success_message(); ?>
                 </div>
-				<?php wp_nonce_field( '_dcf_submit_form', '_dcf_nonce' ); ?>
-                <input type="hidden" name="_user_form_id" value="<?php echo $this->form_id; ?>">
+                <div class="dcf-error">
+					<?php $this->get_error_message(); ?>
+                </div>
+            </div>
+			<?php wp_nonce_field( '_dcf_submit_form', '_dcf_nonce' ); ?>
+            <input type="hidden" name="_user_form_id" value="<?php echo $this->form_id; ?>">
 
-				<?php
-				foreach ( $this->fields as $field ) {
-					echo sprintf( '<div class="field column %s">', $field['field_width'] );
+			<?php
+			foreach ( $this->fields as $field ) {
+				echo sprintf( '<div class="field column %s">', $field['field_width'] );
 
-					$this->label( $field );
+				$this->label( $field );
 
-					echo '<div class="control">';
+				echo '<div class="control">';
 
-					$field_type = isset( $field['field_type'] ) ? esc_attr( $field['field_type'] ) : 'text';
+				$field_type = isset( $field['field_type'] ) ? esc_attr( $field['field_type'] ) : 'text';
 
-					if ( method_exists( $this, $field_type ) ) {
-						$this->$field_type( $field );
-					} else {
-						$this->text( $field );
-					}
-
-					// Show error message if any
-					if ( isset( $this->errors[ $field['field_name'] ][0] ) ) {
-						echo '<span class="help is-danger">' . esc_attr( $this->errors[ $field['field_name'] ][0] ) . '</span>';
-					}
-
-					echo '</div>';
-					echo '</div>';
+				if ( method_exists( $this, $field_type ) ) {
+					$this->$field_type( $field );
+				} else {
+					$this->text( $field );
 				}
 
-				// If Google reCAPTCHA, add here
-				$this->reCAPTCHA( $this->options );
+				// Show error message if any
+				if ( isset( $this->errors[ $field['field_name'] ][0] ) ) {
+					echo '<span class="help is-danger">' . esc_attr( $this->errors[ $field['field_name'] ][0] ) . '</span>';
+				}
 
-				// Submit button
-				printf( '<div class="field column is-12"><p class="%s"><button type="submit" class="button dcf-submit">%s</button></p></div>',
-					( isset( $this->configuration['btnAlign'] ) && $this->configuration['btnAlign'] == 'right' ) ? 'control level-right' : 'control level-left',
-					esc_attr( $this->configuration['btnLabel'] )
-				);
-				?>
-            </form>
-			<?php
+				echo '</div>';
+				echo '</div>' . PHP_EOL;
+			}
+
+			// If Google reCAPTCHA, add here
+			$this->reCAPTCHA( $this->options );
+
+			// Submit button
+			if ( $submit_button ) {
+				echo '<div class="field column is-12"><div class="control">';
+				echo $this->submit_button();
+				echo '</div></div>' . PHP_EOL;
+			}
+
 			$html = ob_get_contents();
 			ob_end_clean();
+
+			return $html;
+		}
+
+		/**
+		 * Contact form
+		 *
+		 * @return string
+		 */
+		public function form() {
+			$html = $this->form_open();
+			$html .= $this->form_content();
+			$html .= $this->form_close();
+
+			return $html;
+		}
+
+		/**
+		 * Submit button
+		 *
+		 * @return string
+		 */
+		public function submit_button() {
+			$html = sprintf( '<div class="%s"><button type="submit" class="button dcf-submit">%s</button></div>',
+				( isset( $this->configuration['btnAlign'] ) && $this->configuration['btnAlign'] == 'right' ) ? 'level-right' : 'level-left',
+				esc_attr( $this->configuration['btnLabel'] )
+			);
 
 			return $html;
 		}

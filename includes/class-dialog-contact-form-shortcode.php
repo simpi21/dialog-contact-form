@@ -62,6 +62,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Shortcode' ) ) {
 		public function dialog_button() {
 			$options = get_dialog_contact_form_option();
 			$form_id = isset( $options['dialog_form_id'] ) ? intval( $options['dialog_form_id'] ) : 0;
+			$form    = Dialog_Contact_Form_Form::instance( $form_id );
 
 			if ( $form_id < 1 ) {
 				return;
@@ -79,19 +80,24 @@ if ( ! class_exists( 'Dialog_Contact_Form_Shortcode' ) ) {
 			?>
             <div id="modal-<?php echo absint( $options['dialog_form_id'] ); ?>" class="modal">
                 <div class="modal-background"></div>
+				<?php echo $form->form_open( array( 'class' => 'dcf-form' ) ); ?>
                 <div class="modal-card">
                     <div class="modal-card-head">
                         <p class="modal-card-title">
 							<?php echo esc_html( get_the_title( $options['dialog_form_id'] ) ); ?>
                         </p>
-                        <button class="delete-icon" data-dismiss="modal"></button>
+                        <button class="modal-close" data-dismiss="modal"></button>
                     </div>
                     <div class="modal-card-body">
-                        <div class="content">
-							<?php echo Dialog_Contact_Form_Form::instance( $form_id )->form(); ?>
+                        <div class="columns is-multiline">
+							<?php echo $form->form_content( false ); ?>
                         </div>
                     </div>
+                    <div class="modal-card-foot">
+						<?php echo $form->submit_button(); ?>
+                    </div>
                 </div>
+				<?php echo $form->form_close(); ?>
             </div>
 			<?php
 			$html = ob_get_contents();
