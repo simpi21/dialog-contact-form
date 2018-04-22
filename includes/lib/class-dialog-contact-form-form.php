@@ -222,12 +222,12 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 			$html = '';
 			foreach ( $options as $option ) {
-				$option  = trim( $option );
-				$checked = ( $value == $option ) ? ' checked' : '';
-				$id      = $id . '-' . sanitize_title_with_dashes( $option );
-				$html    .= sprintf(
+				$option   = trim( $option );
+				$checked  = ( $value == $option ) ? ' checked' : '';
+				$radio_id = $id . '-' . sanitize_title_with_dashes( $option );
+				$html     .= sprintf(
 					'<label for="%6$s" class="%5$s"><input type="radio" id="%6$s" name="%1$s" value="%2$s"%3$s%4$s> %2$s</label>',
-					$name, esc_attr( $option ), $checked, $required_attr, $class, $id
+					$name, esc_attr( $option ), $checked, $required_attr, $class, $radio_id
 				);
 			}
 
@@ -363,7 +363,8 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 			wp_enqueue_script( 'dialog-contact-form-recaptcha' );
 
-			echo '<div class="field column is-12">';
+			echo '<div class="column is-12">';
+			echo '<div class="field">';
 			printf(
 				'<div class="g-recaptcha" data-sitekey="%1$s" data-theme="%2$s"></div>',
 				esc_attr( $options['recaptcha_site_key'] ),
@@ -376,7 +377,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 				echo '<span class="help is-danger">' . esc_attr( $this->errors['dcf_recaptcha'][0] ) . '</span>';
 			}
 
-			echo '</div>' . PHP_EOL;
+			echo '</div></div>' . PHP_EOL;
 		}
 
 		/**
@@ -518,7 +519,8 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 			<?php
 			foreach ( $this->fields as $field ) {
-				echo sprintf( '<div class="field column %s">', $field['field_width'] );
+				echo sprintf( '<div class="column %s">', $field['field_width'] );
+				echo '<div class="field">';
 
 				$this->label( $field );
 
@@ -538,6 +540,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 				}
 
 				echo '</div>';
+				echo '</div>';
 				echo '</div>' . PHP_EOL;
 			}
 
@@ -546,9 +549,9 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 			// Submit button
 			if ( $submit_button ) {
-				echo '<div class="field column is-12"><div class="control">';
+				echo '<div class="column is-12"><div class="field"><div class="control">';
 				echo $this->submit_button();
-				echo '</div></div>' . PHP_EOL;
+				echo '</div></div></div>' . PHP_EOL;
 			}
 
 			$html = ob_get_contents();

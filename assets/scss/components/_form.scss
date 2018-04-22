@@ -1,252 +1,75 @@
 $color--success: #4caf50;
 $color--error: #f44336;
 
-.input,
-.textarea {
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    align-items: center;
-    display: inline-flex;
-    font-size: 1rem;
-    height: 2.25em;
-    justify-content: flex-start;
-    line-height: 1.5;
-    padding: 0.375em 0.625em;
-    position: relative;
-    vertical-align: top;
-    max-width: 100%;
-    width: 100%;
-}
+.field {
+	&:not(:last-child) {
+		margin-bottom: 0.75rem;
+	}
 
-.input:focus,
-.input:active,
-.textarea:focus,
-.textarea:active {
-    outline: none;
-}
-
-.input[disabled],
-.textarea[disabled] {
-    cursor: not-allowed;
-}
-
-.input[disabled],
-.textarea[disabled] {
-    box-shadow: none;
-}
-
-.input.is-success,
-.textarea.is-success {
-    border-color: $color--success;
-}
-
-.input.is-danger,
-.textarea.is-danger {
-    border-color: $color--error;
-}
-
-.input.is-small,
-.textarea.is-small {
-    font-size: 0.75rem;
-}
-
-.input.is-medium,
-.textarea.is-medium {
-    font-size: 1.25rem;
-}
-
-.input.is-large,
-.textarea.is-large {
-    font-size: 1.5rem;
-}
-
-.input.is-fullwidth,
-.textarea.is-fullwidth {
-    display: block;
-    width: 100%;
-}
-
-.input.is-inline,
-.textarea.is-inline {
-    display: inline;
-    width: auto;
-}
-
-.textarea {
-    display: block;
-    max-height: 600px;
-    max-width: 100%;
-    min-height: 120px;
-    min-width: 100%;
-    padding: 0.625em;
-    resize: vertical;
-}
-
-.checkbox,
-.radio {
-    cursor: pointer;
-    display: inline-block;
-    line-height: 1.25;
-    position: relative;
-}
-
-.checkbox input,
-.radio input {
-    cursor: pointer;
-}
-
-.checkbox[disabled],
-.radio[disabled] {
-    cursor: not-allowed;
-}
-
-.radio + .radio {
-    margin-left: 0.5em;
-}
-
-.select {
-    display: inline-block;
-    height: 2.25em;
-    max-width: 100%;
-    position: relative;
-    vertical-align: top;
-}
-
-.select:after {
-    border-width: 1px;
-    border-style: solid;
-    border-color: inherit;
-    border-right: 0;
-    border-top: 0;
-    content: " ";
-    display: block;
-    height: 0.5em;
-    pointer-events: none;
-    position: absolute;
-    transform: rotate(-45deg);
-    width: 0.5em;
-    margin-top: -0.375em;
-    right: 1.125em;
-    top: 50%;
-    z-index: 4;
-}
-
-.select select {
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    align-items: center;
-    border: 1px solid transparent;
-    border-radius: 3px;
-    box-shadow: none;
-    display: inline-flex;
-    font-size: 1rem;
-    height: 2.25em;
-    justify-content: flex-start;
-    line-height: 1.5;
-    position: relative;
-    vertical-align: top;
-    cursor: pointer;
-    max-width: 100%;
-    outline: none;
-    padding: 0.375em 0.625em;
-    padding-right: 2.5em;
-}
-
-.select select:focus,
-.select select:active {
-    outline: none;
-}
-
-.select select[disabled] {
-    cursor: not-allowed;
-}
-
-.select select[disabled] {
-    box-shadow: none;
-}
-
-.select select::-ms-expand {
-    display: none;
-}
-
-.select.is-success select {
-    border-color: $color--success;
-}
-
-.select.is-danger select {
-    border-color: $color--error;
-}
-
-.select.is-small {
-    font-size: 0.75rem;
-}
-
-.select.is-medium {
-    font-size: 1.25rem;
-}
-
-.select.is-large {
-    font-size: 1.5rem;
-}
-
-.select.is-fullwidth {
-    width: 100%;
-}
-
-.select.is-fullwidth select {
-    width: 100%;
+	@media screen and (min-width: $tablet), print {
+		&.is-horizontal {
+			display: flex;
+		}
+	}
 }
 
 .label {
-    color: inherit;
-    display: block;
-    font-size: 1rem;
-    font-weight: 500;
-}
+	color: inherit;
+	display: block;
+	font-size: 1rem;
+	font-weight: 500;
 
-.label:not(:last-child) {
-    margin-bottom: 0.5em;
-}
+	&:not(:last-child) {
+		margin-bottom: 0.5em;
+	}
 
-.label.is-small {
-    font-size: 0.75rem;
-}
+	&.is-small {
+		font-size: 0.75rem;
+	}
 
-.label.is-medium {
-    font-size: 1.25rem;
-}
+	&.is-medium {
+		font-size: 1.25rem;
+	}
 
-.label.is-large {
-    font-size: 1.5rem;
-}
-
-.help {
-    display: block;
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-}
-
-.help.is-success {
-    color: $color--success;
-}
-
-.help.is-danger {
-    color: $color--error;
-}
-
-.field:not(:last-child) {
-    margin: 0;
-}
-
-@media screen and (min-width: $tablet), print {
-    .field.is-horizontal {
-        display: flex;
-    }
+	&.is-large {
+		font-size: 1.5rem;
+	}
 }
 
 .control {
-    font-size: 1rem;
-    position: relative;
-    text-align: left;
-    margin: 0;
+	font-size: 1rem;
+	position: relative;
+	text-align: left;
+	margin: 0;
+}
+
+.help {
+	display: block;
+	font-size: 0.75rem;
+	margin-top: 0.25rem;
+
+	&.is-success {
+		color: $color--success;
+	}
+
+	&.is-danger {
+		color: $color--error;
+	}
+}
+
+// General style
+.input,
+.textarea {
+	width: 100%;
+}
+
+.radio,
+.checkbox {
+	cursor: pointer;
+	display: inline-block;
+	position: relative;
+
+	&:not(:last-child) {
+		margin-right: 1rem;
+	}
 }
