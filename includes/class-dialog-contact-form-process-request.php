@@ -198,7 +198,11 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			foreach ( $fields as $field ) {
 				$field_name = isset( $field['field_name'] ) ? $field['field_name'] : '';
 				$value      = isset( $_POST[ $field_name ] ) ? $_POST[ $field_name ] : null;
-				$message    = $this->validate_field( $value, $field, $messages );
+				if ( 'file' == $field['field_type'] ) {
+					$message = $this->validate_file_field( $field, $messages );
+				} else {
+					$message = $this->validate_post_field( $value, $field, $messages );
+				}
 
 				if ( count( $message ) > 0 ) {
 					$errorData[ $field_name ] = $message;
@@ -224,7 +228,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 *
 		 * @return array
 		 */
-		public function validate_field( $value, $field, $messages ) {
+		public function validate_post_field( $value, $field, $messages ) {
 			$defaults = dcf_validation_messages();
 			$messages = wp_parse_args( $messages, $defaults );
 
@@ -334,6 +338,70 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		}
 
 		/**
+		 * Validate file field
+		 *
+		 * @param array $field
+		 * @param array $messages
+		 *
+		 * @return array
+		 */
+		public function validate_file_field( $field, $messages ) {
+			$defaults = dcf_validation_messages();
+			$messages = wp_parse_args( $messages, $defaults );
+
+			$message        = array();
+			$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
+
+			// Check if global $_FILES exists
+			if ( ! isset( $_FILES[ $field['field_name'] ] ) ) {
+				return $message;
+			}
+
+			$name     = $_FILES[ $field['field_name'] ]['name'];
+			$tmp_name = $_FILES[ $field['field_name'] ]['tmp_name'];
+			$size     = $_FILES[ $field['field_name'] ]['size'];
+
+			if ( empty( $tmp_name ) || empty( $name ) ) {
+				$message[] = $messages['invalid_required'];
+			} else {
+				// Get file mime type for uploaded file
+				$finfo     = new \finfo( FILEINFO_MIME_TYPE );
+				$file_type = $finfo->file( $tmp_name );
+
+				// Get file extension from uploaded file name
+				$temp_ext           = explode( '.', $name );
+				$original_extension = strtolower( end( $temp_ext ) );
+
+				// Get file extension from allowed mime types
+				$ext = array_search( $file_type, get_allowed_mime_types(), true );
+
+				// Check if uploaded file mime type is allowed
+				if ( false === strpos( $ext, $original_extension ) ) {
+					$message[] = $messages['invalid_file_format'];
+				}
+
+				// check file size here.
+				$max_upload_size = wp_max_upload_size();
+				if ( $size > $max_upload_size ) {
+					$message[] = $messages['file_too_large'];
+				}
+			}
+			// If field is not required, hide message if field is empty
+			if ( ! in_array( 'required', $validate_rules ) ) {
+				if ( empty( $tmp_name ) || empty( $name ) ) {
+					$message = array();
+				}
+			}
+
+			// If user custom message exists, use it
+			if ( count( $message ) > 0 && mb_strlen( $field['error_message'], 'UTF-8' ) > 10 ) {
+				$message = array( $field['error_message'] );
+			}
+
+			return $message;
+		}
+
+		/**
 		 * Verify Google reCAPTCHA code
 		 *
 		 * @param array $options
@@ -398,7 +466,9 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 				if ( 'file' == $field['field_type'] ) {
 					continue;
 				}
-				$placeholder[ "[" . $field['field_name'] . "]" ] = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
+				$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
+
+				$placeholder[ "[" . $field['field_name'] . "]" ] = self::sanitize_value( $value, $field['field_type'] );
 			}
 
 			$subject = $mail['subject'];
@@ -589,6 +659,52 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			}
 
 			return false;
+		}
+
+		/**
+		 * Sanitize user input
+		 *
+		 * @param $input
+		 *
+		 * @return array|string
+		 */
+		private static function sanitize_value( $input, $input_type = 'text' ) {
+			// Initialize the new array that will hold the sanitize values
+			$new_input = array();
+			if ( is_array( $input ) ) {
+				// Loop through the input and sanitize each of the values
+				foreach ( $input as $key => $value ) {
+					if ( is_array( $value ) ) {
+						$new_input[ $key ] = self::sanitize_value( $value, $input_type );
+					} else {
+						$new_input[ $key ] = self::sanitize_string( $value, $input_type );
+					}
+				}
+			} else {
+				return self::sanitize_string( $input, $input_type );
+			}
+
+			return $new_input;
+		}
+
+		/**
+		 * Sanitize string
+		 *
+		 * @param string $string
+		 * @param string $input_type
+		 *
+		 * @return string
+		 */
+		private static function sanitize_string( $string, $input_type = 'text' ) {
+			if ( is_array( $string ) || is_object( $string ) ) {
+				return $string;
+			}
+
+			if ( method_exists( 'Dialog_Contact_Form_Sanitize', $input_type ) ) {
+				return Dialog_Contact_Form_Sanitize::$input_type( $string );
+			}
+
+			return Dialog_Contact_Form_Sanitize::text( $string );
 		}
 	}
 }

@@ -103,6 +103,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		private function include_files() {
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-validator.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-sanitize.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-metabox.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-settings-api.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-form.php';

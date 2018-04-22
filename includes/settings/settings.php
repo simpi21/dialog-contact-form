@@ -14,11 +14,6 @@ $option_page->add_menu( array(
 
 // Add settings page tab
 $option_page->add_panel( array(
-	'id'       => 'dcf_dialog_panel',
-	'title'    => __( 'Dialog/Modal', 'dialog-contact-form' ),
-	'priority' => 10,
-) );
-$option_page->add_panel( array(
 	'id'       => 'dcf_message_panel',
 	'title'    => __( 'Messages', 'dialog-contact-form' ),
 	'priority' => 20,
@@ -40,13 +35,6 @@ $option_page->add_panel( array(
 ) );
 
 // Add Sections
-$option_page->add_section( array(
-	'id'          => 'dcf_dialog_section',
-	'title'       => __( 'Dialog/Modal', 'dialog-contact-form' ),
-	'description' => __( 'Configure fixed dialog/modal button at your site footer.', 'dialog-contact-form' ),
-	'panel'       => 'dcf_dialog_panel',
-	'priority'    => 10,
-) );
 $option_page->add_section( array(
 	'id'          => 'dcf_smpt_server_section',
 	'title'       => __( 'SMTP Server Settings', 'dialog-contact-form' ),
@@ -73,7 +61,14 @@ $option_page->add_section( array(
 	'title'       => __( 'Style', 'dialog-contact-form' ),
 	'description' => __( 'Define form style.', 'dialog-contact-form' ),
 	'panel'       => 'dcf_style_panel',
-	'priority'    => 40,
+	'priority'    => 10,
+) );
+$option_page->add_section( array(
+	'id'          => 'dcf_dialog_section',
+	'title'       => __( 'Dialog/Modal', 'dialog-contact-form' ),
+	'description' => __( 'Configure fixed dialog/modal button at your site footer.', 'dialog-contact-form' ),
+	'panel'       => 'dcf_style_panel',
+	'priority'    => 20,
 ) );
 
 // Add SMTP Server settings section fields
