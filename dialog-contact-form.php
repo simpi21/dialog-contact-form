@@ -113,6 +113,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-process-request.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-shortcode.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-activation.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-gutenberg-block.php';
 
 		}
 
