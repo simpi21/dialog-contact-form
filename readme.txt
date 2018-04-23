@@ -19,6 +19,7 @@ Just another WordPress contact form plugin. Simple but flexible.
 * No JavaScript dependency, Written in vanilla JavaScript.
 * Design for modern browser but also works for older browsers.
 * Support creating multiple forms.
+* Support upload file as attachment.
 * Support using multiple forms in same page.
 * Option page for SMTP settings for better mail delivery.
 * More than ten input field types.
@@ -55,7 +56,7 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 
 == Changelog ==
 
-= version 2.2.0 - 2018-04-21 =
+= version 2.2.0 - 2018-04-23 =
 * Added     - Add alpha color picker.
 * Added     - Add File attachment option.
 * Added     - Add option to disable plugin default styles.
