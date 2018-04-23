@@ -38,6 +38,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Gutenberg_Block' ) ) {
 		 */
 		public function template_include( $template ) {
 			if ( isset( $_GET['dcf_forms_preview'], $_GET['dcf_forms_iframe'], $_GET['form_id'] ) ) {
+				wp_enqueue_script( 'jquery' );
 				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/public/form.php';
 			}
 
@@ -48,6 +49,9 @@ if ( ! class_exists( 'Dialog_Contact_Form_Gutenberg_Block' ) ) {
 		 * Register gutenberg block
 		 */
 		public function gutenberg_block() {
+			if ( ! function_exists( 'register_block_type' ) ) {
+				return;
+			}
 			wp_register_script( 'dialog-contact-form-gutenberg-block',
 				DIALOG_CONTACT_FORM_ASSETS . '/js/gutenberg-block.js',
 				array( 'wp-blocks', 'wp-element' )
@@ -60,7 +64,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Gutenberg_Block' ) ) {
 
 			wp_localize_script(
 				'dialog-contact-form-gutenberg-block',
-				'dcfGutenbergBlock',
+				'dcf_gutenberg_block',
 				self::block()
 			);
 
@@ -102,10 +106,10 @@ if ( ! class_exists( 'Dialog_Contact_Form_Gutenberg_Block' ) ) {
 			}
 
 			return array(
-				'forms'          => $_forms,
-				'site_url'       => site_url(),
-				'block_logo'     => '',
-				'thumbnail_logo' => '',
+				'forms'         => $_forms,
+				'site_url'      => site_url(),
+				'block_title'   => __( 'Dialog Contact Form', 'dialog-contact-form' ),
+				'selected_form' => __( 'Selected Form', 'dialog-contact-form' ),
 			);
 		}
 	}

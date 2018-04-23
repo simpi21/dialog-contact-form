@@ -59,6 +59,7 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 * Added     - Add alpha color picker.
 * Added     - Add File attachment option.
 * Added     - Add option to disable plugin default styles.
+* Added     - Add gutenberg block to add form with live preview on new upcoming gutenberg editor.
 * Fixed     - Google reCAPTCHA script is loading multiple times when use multiple form on same page.
 * Fixed     - Fix extra space on select, radio and checkbox field.
 * Dev       - Update send mail data validation rules.

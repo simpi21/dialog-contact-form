@@ -1,4 +1,9 @@
 <?php
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 $form_id = isset( $_GET['form_id'] ) ? intval( $_GET['form_id'] ) : 0;
 $form = Dialog_Contact_Form_Form::instance( $form_id );
 ?><!DOCTYPE html>

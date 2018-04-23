@@ -1,4 +1,9 @@
 <?php
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 $default_options = dcf_default_options();
 $option_page     = Dialog_Contact_Form_Settings_API::instance();
 

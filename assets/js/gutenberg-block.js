@@ -1,19 +1,15 @@
-(function (blocks, element, i18n) {
+(function (blocks, element, components) {
     'use strict';
 
     var el = element.createElement, // function to create elements
-        SelectControl = wp.components.SelectControl, // select control
+        SelectControl = components.SelectControl, // select control
         InspectorControls = blocks.InspectorControls, // sidebar controls
-        dcfGutenbergBlock = window.dcfGutenbergBlock,
-        blockStyle = {backgroundColor: '#900', color: '#fff', padding: '20px'};
+        dcf_gutenberg_block = window.dcf_gutenberg_block;
 
     blocks.registerBlockType('dialog-contact-form/form', {
-        title: 'Dialog Contact Form',
-
+        title: dcf_gutenberg_block.block_title,
         icon: 'feedback',
-
         category: 'common',
-
         attributes: {
             formID: {
                 type: 'integer',
@@ -35,9 +31,9 @@
 
             // Set up the form dropdown in the side bar 'block' settings
             var inspectorControls = el(InspectorControls, {}, el(SelectControl, {
-                label: i18n.__('Selected Form'),
+                label: dcf_gutenberg_block.selected_form,
                 value: formID.toString(),
-                options: dcfGutenbergBlock.forms,
+                options: dcf_gutenberg_block.forms,
                 onChange: onFormChange
             }));
 
@@ -48,10 +44,10 @@
             if ('' === formID) {
                 children.push(
                     el('div', {style: {width: '100%'}},
-                        el('h3', {className: 'dcf-forms-title'}, 'Dialog Contact Form'),
+                        el('h3', {className: 'dcf-forms-title'}, dcf_gutenberg_block.block_title),
                         el(SelectControl, {
                             value: formID.toString(),
-                            options: dcfGutenbergBlock.forms,
+                            options: dcf_gutenberg_block.forms,
                             onChange: onFormChange
                         })
                     )
@@ -61,7 +57,7 @@
                     el('div', {className: 'dcf-form-container'},
                         el('div', {className: 'dcf-form-overlay'}),
                         el('iframe', {
-                            src: dcfGutenbergBlock.siteUrl + '?dcf_forms_preview=1&dcf_forms_iframe&form_id=' + formID,
+                            src: dcf_gutenberg_block.siteUrl + '?dcf_forms_preview=1&dcf_forms_iframe&form_id=' + formID,
                             height: '0',
                             width: '500',
                             scrolling: 'no'
@@ -89,4 +85,4 @@
         },
     });
 
-})(wp.blocks, wp.element, wp.i18n);
+})(wp.blocks, wp.element, wp.components);

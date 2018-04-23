@@ -1,13 +1,24 @@
 {
   "name": "dialog-contact-form",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "description": "Just another contact form WordPress plugin. Simple but flexible.",
+  "keywords": [
+    "wordpress",
+    "form",
+    "contact form",
+    "wordpress contact form"
+  ],
+  "homepage": "https://wordpress.org/plugins/dialog-contact-form/",
+  "bugs": {
+    "url": "https://github.com/sayful1/dialog-contact-form/issues",
+    "email": "sayful.islam001@gmail.com"
+  },
+  "license": "GPL-2.0-or-later",
   "author": {
     "name": "Sayful Islam",
     "email": "sayful.islam001@gmail.com",
     "url": "https://sayfulislam.com"
   },
-  "license": "GPLv3",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^4.0.0",
