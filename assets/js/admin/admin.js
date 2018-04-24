@@ -118,6 +118,9 @@
         }
     });
 
+
+    $("#dcf-metabox-tabs").tabs();
+
     // WordPress ColorPicker
     $('.dcf-colorpicker').each(function () {
         $(this).wpColorPicker({

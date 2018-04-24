@@ -37,7 +37,60 @@ if ( ! class_exists( 'Dialog_Contact_Form_Meta_Boxes' ) ) {
 		 */
 		public function __construct() {
 			add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
+			add_action( 'edit_form_after_title', array( $this, 'edit_form_after_title' ) );
 			add_action( 'save_post', array( $this, 'save_meta' ), 10, 2 );
+		}
+
+		/**
+		 * @param \WP_Post $post
+		 *
+		 * @return void
+		 */
+		public function edit_form_after_title( $post ) {
+			if ( DIALOG_CONTACT_FORM_POST_TYPE !== $post->post_type ) {
+				return;
+			}
+			?>
+            <div class="dcf-tabs-wrapper">
+                <div id="dcf-metabox-tabs" class="dcf-tabs">
+                    <ul class="dcf-tabs-list">
+                        <li class="dcf-tab-list--fields">
+                            <a href="#dcf-tab-1">
+								<?php esc_html_e( 'Fields', 'dialog-contact-form' ); ?>
+                            </a>
+                        </li>
+                        <li class="dcf-tab-list--configuration">
+                            <a href="#dcf-tab-2">
+								<?php esc_html_e( 'Configuration', 'dialog-contact-form' ); ?>
+                            </a>
+                        </li>
+                        <li class="dcf-tab-list--mail">
+                            <a href="#dcf-tab-3">
+								<?php esc_html_e( 'Mail', 'dialog-contact-form' ); ?>
+                            </a>
+                        </li>
+                        <li class="dcf-tab-list--message">
+                            <a href="#dcf-tab-4">
+								<?php esc_html_e( 'Message', 'dialog-contact-form' ); ?>
+                            </a>
+                        </li>
+                    </ul>
+                    <div id="dcf-tab-1" class="dcf_options_panel">
+						<?php include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/fields.php'; ?>
+                    </div>
+                    <div id="dcf-tab-2" class="dcf_options_panel">
+						<?php include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/configuration.php'; ?>
+                    </div>
+                    <div id="dcf-tab-3" class="dcf_options_panel">
+						<?php include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/mail-template.php'; ?>
+                    </div>
+                    <div id="dcf-tab-4" class="dcf_options_panel">
+						<?php include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/messages.php'; ?>
+                    </div>
+                </div>
+            </div>
+			<?php
+
 		}
 
 		/**
@@ -118,67 +171,6 @@ if ( ! class_exists( 'Dialog_Contact_Form_Meta_Boxes' ) ) {
 				'side',
 				'high'
 			);
-			add_meta_box(
-				"dialog-cf-fields",
-				__( "Fields", 'dialog-contact-form' ),
-				array( $this, 'meta_box_fields_cb' ),
-				$this->post_type,
-				"normal",
-				"high"
-			);
-			add_meta_box(
-				"dialog-cf-configuration",
-				__( "Configuration", 'dialog-contact-form' ),
-				array( $this, 'meta_box_config_cb' ),
-				$this->post_type,
-				"side",
-				"high"
-			);
-			add_meta_box(
-				"dialog-cf-mail-template",
-				__( "Mail", 'dialog-contact-form' ),
-				array( $this, 'meta_box_mail_template_cb' ),
-				$this->post_type,
-				"normal",
-				"high"
-			);
-			add_meta_box(
-				"dialog-cf-messages",
-				__( "Validation Messages", 'dialog-contact-form' ),
-				array( $this, 'meta_boxe_messages_cb' ),
-				$this->post_type,
-				"normal",
-				"high"
-			);
-
-		}
-
-		/**
-		 * Metabox configuration callback
-		 */
-		public function meta_box_config_cb() {
-			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/configuration.php';
-		}
-
-		/**
-		 * Metabox message callback
-		 */
-		public function meta_boxe_messages_cb() {
-			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/messages.php';
-		}
-
-		/**
-		 * Metabox mail template callback
-		 */
-		public function meta_box_mail_template_cb() {
-			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/mail-template.php';
-		}
-
-		/**
-		 * Metabox fields callback
-		 */
-		public function meta_box_fields_cb() {
-			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/fields.php';
 		}
 
 		/**

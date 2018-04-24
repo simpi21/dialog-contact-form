@@ -370,6 +370,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 				esc_attr( $options['recaptcha_site_key'] ),
 				esc_attr( $options['recaptcha_theme'] )
 			);
+			echo '<div class="control">';
 			echo '<input type="hidden" name="dcf_recaptcha">';
 
 			// Show error message if any
@@ -377,7 +378,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 				echo '<span class="help is-danger">' . esc_attr( $this->errors['dcf_recaptcha'][0] ) . '</span>';
 			}
 
-			echo '</div></div>' . PHP_EOL;
+			echo '</div></div></div>' . PHP_EOL;
 		}
 
 		/**

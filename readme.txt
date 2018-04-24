@@ -3,7 +3,7 @@ Contributors: sayful
 Tags: contact, contact form, email, feedback, form, modal, dialog
 Requires at least: 4.0
 Tested up to: 4.9
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -55,6 +55,9 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 3. Screenshot of Dialog Contact Form of Setting Page.
 
 == Changelog ==
+
+= version 2.2.1 - 2018-04-24 =
+* Fixed     - Google reCAPTCHA error message is not showing.
 
 = version 2.2.0 - 2018-04-23 =
 * Added     - Add alpha color picker.
