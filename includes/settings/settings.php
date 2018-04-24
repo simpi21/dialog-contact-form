@@ -19,6 +19,11 @@ $option_page->add_menu( array(
 
 // Add settings page tab
 $option_page->add_panel( array(
+	'id'       => 'dcf_style_panel',
+	'title'    => __( 'Form Style', 'dialog-contact-form' ),
+	'priority' => 10,
+) );
+$option_page->add_panel( array(
 	'id'       => 'dcf_message_panel',
 	'title'    => __( 'Messages', 'dialog-contact-form' ),
 	'priority' => 20,
@@ -32,11 +37,6 @@ $option_page->add_panel( array(
 	'id'       => 'dcf_smpt_server_panel',
 	'title'    => __( 'SMTP Settings', 'dialog-contact-form' ),
 	'priority' => 40,
-) );
-$option_page->add_panel( array(
-	'id'       => 'dcf_style_panel',
-	'title'    => __( 'Form Style', 'dialog-contact-form' ),
-	'priority' => 50,
 ) );
 
 // Add Sections

@@ -205,23 +205,12 @@ if ( ! function_exists( 'dcf_default_mail_template' ) ) {
 	 * @return array
 	 */
 	function dcf_default_mail_template() {
-		$blogname = get_option( 'blogname' );
-		$siteurl  = get_option( 'siteurl' );
-		$from     = esc_html__( 'From:', 'dialog-contact-form' );
-		$subject  = esc_html__( 'Subject:', 'dialog-contact-form' );
-		$message  = esc_html__( 'Message Body:', 'dialog-contact-form' );
-		$sign     = sprintf(
-			esc_html__( 'This email was sent from a contact form on %s (%s)', 'dialog-contact-form' ),
-			$blogname,
-			$siteurl
-		);
-
 		$defaults = array(
 			'receiver'    => get_option( 'admin_email' ),
 			'senderEmail' => '[your_email]',
 			'senderName'  => '[your_name]',
-			'subject'     => $blogname . ': [subject]',
-			'body'        => "$from [your_name] <[your_email]>\n$subject [subject]\n\n$message\n[your_message]\n\n--\n$sign ",
+			'subject'     => get_option( 'blogname' ) . ': [subject]',
+			'body'        => "[all_fields_table]",
 		);
 
 		return $defaults;

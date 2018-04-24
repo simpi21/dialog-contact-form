@@ -101,7 +101,7 @@
     });
 
     // Accordion
-    fieldList.find(".dcf-toggle").each(function () {
+    $(document).find(".dcf-toggle").each(function () {
         if ($(this).data('id') === 'closed') {
             $(this).accordion({
                 header: '.dcf-toggle-title',

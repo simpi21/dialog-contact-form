@@ -56,22 +56,22 @@ if ( ! class_exists( 'Dialog_Contact_Form_Meta_Boxes' ) ) {
                     <ul class="dcf-tabs-list">
                         <li class="dcf-tab-list--fields">
                             <a href="#dcf-tab-1">
-								<?php esc_html_e( 'Fields', 'dialog-contact-form' ); ?>
+								<?php esc_html_e( 'Form Fields', 'dialog-contact-form' ); ?>
                             </a>
                         </li>
                         <li class="dcf-tab-list--configuration">
                             <a href="#dcf-tab-2">
-								<?php esc_html_e( 'Configuration', 'dialog-contact-form' ); ?>
+								<?php esc_html_e( 'Form Settings', 'dialog-contact-form' ); ?>
                             </a>
                         </li>
                         <li class="dcf-tab-list--mail">
                             <a href="#dcf-tab-3">
-								<?php esc_html_e( 'Mail', 'dialog-contact-form' ); ?>
+								<?php esc_html_e( 'Emails & Actions', 'dialog-contact-form' ); ?>
                             </a>
                         </li>
                         <li class="dcf-tab-list--message">
                             <a href="#dcf-tab-4">
-								<?php esc_html_e( 'Message', 'dialog-contact-form' ); ?>
+								<?php esc_html_e( 'Validation Messages', 'dialog-contact-form' ); ?>
                             </a>
                         </li>
                     </ul>

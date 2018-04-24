@@ -462,23 +462,36 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 */
 		private function send_mail( $fields, $mail, $attachments = array() ) {
 			$placeholder = array();
+			$all_fields  = array();
 			foreach ( $fields as $field ) {
 				if ( 'file' == $field['field_type'] ) {
 					continue;
 				}
 				$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
+				$value = self::sanitize_value( $value, $field['field_type'] );
 
-				$placeholder[ "[" . $field['field_name'] . "]" ] = self::sanitize_value( $value, $field['field_type'] );
+				$all_fields[ $field['field_name'] ] = array(
+					'label' => $field['field_title'],
+					'value' => $value,
+				);
+
+				$placeholder[ "[" . $field['field_name'] . "]" ] = $value;
 			}
 
 			$subject = $mail['subject'];
 			$subject = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $subject );
 			$subject = sanitize_text_field( $subject );
 
-			$body    = $mail['body'];
-			$body    = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $body );
-			$body    = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $body );
-			$message = stripslashes( wp_kses_post( $body ) );
+			$body = $mail['body'];
+			if ( false !== strpos( $body, '[all_fields_table]' ) ) {
+				ob_start();
+				include_once DIALOG_CONTACT_FORM_TEMPLATES . '/emails/email-notification.php';
+				$message = ob_get_clean();
+			} else {
+				$body    = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $body );
+				$body    = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $body );
+				$message = stripslashes( wp_kses_post( $body ) );
+			}
 
 			$receiver = $mail['receiver'];
 			$receiver = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $receiver );
@@ -664,7 +677,8 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		/**
 		 * Sanitize user input
 		 *
-		 * @param $input
+		 * @param mixed $input
+		 * @param string $input_type
 		 *
 		 * @return array|string
 		 */
@@ -680,11 +694,14 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 						$new_input[ $key ] = self::sanitize_string( $value, $input_type );
 					}
 				}
-			} else {
-				return self::sanitize_string( $input, $input_type );
+
+				// Join array elements with a new line string
+				$new_input = implode( PHP_EOL, $new_input );
+
+				return $new_input;
 			}
 
-			return $new_input;
+			return self::sanitize_string( $input, $input_type );
 		}
 
 		/**
