@@ -1,5 +1,5 @@
-.level-left,
-.level-right {
+.dcf-level-left,
+.dcf-level-right {
 	align-items: center;
 	display: flex;
 	flex-basis: auto;
@@ -7,10 +7,10 @@
 	flex-shrink: 0;
 }
 
-.level-left {
+.dcf-level-left {
 	justify-content: flex-start;
 }
 
-.level-right {
+.dcf-level-right {
 	justify-content: flex-end;
 }

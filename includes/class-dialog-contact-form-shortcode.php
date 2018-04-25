@@ -89,7 +89,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Shortcode' ) ) {
                         <button class="modal-close" data-dismiss="modal"></button>
                     </div>
                     <div class="modal-card-body">
-                        <div class="columns is-multiline">
+                        <div class="dcf-columns">
 							<?php echo $form->form_content( false ); ?>
                         </div>
                     </div>

@@ -7,6 +7,7 @@
         selector: 'dcf-form',
         fieldClass: 'dcf-has-error',
         errorClass: 'dcf-error-message',
+        loadingClass: 'is-loading',
 
         // Messages
         messageValueMissing: 'Please fill out this field.',

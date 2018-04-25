@@ -312,7 +312,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
 
-			$html = sprintf( '<textarea id="%1$s" class="%2$s" name="%3$s" %5$s %5$s >%4$s</textarea>',
+			$html = sprintf( '<textarea id="%1$s" class="%2$s" name="%3$s" %5$s %6$s >%4$s</textarea>',
 				$id, $class, $name, esc_textarea( $value ), $placeholder, $required_attr
 			);
 
@@ -363,19 +363,19 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 			wp_enqueue_script( 'dialog-contact-form-recaptcha' );
 
-			echo '<div class="column is-12">';
-			echo '<div class="field">';
+			echo '<div class="dcf-column is-12">';
+			echo '<div class="dcf-field">';
 			printf(
 				'<div class="g-recaptcha" data-sitekey="%1$s" data-theme="%2$s"></div>',
 				esc_attr( $options['recaptcha_site_key'] ),
 				esc_attr( $options['recaptcha_theme'] )
 			);
-			echo '<div class="control">';
+			echo '<div class="dcf-control">';
 			echo '<input type="hidden" name="dcf_recaptcha">';
 
 			// Show error message if any
 			if ( isset( $this->errors['dcf_recaptcha'][0] ) ) {
-				echo '<span class="help is-danger">' . esc_attr( $this->errors['dcf_recaptcha'][0] ) . '</span>';
+				echo '<span class="dcf-error-message">' . esc_attr( $this->errors['dcf_recaptcha'][0] ) . '</span>';
 			}
 
 			echo '</div></div></div>' . PHP_EOL;
@@ -479,7 +479,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 		 */
 		public function form_open( $options = array() ) {
 			$action = isset( $options['action'] ) ? $options['action'] : $_SERVER['REQUEST_URI'];
-			$class  = isset( $options['class'] ) ? $options['class'] : 'dcf-form columns is-multiline';
+			$class  = isset( $options['class'] ) ? $options['class'] : 'dcf-form dcf-columns';
 
 			return '<form action="' . $action . '" class="' . $class . '" method="POST" accept-charset="UTF-8" enctype="multipart/form-data" novalidate>';
 		}
@@ -520,12 +520,12 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 			<?php
 			foreach ( $this->fields as $field ) {
-				echo sprintf( '<div class="column %s">', $field['field_width'] );
-				echo '<div class="field">';
+				echo sprintf( '<div class="dcf-column %s">', $field['field_width'] );
+				echo '<div class="dcf-field">';
 
 				$this->label( $field );
 
-				echo '<div class="control">';
+				echo '<div class="dcf-control">';
 
 				$field_type = isset( $field['field_type'] ) ? esc_attr( $field['field_type'] ) : 'text';
 
@@ -537,7 +537,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 				// Show error message if any
 				if ( isset( $this->errors[ $field['field_name'] ][0] ) ) {
-					echo '<span class="help is-danger">' . esc_attr( $this->errors[ $field['field_name'] ][0] ) . '</span>';
+					echo '<div class="dcf-error-message">' . esc_attr( $this->errors[ $field['field_name'] ][0] ) . '</div>';
 				}
 
 				echo '</div>';
@@ -550,7 +550,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 			// Submit button
 			if ( $submit_button ) {
-				echo '<div class="column is-12"><div class="field"><div class="control">';
+				echo '<div class="dcf-column is-12"><div class="dcf-field"><div class="dcf-control">';
 				echo $this->submit_button();
 				echo '</div></div></div>' . PHP_EOL;
 			}
@@ -581,7 +581,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 		 */
 		public function submit_button() {
 			$html = sprintf( '<div class="%s"><button type="submit" class="button dcf-submit">%s</button></div>',
-				( isset( $this->configuration['btnAlign'] ) && $this->configuration['btnAlign'] == 'right' ) ? 'level-right' : 'level-left',
+				( isset( $this->configuration['btnAlign'] ) && $this->configuration['btnAlign'] == 'right' ) ? 'dcf-level-right' : 'dcf-level-left',
 				esc_attr( $this->configuration['btnLabel'] )
 			);
 

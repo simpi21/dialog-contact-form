@@ -1,7 +1,7 @@
 $color--success: #4caf50;
 $color--error: #f44336;
 
-.field {
+.dcf-field {
 	&:not(:last-child) {
 		margin-bottom: 0.75rem;
 	}
@@ -13,37 +13,22 @@ $color--error: #f44336;
 	}
 }
 
-.label {
+.dcf-label {
 	color: inherit;
 	display: block;
 	font-size: 1rem;
 	font-weight: 500;
-
-	&:not(:last-child) {
-		margin-bottom: 0.5em;
-	}
-
-	&.is-small {
-		font-size: 0.75rem;
-	}
-
-	&.is-medium {
-		font-size: 1.25rem;
-	}
-
-	&.is-large {
-		font-size: 1.5rem;
-	}
+	margin-bottom: 0.5em;
 }
 
-.control {
+.dcf-control {
 	font-size: 1rem;
 	position: relative;
 	text-align: left;
 	margin: 0;
 }
 
-.help {
+.dcf-help {
 	display: block;
 	font-size: 0.75rem;
 	margin-top: 0.25rem;
@@ -55,6 +40,29 @@ $color--error: #f44336;
 	&.is-danger {
 		color: $color--error;
 	}
+}
+
+.input,
+.textarea,
+.select select {
+	&.dcf-has-error {
+		border-color: $color--error;
+
+		&:hover, &:focus, &:active {
+			border-color: $color--error;
+		}
+
+		&:focus, &:active {
+			box-shadow: 0 0 0 0.125em rgba($color--error, 0.25);
+		}
+	}
+}
+
+.dcf-error-message {
+	color: $color--error;
+	display: block;
+	font-size: 0.75rem;
+	margin-top: 0.25rem;
 }
 
 // General style
