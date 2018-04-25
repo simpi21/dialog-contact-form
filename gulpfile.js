@@ -34,6 +34,13 @@ gulp.task('js', function () {
         .pipe(concat('form.min.js'))
         .pipe(uglify())
         .pipe(gulp.dest('./assets/js'));
+
+    gulp.src('./assets/js/polyfill/*.js')
+        .pipe(concat('polyfill.js'))
+        .pipe(gulp.dest('./assets/js'))
+        .pipe(concat('polyfill.min.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('./assets/js'));
 });
 
 gulp.task('watch', function () {
