@@ -133,55 +133,53 @@ $option_page->add_field( array(
 
 // Add Google reCAPTCHA fields
 $option_page->add_field( array(
-	'id'      => 'recaptcha_site_key',
-	'type'    => 'text',
-	'name'    => __( 'Site key', 'dialog-contact-form' ),
-	'desc'    => __( 'Enter google reCAPTCHA API site key', 'dialog-contact-form' ),
-	'std'     => '',
-	'section' => 'dcf_grecaptcha_section'
+	'id'       => 'recaptcha_site_key',
+	'type'     => 'text',
+	'name'     => __( 'Site key', 'dialog-contact-form' ),
+	'desc'     => __( 'Enter google reCAPTCHA API site key', 'dialog-contact-form' ),
+	'std'      => '',
+	'priority' => 10,
+	'section'  => 'dcf_grecaptcha_section'
 ) );
 $option_page->add_field( array(
-	'id'      => 'recaptcha_secret_key',
-	'type'    => 'text',
-	'name'    => __( 'Secret key', 'dialog-contact-form' ),
-	'desc'    => __( 'Enter google reCAPTCHA API secret key', 'dialog-contact-form' ),
-	'std'     => '',
-	'section' => 'dcf_grecaptcha_section'
+	'id'       => 'recaptcha_secret_key',
+	'type'     => 'text',
+	'name'     => __( 'Secret key', 'dialog-contact-form' ),
+	'desc'     => __( 'Enter google reCAPTCHA API secret key', 'dialog-contact-form' ),
+	'std'      => '',
+	'priority' => 20,
+	'section'  => 'dcf_grecaptcha_section'
 ) );
 $option_page->add_field( array(
-	'id'      => 'recaptcha_lang',
-	'type'    => 'select',
-	'name'    => __( 'Language', 'dialog-contact-form' ),
-	'desc'    => __( 'Enter google reCAPTCHA API secret key', 'dialog-contact-form' ),
-	'std'     => 'en',
-	'section' => 'dcf_grecaptcha_section',
-	'options' => dcf_google_recaptcha_lang(),
+	'id'       => 'recaptcha_lang',
+	'type'     => 'select',
+	'name'     => __( 'Language', 'dialog-contact-form' ),
+	'desc'     => __( 'Enter google reCAPTCHA API secret key', 'dialog-contact-form' ),
+	'std'      => 'en',
+	'section'  => 'dcf_grecaptcha_section',
+	'priority' => 30,
+	'options'  => dcf_google_recaptcha_lang(),
 ) );
 $option_page->add_field( array(
-	'id'      => 'recaptcha_theme',
-	'type'    => 'radio',
-	'name'    => __( 'Theme', 'dialog-contact-form' ),
-	'std'     => 'light',
-	'section' => 'dcf_grecaptcha_section',
-	'options' => array(
+	'id'       => 'recaptcha_theme',
+	'type'     => 'radio',
+	'name'     => __( 'Theme', 'dialog-contact-form' ),
+	'std'      => 'light',
+	'section'  => 'dcf_grecaptcha_section',
+	'priority' => 40,
+	'options'  => array(
 		'light' => esc_html__( 'Light', 'dialog-contact-form' ),
 		'dark'  => esc_html__( 'Dark', 'dialog-contact-form' ),
 	)
 ) );
-// Add Validation Messages section fields
 $option_page->add_field( array(
-	'id'      => 'spam_message',
-	'type'    => 'text',
-	'name'    => __( 'Submission filtered as spam', 'dialog-contact-form' ),
-	'std'     => $default_options['spam_message'],
-	'section' => 'dcf_message_section'
-) );
-$option_page->add_field( array(
-	'id'      => 'invalid_recaptcha',
-	'type'    => 'text',
-	'name'    => __( 'invalid reCAPTCHA', 'dialog-contact-form' ),
-	'std'     => $default_options['invalid_recaptcha'],
-	'section' => 'dcf_message_section'
+	'id'       => 'invalid_recaptcha',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'invalid reCAPTCHA', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_recaptcha'],
+	'section'  => 'dcf_grecaptcha_section',
+	'priority' => 50,
 ) );
 
 // Add Dialog/Modal section fields
@@ -227,4 +225,42 @@ $option_page->add_field( array(
 		'enable'  => esc_html__( 'Enable', 'dialog-contact-form' ),
 		'disable' => esc_html__( 'Disable', 'dialog-contact-form' ),
 	)
+) );
+
+// Add Validation Messages section fields
+$option_page->add_field( array(
+	'id'       => 'spam_message',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Submission filtered as spam', 'dialog-contact-form' ),
+	'std'      => $default_options['spam_message'],
+	'section'  => 'dcf_message_section',
+	'priority' => 10,
+) );
+$option_page->add_field( array(
+	'id'       => 'mail_sent_ok',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Message sent successfully', 'dialog-contact-form' ),
+	'std'      => $default_options['mail_sent_ok'],
+	'section'  => 'dcf_message_section',
+	'priority' => 20,
+) );
+$option_page->add_field( array(
+	'id'       => 'mail_sent_ng',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Message failed to sent', 'dialog-contact-form' ),
+	'std'      => $default_options['mail_sent_ng'],
+	'section'  => 'dcf_message_section',
+	'priority' => 30,
+) );
+$option_page->add_field( array(
+	'id'       => 'validation_error',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Validation errors occurred', 'dialog-contact-form' ),
+	'std'      => $default_options['validation_error'],
+	'section'  => 'dcf_message_section',
+	'priority' => 40,
 ) );

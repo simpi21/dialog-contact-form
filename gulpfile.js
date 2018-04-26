@@ -4,6 +4,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const autoprefixer = require('gulp-autoprefixer');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
+const livereload = require('gulp-livereload');
 const sassOptions = {
     errLogToConsole: true,
     outputStyle: 'compressed'
@@ -26,26 +27,30 @@ gulp.task('js', function () {
         .pipe(gulp.dest('./assets/js'))
         .pipe(concat('admin.min.js'))
         .pipe(uglify())
-        .pipe(gulp.dest('./assets/js'));
+        .pipe(gulp.dest('./assets/js'))
+        .pipe(livereload());
 
     gulp.src('./assets/js/public/*.js')
         .pipe(concat('form.js'))
         .pipe(gulp.dest('./assets/js'))
         .pipe(concat('form.min.js'))
         .pipe(uglify())
-        .pipe(gulp.dest('./assets/js'));
+        .pipe(gulp.dest('./assets/js'))
+        .pipe(livereload());
 
     gulp.src('./assets/js/polyfill/*.js')
         .pipe(concat('polyfill.js'))
         .pipe(gulp.dest('./assets/js'))
         .pipe(concat('polyfill.min.js'))
         .pipe(uglify())
-        .pipe(gulp.dest('./assets/js'));
+        .pipe(gulp.dest('./assets/js'))
+        .pipe(livereload());
 });
 
 gulp.task('watch', function () {
+    livereload.listen();
     gulp.watch('./assets/scss/*.scss', ['scss']);
-    gulp.watch('./assets/js/src/*.js', ['js']);
+    gulp.watch('./assets/js/public/*.js', ['js']);
 });
 
 gulp.task('default', ['scss', 'js', 'watch']);

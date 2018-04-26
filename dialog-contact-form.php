@@ -171,7 +171,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * Load plugin front-end scripts
 		 */
 		public function frontend_scripts() {
-			global $is_IE, $is_edge;
+			global $is_IE;
 
 			$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
 
@@ -186,16 +186,12 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 					array(), DIALOG_CONTACT_FORM_VERSION, 'all' );
 			}
 
-			// Polyfill for IE & EDGE
-			if ( $is_IE || $is_edge ) {
+			// Polyfill for IE
+			if ( $is_IE ) {
 				wp_enqueue_script( $this->plugin_name . '-polyfill',
 					DIALOG_CONTACT_FORM_ASSETS . '/js/polyfill' . $suffix . '.js',
 					array(), null, false );
 			}
-
-			wp_enqueue_script( $this->plugin_name . '-validator',
-				DIALOG_CONTACT_FORM_ASSETS . '/js/validator.js',
-				array(), DIALOG_CONTACT_FORM_VERSION, true );
 
 			wp_enqueue_script( $this->plugin_name,
 				DIALOG_CONTACT_FORM_ASSETS . '/js/form' . $suffix . '.js',

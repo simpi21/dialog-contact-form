@@ -168,30 +168,55 @@ if ( ! function_exists( 'dcf_default_options' ) ) {
 	 * @return array
 	 */
 	function dcf_default_options() {
-		$siteurl     = get_option( 'siteurl' );
-		$senderEmail = str_replace( array( 'https://', 'http://', 'www.' ), '', $siteurl );
-		$senderEmail = sprintf( 'noreply@%s', $senderEmail );
-		$options     = array(
+		$options = array(
+
+			// SMTP Settings
 			'mailer'                   => 0,
 			'smpt_host'                => '',
 			'smpt_username'            => '',
 			'smpt_password'            => '',
 			'smpt_port'                => '',
 			'encryption'               => '',
-			'smpt_from'                => sanitize_email( $senderEmail ),
-			'smpt_from_name'           => sanitize_text_field( get_option( 'blogname' ) ),
+
+			// reCAPTCHA Settings
 			'recaptcha_site_key'       => '',
 			'recaptcha_secret_key'     => '',
 			'recaptcha_theme'          => 'light',
 			'recaptcha_lang'           => 'en',
-			'spam_message'             => esc_html__( 'There was an error trying to send your message. Please try again later.',
-				'dialog-contact-form' ),
 			'invalid_recaptcha'        => esc_html__( 'Check the checkbox.', 'dialog-contact-form' ),
-			'dialog_button_text'       => esc_html__( 'Leave a message', 'dialog-contact-form' ),
+
+			// Dialog Form Style
+			'dialog_form_id'           => '',
 			'dialog_button_background' => '#f44336',
 			'dialog_button_color'      => '#f5f5f5',
-			'dialog_form_id'           => '',
 			'default_style'            => 'enable',
+			'dialog_button_text'       => esc_html__( 'Leave a message', 'dialog-contact-form' ),
+
+			// Validation Messages
+			'spam_message'             => esc_html__( 'There was an error trying to send your message. Please try again later.', 'dialog-contact-form' ),
+			'mail_sent_ok'             => esc_html__( 'Thank you for your message. It has been sent successfully.', 'dialog-contact-form' ),
+			'mail_sent_ng'             => esc_html__( 'There was an error trying to send your message. Please try again later.', 'dialog-contact-form' ),
+			'validation_error'         => esc_html__( 'One or more fields have an error. Please check and try again.', 'dialog-contact-form' ),
+			'invalid_required'         => esc_html__( 'The field is required.', 'dialog-contact-form' ),
+			'invalid_too_long'         => esc_html__( 'The field is too long.', 'dialog-contact-form' ),
+			'invalid_too_short'        => esc_html__( 'The field is too short.', 'dialog-contact-form' ),
+			'number_too_small'         => esc_html__( 'The number is smaller than the minimum allowed.', 'dialog-contact-form' ),
+			'number_too_large'         => esc_html__( 'The number is larger than the maximum allowed.', 'dialog-contact-form' ),
+			'invalid_email'            => esc_html__( 'The email address is invalid.', 'dialog-contact-form' ),
+			'invalid_url'              => esc_html__( 'The URL is invalid.', 'dialog-contact-form' ),
+			'invalid_number'           => esc_html__( 'Please enter a valid number.', 'dialog-contact-form' ),
+			'invalid_int'              => esc_html__( 'Please enter a valid integer.', 'dialog-contact-form' ),
+			'invalid_alpha'            => esc_html__( 'Please enter only alphabetic letters.', 'dialog-contact-form' ),
+			'invalid_alnum'            => esc_html__( 'Please enter only alphabetic and numeric characters.', 'dialog-contact-form' ),
+			'invalid_alnumdash'        => esc_html__( 'only alphanumeric characters, dashes and underscores are permitted.', 'dialog-contact-form' ),
+			'invalid_date'             => esc_html__( 'The date is invalid.', 'dialog-contact-form' ),
+			'invalid_ip'               => esc_html__( 'The IP address is invalid.', 'dialog-contact-form' ),
+			'invalid_checked'          => esc_html__( 'The field must be checked.', 'dialog-contact-form' ),
+			'invalid_user_login'       => esc_html__( 'No user exists with this information.', 'dialog-contact-form' ),
+			'invalid_username'         => esc_html__( 'The username does not exists.', 'dialog-contact-form' ),
+			'invalid_user_email'       => esc_html__( 'The email does not exists.', 'dialog-contact-form' ),
+			'file_too_large'           => esc_html__( 'File size too large.', 'dialog-contact-form' ),
+			'invalid_file_format'      => esc_html__( 'File format is invalid.', 'dialog-contact-form' ),
 		);
 
 		return $options;
