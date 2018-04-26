@@ -199,11 +199,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 
 			wp_register_script( 'dialog-contact-form-recaptcha', $captcha_url, '', null, true );
 
-			wp_localize_script( $this->plugin_name, 'DialogContactForm', array(
-				'ajaxurl'    => admin_url( 'admin-ajax.php' ),
-				'nonce'      => wp_create_nonce( 'dialog_contact_form_ajax' ),
-				'errorColor' => '#f44336',
-			) );
+			wp_localize_script( $this->plugin_name, 'DialogContactForm', $this->localize_script() );
 		}
 
 		/**
@@ -275,6 +271,31 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			if ( in_array( $encryption, array( 'ssl', 'tls' ) ) ) {
 				$mailer->SMTPSecure = $encryption;
 			}
+		}
+
+		/**
+		 * Get dynamic variables that will pass to javaScript variables
+		 *
+		 * @return array
+		 */
+		private function localize_script() {
+			$messages  = dcf_validation_messages();
+			$options   = get_dialog_contact_form_option();
+			$_messages = array();
+			foreach ( $messages as $key => $message ) {
+				$_messages[ $key ] = ! empty( $options[ $key ] ) ? $options[ $key ] : $message;
+			}
+
+			$variables = array(
+				'ajaxurl'      => admin_url( 'admin-ajax.php' ),
+				'nonce'        => wp_create_nonce( 'dialog_contact_form_ajax' ),
+				'selector'     => 'dcf-form',
+				'fieldClass'   => 'dcf-has-error',
+				'errorClass'   => 'dcf-error-message',
+				'loadingClass' => 'is-loading',
+			);
+
+			return array_merge( $variables, $_messages );
 		}
 	}
 }

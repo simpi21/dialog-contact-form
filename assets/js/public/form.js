@@ -4,8 +4,9 @@
 (function () {
     'use strict';
 
-    var settings = {
-
+    var settings = window.DialogContactForm || {
+        ajaxurl: '/wp-admin/admin-ajax.php',
+        nonce: '',
         // Classes and Selectors
         selector: 'dcf-form',
         fieldClass: 'dcf-has-error',
@@ -13,26 +14,19 @@
         loadingClass: 'is-loading',
 
         // Messages
-        messageValueMissing: 'Please fill out this field.',
-        messageValueMissingSelect: 'Please select a value.',
-        messageValueMissingSelectMulti: 'Please select at least one value.',
-        messageTypeMismatchEmail: 'Please enter an email address.',
-        messageTypeMismatchURL: 'Please enter a URL.',
-        messageTooShort: 'Please lengthen this text to {minLength} characters or more. You are currently using {length} characters.',
-        messageTooLong: 'Please shorten this text to no more than {maxLength} characters. You are currently using {length} characters.',
-        messagePatternMismatch: 'Please match the requested format.',
-        messageBadInput: 'Please enter a number.',
-        messageStepMismatch: 'Please select a valid value.',
-        messageRangeOverflow: 'Please select a value that is no more than {max}.',
-        messageRangeUnderflow: 'Please select a value that is no less than {min}.',
-        messageGeneric: 'The value you entered for this field is invalid.',
-
-        disableSubmit: true
-    };
-
-    var config = window.DialogContactForm || {
-        ajaxurl: '',
-        nonce: ''
+        invalid_required: 'Please fill out this field.',
+        required_select: 'Please select a value.',
+        required_select_multi: 'Please select at least one value.',
+        invalid_email: 'Please enter an email address.',
+        invalid_url: 'Please enter a URL.',
+        invalid_too_short: 'Please lengthen this text to {minLength} characters or more. You are currently using {length} characters.',
+        invalid_too_long: 'Please shorten this text to no more than {maxLength} characters. You are currently using {length} characters.',
+        pattern_mismatch: 'Please match the requested format.',
+        bad_input: 'Please enter a number.',
+        step_mismatch: 'Please select a valid value.',
+        number_too_large: 'Please select a value that is no more than {max}.',
+        number_too_small: 'Please select a value that is no less than {min}.',
+        generic_error: 'The value you entered for this field is invalid.',
     };
 
     if (!Element.prototype.matches) {
@@ -77,39 +71,39 @@
         // If field is required and empty
         // if (validity.valueMissing) return 'Please fill out this field.';
         if (validity.valueMissing) {
-            if (field.type === 'select-multiple') return localSettings.messageValueMissingSelectMulti;
-            if (field.type === 'select-one') return localSettings.messageValueMissingSelect;
-            return localSettings.messageValueMissing;
+            if (field.type === 'select-multiple') return localSettings.required_select_multi;
+            if (field.type === 'select-one') return localSettings.required_select;
+            return localSettings.invalid_required;
         }
 
         // If not the right type
         if (validity.typeMismatch) {
 
             // Email
-            if (field.type === 'email') return localSettings.messageTypeMismatchEmail;
+            if (field.type === 'email') return localSettings.invalid_email;
 
             // URL
-            if (field.type === 'url') return localSettings.messageTypeMismatchURL;
+            if (field.type === 'url') return localSettings.invalid_url;
 
         }
 
         // If too short
-        if (validity.tooShort) return localSettings.messageTooShort.replace('{minLength}', field.getAttribute('minLength')).replace('{length}', field.value.length);
+        if (validity.tooShort) return localSettings.invalid_too_short.replace('{minLength}', field.getAttribute('minLength')).replace('{length}', field.value.length);
 
         // If too long
-        if (validity.tooLong) return localSettings.messageTooLong.replace('{minLength}', field.getAttribute('maxLength')).replace('{length}', field.value.length);
+        if (validity.tooLong) return localSettings.invalid_too_long.replace('{minLength}', field.getAttribute('maxLength')).replace('{length}', field.value.length);
 
         // If number input isn't a number
-        if (validity.badInput) return localSettings.messageBadInput;
+        if (validity.badInput) return localSettings.bad_input;
 
         // If a number value doesn't match the step interval
-        if (validity.stepMismatch) return localSettings.messageStepMismatch;
+        if (validity.stepMismatch) return localSettings.step_mismatch;
 
         // If a number field is over the max
-        if (validity.rangeOverflow) return localSettings.messageRangeOverflow.replace('{max}', field.getAttribute('max'));
+        if (validity.rangeOverflow) return localSettings.number_too_large.replace('{max}', field.getAttribute('max'));
 
         // If a number field is below the min
-        if (validity.rangeUnderflow) return localSettings.messageRangeUnderflow.replace('{min}', field.getAttribute('min'));
+        if (validity.rangeUnderflow) return localSettings.number_too_small.replace('{min}', field.getAttribute('min'));
 
         // If pattern doesn't match
         if (validity.patternMismatch) {
@@ -118,12 +112,12 @@
             if (field.hasAttribute('title')) return field.getAttribute('title');
 
             // Otherwise, generic error
-            return localSettings.messagePatternMismatch;
+            return localSettings.pattern_mismatch;
 
         }
 
         // If all else fails, return a generic catchall error
-        return localSettings.messageGeneric;
+        return localSettings.generic_error;
 
     };
 
@@ -399,7 +393,7 @@
         // Add action params with form data
         formData.append('action', 'dcf_submit_form');
         // Add nonce field with form data
-        formData.append('nonce', config.nonce);
+        formData.append('nonce', settings.nonce);
 
         var request = new XMLHttpRequest();
 
@@ -424,7 +418,7 @@
         });
 
         // Set up our request
-        request.open("POST", config.ajaxurl, true);
+        request.open("POST", settings.ajaxurl, true);
 
         // The data sent is what the user provided in the form
         request.send(formData);

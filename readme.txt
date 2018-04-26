@@ -56,6 +56,10 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 
 == Changelog ==
 
+= version Master =
+* Added     - Add client side validation using The HTML5 constraint validation API.
+* Added     - Moved validation message from individual form to settings page.
+
 = version 2.2.1 - 2018-04-24 =
 * Fixed     - Google reCAPTCHA error message is not showing.
 

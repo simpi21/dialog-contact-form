@@ -56,10 +56,17 @@ $option_page->add_section( array(
 ) );
 $option_page->add_section( array(
 	'id'          => 'dcf_message_section',
-	'title'       => __( 'Validation Messages', 'dialog-contact-form' ),
-	'description' => __( 'Define default validation message. This message can be overwrite from each form.', 'dialog-contact-form' ),
+	'title'       => __( 'General Validation Messages', 'dialog-contact-form' ),
+	'description' => __( 'Define general validation message. This message can be overwrite from each form.', 'dialog-contact-form' ),
 	'panel'       => 'dcf_message_panel',
 	'priority'    => 40,
+) );
+$option_page->add_section( array(
+	'id'          => 'dcf_field_message_section',
+	'title'       => __( 'Field Validation Messages', 'dialog-contact-form' ),
+	'description' => __( 'Define validation message for form fields. These message will be used for all forms.', 'dialog-contact-form' ),
+	'panel'       => 'dcf_message_panel',
+	'priority'    => 50,
 ) );
 $option_page->add_section( array(
 	'id'          => 'dcf_style_section',
@@ -263,4 +270,187 @@ $option_page->add_field( array(
 	'std'      => $default_options['validation_error'],
 	'section'  => 'dcf_message_section',
 	'priority' => 40,
+) );
+
+// Field Validation messages
+$option_page->add_field( array(
+	'id'       => 'invalid_required',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Required field', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_required'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 10,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_too_long',
+	'type'     => 'textarea',
+	'rows'     => 3,
+	'name'     => __( 'Too long', 'dialog-contact-form' ),
+	'desc'     => sprintf(
+		__( 'You can use %s for showing maximum allowed characters and %s for user input value length.', 'dialog-contact-form' ),
+		'<strong>{maxLength}</strong>',
+		'<strong>{length}</strong>'
+	),
+	'std'      => $default_options['invalid_too_long'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 20,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_too_short',
+	'type'     => 'textarea',
+	'rows'     => 3,
+	'name'     => __( 'Too short', 'dialog-contact-form' ),
+	'desc'     => sprintf(
+		__( 'You can use %s for showing minimum allowed characters and %s for user input value length.', 'dialog-contact-form' ),
+		'<strong>{minLength}</strong>',
+		'<strong>{length}</strong>'
+	),
+	'std'      => $default_options['invalid_too_short'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 30,
+) );
+$option_page->add_field( array(
+	'id'       => 'number_too_large',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Number too large', 'dialog-contact-form' ),
+	'desc'     => sprintf(
+		__( 'You can use %s for showing maximum allowed number.', 'dialog-contact-form' ),
+		'<strong>{max}</strong>'
+	),
+	'std'      => $default_options['number_too_large'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 40,
+) );
+$option_page->add_field( array(
+	'id'       => 'number_too_small',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Number too short', 'dialog-contact-form' ),
+	'desc'     => sprintf(
+		__( 'You can use %s for showing minimum allowed number.', 'dialog-contact-form' ),
+		'<strong>{min}</strong>'
+	),
+	'std'      => $default_options['number_too_small'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 50,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_email',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid email', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_email'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 60,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_url',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid URL', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_url'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 70,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_number',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid numeric value', 'dialog-contact-form' ),
+	'desc'     => __( 'Numeric strings consist of optional sign, any number of digits, optional decimal part and optional exponential part.', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_number'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 80,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_int',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid integer', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_int'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 90,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_alpha',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid alphabetic letters', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_alpha'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 100,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_alnum',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid alphanumeric characters', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_alnum'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 110,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_alnumdash',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid alphanumeric characters, dashes and underscores', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_alnumdash'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 120,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_date',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid date', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_date'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 130,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_ip',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid IP', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_ip'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 140,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_user_login',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid user login', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_user_login'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 150,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_username',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid username', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_username'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 160,
+) );
+$option_page->add_field( array(
+	'id'       => 'invalid_user_email',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Invalid user email', 'dialog-contact-form' ),
+	'std'      => $default_options['invalid_user_email'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 170,
+) );
+$option_page->add_field( array(
+	'id'       => 'generic_error',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Generic error', 'dialog-contact-form' ),
+	'std'      => $default_options['generic_error'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 300,
 ) );
