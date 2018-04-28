@@ -279,16 +279,21 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 		public function checkbox( $setting, $echo = true ) {
 			$options       = empty( $setting['options'] ) ? array() : explode( PHP_EOL, $setting['options'] );
 			$required_attr = $this->get_required_attribute_text( $setting );
-
+			$total_options = count( $options );
 			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
 
 			$html = '';
+			$name = $name . '[]';
 			foreach ( $options as $option ) {
-				$option  = trim( $option );
-				$checked = ( $value == $option ) ? ' checked' : '';
+				$option = trim( $option );
+				if ( empty( $option ) ) {
+					continue;
+				}
+				$checked = is_array( $value ) && in_array( $option, $value ) ? ' checked' : '';
+				$id      = sanitize_title_with_dashes( $id . '_' . $option );
 				$html    .= sprintf(
-					'<label class="dcf-checkbox-container"><input type="checkbox" name="%1$s" value="%2$s" %3$s %4$s> %2$s</label>',
-					$name, esc_attr( $option ), $checked, $required_attr
+					'<label class="dcf-checkbox-container"><input type="checkbox" name="%1$s" value="%2$s" id="%3$s" %4$s> %2$s</label>',
+					$name, esc_attr( $option ), $id, $checked
 				);
 			}
 
