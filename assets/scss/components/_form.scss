@@ -1,5 +1,5 @@
-$color--success: #4caf50;
-$color--error: #f44336;
+$color--success: #23D160;
+$color--error: #FF3860;
 
 .dcf-field {
 	&:not(:last-child) {
@@ -26,53 +26,45 @@ $color--error: #f44336;
 	position: relative;
 	text-align: left;
 	margin: 0;
+
+	// General style
+	input:not([type='radio']):not([type='checkbox']),
+	textarea {
+		width: 100%;
+	}
+
+	input,
+	textarea,
+	select {
+		&.dcf-has-error {
+			border-color: $color--error;
+
+			&:hover, &:focus, &:active {
+				border-color: $color--error;
+			}
+
+			&:focus, &:active {
+				box-shadow: 0 0 0 0.125em rgba($color--error, 0.25);
+			}
+		}
+	}
+
+	.dcf-error-message {
+		color: $color--error;
+		display: block;
+		font-size: 0.75rem;
+		margin-top: 0.25rem;
+	}
 }
 
 .dcf-help {
 	display: block;
 	font-size: 0.75rem;
 	margin-top: 0.25rem;
-
-	&.is-success {
-		color: $color--success;
-	}
-
-	&.is-danger {
-		color: $color--error;
-	}
 }
 
-.input,
-.textarea,
-.select select {
-	&.dcf-has-error {
-		border-color: $color--error;
-
-		&:hover, &:focus, &:active {
-			border-color: $color--error;
-		}
-
-		&:focus, &:active {
-			box-shadow: 0 0 0 0.125em rgba($color--error, 0.25);
-		}
-	}
-}
-
-.dcf-error-message {
-	color: $color--error;
-	display: block;
-	font-size: 0.75rem;
-	margin-top: 0.25rem;
-}
-
-// General style
-.input,
-.textarea {
-	width: 100%;
-}
-
-.radio,
-.checkbox {
+.dcf-radio-container,
+.dcf-checkbox-container {
 	cursor: pointer;
 	display: inline-block;
 	position: relative;

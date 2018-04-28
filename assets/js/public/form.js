@@ -73,6 +73,8 @@
         if (validity.valueMissing) {
             if (field.type === 'select-multiple') return localSettings.required_select_multi;
             if (field.type === 'select-one') return localSettings.required_select;
+            if (field.type === 'radio') return localSettings.required_select;
+            if (field.type === 'checkbox') return localSettings.required_select_multi;
             return localSettings.invalid_required;
         }
 

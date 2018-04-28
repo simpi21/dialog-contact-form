@@ -162,7 +162,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			$has_error     = $this->has_field_error( $setting );
 			$required_attr = $this->get_required_attribute_text( $setting );
 			$placeholder   = $this->get_placeholder( $setting );
-			$default_class = $has_error ? 'input is-danger' : 'input';
+			$default_class = $has_error ? 'input dcf-has-error' : 'input';
 			$class         = self::get_field_class( $setting, $default_class );
 			$valid_types   = array( 'text', 'email', 'url', 'search', 'password', 'hidden', 'date', 'time' );
 
@@ -192,7 +192,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			$has_error     = $this->has_field_error( $setting );
 			$required_attr = $this->get_required_attribute_text( $setting );
 			$placeholder   = $this->get_placeholder( $setting );
-			$default_class = $has_error ? 'input is-danger' : 'input';
+			$default_class = $has_error ? 'input dcf-has-error' : 'input';
 			$class         = self::get_field_class( $setting, $default_class );
 
 			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
@@ -215,7 +215,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 		 */
 		public function radio( array $setting, $echo = true ) {
 			$required_attr = $this->get_required_attribute_text( $setting );
-			$class         = self::get_field_class( $setting, 'radio' );
+			$class         = self::get_field_class( $setting, 'dcf-radio-container' );
 
 			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
 			$options = empty( $setting['options'] ) ? array() : explode( PHP_EOL, $setting['options'] );
@@ -246,14 +246,14 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			$has_error     = $this->has_field_error( $setting );
 			$required_attr = $this->get_required_attribute_text( $setting );
 			$placeholder   = $this->get_placeholder( $setting );
-			$default_class = $has_error ? 'select is-danger' : 'select';
+			$default_class = $has_error ? 'select dcf-has-error' : 'select';
 			$class         = self::get_field_class( $setting, $default_class );
 			$options       = empty( $setting['options'] ) ? array() : explode( PHP_EOL, $setting['options'] );
 
 			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
 
-			$html = sprintf( '<div class="%s">', $class );
-			$html .= sprintf( '<select id="%1$s" name="%2$s" %3$s>', $id, $name, $required_attr );
+			$html = '<div class="dcf-select-container">';
+			$html .= sprintf( '<select id="%1$s" class="%4$s" name="%2$s" %3$s>', $id, $name, $required_attr, $class );
 			if ( ! empty( $setting['placeholder'] ) ) {
 				$html .= sprintf( '<option value="">%s</option>', esc_attr( $setting['placeholder'] ) );
 			}
@@ -287,7 +287,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 				$option  = trim( $option );
 				$checked = ( $value == $option ) ? ' checked' : '';
 				$html    .= sprintf(
-					'<label class="checkbox"><input type="checkbox" name="%1$s" value="%2$s" %3$s %4$s> %2$s</label>',
+					'<label class="dcf-checkbox-container"><input type="checkbox" name="%1$s" value="%2$s" %3$s %4$s> %2$s</label>',
 					$name, esc_attr( $option ), $checked, $required_attr
 				);
 			}
@@ -307,7 +307,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			$has_error     = $this->has_field_error( $setting );
 			$required_attr = $this->get_required_attribute_text( $setting );
 			$placeholder   = $this->get_placeholder( $setting );
-			$default_class = $has_error ? 'textarea is-danger' : 'textarea';
+			$default_class = $has_error ? 'textarea dcf-has-error' : 'textarea';
 			$class         = self::get_field_class( $setting, $default_class );
 
 			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
@@ -331,7 +331,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			$has_error     = $this->has_field_error( $setting );
 			$required_attr = $this->get_required_attribute_text( $setting );
 			$placeholder   = $this->get_placeholder( $setting );
-			$default_class = $has_error ? 'file is-danger' : 'file';
+			$default_class = $has_error ? 'file dcf-has-error' : 'file';
 			$class         = self::get_field_class( $setting, $default_class );
 
 			list( $id, $name, $value ) = $this->get_general_attributes( $setting );

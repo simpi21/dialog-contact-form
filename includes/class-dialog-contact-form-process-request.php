@@ -15,7 +15,21 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		protected static $instance;
 
 		/**
-		 * @return null|Dialog_Contact_Form_Process_Request
+		 * Form validation messages
+		 *
+		 * @var array
+		 */
+		private $messages = array();
+
+		/**
+		 * Global form options
+		 *
+		 * @var array
+		 */
+		private $options = array();
+
+		/**
+		 * @return Dialog_Contact_Form_Process_Request
 		 */
 		public static function init() {
 			if ( is_null( self::$instance ) ) {
@@ -36,6 +50,29 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			// Remove mail attachment
 			add_action( 'dcf_after_send_mail', array( $this, 'remove_attachment_file' ), 0, 2 );
 			add_action( 'dcf_after_ajax_send_mail', array( $this, 'remove_attachment_file' ), 0, 2 );
+
+			$this->options = get_option( 'dialog_contact_form' );
+		}
+
+		/**
+		 * @param $messages
+		 *
+		 * @return array
+		 */
+		private function get_validation_messages() {
+			if ( $this->messages ) {
+				return $this->messages;
+			}
+
+			$default  = dcf_validation_messages();
+			$messages = array();
+			foreach ( $default as $key => $message ) {
+				$messages[ $key ] = ! empty( $this->options[ $key ] ) ? $this->options[ $key ] : $message;
+			}
+
+			$this->messages = $messages;
+
+			return $this->messages;
 		}
 
 		/**
@@ -199,9 +236,9 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 				$field_name = isset( $field['field_name'] ) ? $field['field_name'] : '';
 				$value      = isset( $_POST[ $field_name ] ) ? $_POST[ $field_name ] : null;
 				if ( 'file' == $field['field_type'] ) {
-					$message = $this->validate_file_field( $field, $messages );
+					$message = $this->validate_file_field( $field );
 				} else {
-					$message = $this->validate_post_field( $value, $field, $messages );
+					$message = $this->validate_post_field( $value, $field );
 				}
 
 				if ( count( $message ) > 0 ) {
@@ -211,7 +248,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
 			// If Google reCAPTCHA enabled, verify it
 			if ( isset( $config['recaptcha'] ) && $config['recaptcha'] == 'yes' ) {
-				if ( ! $this->validate_google_recaptcha( $options ) ) {
+				if ( ! $this->validate_google_recaptcha() ) {
 					$errorData['dcf_recaptcha'] = array( $messages['invalid_recaptcha'] );
 				}
 			}
@@ -224,14 +261,11 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 *
 		 * @param mixed $value
 		 * @param array $field
-		 * @param array $messages
 		 *
 		 * @return array
 		 */
-		public function validate_post_field( $value, $field, $messages ) {
-			$defaults = dcf_validation_messages();
-			$messages = wp_parse_args( $messages, $defaults );
-
+		public function validate_post_field( $value, $field ) {
+			$messages       = $this->get_validation_messages();
 			$message        = array();
 			$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
 
@@ -341,13 +375,11 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		 * Validate file field
 		 *
 		 * @param array $field
-		 * @param array $messages
 		 *
 		 * @return array
 		 */
-		public function validate_file_field( $field, $messages ) {
-			$defaults = dcf_validation_messages();
-			$messages = wp_parse_args( $messages, $defaults );
+		public function validate_file_field( $field ) {
+			$messages = $this->get_validation_messages();
 
 			$message        = array();
 			$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
@@ -404,13 +436,11 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 		/**
 		 * Verify Google reCAPTCHA code
 		 *
-		 * @param array $options
-		 *
 		 * @return bool
 		 */
-		private function validate_google_recaptcha( $options ) {
+		private function validate_google_recaptcha() {
 			// If reCAPTCHA key or secret is empty, return true
-			if ( empty( $options['recaptcha_site_key'] ) || empty( $options['recaptcha_secret_key'] ) ) {
+			if ( empty( $this->options['recaptcha_site_key'] ) || empty( $this->options['recaptcha_secret_key'] ) ) {
 				return true;
 			}
 
@@ -422,7 +452,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			$_response = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify',
 				array(
 					'body' => array(
-						'secret'   => esc_attr( $options['recaptcha_secret_key'] ),
+						'secret'   => esc_attr( $this->options['recaptcha_secret_key'] ),
 						'response' => $captcha_code,
 						'remoteip' => $this->get_remote_ip_addr(),
 					)
@@ -480,7 +510,6 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
 			$subject = $mail['subject'];
 			$subject = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $subject );
-			$subject = sanitize_text_field( $subject );
 
 			$body = $mail['body'];
 			if ( false !== strpos( $body, '[all_fields_table]' ) ) {
@@ -495,27 +524,24 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
 			$receiver = $mail['receiver'];
 			$receiver = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $receiver );
-			if ( false !== strpos( $receiver, ',' ) ) {
-				$receivers = explode( ',', $receiver );
-				$receiver  = array_map( 'sanitize_email', $receivers );
-			} else {
-				$receiver = sanitize_email( $receiver );
-			}
+			$receiver = ( false !== strpos( $receiver, ',' ) ) ? explode( ',', $receiver ) : $receiver;
 
 			$senderEmail = $mail['senderEmail'];
 			$senderEmail = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderEmail );
-			$senderEmail = sanitize_email( $senderEmail );
 
 			$senderName = esc_attr( $mail['senderName'] );
 			$senderName = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderName );
-			$senderName = sanitize_text_field( $senderName );
 
-			$headers   = array();
-			$headers[] = 'Content-Type: text/html; charset=UTF-8';
-			$headers[] = "From: $senderName <$senderEmail>";
-			$headers[] = "Reply-To: $senderName <$senderEmail>";
+			$mailer = new Dialog_Contact_Form_Mailer();
+			$mailer->setReceiver( $receiver );
+			$mailer->setSubject( $subject );
+			$mailer->setMessage( $message );
+			$mailer->setFrom( $senderEmail, $senderName );
+			$mailer->setReplyTo( $senderEmail, $senderName );
+			$mailer->setContentType( 'html' );
+			$mailer->setAttachments( $attachments );
 
-			return wp_mail( $receiver, $subject, $message, $headers, $attachments );
+			return $mailer->send();
 		}
 
 		/**

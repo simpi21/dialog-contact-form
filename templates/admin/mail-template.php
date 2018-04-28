@@ -73,7 +73,10 @@ foreach ( $fields as $field ) {
 				'group'       => 'mail',
 				'meta_key'    => '_contact_form_mail',
 				'label'       => __( 'Message Body', 'dialog-contact-form' ),
-				'description' => __( 'Use mail-tags or enter [all_fields_table] for including all fields.', 'dialog-contact-form' ),
+				'description' => sprintf(
+					__( 'Use mail-tags or enter %s for including all fields.', 'dialog-contact-form' ),
+					'<strong>[all_fields_table]</strong>'
+				),
 				'rows'        => 10,
 				'input_class' => 'widefat',
 				'default'     => $mail['body'],

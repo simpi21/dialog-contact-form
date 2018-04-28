@@ -145,8 +145,8 @@ if ( ! function_exists( 'dcf_validation_messages' ) ) {
 			'step_mismatch'         => esc_html__( 'Please select a valid value.', 'dialog-contact-form' ),
 			'pattern_mismatch'      => esc_html__( 'Please match the requested format.', 'dialog-contact-form' ),
 			'bad_input'             => esc_html__( 'Please enter a number.', 'dialog-contact-form' ),
-			'required_select'       => esc_html__( 'Please select a value.', 'dialog-contact-form' ),
-			'required_select_multi' => esc_html__( 'Please select at least one value.', 'dialog-contact-form' ),
+			'required_select'       => esc_html__( 'Please choose a value.', 'dialog-contact-form' ),
+			'required_select_multi' => esc_html__( 'Please choose at least one value.', 'dialog-contact-form' ),
 		);
 
 		return $messages;

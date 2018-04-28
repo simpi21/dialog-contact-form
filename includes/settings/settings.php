@@ -50,7 +50,8 @@ $option_page->add_section( array(
 $option_page->add_section( array(
 	'id'          => 'dcf_grecaptcha_section',
 	'title'       => __( 'Google reCAPTCHA', 'dialog-contact-form' ),
-	'description' => __( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse. To use reCAPTCHA, you need to install an API key pair.', 'dialog-contact-form' ),
+	'description' => sprintf( __( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse. To use reCAPTCHA, you need to install an API key pair. %sGet your API Keys%s.', 'dialog-contact-form' ),
+		'<a target="_blank" href="https://www.google.com/recaptcha/admin#list">', '</a>' ),
 	'panel'       => 'dcf_grecaptcha_panel',
 	'priority'    => 30,
 ) );
@@ -277,10 +278,31 @@ $option_page->add_field( array(
 	'id'       => 'invalid_required',
 	'type'     => 'textarea',
 	'rows'     => 2,
-	'name'     => __( 'Required field', 'dialog-contact-form' ),
+	'name'     => __( 'Required input', 'dialog-contact-form' ),
+	'desc'     => __( 'Required field message for input, textarea except radio, select and checkbox field.', 'dialog-contact-form' ),
 	'std'      => $default_options['invalid_required'],
 	'section'  => 'dcf_field_message_section',
 	'priority' => 10,
+) );
+$option_page->add_field( array(
+	'id'       => 'required_select',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Required select', 'dialog-contact-form' ),
+	'desc'     => __( 'Required field message for radio, select and checkbox field.', 'dialog-contact-form' ),
+	'std'      => $default_options['required_select'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 11,
+) );
+$option_page->add_field( array(
+	'id'       => 'required_select_multi',
+	'type'     => 'textarea',
+	'rows'     => 2,
+	'name'     => __( 'Required select multiple', 'dialog-contact-form' ),
+	'desc'     => __( 'Required field message for select and checkbox fields with multiple values.', 'dialog-contact-form' ),
+	'std'      => $default_options['required_select_multi'],
+	'section'  => 'dcf_field_message_section',
+	'priority' => 12,
 ) );
 $option_page->add_field( array(
 	'id'       => 'invalid_too_long',
