@@ -9,12 +9,14 @@ class Textarea extends Abstract_Field {
 	/**
 	 * Render field html for frontend display
 	 *
-	 * @param $field
+	 * @param array $field
 	 *
 	 * @return string
 	 */
-	public function render( $field ) {
-		$this->field = $field;
+	public function render( $field = array() ) {
+		if ( ! empty( $field ) ) {
+			$this->setField( $field );
+		}
 
 		$html = sprintf( '<textarea id="%1$s" class="%2$s" name="%3$s" %5$s %6$s >%4$s</textarea>',
 			$this->get_id(),

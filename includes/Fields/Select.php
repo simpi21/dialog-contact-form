@@ -9,13 +9,15 @@ class Select extends Abstract_Field {
 	/**
 	 * Render field html for frontend display
 	 *
-	 * @param $field
+	 * @param array $field
 	 *
 	 * @return string
 	 */
-	public function render( $field ) {
-		$this->field = $field;
-		$options     = $this->get_options();
+	public function render( $field = array() ) {
+		if ( ! empty( $field ) ) {
+			$this->setField( $field );
+		}
+		$options = $this->get_options();
 
 		$html = '<div class="dcf-select-container">';
 		$html .= sprintf(

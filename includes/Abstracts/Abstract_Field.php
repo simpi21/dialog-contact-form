@@ -35,16 +35,18 @@ abstract class Abstract_Field {
 	/**
 	 * Render field html for frontend display
 	 *
-	 * @param $field
+	 * @param array $field
 	 *
 	 * @return string
 	 */
-	abstract public function render( $field );
+	abstract public function render( $field = array() );
 
 	/**
 	 * Validate field value
 	 *
 	 * @param mixed $value
+	 *
+	 * @return bool
 	 */
 	abstract public function validate( $value );
 

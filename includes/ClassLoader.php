@@ -105,6 +105,10 @@ class ClassLoader {
 	 * failure.
 	 */
 	public function loadClass( $class ) {
+		// If class already loaded, not need to load again
+		if ( class_exists( $class ) ) {
+			return true;
+		}
 		// the current namespace prefix
 		$prefix = $class;
 
@@ -178,7 +182,7 @@ class ClassLoader {
 	 */
 	protected function requireFile( $file ) {
 		if ( file_exists( $file ) ) {
-			require $file;
+			require_once $file;
 
 			return true;
 		}

@@ -69,11 +69,11 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			register_activation_hook( __FILE__, array( $this, 'plugin_activation' ) );
 			register_deactivation_hook( __FILE__, array( $this, 'plugin_deactivate' ) );
 
-			// include files
-			$this->include_files();
-
 			// Include Classes
 			$this->include_classes();
+
+			// include files
+			$this->include_files();
 
 			add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ), 30 );
@@ -104,28 +104,27 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * Includes plugin files
 		 */
 		private function include_files() {
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/ClassLoader.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-validator.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-sanitize.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-mailer.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-metabox.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/Mailer.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/Sanitize.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/Validate.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-settings-api.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-form.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/settings/settings.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-metabox.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-form.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-post-type.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-meta-boxes.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-process-request.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-shortcode.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-activation.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-gutenberg-block.php';
-
 		}
 
 		/**
 		 * Include classes
 		 */
 		private function include_classes() {
+			require_once DIALOG_CONTACT_FORM_INCLUDES . '/ClassLoader.php';
 			// instantiate the loader
 			$loader = new \DialogContactForm\ClassLoader;
 
@@ -272,7 +271,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				return;
 			}
 
-			if ( ! Dialog_Contact_Form_Validator::checked( $options['mailer'] ) ) {
+			if ( ! in_array( $options['mailer'], array( 'yes', 'on', '1', 1, true, 'true' ), true ) ) {
 				return;
 			}
 

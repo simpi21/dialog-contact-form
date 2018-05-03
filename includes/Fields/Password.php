@@ -13,12 +13,14 @@ class Password extends Text {
 	/**
 	 * Render field html for frontend display
 	 *
-	 * @param $field
+	 * @param array $field
 	 *
 	 * @return string
 	 */
-	public function render( $field ) {
-		$this->field = $field;
+	public function render( $field = array() ) {
+		if ( ! empty( $field ) ) {
+			$this->setField( $field );
+		}
 
 		$html = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" type="%4$s" %5$s %6$s>',
 			$this->get_id(),

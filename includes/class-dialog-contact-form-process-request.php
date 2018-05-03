@@ -1,6 +1,8 @@
 <?php
 
 // If this file is called directly, abort.
+use DialogContactForm\Validate;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -282,72 +284,72 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			foreach ( $validate_rules as $rule ) {
 				switch ( $rule ) {
 					case 'required':
-						if ( ! Dialog_Contact_Form_Validator::required( $value ) ) {
+						if ( ! Validate::required( $value ) ) {
 							$message[] = $messages['invalid_required'];
 						}
 						break;
 					case 'email':
-						if ( ! Dialog_Contact_Form_Validator::email( $value ) ) {
+						if ( ! Validate::email( $value ) ) {
 							$message[] = $messages['invalid_email'];
 						}
 						break;
 					case 'url':
-						if ( ! Dialog_Contact_Form_Validator::url( $value ) ) {
+						if ( ! Validate::url( $value ) ) {
 							$message[] = $messages['invalid_url'];
 						}
 						break;
 					case 'number':
-						if ( ! Dialog_Contact_Form_Validator::number( $value ) ) {
+						if ( ! Validate::number( $value ) ) {
 							$message[] = $messages['invalid_number'];
 						}
 						break;
 					case 'int':
-						if ( ! Dialog_Contact_Form_Validator::int( $value ) ) {
+						if ( ! Validate::int( $value ) ) {
 							$message[] = $messages['invalid_int'];
 						}
 						break;
 					case 'alpha':
-						if ( ! Dialog_Contact_Form_Validator::alpha( $value ) ) {
+						if ( ! Validate::alpha( $value ) ) {
 							$message[] = $messages['invalid_alpha'];
 						}
 						break;
 					case 'alnum':
-						if ( ! Dialog_Contact_Form_Validator::alnum( $value ) ) {
+						if ( ! Validate::alnum( $value ) ) {
 							$message[] = $messages['invalid_alnum'];
 						}
 						break;
 					case 'alnumdash':
-						if ( ! Dialog_Contact_Form_Validator::alnumdash( $value ) ) {
+						if ( ! Validate::alnumdash( $value ) ) {
 							$message[] = $messages['invalid_alnumdash'];
 						}
 						break;
 					case 'date':
-						if ( ! Dialog_Contact_Form_Validator::date( $value ) ) {
+						if ( ! Validate::date( $value ) ) {
 							$message[] = $messages['invalid_date'];
 						}
 						break;
 					case 'checked':
-						if ( ! Dialog_Contact_Form_Validator::checked( $value ) ) {
+						if ( ! Validate::checked( $value ) ) {
 							$message[] = $messages['invalid_checked'];
 						}
 						break;
 					case 'ip':
-						if ( ! Dialog_Contact_Form_Validator::ip( $value ) ) {
+						if ( ! Validate::ip( $value ) ) {
 							$message[] = $messages['invalid_ip'];
 						}
 						break;
 					case 'user_login':
-						if ( ! Dialog_Contact_Form_Validator::user_login( $value ) ) {
+						if ( ! Validate::user_login( $value ) ) {
 							$message[] = $messages['invalid_user_login'];
 						}
 						break;
 					case 'username':
-						if ( ! Dialog_Contact_Form_Validator::username( $value ) ) {
+						if ( ! Validate::username( $value ) ) {
 							$message[] = $messages['invalid_username'];
 						}
 						break;
 					case 'user_email':
-						if ( ! Dialog_Contact_Form_Validator::user_email( $value ) ) {
+						if ( ! Validate::user_email( $value ) ) {
 							$message[] = $messages['invalid_user_email'];
 						}
 						break;
@@ -358,7 +360,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 
 			// If field is not required, hide message if field is empty
 			if ( ! in_array( 'required', $validate_rules ) &&
-			     ! Dialog_Contact_Form_Validator::required( $value ) ) {
+			     ! Validate::required( $value ) ) {
 				$message = array();
 			}
 
@@ -532,7 +534,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 			$senderName = esc_attr( $mail['senderName'] );
 			$senderName = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderName );
 
-			$mailer = new Dialog_Contact_Form_Mailer();
+			$mailer = new \DialogContactForm\Mailer();
 			$mailer->setReceiver( $receiver );
 			$mailer->setSubject( $subject );
 			$mailer->setMessage( $message );
@@ -743,11 +745,14 @@ if ( ! class_exists( 'Dialog_Contact_Form_Process_Request' ) ) {
 				return $string;
 			}
 
-			if ( method_exists( 'Dialog_Contact_Form_Sanitize', $input_type ) ) {
-				return Dialog_Contact_Form_Sanitize::$input_type( $string );
+			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $input_type );
+			if ( method_exists( $class_name, 'sanitize' ) ) {
+				$class = new $class_name;
+
+				return $class->sanitize( $string );
 			}
 
-			return Dialog_Contact_Form_Sanitize::text( $string );
+			return sanitize_text_field( $string );
 		}
 	}
 }

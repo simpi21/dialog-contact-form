@@ -542,13 +542,11 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 				// Load Field Class if exists
 				$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field_type );
-				if ( class_exists( $class_name ) ) {
+				if ( method_exists( $class_name, 'render' ) ) {
 					$field_class = new $class_name;
-					echo $field_class->render( $field );
-				} else if ( method_exists( $this, $field_type ) ) {
-					$this->$field_type( $field );
-				} else {
-					$this->text( $field );
+					$field_class->setFormId( $this->form_id );
+					$field_class->setField( $field );
+					echo $field_class->render();
 				}
 
 

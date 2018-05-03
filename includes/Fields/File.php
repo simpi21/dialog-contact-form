@@ -9,12 +9,14 @@ class File extends Abstract_Field {
 	/**
 	 * Render field html for frontend display
 	 *
-	 * @param $field
+	 * @param array $field
 	 *
 	 * @return string
 	 */
-	public function render( $field ) {
-		$this->setField( $field );
+	public function render( $field = array() ) {
+		if ( ! empty( $field ) ) {
+			$this->setField( $field );
+		}
 
 		$accept   = '';
 		$multiple = '';

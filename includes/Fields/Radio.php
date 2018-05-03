@@ -9,12 +9,14 @@ class Radio extends Abstract_Field {
 	/**
 	 * Render field html for frontend display
 	 *
-	 * @param $field
+	 * @param array $field
 	 *
 	 * @return string
 	 */
-	public function render( $field ) {
-		$this->field = $field;
+	public function render( $field = array() ) {
+		if ( ! empty( $field ) ) {
+			$this->setField( $field );
+		}
 
 		$html = '';
 		foreach ( $this->get_options() as $option ) {
