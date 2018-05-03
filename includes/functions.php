@@ -67,7 +67,7 @@ if ( ! function_exists( 'dcf_available_field_types' ) ) {
 			'file'     => esc_html__( 'File', 'dialog-contact-form' ),
 		);
 
-		return $fieldType;
+		return apply_filters( 'dialog_contact_form_field_types', $fieldType );
 	}
 }
 
@@ -95,7 +95,7 @@ if ( ! function_exists( 'dcf_validation_rules' ) ) {
 			'ip'         => esc_html__( 'IP Address', 'dialog-contact-form' ),
 		);
 
-		return $validationField;
+		return apply_filters( 'dialog_contact_form_validation_rules', $validationField );
 	}
 }
 
@@ -149,7 +149,7 @@ if ( ! function_exists( 'dcf_validation_messages' ) ) {
 			'required_select_multi' => esc_html__( 'Please choose at least one value.', 'dialog-contact-form' ),
 		);
 
-		return $messages;
+		return apply_filters( 'dialog_contact_form_validation_messages', $messages );
 	}
 }
 

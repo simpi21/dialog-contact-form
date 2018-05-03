@@ -1,7 +1,5 @@
 <?php
 // If this file is called directly, abort.
-use DialogContactForm\Fields\Text;
-
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -105,23 +103,6 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 		}
 
 		/**
-		 * Get field class
-		 *
-		 * @param array $setting
-		 * @param string $default_class
-		 *
-		 * @return string
-		 */
-		private static function get_field_class( $setting, $default_class = '' ) {
-			$class = $default_class;
-			if ( ! empty( $setting['field_class'] ) ) {
-				$class = $setting['field_class'] . ' ' . $default_class;
-			}
-
-			return esc_attr( $class );
-		}
-
-		/**
 		 * Generate text field
 		 *
 		 * @param array $setting
@@ -147,210 +128,6 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			$id   = sanitize_title_with_dashes( $setting['field_id'] . '-' . $this->form_id );
 			$html = sprintf( '<label for="%1$s" class="label">%2$s%3$s</label>',
 				$id, esc_attr( $setting['field_title'] ), $required_abbr
-			);
-
-			return self::print_html( $html, $echo );
-		}
-
-		/**
-		 * Generate text field
-		 *
-		 * @param array $setting
-		 * @param bool $echo
-		 *
-		 * @return string
-		 */
-		public function text( $setting, $echo = true ) {
-			$has_error     = $this->has_field_error( $setting );
-			$required_attr = $this->get_required_attribute_text( $setting );
-			$placeholder   = $this->get_placeholder( $setting );
-			$default_class = $has_error ? 'input dcf-has-error' : 'input';
-			$class         = self::get_field_class( $setting, $default_class );
-			$valid_types   = array( 'text', 'email', 'url', 'search', 'password', 'hidden', 'date', 'time' );
-
-			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
-
-			$html = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" value="%4$s" type="%7$s" %5$s %6$s>',
-				$id, $class, $name, esc_attr( $value ), $placeholder, $required_attr,
-				in_array( $setting['field_type'], $valid_types ) ? $setting['field_type'] : 'text'
-			);
-
-			$text = new Text();
-
-			$html = $text->render( $setting );
-
-			return self::print_html( $html, $echo );
-		}
-
-		/**
-		 * Generate text field
-		 *
-		 * @param array $setting
-		 * @param bool $echo
-		 *
-		 * @return string
-		 */
-		public function number( $setting, $echo = true ) {
-			$min  = empty( $setting['number_min'] ) ? '' : sprintf( ' min="%s"', floatval( $setting['number_min'] ) );
-			$max  = empty( $setting['number_max'] ) ? '' : sprintf( ' max="%s"', floatval( $setting['number_max'] ) );
-			$step = empty( $setting['number_step'] ) ? '' : sprintf( ' step="%s"', floatval( $setting['number_step'] ) );
-
-			$has_error     = $this->has_field_error( $setting );
-			$required_attr = $this->get_required_attribute_text( $setting );
-			$placeholder   = $this->get_placeholder( $setting );
-			$default_class = $has_error ? 'input dcf-has-error' : 'input';
-			$class         = self::get_field_class( $setting, $default_class );
-
-			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
-
-			$html = sprintf(
-				'<input id="%1$s" class="%2$s" name="%3$s" value="%4$s" type="number" %5$s %6$s %7$s %8$s %9$s>',
-				$id, $class, $name, esc_attr( $value ), $placeholder, $min, $max, $step, $required_attr
-			);
-
-			return self::print_html( $html, $echo );
-		}
-
-		/**
-		 * Generate radio field
-		 *
-		 * @param array $setting
-		 * @param bool $echo
-		 *
-		 * @return string
-		 */
-		public function radio( array $setting, $echo = true ) {
-			$required_attr = $this->get_required_attribute_text( $setting );
-			$class         = self::get_field_class( $setting, 'dcf-radio-container' );
-
-			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
-			$options = empty( $setting['options'] ) ? array() : explode( PHP_EOL, $setting['options'] );
-
-			$html = '';
-			foreach ( $options as $option ) {
-				$option   = trim( $option );
-				$checked  = ( $value == $option ) ? ' checked' : '';
-				$radio_id = $id . '-' . sanitize_title_with_dashes( $option );
-				$html     .= sprintf(
-					'<label for="%6$s" class="%5$s"><input type="radio" id="%6$s" name="%1$s" value="%2$s"%3$s%4$s> %2$s</label>',
-					$name, esc_attr( $option ), $checked, $required_attr, $class, $radio_id
-				);
-			}
-
-			return self::print_html( $html, $echo );
-		}
-
-		/**
-		 * Generate select field
-		 *
-		 * @param array $setting
-		 * @param bool $echo
-		 *
-		 * @return string
-		 */
-		public function select( $setting, $echo = true ) {
-			$has_error     = $this->has_field_error( $setting );
-			$required_attr = $this->get_required_attribute_text( $setting );
-			$placeholder   = $this->get_placeholder( $setting );
-			$default_class = $has_error ? 'select dcf-has-error' : 'select';
-			$class         = self::get_field_class( $setting, $default_class );
-			$options       = empty( $setting['options'] ) ? array() : explode( PHP_EOL, $setting['options'] );
-
-			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
-
-			$html = '<div class="dcf-select-container">';
-			$html .= sprintf( '<select id="%1$s" class="%4$s" name="%2$s" %3$s>', $id, $name, $required_attr, $class );
-			if ( ! empty( $setting['placeholder'] ) ) {
-				$html .= sprintf( '<option value="">%s</option>', esc_attr( $setting['placeholder'] ) );
-			}
-			foreach ( $options as $option ) {
-				$option   = trim( $option );
-				$selected = ( $value == $option ) ? ' selected' : '';
-				$html     .= sprintf( '<option value="%1$s" %2$s>%1$s</option>', esc_attr( $option ), $selected );
-			}
-			$html .= '</select>';
-			$html .= '</div>';
-
-			return self::print_html( $html, $echo );
-		}
-
-		/**
-		 * Generate checkbox field
-		 *
-		 * @param array $setting
-		 * @param bool $echo
-		 *
-		 * @return string
-		 */
-		public function checkbox( $setting, $echo = true ) {
-			$options       = empty( $setting['options'] ) ? array() : explode( PHP_EOL, $setting['options'] );
-			$required_attr = $this->get_required_attribute_text( $setting );
-			$total_options = count( $options );
-			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
-
-			$html = '';
-			$name = $name . '[]';
-			foreach ( $options as $option ) {
-				$option = trim( $option );
-				if ( empty( $option ) ) {
-					continue;
-				}
-				$checked = is_array( $value ) && in_array( $option, $value ) ? ' checked' : '';
-				$id      = sanitize_title_with_dashes( $id . '_' . $option );
-				$html    .= sprintf(
-					'<label class="dcf-checkbox-container"><input type="checkbox" name="%1$s" value="%2$s" id="%3$s" %4$s> %2$s</label>',
-					$name, esc_attr( $option ), $id, $checked
-				);
-			}
-
-			return self::print_html( $html, $echo );
-		}
-
-		/**
-		 * Generate textarea field
-		 *
-		 * @param array $setting
-		 * @param bool $echo
-		 *
-		 * @return string
-		 */
-		public function textarea( $setting, $echo = true ) {
-			$has_error     = $this->has_field_error( $setting );
-			$required_attr = $this->get_required_attribute_text( $setting );
-			$placeholder   = $this->get_placeholder( $setting );
-			$default_class = $has_error ? 'textarea dcf-has-error' : 'textarea';
-			$class         = self::get_field_class( $setting, $default_class );
-
-			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
-
-			$html = sprintf( '<textarea id="%1$s" class="%2$s" name="%3$s" %5$s %6$s >%4$s</textarea>',
-				$id, $class, $name, esc_textarea( $value ), $placeholder, $required_attr
-			);
-
-			return self::print_html( $html, $echo );
-		}
-
-		/**
-		 * Generate file field
-		 *
-		 * @param array $setting
-		 * @param bool $echo
-		 *
-		 * @return string
-		 */
-		public function file( $setting, $echo = true ) {
-			$has_error     = $this->has_field_error( $setting );
-			$required_attr = $this->get_required_attribute_text( $setting );
-			$placeholder   = $this->get_placeholder( $setting );
-			$default_class = $has_error ? 'file dcf-has-error' : 'file';
-			$class         = self::get_field_class( $setting, $default_class );
-
-			list( $id, $name, $value ) = $this->get_general_attributes( $setting );
-
-			$accept   = '';
-			$multiple = '';
-			$html     = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" type="file" %4$s %5$s %6$s>',
-				$id, $class, $name, $multiple, $accept, $required_attr
 			);
 
 			return self::print_html( $html, $echo );
@@ -390,69 +167,6 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 			}
 
 			echo '</div></div></div>' . PHP_EOL;
-		}
-
-		/**
-		 * Generate placeholder for current field
-		 *
-		 * @param $setting
-		 *
-		 * @return string
-		 */
-		private function get_placeholder( $setting ) {
-			$placeholder = '';
-			if ( $this->configuration['labelPosition'] != 'label' ) {
-				$placeholder = empty( $setting['placeholder'] ) ? '' : sprintf( ' placeholder="%s"', esc_attr( $setting['placeholder'] ) );
-			}
-
-			return $placeholder;
-		}
-
-		/**
-		 * Generate field id, name and value
-		 *
-		 * @param array $setting
-		 *
-		 * @return array
-		 */
-		private function get_general_attributes( $setting ) {
-			$id    = sanitize_title_with_dashes( $setting['field_id'] . '-' . $this->form_id );
-			$name  = sanitize_title_with_dashes( $setting['field_name'] );
-			$value = empty( $_POST[ $setting['field_name'] ] ) ? null : $_POST[ $setting['field_name'] ];
-
-			return array( $id, $name, $value );
-		}
-
-		/**
-		 * Check if there is any error for current field
-		 *
-		 * @param array $setting
-		 *
-		 * @return bool
-		 */
-		private function has_field_error( $setting ) {
-			$has_error = false;
-			if ( isset( $this->errors[ $setting['field_name'] ][0] ) ) {
-				$has_error = true;
-			}
-
-			return $has_error;
-		}
-
-		/**
-		 * Get required attribute text
-		 *
-		 * @param array $setting
-		 *
-		 * @return string
-		 */
-		private function get_required_attribute_text( $setting ) {
-			$required_attr = '';
-			if ( in_array( 'required', $setting['validation'] ) ) {
-				$required_attr = ' required';
-			}
-
-			return $required_attr;
 		}
 
 		/**
@@ -549,6 +263,7 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 					echo $field_class->render();
 				}
 
+				do_action( 'dialog_contact_form_render_field', $this->form_id, $field, $field_type );
 
 				// Show error message if any
 				if ( isset( $this->errors[ $field['field_name'] ][0] ) ) {
