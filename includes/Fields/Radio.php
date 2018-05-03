@@ -4,7 +4,7 @@ namespace DialogContactForm\Fields;
 
 use DialogContactForm\Abstracts\Abstract_Field;
 
-class Text extends Abstract_Field {
+class Radio extends Abstract_Field {
 
 	/**
 	 * Render field html for frontend display
@@ -16,15 +16,21 @@ class Text extends Abstract_Field {
 	public function render( $field ) {
 		$this->field = $field;
 
-		$html = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" value="%4$s" type="%5$s" %6$s %7$s>',
-			$this->get_id(),
-			$this->get_class( 'input' ),
-			$this->get_name(),
-			$this->get_value(),
-			$this->get_type(),
-			$this->get_placeholder(),
-			$this->get_required()
-		);
+		$html = '';
+		foreach ( $this->get_options() as $option ) {
+			$option   = trim( $option );
+			$checked  = ( $this->get_value() == $option ) ? ' checked' : '';
+			$radio_id = $this->get_id() . '-' . sanitize_title_with_dashes( $option );
+			$html     .= sprintf(
+				'<label for="%6$s" class="%5$s"><input type="radio" id="%6$s" name="%1$s" value="%2$s"%3$s%4$s> %2$s</label>',
+				$this->get_name(),
+				esc_attr( $option ),
+				$checked,
+				$this->get_required(),
+				$this->get_class( 'dcf-radio-container' ),
+				$radio_id
+			);
+		}
 
 		return $html;
 	}
@@ -42,11 +48,9 @@ class Text extends Abstract_Field {
 	 * Sanitize field value
 	 *
 	 * @param mixed $value
-	 *
-	 * @return string
 	 */
 	public function sanitize( $value ) {
-		return sanitize_text_field( $value );
+		// TODO: Implement sanitize() method.
 	}
 
 	/**

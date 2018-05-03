@@ -4,7 +4,7 @@ namespace DialogContactForm\Fields;
 
 use DialogContactForm\Abstracts\Abstract_Field;
 
-class Text extends Abstract_Field {
+class File extends Abstract_Field {
 
 	/**
 	 * Render field html for frontend display
@@ -14,15 +14,16 @@ class Text extends Abstract_Field {
 	 * @return string
 	 */
 	public function render( $field ) {
-		$this->field = $field;
+		$this->setField( $field );
 
-		$html = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" value="%4$s" type="%5$s" %6$s %7$s>',
+		$accept   = '';
+		$multiple = '';
+		$html     = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" type="file" %4$s %5$s %6$s>',
 			$this->get_id(),
-			$this->get_class( 'input' ),
+			$this->get_class( 'file' ),
 			$this->get_name(),
-			$this->get_value(),
-			$this->get_type(),
-			$this->get_placeholder(),
+			$multiple,
+			$accept,
 			$this->get_required()
 		);
 
@@ -42,11 +43,9 @@ class Text extends Abstract_Field {
 	 * Sanitize field value
 	 *
 	 * @param mixed $value
-	 *
-	 * @return string
 	 */
 	public function sanitize( $value ) {
-		return sanitize_text_field( $value );
+		// TODO: Implement sanitize() method.
 	}
 
 	/**
@@ -55,10 +54,6 @@ class Text extends Abstract_Field {
 	 * @return mixed
 	 */
 	protected function get_value() {
-		if ( empty( $_POST[ $this->field['field_name'] ] ) ) {
-			return null;
-		}
-
-		return esc_attr( $_POST[ $this->field['field_name'] ] );
+		// TODO: Implement get_value() method.
 	}
 }

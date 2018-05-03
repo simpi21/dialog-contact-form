@@ -2,14 +2,14 @@
 
 namespace DialogContactForm\Fields;
 
-class Email extends Text {
+class Url extends Text {
 
 	/**
 	 * Field type
 	 *
 	 * @var string
 	 */
-	protected $type = 'email';
+	protected $type = 'url';
 
 	/**
 	 * Validate field value
@@ -19,7 +19,7 @@ class Email extends Text {
 	 * @return bool
 	 */
 	public function validate( $value ) {
-		return filter_var( $value, FILTER_VALIDATE_EMAIL ) !== false;
+		return filter_var( $value, FILTER_VALIDATE_URL ) !== false;
 	}
 
 	/**
@@ -30,6 +30,6 @@ class Email extends Text {
 	 * @return string
 	 */
 	public function sanitize( $value ) {
-		return sanitize_email( $value );
+		return esc_url_raw( $value );
 	}
 }

@@ -4,7 +4,7 @@ namespace DialogContactForm\Fields;
 
 use DialogContactForm\Abstracts\Abstract_Field;
 
-class Text extends Abstract_Field {
+class Select extends Abstract_Field {
 
 	/**
 	 * Render field html for frontend display
@@ -15,16 +15,27 @@ class Text extends Abstract_Field {
 	 */
 	public function render( $field ) {
 		$this->field = $field;
+		$options     = $this->get_options();
 
-		$html = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" value="%4$s" type="%5$s" %6$s %7$s>',
+		$html = '<div class="dcf-select-container">';
+		$html .= sprintf(
+			'<select id="%1$s" class="%4$s" name="%2$s" %3$s>',
 			$this->get_id(),
-			$this->get_class( 'input' ),
 			$this->get_name(),
-			$this->get_value(),
-			$this->get_type(),
-			$this->get_placeholder(),
-			$this->get_required()
+			$this->get_required(),
+			$this->get_class( 'select' )
 		);
+
+		if ( ! empty( $this->field['placeholder'] ) ) {
+			$html .= sprintf( '<option value="">%s</option>', esc_attr( $this->field['placeholder'] ) );
+		}
+		foreach ( $options as $option ) {
+			$option   = trim( $option );
+			$selected = ( $this->get_value() == $option ) ? ' selected' : '';
+			$html     .= sprintf( '<option value="%1$s" %2$s>%1$s</option>', esc_attr( $option ), $selected );
+		}
+		$html .= '</select>';
+		$html .= '</div>';
 
 		return $html;
 	}
@@ -42,11 +53,9 @@ class Text extends Abstract_Field {
 	 * Sanitize field value
 	 *
 	 * @param mixed $value
-	 *
-	 * @return string
 	 */
 	public function sanitize( $value ) {
-		return sanitize_text_field( $value );
+		// TODO: Implement sanitize() method.
 	}
 
 	/**

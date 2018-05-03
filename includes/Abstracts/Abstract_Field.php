@@ -93,6 +93,10 @@ abstract class Abstract_Field {
 			$class = $this->field['field_class'];
 		}
 
+		if ( $this->has_error() ) {
+			$class .= ' dcf-has-error';
+		}
+
 		return esc_attr( $class );
 	}
 
@@ -130,5 +134,67 @@ abstract class Abstract_Field {
 	 */
 	protected function get_type() {
 		return $this->type;
+	}
+
+	/**
+	 * Get options
+	 *
+	 * @return array
+	 */
+	protected function get_options() {
+		if ( empty( $this->field['options'] ) ) {
+			return array();
+		}
+
+		if ( is_string( $this->field['options'] ) ) {
+			return explode( PHP_EOL, $this->field['options'] );
+		}
+
+		return is_array( $this->field['options'] ) ? $this->field['options'] : array();
+	}
+
+	/**
+	 * Check if there is any error for current field
+	 *
+	 * @return bool
+	 */
+	protected function has_error() {
+		if ( ! empty( $GLOBALS['_dcf_errors'][ $this->get_name() ] ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get current form ID
+	 *
+	 * @return int
+	 */
+	public function getFormId() {
+		return $this->form_id;
+	}
+
+	/**
+	 * Set current form ID
+	 *
+	 * @param int $form_id
+	 */
+	public function setFormId( $form_id ) {
+		$this->form_id = $form_id;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getField() {
+		return $this->field;
+	}
+
+	/**
+	 * @param array $field
+	 */
+	public function setField( $field ) {
+		$this->field = $field;
 	}
 }

@@ -4,7 +4,7 @@ namespace DialogContactForm\Fields;
 
 use DialogContactForm\Abstracts\Abstract_Field;
 
-class Text extends Abstract_Field {
+class Textarea extends Abstract_Field {
 
 	/**
 	 * Render field html for frontend display
@@ -16,12 +16,11 @@ class Text extends Abstract_Field {
 	public function render( $field ) {
 		$this->field = $field;
 
-		$html = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" value="%4$s" type="%5$s" %6$s %7$s>',
+		$html = sprintf( '<textarea id="%1$s" class="%2$s" name="%3$s" %5$s %6$s >%4$s</textarea>',
 			$this->get_id(),
-			$this->get_class( 'input' ),
+			$this->get_class( 'textarea' ),
 			$this->get_name(),
 			$this->get_value(),
-			$this->get_type(),
 			$this->get_placeholder(),
 			$this->get_required()
 		);
@@ -46,7 +45,11 @@ class Text extends Abstract_Field {
 	 * @return string
 	 */
 	public function sanitize( $value ) {
-		return sanitize_text_field( $value );
+		if ( function_exists( 'sanitize_textarea_field' ) ) {
+			return sanitize_textarea_field( $value );
+		}
+
+		return _sanitize_text_fields( $value, true );
 	}
 
 	/**
@@ -59,6 +62,6 @@ class Text extends Abstract_Field {
 			return null;
 		}
 
-		return esc_attr( $_POST[ $this->field['field_name'] ] );
+		return esc_textarea( $_POST[ $this->field['field_name'] ] );
 	}
 }
