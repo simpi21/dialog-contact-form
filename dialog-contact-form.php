@@ -72,6 +72,9 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			// include files
 			$this->include_files();
 
+			// Include Classes
+			$this->include_classes();
+
 			add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ), 30 );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
@@ -101,6 +104,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * Includes plugin files
 		 */
 		private function include_files() {
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/ClassLoader.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-validator.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-sanitize.php';
@@ -116,6 +120,27 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-activation.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-gutenberg-block.php';
 
+		}
+
+		/**
+		 * Include classes
+		 */
+		private function include_classes() {
+			// instantiate the loader
+			$loader = new \DialogContactForm\ClassLoader;
+
+			$files = array(
+				'DialogContactForm\\Abstracts\\' => DIALOG_CONTACT_FORM_INCLUDES . '/Abstracts',
+				'DialogContactForm\\Fields\\'    => DIALOG_CONTACT_FORM_INCLUDES . '/Fields',
+			);
+
+			// register the base directories for the namespace prefix
+			foreach ( $files as $prefix => $baseDir ) {
+				$loader->addNamespace( $prefix, $baseDir );
+			}
+
+			// register the autoloader
+			$loader->register();
 		}
 
 		/**

@@ -1,5 +1,7 @@
 <?php
 // If this file is called directly, abort.
+use DialogContactForm\Fields\Text;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -172,6 +174,10 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 				$id, $class, $name, esc_attr( $value ), $placeholder, $required_attr,
 				in_array( $setting['field_type'], $valid_types ) ? $setting['field_type'] : 'text'
 			);
+
+			$text = new Text();
+
+			$html = $text->render( $setting );
 
 			return self::print_html( $html, $echo );
 		}
@@ -534,11 +540,17 @@ if ( ! class_exists( 'Dialog_Contact_Form_Form' ) ) {
 
 				$field_type = isset( $field['field_type'] ) ? esc_attr( $field['field_type'] ) : 'text';
 
-				if ( method_exists( $this, $field_type ) ) {
+				// Load Field Class if exists
+				$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field_type );
+				if ( class_exists( $class_name ) ) {
+					$field_class = new $class_name;
+					echo $field_class->render( $field );
+				} else if ( method_exists( $this, $field_type ) ) {
 					$this->$field_type( $field );
 				} else {
 					$this->text( $field );
 				}
+
 
 				// Show error message if any
 				if ( isset( $this->errors[ $field['field_name'] ][0] ) ) {
