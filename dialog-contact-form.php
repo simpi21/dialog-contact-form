@@ -25,28 +25,28 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		/**
 		 * @var object
 		 */
-		protected static $instance;
+		private static $instance;
 
 		/**
 		 * Plugin name slug
 		 *
 		 * @var string
 		 */
-		protected $plugin_name = 'dialog-contact-form';
+		private $plugin_name = 'dialog-contact-form';
 
 		/**
 		 * Plugin custom post type
 		 *
 		 * @var string
 		 */
-		protected $post_type = 'dialog-contact-form';
+		private $post_type = 'dialog-contact-form';
 
 		/**
 		 * Plugin version
 		 *
 		 * @var string
 		 */
-		protected $version = '2.2.1';
+		private $version = '2.2.1';
 
 		/**
 		 * Holds various class instances
@@ -74,25 +74,24 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			// define constants
 			$this->define_constants();
 
-			register_activation_hook( __FILE__, array( $this, 'plugin_activation' ) );
-			register_deactivation_hook( __FILE__, array( $this, 'plugin_deactivate' ) );
-
 			// Include Classes
 			$this->include_classes();
 
 			// include files
 			$this->include_files();
 
+			register_activation_hook( __FILE__, array( $this, 'plugin_activation' ) );
+			register_deactivation_hook( __FILE__, array( $this, 'plugin_deactivate' ) );
+
 			// initialize the classes
 			add_action( 'plugins_loaded', array( $this, 'init_classes' ) );
-
 			add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ), 30 );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 			add_action( 'admin_footer', array( $this, 'form_template' ), 0 );
 			add_action( 'phpmailer_init', array( $this, 'phpmailer_config' ) );
 
-			do_action( 'dialog_contact_form_init' );
+			do_action( 'dialog_contact_form_init', $this );
 		}
 
 		/**
@@ -131,36 +130,44 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 */
 		private function include_files() {
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/Admin.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/Settings.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/Submission.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/GutenbergBlock.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-form.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-shortcode.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-activation.php';
 		}
 
 		/**
 		 * Include classes
 		 */
 		private function include_classes() {
-			require_once DIALOG_CONTACT_FORM_INCLUDES . '/ClassLoader.php';
-			// instantiate the loader
-			$loader = new \DialogContactForm\ClassLoader;
+			spl_autoload_register( function ( $class ) {
 
-			$files = array(
-				'DialogContactForm\\Abstracts\\' => DIALOG_CONTACT_FORM_INCLUDES . '/Abstracts',
-				'DialogContactForm\\Fields\\'    => DIALOG_CONTACT_FORM_INCLUDES . '/Fields',
-				'DialogContactForm\\Supports\\'  => DIALOG_CONTACT_FORM_INCLUDES . '/Supports',
-			);
+				if ( class_exists( $class ) ) {
+					return;
+				}
 
-			// register the base directories for the namespace prefix
-			foreach ( $files as $prefix => $baseDir ) {
-				$loader->addNamespace( $prefix, $baseDir );
-			}
+				// project-specific namespace prefix
+				$prefix = 'DialogContactForm\\';
 
-			// register the autoloader
-			$loader->register();
+				// base directory for the namespace prefix
+				$base_dir = DIALOG_CONTACT_FORM_INCLUDES . DIRECTORY_SEPARATOR;
+
+				// does the class use the namespace prefix?
+				$len = strlen( $prefix );
+				if ( strncmp( $prefix, $class, $len ) !== 0 ) {
+					// no, move to the next registered autoloader
+					return;
+				}
+
+				// get the relative class name
+				$relative_class = substr( $class, $len );
+
+				// replace the namespace prefix with the base directory, replace namespace
+				// separators with directory separators in the relative class name, append
+				// with .php
+				$file = $base_dir . str_replace( '\\', '/', $relative_class ) . '.php';
+
+				// if the file exists, require it
+				if ( file_exists( $file ) ) {
+					require_once $file;
+				}
+			} );
 		}
 
 		/**
@@ -176,6 +183,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				$this->container['settings'] = \DialogContactForm\Settings::init();
 			}
 
+			$this->container['shortcode']  = \DialogContactForm\Shortcode::init();
 			$this->container['gutenblock'] = \DialogContactForm\GutenbergBlock::init();
 		}
 
@@ -282,6 +290,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * @return void
 		 */
 		public function plugin_activation() {
+			\DialogContactForm\Activation::init();
 			do_action( 'dialog_contact_form_activation' );
 			flush_rewrite_rules();
 		}
