@@ -134,10 +134,10 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/Admin.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/Settings.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/Submission.php';
+			include_once DIALOG_CONTACT_FORM_INCLUDES . '/GutenbergBlock.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/lib/class-dialog-contact-form-form.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-shortcode.php';
 			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-activation.php';
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/class-dialog-contact-form-gutenberg-block.php';
 		}
 
 		/**
@@ -175,6 +175,8 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				$this->container['admin']    = \DialogContactForm\Admin::init();
 				$this->container['settings'] = \DialogContactForm\Settings::init();
 			}
+
+			$this->container['gutenblock'] = \DialogContactForm\GutenbergBlock::init();
 		}
 
 		/**
