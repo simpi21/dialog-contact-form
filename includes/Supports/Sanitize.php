@@ -1,6 +1,6 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Supports;
 
 /**
  * A simple wrapper class of static methods sanitizing value.

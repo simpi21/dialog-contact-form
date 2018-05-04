@@ -1,4 +1,7 @@
 <?php
+
+use DialogContactForm\Supports\Metabox;
+
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -34,7 +37,7 @@ if ( ! defined( 'WPINC' ) ) {
                         </button>
                     </p>
 					<?php
-					Dialog_Contact_Form_Metabox::text( array(
+					Metabox::text( array(
 						'id'          => 'field_title',
 						'group'       => 'field',
 						'position'    => $_field_number,
@@ -44,7 +47,7 @@ if ( ! defined( 'WPINC' ) ) {
 						'description' => __( 'Insert the title for the field.', 'dialog-contact-form' ),
 						'default'     => $_field['field_title'],
 					) );
-					Dialog_Contact_Form_Metabox::text( array(
+					Metabox::text( array(
 						'id'          => 'field_id',
 						'group'       => 'field',
 						'position'    => $_field_number,
@@ -54,7 +57,7 @@ if ( ! defined( 'WPINC' ) ) {
 						'description' => __( 'REQUIRED: Field identification name to be entered into email body. Note: Use only lowercase characters, hyphens and underscores.', 'dialog-contact-form' ),
 						'default'     => $_field['field_id'],
 					) );
-					Dialog_Contact_Form_Metabox::select( array(
+					Metabox::select( array(
 						'id'          => 'field_type',
 						'group'       => 'field',
 						'position'    => $_field_number,
@@ -65,7 +68,7 @@ if ( ! defined( 'WPINC' ) ) {
 						'options'     => dcf_available_field_types(),
 						'default'     => $_field['field_type'],
 					) );
-					Dialog_Contact_Form_Metabox::textarea( array(
+					Metabox::textarea( array(
 						'id'          => 'options',
 						'group'       => 'field',
 						'position'    => $_field_number,
@@ -86,7 +89,7 @@ if ( ! defined( 'WPINC' ) ) {
 							),
 						),
 					) );
-					Dialog_Contact_Form_Metabox::number_options( array(
+					Metabox::number_options( array(
 						'group'       => 'field',
 						'group_class' => 'dcf-input-group col-numberOption',
 						'position'    => $_field_number,
@@ -104,7 +107,7 @@ if ( ! defined( 'WPINC' ) ) {
 							),
 						),
 					) );
-					Dialog_Contact_Form_Metabox::text( array(
+					Metabox::text( array(
 						'id'          => 'field_value',
 						'group'       => 'field',
 						'position'    => $_field_number,
@@ -113,7 +116,7 @@ if ( ! defined( 'WPINC' ) ) {
 						'description' => __( 'Define field default value.', 'dialog-contact-form' ),
 						'default'     => $_field['field_value'],
 					) );
-					Dialog_Contact_Form_Metabox::text( array(
+					Metabox::text( array(
 						'id'          => 'field_class',
 						'group'       => 'field',
 						'position'    => $_field_number,
@@ -122,7 +125,7 @@ if ( ! defined( 'WPINC' ) ) {
 						'description' => __( 'Insert additional class(es) (separated by blank space) for more personalization.', 'dialog-contact-form' ),
 						'default'     => $_field['field_class'],
 					) );
-					Dialog_Contact_Form_Metabox::select( array(
+					Metabox::select( array(
 						'id'          => 'field_width',
 						'group'       => 'field',
 						'position'    => $_field_number,
@@ -139,7 +142,7 @@ if ( ! defined( 'WPINC' ) ) {
 							'is-3'  => esc_html__( 'One Quarter', 'dialog-contact-form' ),
 						),
 					) );
-					Dialog_Contact_Form_Metabox::checkbox( array(
+					Metabox::checkbox( array(
 						'id'       => 'validation',
 						'group'    => 'field',
 						'position' => $_field_number,
@@ -148,7 +151,7 @@ if ( ! defined( 'WPINC' ) ) {
 						'options'  => dcf_validation_rules(),
 						'default'  => $_field['validation'],
 					) );
-					Dialog_Contact_Form_Metabox::text( array(
+					Metabox::text( array(
 						'id'          => 'placeholder',
 						'group'       => 'field',
 						'position'    => $_field_number,
@@ -158,7 +161,7 @@ if ( ! defined( 'WPINC' ) ) {
 						'description' => __( 'Insert placeholder message.', 'dialog-contact-form' ),
 						'default'     => $_field['placeholder'],
 					) );
-					Dialog_Contact_Form_Metabox::text( array(
+					Metabox::text( array(
 						'id'          => 'error_message',
 						'group'       => 'field',
 						'position'    => $_field_number,

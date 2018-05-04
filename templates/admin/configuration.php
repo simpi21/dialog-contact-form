@@ -1,10 +1,13 @@
 <?php
+
+use DialogContactForm\Supports\Metabox;
+
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-Dialog_Contact_Form_Metabox::select( array(
+Metabox::select( array(
 	'id'          => 'labelPosition',
 	'group'       => 'config',
 	'meta_key'    => '_contact_form_config',
@@ -17,7 +20,7 @@ Dialog_Contact_Form_Metabox::select( array(
 		'both'        => esc_html__( 'Both label and placeholder', 'dialog-contact-form' ),
 	),
 ) );
-Dialog_Contact_Form_Metabox::buttonset( array(
+Metabox::buttonset( array(
 	'id'          => 'btnAlign',
 	'group'       => 'config',
 	'meta_key'    => '_contact_form_config',
@@ -29,7 +32,7 @@ Dialog_Contact_Form_Metabox::buttonset( array(
 		'right' => esc_html__( 'Right', 'dialog-contact-form' ),
 	),
 ) );
-Dialog_Contact_Form_Metabox::text( array(
+Metabox::text( array(
 	'id'          => 'btnLabel',
 	'group'       => 'config',
 	'meta_key'    => '_contact_form_config',
@@ -37,7 +40,7 @@ Dialog_Contact_Form_Metabox::text( array(
 	'description' => __( 'Define the label of submit button.', 'dialog-contact-form' ),
 	'default'     => esc_html__( 'Send', 'dialog-contact-form' ),
 ) );
-Dialog_Contact_Form_Metabox::buttonset( array(
+Metabox::buttonset( array(
 	'id'       => 'recaptcha',
 	'group'    => 'config',
 	'meta_key' => '_contact_form_config',

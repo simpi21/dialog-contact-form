@@ -2,6 +2,9 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\Supports\Mailer;
+use DialogContactForm\Supports\Validate;
+
 class Submission {
 
 	/**
@@ -527,7 +530,7 @@ class Submission {
 		$senderName = esc_attr( $mail['senderName'] );
 		$senderName = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderName );
 
-		$mailer = new \DialogContactForm\Mailer();
+		$mailer = new Mailer();
 		$mailer->setReceiver( $receiver );
 		$mailer->setSubject( $subject );
 		$mailer->setMessage( $message );
@@ -748,5 +751,3 @@ class Submission {
 		return sanitize_text_field( $string );
 	}
 }
-
-Submission::init();

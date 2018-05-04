@@ -1,6 +1,6 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Supports;
 
 /**
  * Class Dialog_Contact_Form_Mailer
