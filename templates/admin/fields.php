@@ -24,7 +24,15 @@ if ( ! defined( 'WPINC' ) ) {
 		return;
 	}
 
-	foreach ( $_fields as $_field_number => $_field ) { ?>
+	foreach ( $_fields as $_field_number => $_field ) {
+		$is_required_field = 'off';
+		if ( is_array( $_field['validation'] ) && in_array( 'required', $_field['validation'] ) ) {
+			$is_required_field = 'on';
+		}
+		if ( isset( $_field['required_field'] ) && in_array( $_field['required_field'], array( 'on', 'off' ) ) ) {
+			$is_required_field = $_field['required_field'];
+		}
+		?>
         <div data-id="closed" class="dcf-toggle dcf-toggle--normal">
             <span class="dcf-toggle-title">
                 <?php esc_html_e( $_field['field_title'] ); ?>
@@ -115,6 +123,19 @@ if ( ! defined( 'WPINC' ) ) {
 						'label'       => __( 'Default Value', 'dialog-contact-form' ),
 						'description' => __( 'Define field default value.', 'dialog-contact-form' ),
 						'default'     => $_field['field_value'],
+					) );
+					Metabox::buttonset( array(
+						'id'          => 'required_field',
+						'group'       => 'field',
+						'position'    => $_field_number,
+						'meta_key'    => '_contact_form_fields',
+						'label'       => __( 'Required Field', 'dialog-contact-form' ),
+						'description' => __( 'Choose Yes if this field need to be filled out.', 'dialog-contact-form' ),
+						'default'     => $is_required_field,
+						'options'     => array(
+							'off' => esc_html__( 'No', 'dialog-contact-form' ),
+							'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+						),
 					) );
 					Metabox::text( array(
 						'id'          => 'field_class',

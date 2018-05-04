@@ -50,10 +50,14 @@ class Number extends Abstract_Field {
 	 *
 	 * @param mixed $value
 	 *
-	 * @return int|string
+	 * @return int|float
 	 */
 	public function sanitize( $value ) {
-		return is_numeric( $value ) ? $value : intval( $value );
+		if ( is_numeric( $value ) ) {
+			return $value + 0;
+		}
+
+		return intval( $value );
 	}
 
 	/**

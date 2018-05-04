@@ -61,6 +61,7 @@ if ( ! function_exists( 'dcf_available_field_types' ) ) {
 			'date'     => esc_html__( 'Date', 'dialog-contact-form' ),
 			'time'     => esc_html__( 'Time', 'dialog-contact-form' ),
 			'hidden'   => esc_html__( 'Hidden', 'dialog-contact-form' ),
+			'ip'       => esc_html__( 'IP Address', 'dialog-contact-form' ),
 			'radio'    => esc_html__( 'Multiple choice', 'dialog-contact-form' ),
 			'select'   => esc_html__( 'Dropdown', 'dialog-contact-form' ),
 			'checkbox' => esc_html__( 'Checkbox', 'dialog-contact-form' ),
@@ -79,10 +80,6 @@ if ( ! function_exists( 'dcf_validation_rules' ) ) {
 	 */
 	function dcf_validation_rules() {
 		$validationField = array(
-			'required'   => esc_html__( 'Required', 'dialog-contact-form' ),
-			'email'      => esc_html__( 'Email', 'dialog-contact-form' ),
-			'url'        => esc_html__( 'URL', 'dialog-contact-form' ),
-			'number'     => esc_html__( 'Number', 'dialog-contact-form' ),
 			'int'        => esc_html__( 'Integer', 'dialog-contact-form' ),
 			'alpha'      => esc_html__( 'Alphabetic', 'dialog-contact-form' ),
 			'alnum'      => esc_html__( 'Alphanumeric', 'dialog-contact-form' ),
@@ -90,8 +87,6 @@ if ( ! function_exists( 'dcf_validation_rules' ) ) {
 			'user_login' => esc_html__( 'User Login', 'dialog-contact-form' ),
 			'username'   => esc_html__( 'Username', 'dialog-contact-form' ),
 			'user_email' => esc_html__( 'User Email', 'dialog-contact-form' ),
-			'date'       => esc_html__( 'Date', 'dialog-contact-form' ),
-			'checked'    => esc_html__( 'Checked', 'dialog-contact-form' ),
 			'ip'         => esc_html__( 'IP Address', 'dialog-contact-form' ),
 		);
 

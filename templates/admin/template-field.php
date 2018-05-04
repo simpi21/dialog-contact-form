@@ -97,6 +97,19 @@ $_field_number = 100;
 					'label'       => __( 'Default Value', 'dialog-contact-form' ),
 					'description' => __( 'Define field default value.', 'dialog-contact-form' ),
 				) );
+				Metabox::buttonset( array(
+					'id'          => 'required_field',
+					'group'       => 'field',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'label'       => __( 'Required Field', 'dialog-contact-form' ),
+					'description' => __( 'Choose Yes if this field need to be filled out.', 'dialog-contact-form' ),
+					'default'     => 'off',
+					'options'     => array(
+						'off' => esc_html__( 'No', 'dialog-contact-form' ),
+						'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+					),
+				) );
 				Metabox::text( array(
 					'id'          => 'field_class',
 					'group'       => 'field',

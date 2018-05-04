@@ -121,12 +121,21 @@ abstract class Abstract_Field {
 	 * @return string
 	 */
 	protected function get_required() {
-		$required_attr = '';
-		if ( in_array( 'required', $this->field['validation'] ) ) {
-			$required_attr = ' required';
+		if ( ! empty( $this->field['required_field'] ) ) {
+			if ( 'on' == $this->field['required_field'] ) {
+				return ' required';
+			}
+			if ( 'off' == $this->field['required_field'] ) {
+				return '';
+			}
 		}
 
-		return $required_attr;
+		// Backward compatibility
+		if ( is_array( $this->field['validation'] ) && in_array( 'required', $this->field['validation'] ) ) {
+			return ' required';
+		}
+
+		return '';
 	}
 
 	/**

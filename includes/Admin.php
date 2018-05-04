@@ -263,20 +263,21 @@ class Admin {
 			$_data = array();
 			foreach ( $_POST['field'] as $field ) {
 				$_data[] = array(
-					'field_title'   => isset( $field['field_title'] ) ? sanitize_text_field( $field['field_title'] ) : '',
-					'field_name'    => isset( $field['field_id'] ) ? sanitize_text_field( $field['field_id'] ) : '',
-					'field_id'      => isset( $field['field_id'] ) ? sanitize_text_field( $field['field_id'] ) : '',
-					'field_type'    => isset( $field['field_type'] ) ? sanitize_text_field( $field['field_type'] ) : '',
-					'options'       => isset( $field['options'] ) ? wp_strip_all_tags( $field['options'] ) : '',
-					'number_min'    => isset( $field['number_min'] ) ? $this->positive_int( $field['number_min'] ) : '',
-					'number_max'    => isset( $field['number_max'] ) ? $this->positive_int( $field['number_max'] ) : '',
-					'number_step'   => isset( $field['number_step'] ) ? $this->positive_int( $field['number_step'] ) : '',
-					'field_value'   => isset( $field['field_value'] ) ? sanitize_text_field( $field['field_value'] ) : '',
-					'field_class'   => isset( $field['field_class'] ) ? sanitize_text_field( $field['field_class'] ) : '',
-					'field_width'   => isset( $field['field_width'] ) ? sanitize_text_field( $field['field_width'] ) : '',
-					'validation'    => isset( $field['validation'] ) ? self::sanitize_value( $field['validation'] ) : array(),
-					'placeholder'   => isset( $field['placeholder'] ) ? sanitize_text_field( $field['placeholder'] ) : '',
-					'error_message' => isset( $field['error_message'] ) ? sanitize_text_field( $field['error_message'] ) : '',
+					'field_title'    => isset( $field['field_title'] ) ? sanitize_text_field( $field['field_title'] ) : '',
+					'field_name'     => isset( $field['field_id'] ) ? sanitize_text_field( $field['field_id'] ) : '',
+					'field_id'       => isset( $field['field_id'] ) ? sanitize_text_field( $field['field_id'] ) : '',
+					'field_type'     => isset( $field['field_type'] ) ? sanitize_text_field( $field['field_type'] ) : '',
+					'options'        => isset( $field['options'] ) ? wp_strip_all_tags( $field['options'] ) : '',
+					'number_min'     => isset( $field['number_min'] ) ? $this->positive_int( $field['number_min'] ) : '',
+					'number_max'     => isset( $field['number_max'] ) ? $this->positive_int( $field['number_max'] ) : '',
+					'number_step'    => isset( $field['number_step'] ) ? $this->positive_int( $field['number_step'] ) : '',
+					'field_value'    => isset( $field['field_value'] ) ? sanitize_text_field( $field['field_value'] ) : '',
+					'required_field' => isset( $field['required_field'] ) ? sanitize_text_field( $field['required_field'] ) : '',
+					'field_class'    => isset( $field['field_class'] ) ? sanitize_text_field( $field['field_class'] ) : '',
+					'field_width'    => isset( $field['field_width'] ) ? sanitize_text_field( $field['field_width'] ) : '',
+					'validation'     => isset( $field['validation'] ) ? self::sanitize_value( $field['validation'] ) : array(),
+					'placeholder'    => isset( $field['placeholder'] ) ? sanitize_text_field( $field['placeholder'] ) : '',
+					'error_message'  => isset( $field['error_message'] ) ? sanitize_text_field( $field['error_message'] ) : '',
 				);
 			}
 

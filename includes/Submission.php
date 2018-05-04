@@ -272,6 +272,10 @@ class Submission {
 			$validate_rules[] = $field['field_type'];
 		}
 
+		if ( isset( $field['required_field'] ) && 'on' == $field['required_field'] ) {
+			$validate_rules[] = 'required';
+		}
+
 		// Make sure, validation rules are unique
 		$validate_rules = array_unique( $validate_rules );
 

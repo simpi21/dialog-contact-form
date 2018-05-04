@@ -116,11 +116,17 @@ class FormBuilder {
 		}
 
 		$required_abbr = '';
-		if ( in_array( 'required', $setting['validation'] ) ) {
+		if ( isset( $setting['required_field'] ) && 'on' == $setting['required_field'] ) {
+			$required_abbr = sprintf( '&nbsp;<abbr class="dcf-required" title="%s">*</abbr>',
+				esc_html__( 'Required', 'dialog-contact-form' )
+			);
+		} // Backward compatibility
+        elseif ( in_array( 'required', $setting['validation'] ) ) {
 			$required_abbr = sprintf( '&nbsp;<abbr class="dcf-required" title="%s">*</abbr>',
 				esc_html__( 'Required', 'dialog-contact-form' )
 			);
 		}
+
 		$id   = sanitize_title_with_dashes( $setting['field_id'] . '-' . $this->form_id );
 		$html = sprintf( '<label for="%1$s" class="label">%2$s%3$s</label>',
 			$id, esc_attr( $setting['field_title'] ), $required_abbr
