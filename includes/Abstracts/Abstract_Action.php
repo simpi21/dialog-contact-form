@@ -53,11 +53,12 @@ abstract class Abstract_Action {
 	}
 
 	/**
-	 * Save action data
+	 * Save action settings
+	 *
+	 * @param int $post_id
+	 * @param \WP_Post $post
 	 */
-	protected function save( $action_settings ) {
-
-	}
+	abstract public function save( $post_id, $post );
 
 	/**
 	 * Process action
@@ -166,5 +167,68 @@ abstract class Abstract_Action {
 				Metabox::$input_type( $setting );
 			}
 		}
+	}
+
+	/**
+	 * Sanitize action settings
+	 *
+	 * @param $data
+	 *
+	 * @return array
+	 */
+	protected function sanitize_settings( $data ) {
+		$sanitize_data = array();
+		foreach ( $this->get_settings() as $setting ) {
+			$value = isset( $data[ $setting['id'] ] ) ? $data[ $setting['id'] ] : null;
+
+			if ( is_array( $value ) ) {
+				$sanitize_data[ $setting['id'] ] = self::sanitize_array( $value );
+				continue;
+			}
+
+			if ( 'select' == $setting['type'] ) {
+				$valid_options = array_keys( $setting['options'] );
+				$value         = in_array( $value, $valid_options ) ? $value : $setting['default'];
+
+				$sanitize_data[ $setting['id'] ] = $value;
+				continue;
+			}
+
+			$sanitize_method = 'sanitize_text_field';
+			if ( isset( $setting['sanitize'] ) && is_callable( $setting['sanitize'] ) ) {
+				$sanitize_method = $setting['sanitize'];
+			}
+			$sanitize_data[ $setting['id'] ] = call_user_func( $sanitize_method, $value );
+		}
+
+		return $sanitize_data;
+	}
+
+	/**
+	 * Sanitize meta value
+	 *
+	 * @param $input
+	 *
+	 * @return array|string
+	 */
+	protected static function sanitize_array( $input ) {
+
+		if ( is_array( $input ) ) {
+			// Initialize the new array that will hold the sanitize values
+			$new_input = array();
+
+			// Loop through the input and sanitize each of the values
+			foreach ( $input as $key => $value ) {
+				if ( is_array( $value ) ) {
+					$new_input[ $key ] = self::sanitize_array( $value );
+				} else {
+					$new_input[ $key ] = sanitize_text_field( $value );
+				}
+			}
+
+			return $new_input;
+		}
+
+		return sanitize_text_field( $input );
 	}
 }

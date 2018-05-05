@@ -158,6 +158,33 @@ class Metabox {
 	}
 
 	/**
+	 * Options for input type number
+	 *
+	 * @param array $config
+	 */
+	public static function pages_list( array $config ) {
+		list( $name, $value, $input_id ) = self::field_common( $config );
+
+		$multiple = isset( $args['multiple'] ) ? 'multiple' : '';
+		$class    = isset( $args['input_class'] ) ? esc_attr( $args['input_class'] ) : 'select2 dcf-input-text';
+
+		echo self::field_before( $config );
+
+		wp_dropdown_pages( array(
+			'id'                => $input_id,
+			'class'             => $class,
+			'name'              => $name,
+			'selected'          => $value,
+			'value_field'       => 'ID',
+			'echo'              => 1,
+			'show_option_none'  => esc_attr__( '-- Select a page --', 'dialog-contact-form' ),
+			'option_none_value' => '0',
+		) );
+
+		echo self::field_after();
+	}
+
+	/**
 	 * Generate field name and field value
 	 *
 	 * @param $args

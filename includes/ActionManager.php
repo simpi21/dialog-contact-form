@@ -4,6 +4,7 @@ namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Abstract_Action;
 use DialogContactForm\Actions\EmailNotification;
+use DialogContactForm\Actions\Redirect;
 use DialogContactForm\Actions\SuccessMessage;
 use Traversable;
 
@@ -35,7 +36,8 @@ class ActionManager implements
 
 	public function __construct() {
 		$this->add_action( 'email_notification', new EmailNotification() );
-		// $this->add_action( 'success_message', new SuccessMessage() );
+		$this->add_action( 'success_message', new SuccessMessage() );
+		$this->add_action( 'redirect', new Redirect() );
 	}
 
 	/**

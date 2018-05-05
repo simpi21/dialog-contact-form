@@ -38,7 +38,7 @@ class EmailNotification extends Abstract_Action {
 			'receiver'    => array(
 				'type'        => 'text',
 				'id'          => 'receiver',
-				'group'       => 'mail',
+				'group'       => 'email_notification',
 				'meta_key'    => '_contact_form_mail',
 				'label'       => __( 'Receiver(s)', 'dialog-contact-form' ),
 				'description' => __( 'Define the emails used (separated by comma) to receive emails.', 'dialog-contact-form' ),
@@ -47,7 +47,7 @@ class EmailNotification extends Abstract_Action {
 			'senderEmail' => array(
 				'type'        => 'text',
 				'id'          => 'senderEmail',
-				'group'       => 'mail',
+				'group'       => 'email_notification',
 				'meta_key'    => '_contact_form_mail',
 				'label'       => __( 'Sender Email', 'dialog-contact-form' ),
 				'description' => __( 'Define from what email send the message.', 'dialog-contact-form' ),
@@ -56,7 +56,7 @@ class EmailNotification extends Abstract_Action {
 			'senderName'  => array(
 				'type'        => 'text',
 				'id'          => 'senderName',
-				'group'       => 'mail',
+				'group'       => 'email_notification',
 				'meta_key'    => '_contact_form_mail',
 				'label'       => __( 'Sender Name', 'dialog-contact-form' ),
 				'description' => __( 'Define the sender name that send the message.', 'dialog-contact-form' ),
@@ -65,7 +65,7 @@ class EmailNotification extends Abstract_Action {
 			'subject'     => array(
 				'type'        => 'text',
 				'id'          => 'subject',
-				'group'       => 'mail',
+				'group'       => 'email_notification',
 				'meta_key'    => '_contact_form_mail',
 				'label'       => __( 'Message Subject', 'dialog-contact-form' ),
 				'description' => __( 'Define the subject of the email sent to you.', 'dialog-contact-form' ),
@@ -74,7 +74,7 @@ class EmailNotification extends Abstract_Action {
 			'body'        => array(
 				'type'        => 'textarea',
 				'id'          => 'body',
-				'group'       => 'mail',
+				'group'       => 'email_notification',
 				'meta_key'    => '_contact_form_mail',
 				'label'       => __( 'Message Body', 'dialog-contact-form' ),
 				'description' => sprintf(
@@ -83,6 +83,7 @@ class EmailNotification extends Abstract_Action {
 				),
 				'rows'        => 10,
 				'input_class' => 'widefat',
+				'sanitize'    => array( 'DialogContactForm\\Supports\\Sanitize', 'html' ),
 				'default'     => $defaults['body'],
 			),
 		);
@@ -120,5 +121,21 @@ class EmailNotification extends Abstract_Action {
 		$html .= '<br><hr>';
 
 		return $html;
+	}
+
+	/**
+	 * Save action settings
+	 *
+	 * @param int $post_id
+	 * @param \WP_Post $post
+	 */
+	public function save( $post_id, $post ) {
+		if ( ! empty( $_POST['email_notification'] ) ) {
+			$sanitize_data = $this->sanitize_settings( $_POST['email_notification'] );
+
+			update_post_meta( $post_id, '_contact_form_mail', $sanitize_data );
+		} else {
+			delete_post_meta( $post_id, '_contact_form_mail' );
+		}
 	}
 }

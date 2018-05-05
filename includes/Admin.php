@@ -192,7 +192,6 @@ class Admin {
 					<?php include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/configuration.php'; ?>
                 </div>
                 <div id="dcf-tab-3" class="dcf_options_panel">
-					<?php // include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/mail-template.php'; ?>
 					<?php
 					/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
 					foreach ( $actions as $action ) {
@@ -272,10 +271,6 @@ class Admin {
 			update_post_meta( $post_id, '_contact_form_messages', self::sanitize_value( $_POST['messages'] ) );
 		}
 
-		if ( isset( $_POST['mail'] ) ) {
-			update_post_meta( $post_id, '_contact_form_mail', $_POST['mail'] );
-		}
-
 		if ( isset( $_POST['field'] ) && is_array( $_POST['field'] ) ) {
 			$_data = array();
 			foreach ( $_POST['field'] as $field ) {
@@ -300,6 +295,20 @@ class Admin {
 
 			update_post_meta( $post_id, '_contact_form_fields', $_data );
 		}
+
+		$actions = ActionManager::init();
+		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
+		foreach ( $actions as $action ) {
+			$action->save( $post_id, $post );
+		}
+
+		/**
+		 * Let give option to save settings for other plugins
+		 *
+		 * @param int $post_id The post ID.
+		 * @param \WP_Post $post The post object.
+		 */
+		do_action( 'dialog_contact_form_save_post', $post_id, $post );
 	}
 
 	/**

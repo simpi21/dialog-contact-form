@@ -130,7 +130,7 @@ if ( ! defined( 'WPINC' ) ) {
 						'position'    => $_field_number,
 						'meta_key'    => '_contact_form_fields',
 						'label'       => __( 'Required Field', 'dialog-contact-form' ),
-						'description' => __( 'Choose Yes if this field need to be filled out.', 'dialog-contact-form' ),
+						'description' => __( 'Check this option to mark the field required. A form will not submit unless all required fields are provided.', 'dialog-contact-form' ),
 						'default'     => $is_required_field,
 						'options'     => array(
 							'off' => esc_html__( 'No', 'dialog-contact-form' ),
