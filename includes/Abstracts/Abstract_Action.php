@@ -2,6 +2,8 @@
 
 namespace DialogContactForm\Abstracts;
 
+use DialogContactForm\Supports\Metabox;
+
 abstract class Abstract_Action {
 
 	/**
@@ -63,6 +65,19 @@ abstract class Abstract_Action {
 	abstract public function process( $action_id, $form_id, $data );
 
 	/**
+	 * Get settings as array
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'id'       => $this->get_id(),
+			'title'    => $this->get_title(),
+			'settings' => $this->get_settings()
+		);
+	}
+
+	/**
 	 * Get Timing
 	 *
 	 * Returns the timing for an action.
@@ -82,7 +97,7 @@ abstract class Abstract_Action {
 	 *
 	 * @return int
 	 */
-	protected function get_priority() {
+	public function get_priority() {
 		return intval( $this->priority );
 	}
 
@@ -91,7 +106,7 @@ abstract class Abstract_Action {
 	 *
 	 * @return string
 	 */
-	protected function get_id() {
+	public function get_id() {
 		return $this->id;
 	}
 
@@ -100,7 +115,7 @@ abstract class Abstract_Action {
 	 *
 	 * @return string
 	 */
-	protected function get_title() {
+	public function get_title() {
 		return $this->title;
 	}
 
@@ -109,7 +124,7 @@ abstract class Abstract_Action {
 	 *
 	 * @return string
 	 */
-	protected function get_section() {
+	public function get_section() {
 		return $this->section;
 	}
 
@@ -118,7 +133,7 @@ abstract class Abstract_Action {
 	 *
 	 * @return string
 	 */
-	protected function get_icon() {
+	public function get_icon() {
 		return $this->icon;
 	}
 
@@ -127,7 +142,29 @@ abstract class Abstract_Action {
 	 *
 	 * @return array
 	 */
-	protected function get_settings() {
+	public function get_settings() {
 		return $this->settings;
+	}
+
+	/**
+	 * Get action description
+	 *
+	 * @return string
+	 */
+	public function get_description() {
+		return '';
+	}
+
+	/**
+	 * Build metabox fields
+	 */
+	public function build_fields() {
+		foreach ( $this->settings as $setting ) {
+			$input_type = isset( $setting['type'] ) ? esc_attr( $setting['type'] ) : 'text';
+
+			if ( method_exists( '\\DialogContactForm\\Supports\\Metabox', $input_type ) ) {
+				Metabox::$input_type( $setting );
+			}
+		}
 	}
 }

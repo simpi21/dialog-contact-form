@@ -110,19 +110,31 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		}
 
 		/**
-		 * Define constants
+		 * Define plugin constants
 		 */
 		private function define_constants() {
-			define( 'DIALOG_CONTACT_FORM', $this->plugin_name );
-			define( 'DIALOG_CONTACT_FORM_POST_TYPE', $this->post_type );
-			define( 'DIALOG_CONTACT_FORM_VERSION', $this->version );
-			define( 'DIALOG_CONTACT_FORM_FILE', __FILE__ );
-			define( 'DIALOG_CONTACT_FORM_PATH', dirname( DIALOG_CONTACT_FORM_FILE ) );
-			define( 'DIALOG_CONTACT_FORM_INCLUDES', DIALOG_CONTACT_FORM_PATH . '/includes' );
-			define( 'DIALOG_CONTACT_FORM_TEMPLATES', DIALOG_CONTACT_FORM_PATH . '/templates' );
-			define( 'DIALOG_CONTACT_FORM_URL', plugins_url( '', DIALOG_CONTACT_FORM_FILE ) );
-			define( 'DIALOG_CONTACT_FORM_ASSETS', DIALOG_CONTACT_FORM_URL . '/assets' );
-			define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', 'dcf-attachments' );
+			$this->define( 'DIALOG_CONTACT_FORM', $this->plugin_name );
+			$this->define( 'DIALOG_CONTACT_FORM_POST_TYPE', $this->post_type );
+			$this->define( 'DIALOG_CONTACT_FORM_VERSION', $this->version );
+			$this->define( 'DIALOG_CONTACT_FORM_FILE', __FILE__ );
+			$this->define( 'DIALOG_CONTACT_FORM_PATH', dirname( DIALOG_CONTACT_FORM_FILE ) );
+			$this->define( 'DIALOG_CONTACT_FORM_INCLUDES', DIALOG_CONTACT_FORM_PATH . '/includes' );
+			$this->define( 'DIALOG_CONTACT_FORM_TEMPLATES', DIALOG_CONTACT_FORM_PATH . '/templates' );
+			$this->define( 'DIALOG_CONTACT_FORM_URL', plugins_url( '', DIALOG_CONTACT_FORM_FILE ) );
+			$this->define( 'DIALOG_CONTACT_FORM_ASSETS', DIALOG_CONTACT_FORM_URL . '/assets' );
+			$this->define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', 'dcf-attachments' );
+		}
+
+		/**
+		 * Define constant if not already set.
+		 *
+		 * @param string $name Constant name.
+		 * @param string|bool $value Constant value.
+		 */
+		private function define( $name, $value ) {
+			if ( ! defined( $name ) ) {
+				define( $name, $value );
+			}
 		}
 
 		/**
@@ -176,13 +188,14 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * @return void
 		 */
 		public function init_classes() {
-			$this->container['submission'] = \DialogContactForm\Submission::init();
 
-			if ( is_admin() ) {
+			if ( $this->is_request( 'admin' ) ) {
 				$this->container['admin']    = \DialogContactForm\Admin::init();
 				$this->container['settings'] = \DialogContactForm\Settings::init();
+				// $this->container['action']   = \DialogContactForm\ActionManager::init();
 			}
 
+			$this->container['submission'] = \DialogContactForm\Submission::init();
 			$this->container['shortcode']  = \DialogContactForm\Shortcode::init();
 			$this->container['gutenblock'] = \DialogContactForm\GutenbergBlock::init();
 		}
@@ -367,6 +380,28 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			);
 
 			return array_merge( $variables, $_messages );
+		}
+
+		/**
+		 * What type of request is this?
+		 *
+		 * @param  string $type admin, ajax, cron or frontend.
+		 *
+		 * @return bool
+		 */
+		private function is_request( $type ) {
+			switch ( $type ) {
+				case 'admin':
+					return is_admin();
+				case 'ajax':
+					return defined( 'DOING_AJAX' );
+				case 'cron':
+					return defined( 'DOING_CRON' );
+				case 'frontend':
+					return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' );
+			}
+
+			return false;
 		}
 	}
 }

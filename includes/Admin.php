@@ -2,6 +2,8 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\ActionManager;
+
 class Admin {
 
 	/**
@@ -157,6 +159,7 @@ class Admin {
 		if ( DIALOG_CONTACT_FORM_POST_TYPE !== $post->post_type ) {
 			return;
 		}
+		$actions = ActionManager::init();
 		?>
         <div class="dcf-tabs-wrapper">
             <div id="dcf-metabox-tabs" class="dcf-tabs">
@@ -189,7 +192,21 @@ class Admin {
 					<?php include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/configuration.php'; ?>
                 </div>
                 <div id="dcf-tab-3" class="dcf_options_panel">
-					<?php include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/mail-template.php'; ?>
+					<?php // include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/mail-template.php'; ?>
+					<?php
+					/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
+					foreach ( $actions as $action ) {
+						echo '<div data-id="closed" class="dcf-toggle dcf-toggle--normal">';
+						echo '<span class="dcf-toggle-title">' . $action->get_title() . '</span>';
+						echo '<div class="dcf-toggle-inner"><div class="dcf-toggle-content">';
+						if ( $action->get_description() ) {
+							echo '<p class="description">' . $action->get_description() . '</p>';
+						}
+						$action->build_fields();
+						echo '</div></div>';
+						echo '</div>';
+					}
+					?>
                 </div>
                 <div id="dcf-tab-4" class="dcf_options_panel">
 					<?php include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/messages.php'; ?>
