@@ -4,15 +4,13 @@ namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Abstract_Action;
 
-class Email extends Abstract_Action {
+class EmailNotification extends Abstract_Action {
 
 	/**
 	 * Email constructor.
 	 */
 	public function __construct() {
-		parent::__construct();
-
-		$this->id       = 'email';
+		$this->id       = 'email_notification';
 		$this->title    = __( 'Email Notification', 'dialog-contact-form' );
 		$this->settings = array_merge( $this->settings, $this->settings() );
 	}
