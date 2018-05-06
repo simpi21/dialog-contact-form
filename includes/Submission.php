@@ -3,6 +3,7 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Supports\Mailer;
+use DialogContactForm\Supports\UploadedFile;
 use DialogContactForm\Supports\Validate;
 
 class Submission {
@@ -475,7 +476,7 @@ class Submission {
 	 * @return string
 	 */
 	private function get_remote_ip_addr() {
-		if ( isset( $_SERVER['REMOTE_ADDR'] ) && WP_Http::is_ip_address( $_SERVER['REMOTE_ADDR'] ) ) {
+		if ( isset( $_SERVER['REMOTE_ADDR'] ) && \WP_Http::is_ip_address( $_SERVER['REMOTE_ADDR'] ) ) {
 			return $_SERVER['REMOTE_ADDR'];
 		}
 
@@ -579,6 +580,8 @@ class Submission {
 		if ( ! file_exists( $attachment_dir ) ) {
 			wp_mkdir_p( $attachment_dir );
 		}
+
+		// $files = UploadedFile::getUploadedFiles();
 
 		foreach ( $_FILES as $input_name => $file ) {
 

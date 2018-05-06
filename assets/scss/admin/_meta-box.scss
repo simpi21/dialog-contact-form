@@ -86,6 +86,7 @@
 		&-input-text,
 		&-input-textarea {
 			width: 25em;
+			max-width: 100%;
 
 			&.widefat {
 				width: 100%;
