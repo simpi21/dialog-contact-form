@@ -198,6 +198,15 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			$this->container['submission'] = \DialogContactForm\Submission::init();
 			$this->container['shortcode']  = \DialogContactForm\Shortcode::init();
 			$this->container['gutenblock'] = \DialogContactForm\GutenbergBlock::init();
+
+			add_action( 'template_redirect', function () {
+				if ( isset( $_POST['dcf_test_file'] ) && 'on' == $_POST['dcf_test_file'] ) {
+					$files = \DialogContactForm\Supports\UploadedFile::getUploadedFiles();
+
+					var_dump( $files );
+					die();
+				}
+			} );
 		}
 
 		/**

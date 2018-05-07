@@ -137,18 +137,20 @@ class UploadedFile {
 	 * @param string $directory directory to which the file is moved
 	 * @param string $filename unique file name
 	 *
-	 * @return string filename of moved file
+	 * @return string new path of moved file
 	 */
 	public function moveUploadedFile( $directory, $filename = null ) {
 		if ( empty( $filename ) ) {
 			$extension = pathinfo( $this->getClientFilename(), PATHINFO_EXTENSION );
 			$basename  = md5( uniqid( rand(), true ) );
-			$filename  = sprintf( '%s.%s', $basename, $extension );
+			$filename  = sprintf( '%s.%0.8s', $basename, $extension );
 		}
 
-		$this->moveTo( $directory . DIRECTORY_SEPARATOR . $filename );
+		$directory     = rtrim( $directory, DIRECTORY_SEPARATOR );
+		$new_file_path = $directory . DIRECTORY_SEPARATOR . $filename;
+		$this->moveTo( $new_file_path );
 
-		return $filename;
+		return $new_file_path;
 	}
 
 	/**

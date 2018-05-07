@@ -384,8 +384,17 @@ class Submission {
 	public function validate_file_field( $field ) {
 		$messages = $this->get_validation_messages();
 
-		$message        = array();
+		$message     = array();
+		$is_required = false;
+
 		$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
+		if ( in_array( 'required', $validate_rules ) ) {
+			$is_required = true;
+		}
+
+		if ( isset( $field['required_field'] ) && 'on' == $field['required_field'] ) {
+			$is_required = true;
+		}
 
 		// Check if global $_FILES exists
 		if ( ! isset( $_FILES[ $field['field_name'] ] ) ) {
@@ -395,23 +404,18 @@ class Submission {
 		$name     = $_FILES[ $field['field_name'] ]['name'];
 		$tmp_name = $_FILES[ $field['field_name'] ]['tmp_name'];
 		$size     = $_FILES[ $field['field_name'] ]['size'];
+		$error    = $_FILES[ $field['field_name'] ]['error'];
 
-		if ( empty( $tmp_name ) || empty( $name ) ) {
-			$message[] = $messages['invalid_required'];
-		} else {
+		if ( ! empty( $name ) || ! empty( $size ) ) {
 			// Get file mime type for uploaded file
 			$finfo     = new \finfo( FILEINFO_MIME_TYPE );
 			$file_type = $finfo->file( $tmp_name );
-
-			// Get file extension from uploaded file name
-			$temp_ext           = explode( '.', $name );
-			$original_extension = strtolower( end( $temp_ext ) );
 
 			// Get file extension from allowed mime types
 			$ext = array_search( $file_type, get_allowed_mime_types(), true );
 
 			// Check if uploaded file mime type is allowed
-			if ( false === strpos( $ext, $original_extension ) ) {
+			if ( false === strpos( $ext, strtolower( pathinfo( $name, PATHINFO_EXTENSION ) ) ) ) {
 				$message[] = $messages['invalid_file_format'];
 			}
 
@@ -421,11 +425,12 @@ class Submission {
 				$message[] = $messages['file_too_large'];
 			}
 		}
+
 		// If field is not required, hide message if field is empty
-		if ( ! in_array( 'required', $validate_rules ) ) {
-			if ( empty( $tmp_name ) || empty( $name ) ) {
-				$message = array();
-			}
+		if ( $is_required && $error === UPLOAD_ERR_NO_FILE ) {
+			$message[] = $messages['invalid_required'];
+		} else {
+			$message = array();
 		}
 
 		// If user custom message exists, use it
@@ -556,82 +561,73 @@ class Submission {
 	 */
 	private function upload_attachments( $fields ) {
 		$attachments = array();
-		$field_names = array_column( $fields, 'field_name' );
-		$field_types = array_column( $fields, 'field_type' );
-
-		// Check if global $_FILES exists
-		if ( ! isset( $_FILES ) ) {
-			return $attachments;
-		}
 
 		// Check if current form has any file field
-		if ( ! in_array( 'file', $field_types ) ) {
+		if ( ! in_array( 'file', array_column( $fields, 'field_type' ) ) ) {
 			return $attachments;
 		}
 
 		$upload_dir = wp_upload_dir();
 
-		$attachment_dir = join( DIRECTORY_SEPARATOR, array(
-			$upload_dir['basedir'],
-			DIALOG_CONTACT_FORM_UPLOAD_DIR
-		) );
+		$attachment_dir = join( DIRECTORY_SEPARATOR, array( $upload_dir['basedir'], DIALOG_CONTACT_FORM_UPLOAD_DIR ) );
 
 		// Make attachment directory in upload directory if not already exists
 		if ( ! file_exists( $attachment_dir ) ) {
 			wp_mkdir_p( $attachment_dir );
 		}
 
-		// $files = UploadedFile::getUploadedFiles();
+		$files = UploadedFile::getUploadedFiles();
 
-		foreach ( $_FILES as $input_name => $file ) {
-
-			// Check if file field exists in our field list
-			if ( ! in_array( $input_name, $field_names ) ) {
+		$files_list = array();
+		foreach ( $fields as $field ) {
+			if ( 'file' != $field['field_type'] ) {
 				continue;
 			}
 
-			$name     = $_FILES[ $input_name ]['name'];
-			$tmp_name = $_FILES[ $input_name ]['tmp_name'];
-			$size     = $_FILES[ $input_name ]['size'];
+			$file = isset( $files[ $field['field_name'] ] ) ? $files[ $field['field_name'] ] : false;
+			if ( $file instanceof UploadedFile ) {
+				$files_list[] = $file;
+			}
+			if ( is_array( $file ) ) {
+				foreach ( $file as $_file ) {
+					if ( $_file instanceof UploadedFile ) {
+						$files_list[] = $_file;
+					}
+				}
+			}
+		}
 
-			// $type     = $_FILES[ $input_name ]['type'];
+		/** @var \DialogContactForm\Supports\UploadedFile $file */
+		foreach ( $files_list as $file ) {
 
-			if ( empty( $tmp_name ) || empty( $name ) ) {
+			if ( $file->getError() !== UPLOAD_ERR_OK ) {
 				continue;
 			}
 
 			// Generate unique file name
-			$filename = wp_unique_filename( $attachment_dir, $name );
+			$filename = wp_unique_filename( $attachment_dir, $file->getClientFilename() );
 
 			// Get file mime type for uploaded file
 			$finfo     = new \finfo( FILEINFO_MIME_TYPE );
-			$file_type = $finfo->file( $tmp_name );
-
-			// Get file extension from uploaded file name
-			$temp_ext           = explode( '.', $name );
-			$original_extension = strtolower( end( $temp_ext ) );
+			$file_type = $finfo->file( $file->getFile() );
 
 			// Get file extension from allowed mime types
 			$ext = array_search( $file_type, get_allowed_mime_types(), true );
 
 			// Check if uploaded file mime type is allowed
-			if ( false === strpos( $ext, $original_extension ) ) {
+			if ( false === strpos( $ext, $file->getClientExtension() ) ) {
 				continue;
 			}
 
 			// check file size here.
 			$max_upload_size = wp_max_upload_size();
-			if ( $size > $max_upload_size ) {
+			if ( $file->getSize() > $max_upload_size ) {
 				continue;
 			}
 
-			// Generate new file path
-			$new_file = $attachment_dir . DIRECTORY_SEPARATOR . $filename;
-
 			// Upload file
-			$response = @move_uploaded_file( $tmp_name, $new_file );
-
-			if ( $response ) {
+			try {
+				$new_file = $file->moveUploadedFile( $attachment_dir, $filename );
 				// Set correct file permissions.
 				$stat  = stat( dirname( $new_file ) );
 				$perms = $stat['mode'] & 0000666;
@@ -639,6 +635,8 @@ class Submission {
 
 				// Save uploaded file path for later use
 				$attachments[] = $new_file;
+			} catch ( \Exception $exception ) {
+
 			}
 		}
 
