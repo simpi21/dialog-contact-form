@@ -2,8 +2,8 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\Supports\Attachment;
 use DialogContactForm\Supports\Mailer;
-use DialogContactForm\Supports\UploadedFile;
 use DialogContactForm\Supports\Validate;
 
 class Submission {
@@ -150,7 +150,7 @@ class Submission {
 		}
 
 		// If form upload a file, handle here
-		$attachments = $this->upload_attachments( $fields );
+		$attachments = Attachment::upload( $fields );
 
 		do_action( 'dcf_before_send_mail', $form_options, $attachments );
 		$mail_sent = $this->send_mail( $fields, $mail, $attachments );
@@ -196,7 +196,7 @@ class Submission {
 		}
 
 		// If form upload a file, handle here
-		$attachments = $this->upload_attachments( $fields );
+		$attachments = Attachment::upload( $fields );
 
 		do_action( 'dcf_before_ajax_send_mail', $form_options, $attachments );
 
@@ -235,7 +235,7 @@ class Submission {
 			$field_name = isset( $field['field_name'] ) ? $field['field_name'] : '';
 			$value      = isset( $_POST[ $field_name ] ) ? $_POST[ $field_name ] : null;
 			if ( 'file' == $field['field_type'] ) {
-				$message = $this->validate_file_field( $field );
+				$message = Attachment::validate( $field );
 			} else {
 				$message = $this->validate_post_field( $value, $field );
 			}
@@ -375,73 +375,6 @@ class Submission {
 	}
 
 	/**
-	 * Validate file field
-	 *
-	 * @param array $field
-	 *
-	 * @return array
-	 */
-	public function validate_file_field( $field ) {
-		$messages = $this->get_validation_messages();
-
-		$message     = array();
-		$is_required = false;
-
-		$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
-		if ( in_array( 'required', $validate_rules ) ) {
-			$is_required = true;
-		}
-
-		if ( isset( $field['required_field'] ) && 'on' == $field['required_field'] ) {
-			$is_required = true;
-		}
-
-		// Check if global $_FILES exists
-		if ( ! isset( $_FILES[ $field['field_name'] ] ) ) {
-			return $message;
-		}
-
-		$name     = $_FILES[ $field['field_name'] ]['name'];
-		$tmp_name = $_FILES[ $field['field_name'] ]['tmp_name'];
-		$size     = $_FILES[ $field['field_name'] ]['size'];
-		$error    = $_FILES[ $field['field_name'] ]['error'];
-
-		if ( ! empty( $name ) || ! empty( $size ) ) {
-			// Get file mime type for uploaded file
-			$finfo     = new \finfo( FILEINFO_MIME_TYPE );
-			$file_type = $finfo->file( $tmp_name );
-
-			// Get file extension from allowed mime types
-			$ext = array_search( $file_type, get_allowed_mime_types(), true );
-
-			// Check if uploaded file mime type is allowed
-			if ( false === strpos( $ext, strtolower( pathinfo( $name, PATHINFO_EXTENSION ) ) ) ) {
-				$message[] = $messages['invalid_file_format'];
-			}
-
-			// check file size here.
-			$max_upload_size = wp_max_upload_size();
-			if ( $size > $max_upload_size ) {
-				$message[] = $messages['file_too_large'];
-			}
-		}
-
-		// If field is not required, hide message if field is empty
-		if ( $is_required && $error === UPLOAD_ERR_NO_FILE ) {
-			$message[] = $messages['invalid_required'];
-		} else {
-			$message = array();
-		}
-
-		// If user custom message exists, use it
-		if ( count( $message ) > 0 && mb_strlen( $field['error_message'], 'UTF-8' ) > 10 ) {
-			$message = array( $field['error_message'] );
-		}
-
-		return $message;
-	}
-
-	/**
 	 * Verify Google reCAPTCHA code
 	 *
 	 * @return bool
@@ -553,108 +486,13 @@ class Submission {
 	}
 
 	/**
-	 * Upload attachments
-	 *
-	 * @param $fields
-	 *
-	 * @return array
-	 */
-	private function upload_attachments( $fields ) {
-		$attachments = array();
-
-		// Check if current form has any file field
-		if ( ! in_array( 'file', array_column( $fields, 'field_type' ) ) ) {
-			return $attachments;
-		}
-
-		$upload_dir = wp_upload_dir();
-
-		$attachment_dir = join( DIRECTORY_SEPARATOR, array( $upload_dir['basedir'], DIALOG_CONTACT_FORM_UPLOAD_DIR ) );
-
-		// Make attachment directory in upload directory if not already exists
-		if ( ! file_exists( $attachment_dir ) ) {
-			wp_mkdir_p( $attachment_dir );
-		}
-
-		$files = UploadedFile::getUploadedFiles();
-
-		$files_list = array();
-		foreach ( $fields as $field ) {
-			if ( 'file' != $field['field_type'] ) {
-				continue;
-			}
-
-			$file = isset( $files[ $field['field_name'] ] ) ? $files[ $field['field_name'] ] : false;
-			if ( $file instanceof UploadedFile ) {
-				$files_list[] = $file;
-			}
-			if ( is_array( $file ) ) {
-				foreach ( $file as $_file ) {
-					if ( $_file instanceof UploadedFile ) {
-						$files_list[] = $_file;
-					}
-				}
-			}
-		}
-
-		/** @var \DialogContactForm\Supports\UploadedFile $file */
-		foreach ( $files_list as $file ) {
-
-			if ( $file->getError() !== UPLOAD_ERR_OK ) {
-				continue;
-			}
-
-			// Generate unique file name
-			$filename = wp_unique_filename( $attachment_dir, $file->getClientFilename() );
-
-			// Get file mime type for uploaded file
-			$finfo     = new \finfo( FILEINFO_MIME_TYPE );
-			$file_type = $finfo->file( $file->getFile() );
-
-			// Get file extension from allowed mime types
-			$ext = array_search( $file_type, get_allowed_mime_types(), true );
-
-			// Check if uploaded file mime type is allowed
-			if ( false === strpos( $ext, $file->getClientExtension() ) ) {
-				continue;
-			}
-
-			// check file size here.
-			$max_upload_size = wp_max_upload_size();
-			if ( $file->getSize() > $max_upload_size ) {
-				continue;
-			}
-
-			// Upload file
-			try {
-				$new_file = $file->moveUploadedFile( $attachment_dir, $filename );
-				// Set correct file permissions.
-				$stat  = stat( dirname( $new_file ) );
-				$perms = $stat['mode'] & 0000666;
-				@ chmod( $new_file, $perms );
-
-				// Save uploaded file path for later use
-				$attachments[] = $new_file;
-			} catch ( \Exception $exception ) {
-
-			}
-		}
-
-		return $attachments;
-	}
-
-	/**
 	 * Remove attachment after mail sent
 	 *
 	 * @param array $form_options
 	 * @param array $attachments
 	 */
 	public function remove_attachment_file( $form_options, $attachments ) {
-		foreach ( $attachments as $attachment ) {
-			if ( file_exists( $attachment ) ) {
-				unlink( $attachment );
-			}
-		}
+		Attachment::remove( $attachments );
 	}
 
 	/**

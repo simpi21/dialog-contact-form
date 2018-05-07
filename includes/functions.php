@@ -135,13 +135,17 @@ if ( ! function_exists( 'dcf_validation_messages' ) ) {
 			'invalid_username'      => esc_html__( 'The username does not exists.', 'dialog-contact-form' ),
 			'invalid_user_email'    => esc_html__( 'The email does not exists.', 'dialog-contact-form' ),
 			'invalid_recaptcha'     => esc_html__( 'Check the checkbox.', 'dialog-contact-form' ),
-			'file_too_large'        => esc_html__( 'File size too large.', 'dialog-contact-form' ),
-			'invalid_file_format'   => esc_html__( 'File format is invalid.', 'dialog-contact-form' ),
 			'step_mismatch'         => esc_html__( 'Please select a valid value.', 'dialog-contact-form' ),
 			'pattern_mismatch'      => esc_html__( 'Please match the requested format.', 'dialog-contact-form' ),
 			'bad_input'             => esc_html__( 'Please enter a number.', 'dialog-contact-form' ),
 			'required_select'       => esc_html__( 'Please choose a value.', 'dialog-contact-form' ),
 			'required_select_multi' => esc_html__( 'Please choose at least one value.', 'dialog-contact-form' ),
+			// File related errors
+			'file_generic_error'    => esc_html__( 'Unknown upload error.', 'dialog-contact-form' ),
+			'required_file'         => esc_html__( 'Please upload a file.', 'dialog-contact-form' ),
+			'required_file_multi'   => esc_html__( 'Please upload at least one file.', 'dialog-contact-form' ),
+			'file_too_large'        => esc_html__( 'Please upload a file no more than {maxSize}.', 'dialog-contact-form' ),
+			'invalid_file_format'   => esc_html__( 'File format is invalid.', 'dialog-contact-form' ),
 		);
 
 		return apply_filters( 'dialog_contact_form_validation_messages', $messages );
