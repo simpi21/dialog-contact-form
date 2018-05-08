@@ -3,6 +3,7 @@
 namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Supports\Mailer;
 
 class EmailNotification extends Abstract_Action {
 
@@ -17,9 +18,78 @@ class EmailNotification extends Abstract_Action {
 
 	/**
 	 * Process action
+	 *
+	 * @param int $form_id
+	 * @param array $data
+	 *
+	 * @return bool
 	 */
-	public function process( $action_id, $form_id, $data ) {
-		// TODO: Implement process() method.
+	public function process( $form_id, $data ) {
+		$placeholder = array(
+			'[system:admin_email]' => get_option( 'admin_email' ),
+			'[system:blogname]'    => get_option( 'blogname' ),
+			'[system:siteurl]'     => get_option( 'siteurl' ),
+			'[system:home]'        => get_option( 'home' ),
+		);
+
+		$attachments = $data['attachments'];
+		$fields      = get_post_meta( $form_id, '_contact_form_fields', true );
+		$mail        = get_post_meta( $form_id, '_contact_form_mail', true );
+
+		$all_fields = array();
+		foreach ( $fields as $field ) {
+			if ( 'file' == $field['field_type'] ) {
+				continue;
+			}
+			$value = isset( $data[ $field['field_name'] ] ) ? $data[ $field['field_name'] ] : '';
+
+			// Join array elements with a new line string
+			if ( is_array( $value ) ) {
+				$value = implode( PHP_EOL, $value );
+			}
+
+			$all_fields[ $field['field_name'] ] = array(
+				'label' => $field['field_title'],
+				'value' => $value,
+			);
+
+			$placeholder[ "[" . $field['field_name'] . "]" ] = $value;
+		}
+
+		$subject = $mail['subject'];
+		$subject = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $subject );
+
+		$body = $mail['body'];
+		if ( false !== strpos( $body, '[all_fields_table]' ) ) {
+			ob_start();
+			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/emails/email-notification.php';
+			$message = ob_get_clean();
+		} else {
+			$body    = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $body );
+			$body    = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $body );
+			$message = stripslashes( wp_kses_post( $body ) );
+		}
+
+		$receiver = $mail['receiver'];
+		$receiver = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $receiver );
+		$receiver = ( false !== strpos( $receiver, ',' ) ) ? explode( ',', $receiver ) : $receiver;
+
+		$senderEmail = $mail['senderEmail'];
+		$senderEmail = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderEmail );
+
+		$senderName = esc_attr( $mail['senderName'] );
+		$senderName = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderName );
+
+		$mailer = new Mailer();
+		$mailer->setReceiver( $receiver );
+		$mailer->setSubject( $subject );
+		$mailer->setMessage( $message );
+		$mailer->setFrom( $senderEmail, $senderName );
+		$mailer->setReplyTo( $senderEmail, $senderName );
+		$mailer->setContentType( 'html' );
+		$mailer->setAttachments( $attachments );
+
+		return $mailer->send();
 	}
 
 	/**
@@ -27,10 +97,10 @@ class EmailNotification extends Abstract_Action {
 	 */
 	private function settings() {
 		$defaults = array(
-			'receiver'    => get_option( 'admin_email' ),
+			'receiver'    => '[system:admin_email]',
 			'senderEmail' => '[your_email]',
 			'senderName'  => '[your_name]',
-			'subject'     => get_option( 'blogname' ) . ': [subject]',
+			'subject'     => '[system:blogname] : [subject]',
 			'body'        => "[all_fields_table]",
 		);
 

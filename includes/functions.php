@@ -87,7 +87,6 @@ if ( ! function_exists( 'dcf_validation_rules' ) ) {
 			'user_login' => esc_html__( 'User Login', 'dialog-contact-form' ),
 			'username'   => esc_html__( 'Username', 'dialog-contact-form' ),
 			'user_email' => esc_html__( 'User Email', 'dialog-contact-form' ),
-			'ip'         => esc_html__( 'IP Address', 'dialog-contact-form' ),
 		);
 
 		return apply_filters( 'dialog_contact_form_validation_rules', $validationField );

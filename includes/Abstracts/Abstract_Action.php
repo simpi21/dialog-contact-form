@@ -62,8 +62,11 @@ abstract class Abstract_Action {
 
 	/**
 	 * Process action
+	 *
+	 * @param int $form_id
+	 * @param array $data
 	 */
-	abstract public function process( $action_id, $form_id, $data );
+	abstract public function process( $form_id, $data );
 
 	/**
 	 * Get settings as array

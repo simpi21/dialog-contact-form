@@ -17,8 +17,11 @@ class SuccessMessage extends Abstract_Action {
 
 	/**
 	 * Process action
+	 *
+	 * @param int $form_id
+	 * @param array $data
 	 */
-	public function process( $action_id, $form_id, $data ) {
+	public function process( $form_id, $data ) {
 		// TODO: Implement process() method.
 	}
 

@@ -2,6 +2,8 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\Actions\EmailNotification;
+use DialogContactForm\Fields\Recaptcha;
 use DialogContactForm\Supports\Attachment;
 use DialogContactForm\Supports\Mailer;
 use DialogContactForm\Supports\Validate;
@@ -149,11 +151,22 @@ class Submission {
 			return;
 		}
 
+		// Sanitize form data
+		$data = array();
+		foreach ( $fields as $field ) {
+			if ( 'file' == $field['field_type'] ) {
+				continue;
+			}
+			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
+
+			$data[ $field['field_name'] ] = self::sanitize( $value, $field['field_type'] );
+		}
+
 		// If form upload a file, handle here
 		$attachments = Attachment::upload( $fields );
 
 		do_action( 'dcf_before_send_mail', $form_options, $attachments );
-		$mail_sent = $this->send_mail( $fields, $mail, $attachments );
+		$mail_sent = $this->send_mail( $form_id, $data, $attachments );
 		do_action( 'dcf_after_send_mail', $form_options, $attachments, $mail_sent );
 
 		if ( $mail_sent ) {
@@ -195,13 +208,24 @@ class Submission {
 			), 422 );
 		}
 
+		// Sanitize form data
+		$data = array();
+		foreach ( $fields as $field ) {
+			if ( 'file' == $field['field_type'] ) {
+				continue;
+			}
+			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
+
+			$data[ $field['field_name'] ] = self::sanitize( $value, $field['field_type'] );
+		}
+
 		// If form upload a file, handle here
 		$attachments = Attachment::upload( $fields );
 
 		do_action( 'dcf_before_ajax_send_mail', $form_options, $attachments );
 
 		// Send mail to user
-		$mail_sent = $this->send_mail( $fields, $mail, $attachments );
+		$mail_sent = $this->send_mail( $form_id, $data, $attachments );
 
 		do_action( 'dcf_after_ajax_send_mail', $form_options, $attachments, $mail_sent );
 
@@ -246,8 +270,9 @@ class Submission {
 		}
 
 		// If Google reCAPTCHA enabled, verify it
-		if ( isset( $config['recaptcha'] ) && $config['recaptcha'] == 'yes' ) {
-			if ( ! $this->validate_google_recaptcha() ) {
+		$messages = $this->get_validation_messages();
+		if ( isset( $config['recaptcha'] ) && $config['recaptcha'] === 'yes' ) {
+			if ( ! Recaptcha::_validate() ) {
 				$errorData['dcf_recaptcha'] = array( $messages['invalid_recaptcha'] );
 			}
 		}
@@ -375,114 +400,21 @@ class Submission {
 	}
 
 	/**
-	 * Verify Google reCAPTCHA code
-	 *
-	 * @return bool
-	 */
-	private function validate_google_recaptcha() {
-		// If reCAPTCHA key or secret is empty, return true
-		if ( empty( $this->options['recaptcha_site_key'] ) || empty( $this->options['recaptcha_secret_key'] ) ) {
-			return true;
-		}
-
-		$captcha_code = isset( $_POST['g-recaptcha-response'] ) ? $_POST['g-recaptcha-response'] : null;
-		if ( empty( $captcha_code ) ) {
-			return false;
-		}
-
-		$_response = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify',
-			array(
-				'body' => array(
-					'secret'   => esc_attr( $this->options['recaptcha_secret_key'] ),
-					'response' => $captcha_code,
-					'remoteip' => $this->get_remote_ip_addr(),
-				)
-			)
-		);
-		$body      = json_decode( wp_remote_retrieve_body( $_response ), true );
-
-		if ( isset( $body['success'] ) && ! $body['success'] ) {
-			return false;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Get user IP address
-	 *
-	 * @return string
-	 */
-	private function get_remote_ip_addr() {
-		if ( isset( $_SERVER['REMOTE_ADDR'] ) && \WP_Http::is_ip_address( $_SERVER['REMOTE_ADDR'] ) ) {
-			return $_SERVER['REMOTE_ADDR'];
-		}
-
-		return '';
-	}
-
-	/**
 	 * Send Mail to User
 	 *
-	 * @param $fields
-	 * @param $mail
+	 * @param int $form_id
+	 * @param array $data
 	 * @param array $attachments
 	 *
 	 * @return bool
-	 * @internal param $headers
 	 */
-	private function send_mail( $fields, $mail, $attachments = array() ) {
-		$placeholder = array();
-		$all_fields  = array();
-		foreach ( $fields as $field ) {
-			if ( 'file' == $field['field_type'] ) {
-				continue;
-			}
-			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
-			$value = self::sanitize( $value, $field['field_type'] );
+	private function send_mail( $form_id, $data, $attachments = array() ) {
 
-			$all_fields[ $field['field_name'] ] = array(
-				'label' => $field['field_title'],
-				'value' => $value,
-			);
+		$data['attachments'] = $attachments;
 
-			$placeholder[ "[" . $field['field_name'] . "]" ] = $value;
-		}
+		$emailNotification = new EmailNotification();
 
-		$subject = $mail['subject'];
-		$subject = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $subject );
-
-		$body = $mail['body'];
-		if ( false !== strpos( $body, '[all_fields_table]' ) ) {
-			ob_start();
-			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/emails/email-notification.php';
-			$message = ob_get_clean();
-		} else {
-			$body    = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $body );
-			$body    = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $body );
-			$message = stripslashes( wp_kses_post( $body ) );
-		}
-
-		$receiver = $mail['receiver'];
-		$receiver = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $receiver );
-		$receiver = ( false !== strpos( $receiver, ',' ) ) ? explode( ',', $receiver ) : $receiver;
-
-		$senderEmail = $mail['senderEmail'];
-		$senderEmail = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderEmail );
-
-		$senderName = esc_attr( $mail['senderName'] );
-		$senderName = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderName );
-
-		$mailer = new Mailer();
-		$mailer->setReceiver( $receiver );
-		$mailer->setSubject( $subject );
-		$mailer->setMessage( $message );
-		$mailer->setFrom( $senderEmail, $senderName );
-		$mailer->setReplyTo( $senderEmail, $senderName );
-		$mailer->setContentType( 'html' );
-		$mailer->setAttachments( $attachments );
-
-		return $mailer->send();
+		return $emailNotification->process( $form_id, $data );
 	}
 
 	/**
@@ -561,9 +493,6 @@ class Submission {
 					$new_input[ $key ] = self::sanitize_string( $value, $input_type );
 				}
 			}
-
-			// Join array elements with a new line string
-			$new_input = implode( PHP_EOL, $new_input );
 
 			return $new_input;
 		}
