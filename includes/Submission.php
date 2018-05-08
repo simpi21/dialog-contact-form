@@ -439,7 +439,7 @@ class Submission {
 				continue;
 			}
 			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
-			$value = self::sanitize_value( $value, $field['field_type'] );
+			$value = self::sanitize( $value, $field['field_type'] );
 
 			$all_fields[ $field['field_name'] ] = array(
 				'label' => $field['field_title'],
@@ -549,14 +549,14 @@ class Submission {
 	 *
 	 * @return array|string
 	 */
-	private static function sanitize_value( $input, $input_type = 'text' ) {
+	private static function sanitize( $input, $input_type = 'text' ) {
 		// Initialize the new array that will hold the sanitize values
 		$new_input = array();
 		if ( is_array( $input ) ) {
 			// Loop through the input and sanitize each of the values
 			foreach ( $input as $key => $value ) {
 				if ( is_array( $value ) ) {
-					$new_input[ $key ] = self::sanitize_value( $value, $input_type );
+					$new_input[ $key ] = self::sanitize( $value, $input_type );
 				} else {
 					$new_input[ $key ] = self::sanitize_string( $value, $input_type );
 				}

@@ -55,6 +55,14 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 */
 		private $container = array();
 
+
+		/**
+		 * Minimum PHP version required
+		 *
+		 * @var string
+		 */
+		private $min_php = '5.3';
+
 		/**
 		 * @return Dialog_Contact_Form
 		 */
@@ -73,6 +81,13 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 
 			// define constants
 			$this->define_constants();
+
+			if ( ! $this->is_supported_php() ) {
+				register_activation_hook( __FILE__, array( $this, 'auto_deactivate' ) );
+				add_action( 'admin_notices', array( $this, 'php_version_notice' ) );
+
+				return;
+			}
 
 			// Include Classes
 			$this->include_classes();
@@ -358,6 +373,50 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		}
 
 		/**
+		 * Show notice about PHP version
+		 *
+		 * @return void
+		 */
+		function php_version_notice() {
+
+			if ( $this->is_supported_php() || ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+
+			$error = __( 'Your installed PHP Version is: ', 'dialog-contact-form' ) . PHP_VERSION . '. ';
+			$error .= sprintf( __( 'The Dialog Contact Form plugin requires PHP version %s or greater.', 'dialog-contact-form' ), $this->min_php );
+			?>
+            <div class="error">
+                <p><?php printf( $error ); ?></p>
+            </div>
+			<?php
+		}
+
+		/**
+		 * Bail out if the php version is lower than
+		 *
+		 * @return void
+		 */
+		function auto_deactivate() {
+			if ( $this->is_supported_php() ) {
+				return;
+			}
+
+			deactivate_plugins( plugin_basename( __FILE__ ) );
+
+			$error = '<h1>' . __( 'An Error Occurred', 'dialog-contact-form' ) . '</h1>';
+			$error .= '<h2>' . __( 'Your installed PHP Version is: ', 'dialog-contact-form' ) . PHP_VERSION . '</h2>';
+			$error .= '<p>' . sprintf( __( 'The Dialog Contact Form plugin requires PHP version %s or greater', 'dialog-contact-form' ), $this->min_php ) . '</p>';
+			$error .= '<p>' . sprintf( __( 'The version of your PHP is %s unsupported and old %s. ', 'dialog-contact-form' ),
+					'<a href="http://php.net/supported-versions.php" target="_blank"><strong>',
+					'</strong></a>'
+				);
+			$error .= __( 'You should update your PHP software or contact your host regarding this matter.', 'dialog-contact-form' ) . '</p>';
+
+			wp_die( $error, __( 'Plugin Activation Error', 'dialog-contact-form' ), array( 'back_link' => true ) );
+		}
+
+		/**
 		 * Get dynamic variables that will pass to javaScript variables
 		 *
 		 * @return array
@@ -402,6 +461,24 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			}
 
 			return false;
+		}
+
+		/**
+		 * Check if the PHP version is supported
+		 *
+		 * @param null $min_php
+		 *
+		 * @return bool
+		 */
+		private function is_supported_php( $min_php = null ) {
+
+			$min_php = $min_php ? $min_php : $this->min_php;
+
+			if ( version_compare( PHP_VERSION, $min_php, '<=' ) ) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 }
