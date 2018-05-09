@@ -5,7 +5,6 @@ namespace DialogContactForm;
 use DialogContactForm\Actions\EmailNotification;
 use DialogContactForm\Fields\Recaptcha;
 use DialogContactForm\Supports\Attachment;
-use DialogContactForm\Supports\Mailer;
 use DialogContactForm\Supports\Validate;
 
 class Submission {

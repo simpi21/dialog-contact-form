@@ -63,7 +63,7 @@ class Mailer {
 	 * @return array
 	 */
 	public function getReceiver() {
-		return $this->receiver;
+		return array_filter( $this->receiver );
 	}
 
 	/**

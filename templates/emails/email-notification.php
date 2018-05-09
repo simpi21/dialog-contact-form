@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;';
-$style = [
+$style = array(
 	/* Layout ------------------------------ */
 	'body'                => 'margin: 0; padding: 0; width: 100%; background-color: #F2F4F6;',
 	'email-wrapper'       => 'width: 100%; margin: 0; padding: 0; background-color: #F2F4F6;',
@@ -43,7 +43,7 @@ $style = [
 	'button--green' => 'background-color: #22BC66;',
 	'button--red'   => 'background-color: #dc4d2f;',
 	'button--blue'  => 'background-color: #3869D4;',
-];
+);
 
 ?><!DOCTYPE html>
 <html>
@@ -83,7 +83,7 @@ $style = [
                     <td style="<?php echo $style['email-body']; ?>" width="100%">
                         <table style="<?php echo $style['email-body_inner']; ?>" align="center" width="600"
                                cellpadding="0" cellspacing="0">
-							<?php foreach ( $all_fields as $all_field ) {
+							<?php foreach ( $form_fields as $all_field ) {
 								$value = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $all_field['value'] );
 								?>
                                 <tr>

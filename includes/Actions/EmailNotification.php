@@ -8,12 +8,91 @@ use DialogContactForm\Supports\Mailer;
 class EmailNotification extends Abstract_Action {
 
 	/**
+	 * Hold value from WordPress option
+	 *
+	 * @var array
+	 */
+	private $system_fields = array();
+
+	/**
 	 * Email constructor.
 	 */
 	public function __construct() {
-		$this->id       = 'email_notification';
-		$this->title    = __( 'Email Notification', 'dialog-contact-form' );
-		$this->settings = array_merge( $this->settings, $this->settings() );
+		$this->id            = 'email_notification';
+		$this->title         = __( 'Email Notification', 'dialog-contact-form' );
+		$this->settings      = array_merge( $this->settings, $this->settings() );
+		$this->system_fields = array(
+			'[system:admin_email]' => get_option( 'admin_email' ),
+			'[system:blogname]'    => get_option( 'blogname' ),
+			'[system:siteurl]'     => get_option( 'siteurl' ),
+			'[system:home]'        => get_option( 'home' ),
+		);
+	}
+
+	/**
+	 * Get email sender email
+	 *
+	 * @param string $senderEmail
+	 *
+	 * @return string
+	 */
+	private static function getSenderEmail( $senderEmail ) {
+		if ( is_string( $senderEmail ) && filter_var( $senderEmail, FILTER_VALIDATE_EMAIL ) !== false ) {
+			return sanitize_email( $senderEmail );
+		}
+
+		// Get the site domain and get rid of www.
+		$site_name = strtolower( $_SERVER['SERVER_NAME'] );
+		if ( substr( $site_name, 0, 4 ) == 'www.' ) {
+			$site_name = substr( $site_name, 4 );
+		}
+
+		return 'noreply@' . $site_name;
+	}
+
+	/**
+	 * Get email sender name
+	 *
+	 * @param string $senderName
+	 *
+	 * @return string
+	 */
+	private static function getSenderName( $senderName ) {
+		if ( is_string( $senderName ) ) {
+			return sanitize_text_field( $senderName );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Get email receiver
+	 *
+	 * @param array|string $receiver
+	 *
+	 * @return array|string
+	 */
+	private static function getReceiver( $receiver ) {
+		$receiver = ( false !== strpos( $receiver, ',' ) ) ? explode( ',', $receiver ) : $receiver;
+
+		if ( is_string( $receiver ) && filter_var( $receiver, FILTER_VALIDATE_EMAIL ) !== false ) {
+			return sanitize_email( $receiver );
+		}
+
+		$receivers = array();
+		if ( is_array( $receiver ) ) {
+			foreach ( $receiver as $_receiver ) {
+				if ( is_string( $_receiver ) && filter_var( $_receiver, FILTER_VALIDATE_EMAIL ) !== false ) {
+					$receivers[] = sanitize_email( $_receiver );
+				}
+			}
+		}
+
+		if ( count( $receivers ) > 0 ) {
+			return $receivers;
+		}
+
+		return get_option( 'admin_email' );
 	}
 
 	/**
@@ -25,18 +104,11 @@ class EmailNotification extends Abstract_Action {
 	 * @return bool
 	 */
 	public function process( $form_id, $data ) {
-		$placeholder = array(
-			'[system:admin_email]' => get_option( 'admin_email' ),
-			'[system:blogname]'    => get_option( 'blogname' ),
-			'[system:siteurl]'     => get_option( 'siteurl' ),
-			'[system:home]'        => get_option( 'home' ),
-		);
-
 		$attachments = $data['attachments'];
 		$fields      = get_post_meta( $form_id, '_contact_form_fields', true );
 		$mail        = get_post_meta( $form_id, '_contact_form_mail', true );
 
-		$all_fields = array();
+		$form_fields = array();
 		foreach ( $fields as $field ) {
 			if ( 'file' == $field['field_type'] ) {
 				continue;
@@ -48,16 +120,18 @@ class EmailNotification extends Abstract_Action {
 				$value = implode( PHP_EOL, $value );
 			}
 
-			$all_fields[ $field['field_name'] ] = array(
-				'label' => $field['field_title'],
-				'value' => $value,
+			$form_fields[] = array(
+				'label'       => $field['field_title'],
+				'value'       => $value,
+				'placeholder' => '[' . $field['field_name'] . ']',
 			);
-
-			$placeholder[ "[" . $field['field_name'] . "]" ] = $value;
 		}
 
+		$_keys   = array_merge( array_keys( $this->system_fields ), array_column( $form_fields, 'placeholder' ) );
+		$_values = array_merge( array_values( $this->system_fields ), array_column( $form_fields, 'value' ) );
+
 		$subject = $mail['subject'];
-		$subject = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $subject );
+		$subject = str_replace( $_keys, $_values, $subject );
 
 		$body = $mail['body'];
 		if ( false !== strpos( $body, '[all_fields_table]' ) ) {
@@ -65,20 +139,22 @@ class EmailNotification extends Abstract_Action {
 			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/emails/email-notification.php';
 			$message = ob_get_clean();
 		} else {
-			$body    = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $body );
+			$body    = str_replace( $_keys, $_values, $body );
 			$body    = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $body );
 			$message = stripslashes( wp_kses_post( $body ) );
 		}
 
 		$receiver = $mail['receiver'];
-		$receiver = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $receiver );
-		$receiver = ( false !== strpos( $receiver, ',' ) ) ? explode( ',', $receiver ) : $receiver;
+		$receiver = str_replace( $_keys, $_values, $receiver );
+		$receiver = self::getReceiver( $receiver );
 
 		$senderEmail = $mail['senderEmail'];
-		$senderEmail = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderEmail );
+		$senderEmail = str_replace( $_keys, $_values, $senderEmail );
+		$senderEmail = self::getSenderEmail( $senderEmail );
 
 		$senderName = esc_attr( $mail['senderName'] );
-		$senderName = str_replace( array_keys( $placeholder ), array_values( $placeholder ), $senderName );
+		$senderName = str_replace( $_keys, $_values, $senderName );
+		$senderName = self::getSenderName( $senderName );
 
 		$mailer = new Mailer();
 		$mailer->setReceiver( $receiver );
@@ -183,12 +259,22 @@ class EmailNotification extends Abstract_Action {
 		}
 
 		$html = '<p class="description">';
-		$html .= esc_html__( 'In the following fields, you can use these mail-tags:', 'dialog-contact-form' );
+		$html .= esc_html__( 'In the following fields, you can use these system option tags:', 'dialog-contact-form' );
 		$html .= '</p>';
+		$html .= '<p>';
+		foreach ( $this->system_fields as $_field_placeholder => $value ) {
+			$html .= '<code class="mailtag code">' . esc_attr( $_field_placeholder ) . '</code>';
+		}
+		$html .= '</p>';
+		$html .= '<p class="description">';
+		$html .= esc_html__( 'You can also use these field tags:', 'dialog-contact-form' );
+		$html .= '</p>';
+		$html .= '<p>';
 		foreach ( $name_placeholders as $name_placeholder ) {
 			$html .= '<code class="mailtag code">' . esc_attr( $name_placeholder ) . '</code>';
 		}
-		$html .= '<br><hr>';
+		$html .= '</p>';
+		$html .= '<hr>';
 
 		return $html;
 	}
