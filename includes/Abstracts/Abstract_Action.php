@@ -65,8 +65,12 @@ abstract class Abstract_Action {
 	 *
 	 * @param int $form_id
 	 * @param array $data
+	 *
+	 * @return string|bool|array
 	 */
-	abstract public function process( $form_id, $data );
+	public static function process( $form_id, $data ) {
+		// TODO: Implement process() method.
+	}
 
 	/**
 	 * Get settings as array

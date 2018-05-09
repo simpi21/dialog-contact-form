@@ -20,9 +20,16 @@ class SuccessMessage extends Abstract_Action {
 	 *
 	 * @param int $form_id
 	 * @param array $data
+	 *
+	 * @return string
 	 */
-	public function process( $form_id, $data ) {
-		// TODO: Implement process() method.
+	public static function process( $form_id, $data ) {
+		$message = get_post_meta( $form_id, '_action_success_message', true );
+		if ( empty( $message['message'] ) ) {
+			return false;
+		}
+
+		return esc_attr( $message['message'] );
 	}
 
 	private function settings() {

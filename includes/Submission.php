@@ -162,11 +162,15 @@ class Submission {
 		}
 
 		// If form upload a file, handle here
-		$attachments = Attachment::upload( $fields );
+		$data['dcf_attachments'] = Attachment::upload( $fields );
 
-		do_action( 'dcf_before_send_mail', $form_options, $attachments );
-		$mail_sent = $this->send_mail( $form_id, $data, $attachments );
-		do_action( 'dcf_after_send_mail', $form_options, $attachments, $mail_sent );
+		$actions = ActionManager::init();
+		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
+		foreach ( $actions as $action ) {
+			var_dump( $action );
+		}
+
+		$mail_sent = $this->send_mail( $form_id, $data );
 
 		if ( $mail_sent ) {
 			$GLOBALS['_dcf_mail_sent_ok'] = $messages['mail_sent_ok'];
@@ -219,26 +223,32 @@ class Submission {
 		}
 
 		// If form upload a file, handle here
-		$attachments = Attachment::upload( $fields );
+		$data['dcf_attachments'] = Attachment::upload( $fields );
 
-		do_action( 'dcf_before_ajax_send_mail', $form_options, $attachments );
-
-		// Send mail to user
-		$mail_sent = $this->send_mail( $form_id, $data, $attachments );
-
-		do_action( 'dcf_after_ajax_send_mail', $form_options, $attachments, $mail_sent );
-
-		if ( $mail_sent ) {
-			wp_send_json( array(
-				'status'  => 'success',
-				'message' => esc_attr( $messages['mail_sent_ok'] ),
-			), 200 );
+		$response = array();
+		$actions  = ActionManager::init();
+		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
+		foreach ( $actions as $action ) {
+			$response[ $action->get_id() ] = $action::process( $form_id, $data );
 		}
 
-		wp_send_json( array(
-			'status'  => 'fail',
-			'message' => esc_attr( $messages['mail_sent_ng'] ),
-		), 500 );
+		// If any action fails, display error message
+		if ( false !== array_search( false, array_values( $response ), true ) ) {
+			wp_send_json( array(
+				'status'  => 'fail',
+				'message' => esc_attr( $messages['mail_sent_ng'] ),
+				'actions' => $response,
+			), 500 );
+		}
+
+		// Display success message
+		$reset_form = get_post_meta( $form_id, '_contact_form_config', true );
+		$_response  = array(
+			'status'     => 'success',
+			'reset_form' => ( 'no' !== $reset_form['reset_form'] ),
+			'actions'    => $response,
+		);
+		wp_send_json( $_response, 200 );
 	}
 
 	/**
@@ -403,13 +413,10 @@ class Submission {
 	 *
 	 * @param int $form_id
 	 * @param array $data
-	 * @param array $attachments
 	 *
 	 * @return bool
 	 */
-	private function send_mail( $form_id, $data, $attachments = array() ) {
-
-		$data['attachments'] = $attachments;
+	private function send_mail( $form_id, $data ) {
 
 		$emailNotification = new EmailNotification();
 

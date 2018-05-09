@@ -12,7 +12,7 @@ class EmailNotification extends Abstract_Action {
 	 *
 	 * @var array
 	 */
-	private $system_fields = array();
+	private static $system_fields = array();
 
 	/**
 	 * Email constructor.
@@ -21,7 +21,7 @@ class EmailNotification extends Abstract_Action {
 		$this->id            = 'email_notification';
 		$this->title         = __( 'Email Notification', 'dialog-contact-form' );
 		$this->settings      = array_merge( $this->settings, $this->settings() );
-		$this->system_fields = array(
+		self::$system_fields = array(
 			'[system:admin_email]' => get_option( 'admin_email' ),
 			'[system:blogname]'    => get_option( 'blogname' ),
 			'[system:siteurl]'     => get_option( 'siteurl' ),
@@ -103,8 +103,8 @@ class EmailNotification extends Abstract_Action {
 	 *
 	 * @return bool
 	 */
-	public function process( $form_id, $data ) {
-		$attachments = $data['attachments'];
+	public static function process( $form_id, $data ) {
+		$attachments = $data['dcf_attachments'];
 		$fields      = get_post_meta( $form_id, '_contact_form_fields', true );
 		$mail        = get_post_meta( $form_id, '_contact_form_mail', true );
 
@@ -127,8 +127,8 @@ class EmailNotification extends Abstract_Action {
 			);
 		}
 
-		$_keys   = array_merge( array_keys( $this->system_fields ), array_column( $form_fields, 'placeholder' ) );
-		$_values = array_merge( array_values( $this->system_fields ), array_column( $form_fields, 'value' ) );
+		$_keys   = array_merge( array_keys( self::$system_fields ), array_column( $form_fields, 'placeholder' ) );
+		$_values = array_merge( array_values( self::$system_fields ), array_column( $form_fields, 'value' ) );
 
 		$subject = $mail['subject'];
 		$subject = str_replace( $_keys, $_values, $subject );
@@ -172,14 +172,6 @@ class EmailNotification extends Abstract_Action {
 	 * @return array
 	 */
 	private function settings() {
-		$defaults = array(
-			'receiver'    => '[system:admin_email]',
-			'senderEmail' => '[your_email]',
-			'senderName'  => '[your_name]',
-			'subject'     => '[system:blogname] : [subject]',
-			'body'        => "[all_fields_table]",
-		);
-
 		return array(
 			'receiver'    => array(
 				'type'        => 'text',
@@ -188,7 +180,7 @@ class EmailNotification extends Abstract_Action {
 				'meta_key'    => '_contact_form_mail',
 				'label'       => __( 'Receiver(s)', 'dialog-contact-form' ),
 				'description' => __( 'Define the emails used (separated by comma) to receive emails.', 'dialog-contact-form' ),
-				'default'     => $defaults['receiver'],
+				'default'     => '[system:admin_email]',
 			),
 			'senderEmail' => array(
 				'type'        => 'text',
@@ -197,7 +189,7 @@ class EmailNotification extends Abstract_Action {
 				'meta_key'    => '_contact_form_mail',
 				'label'       => __( 'Sender Email', 'dialog-contact-form' ),
 				'description' => __( 'Define from what email send the message.', 'dialog-contact-form' ),
-				'default'     => $defaults['senderEmail'],
+				'default'     => '[your_email]',
 			),
 			'senderName'  => array(
 				'type'        => 'text',
@@ -206,7 +198,7 @@ class EmailNotification extends Abstract_Action {
 				'meta_key'    => '_contact_form_mail',
 				'label'       => __( 'Sender Name', 'dialog-contact-form' ),
 				'description' => __( 'Define the sender name that send the message.', 'dialog-contact-form' ),
-				'default'     => $defaults['senderName'],
+				'default'     => '[your_name]',
 			),
 			'subject'     => array(
 				'type'        => 'text',
@@ -215,7 +207,7 @@ class EmailNotification extends Abstract_Action {
 				'meta_key'    => '_contact_form_mail',
 				'label'       => __( 'Message Subject', 'dialog-contact-form' ),
 				'description' => __( 'Define the subject of the email sent to you.', 'dialog-contact-form' ),
-				'default'     => $defaults['subject'],
+				'default'     => '[system:blogname] : [subject]',
 			),
 			'body'        => array(
 				'type'        => 'textarea',
@@ -230,7 +222,7 @@ class EmailNotification extends Abstract_Action {
 				'rows'        => 10,
 				'input_class' => 'widefat',
 				'sanitize'    => array( 'DialogContactForm\\Supports\\Sanitize', 'html' ),
-				'default'     => $defaults['body'],
+				'default'     => '[all_fields_table]',
 			),
 		);
 	}
@@ -262,7 +254,7 @@ class EmailNotification extends Abstract_Action {
 		$html .= esc_html__( 'In the following fields, you can use these system option tags:', 'dialog-contact-form' );
 		$html .= '</p>';
 		$html .= '<p>';
-		foreach ( $this->system_fields as $_field_placeholder => $value ) {
+		foreach ( self::$system_fields as $_field_placeholder => $value ) {
 			$html .= '<code class="mailtag code">' . esc_attr( $_field_placeholder ) . '</code>';
 		}
 		$html .= '</p>';

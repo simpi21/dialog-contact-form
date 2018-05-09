@@ -59,6 +59,16 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 = version Master =
 * Added     - Add client side validation using The HTML5 constraint validation API.
 * Added     - Moved validation message from individual form to settings page.
+* Added     - Add polyfill for ClassList and validityState for IE 9.
+* Added     - Add dcf- prefix in all css class.
+* Added     - Add support for multiple value for checkbox.
+* Added     - Add IP Address field.
+* Dev       - Add reCAPTCHA field.
+* Added     - Add action manager for managing multiple form submission actions.
+* Dev       - Add PSR4 class loader for loading fields.
+* Dev       - Add UploadedFile helper class for handling file upload.
+* Dev       - Add Attachment class for upload, validate, remove attachment.
+* Dev       - Add PHP version check functionality.
 
 = version 2.2.1 - 2018-04-24 =
 * Fixed     - Google reCAPTCHA error message is not showing.

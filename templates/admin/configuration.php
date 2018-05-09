@@ -20,6 +20,14 @@ Metabox::select( array(
 		'both'        => esc_html__( 'Both label and placeholder', 'dialog-contact-form' ),
 	),
 ) );
+Metabox::text( array(
+	'id'          => 'btnLabel',
+	'group'       => 'config',
+	'meta_key'    => '_contact_form_config',
+	'label'       => __( 'Submit Button Label', 'dialog-contact-form' ),
+	'description' => __( 'Define the label of submit button.', 'dialog-contact-form' ),
+	'default'     => esc_html__( 'Send', 'dialog-contact-form' ),
+) );
 Metabox::buttonset( array(
 	'id'          => 'btnAlign',
 	'group'       => 'config',
@@ -32,13 +40,17 @@ Metabox::buttonset( array(
 		'right' => esc_html__( 'Right', 'dialog-contact-form' ),
 	),
 ) );
-Metabox::text( array(
-	'id'          => 'btnLabel',
+Metabox::buttonset( array(
+	'id'          => 'reset_form',
 	'group'       => 'config',
 	'meta_key'    => '_contact_form_config',
-	'label'       => __( 'Submit Button Label', 'dialog-contact-form' ),
-	'description' => __( 'Define the label of submit button.', 'dialog-contact-form' ),
-	'default'     => esc_html__( 'Send', 'dialog-contact-form' ),
+	'label'       => __( 'Reset form', 'dialog-contact-form' ),
+	'description' => __( 'Choose Yes to reset form after successfully submission.', 'dialog-contact-form' ),
+	'default'     => 'yes',
+	'options'     => array(
+		'no'  => esc_html__( 'No', 'dialog-contact-form' ),
+		'yes' => esc_html__( 'Yes', 'dialog-contact-form' ),
+	),
 ) );
 Metabox::buttonset( array(
 	'id'       => 'recaptcha',

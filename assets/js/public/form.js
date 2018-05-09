@@ -345,6 +345,16 @@
         }
     };
 
+    var isURL = function (str) {
+        var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+            '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+        return pattern.test(str);
+    };
+
     /**
      * Check all fields on submit
      * @private
@@ -404,16 +414,30 @@
             // Remove loading class from submit button
             submitBtn.classList.remove(settings.loadingClass);
 
-            var xhr = event.target,
-                response = JSON.parse(xhr.responseText);
+            var action,
+                xhr = event.target,
+                response = JSON.parse(xhr.responseText),
+                actions = response.actions ? response.actions : {};
 
             if (xhr.status >= 200 && xhr.status < 300) {
-                // Get success message and print on success div
-                if (response.message) {
-                    dcfSuccess.innerHTML = '<p>' + response.message + '</p>';
-                }
                 // Remove form fields value
-                form.reset();
+                if (response.reset_form) {
+                    form.reset();
+                }
+
+                for (action in actions) {
+                    if (actions.hasOwnProperty(action)) {
+                        // Get success message and print on success div
+                        if ('success_message' === action) {
+                            dcfSuccess.innerHTML = '<p>' + actions[action] + '</p>';
+                        }
+                        if ('redirect' === action && isURL(actions[action])) {
+                            setTimeout(function (url) {
+                                window.location.href = url;
+                            }, 1000, actions[action]);
+                        }
+                    }
+                }
             } else {
                 showServerError(form, response);
             }

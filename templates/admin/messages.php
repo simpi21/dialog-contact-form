@@ -10,13 +10,6 @@ if ( ! defined( 'WPINC' ) ) {
 $messages = dcf_validation_messages();
 
 Metabox::textarea( array(
-	'id'       => 'mail_sent_ok',
-	'group'    => 'messages',
-	'meta_key' => '_contact_form_messages',
-	'label'    => __( 'Message sent successfully', 'dialog-contact-form' ),
-	'default'  => $messages['mail_sent_ok'],
-) );
-Metabox::textarea( array(
 	'id'       => 'mail_sent_ng',
 	'group'    => 'messages',
 	'meta_key' => '_contact_form_messages',

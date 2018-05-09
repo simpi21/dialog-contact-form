@@ -37,9 +37,27 @@ class Redirect extends Abstract_Action {
 	 *
 	 * @param int $form_id
 	 * @param array $data
+	 *
+	 * @return string
 	 */
-	public function process( $form_id, $data ) {
-		// TODO: Implement process() method.
+	public static function process( $form_id, $data ) {
+		$_redirect   = get_post_meta( $form_id, '_action_redirect', true );
+		$redirect_to = ! empty( $_redirect['redirect_to'] ) ? $_redirect['redirect_to'] : 'same';
+		$page_id     = ! empty( $_redirect['page_id'] ) ? intval( $_redirect['page_id'] ) : 0;
+		$url         = ! empty( $_redirect['url'] ) ? esc_url( $_redirect['url'] ) : null;
+
+		if ( 'same' == $redirect_to ) {
+			return '';
+		}
+		if ( 'page' == $redirect_to && $page_id ) {
+			return get_permalink( $page_id );
+		}
+		if ( 'url' == $redirect_to && $url ) {
+			return $url;
+		}
+
+
+		return '';
 	}
 
 	private function settings() {
