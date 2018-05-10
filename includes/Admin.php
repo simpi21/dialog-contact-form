@@ -34,6 +34,7 @@ class Admin {
 
 		add_action( 'init', array( $this, 'post_type' ) );
 		add_action( 'edit_form_after_title', array( $this, 'edit_form_after_title' ) );
+		add_action( 'admin_menu', array( $this, 'remove_submitdiv' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_meta' ), 10, 2 );
 	}
@@ -217,12 +218,19 @@ class Admin {
 	}
 
 	/**
+	 * Remove submit div form post type
+	 */
+	public function remove_submitdiv() {
+		remove_meta_box( 'submitdiv', $this->post_type, 'side' );
+	}
+
+	/**
 	 * Add carousel slider meta box
 	 */
 	public function add_meta_boxes() {
 		add_meta_box(
-			'dialog-cf-shortcode',
-			__( 'Shortcode', 'dialog-contact-form' ),
+			'dialog-contact-form-usage',
+			__( 'Usage', 'dialog-contact-form' ),
 			array( $this, 'meta_box_shortcode_cb' ),
 			$this->post_type,
 			'side',
@@ -247,6 +255,18 @@ class Admin {
                 value="<?php echo $shortcode; ?>"
                 style="background-color: #f1f1f1;letter-spacing: 1px;width: 100%;padding: 5px 8px;"
         >
+        <div class="submitbox" id="submitpost" style="margin: 12px -12px -12px;">
+            <input type="hidden" id="post_status" name="post_status" value="publish">
+            <div id="major-publishing-actions">
+                <div id="publishing-action">
+                    <span class="spinner"></span>
+                    <input name="original_publish" type="hidden" id="original_publish" value="Update">
+                    <input name="save" type="submit" class="button button-primary button-large" id="publish"
+                           value="Update">
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
 		<?php
 	}
 

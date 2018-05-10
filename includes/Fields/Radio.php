@@ -41,18 +41,26 @@ class Radio extends Abstract_Field {
 	 * Validate field value
 	 *
 	 * @param mixed $value
+	 *
+	 * @return bool
 	 */
 	public function validate( $value ) {
-		// TODO: Implement validate() method.
+		return in_array( $value, $this->get_options() );
 	}
 
 	/**
 	 * Sanitize field value
 	 *
 	 * @param mixed $value
+	 *
+	 * @return mixed
 	 */
 	public function sanitize( $value ) {
-		// TODO: Implement sanitize() method.
+		if ( in_array( $value, $this->get_options() ) ) {
+			return $value;
+		}
+
+		return '';
 	}
 
 	/**

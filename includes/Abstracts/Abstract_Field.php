@@ -143,7 +143,7 @@ abstract class Abstract_Field {
 	 *
 	 * @return string
 	 */
-	protected function get_type() {
+	public function get_type() {
 		return $this->type;
 	}
 
@@ -153,15 +153,19 @@ abstract class Abstract_Field {
 	 * @return array
 	 */
 	protected function get_options() {
-		if ( empty( $this->field['options'] ) ) {
-			return array();
+		if ( is_array( $this->field['options'] ) ) {
+			return $this->field['options'];
 		}
 
 		if ( is_string( $this->field['options'] ) ) {
 			return explode( PHP_EOL, $this->field['options'] );
 		}
 
-		return is_array( $this->field['options'] ) ? $this->field['options'] : array();
+		if ( empty( $this->field['options'] ) ) {
+			return array();
+		}
+
+		return array();
 	}
 
 	/**
@@ -207,5 +211,18 @@ abstract class Abstract_Field {
 	 */
 	public function setField( $field ) {
 		$this->field = $field;
+	}
+
+	/**
+	 * Check if the value is present.
+	 *
+	 * @param  mixed $value
+	 *
+	 * @return boolean
+	 */
+	public function is_empty( $value ) {
+		$value = preg_replace( '/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $value );
+
+		return empty( $value );
 	}
 }

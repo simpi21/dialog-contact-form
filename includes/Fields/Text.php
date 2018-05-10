@@ -35,9 +35,11 @@ class Text extends Abstract_Field {
 	 * Validate field value
 	 *
 	 * @param mixed $value
+	 *
+	 * @return bool
 	 */
 	public function validate( $value ) {
-		// TODO: Implement validate() method.
+		return ! ( is_array( $value ) || is_object( $value ) );
 	}
 
 	/**

@@ -301,107 +301,44 @@ class Submission {
 		$messages       = $this->get_validation_messages();
 		$message        = array();
 		$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
+		$field_type     = $field['field_type'] ? $field['field_type'] : '';
+		$message_key    = sprintf( 'invalid_%s', $field_type );
+		$error_message  = isset( $messages[ $message_key ] ) ? $messages[ $message_key ] : $messages['generic_error'];
 
-		// If field type is email, url, number or date then add appropriate validation rule
-		if ( in_array( $field['field_type'], array( 'email', 'url', 'number', 'date' ) ) ) {
-			$validate_rules[] = $field['field_type'];
-		}
-
-		if ( isset( $field['required_field'] ) && 'on' == $field['required_field'] ) {
-			$validate_rules[] = 'required';
-		}
-
-		// Make sure, validation rules are unique
-		$validate_rules = array_unique( $validate_rules );
-
-		// Loop through all validation rules and
-		// Add error message if any error occur
-		foreach ( $validate_rules as $rule ) {
-			switch ( $rule ) {
-				case 'required':
-					if ( ! Validate::required( $value ) ) {
-						$message[] = $messages['invalid_required'];
-					}
-					break;
-				case 'email':
-					if ( ! Validate::email( $value ) ) {
-						$message[] = $messages['invalid_email'];
-					}
-					break;
-				case 'url':
-					if ( ! Validate::url( $value ) ) {
-						$message[] = $messages['invalid_url'];
-					}
-					break;
-				case 'number':
-					if ( ! Validate::number( $value ) ) {
-						$message[] = $messages['invalid_number'];
-					}
-					break;
-				case 'int':
-					if ( ! Validate::int( $value ) ) {
-						$message[] = $messages['invalid_int'];
-					}
-					break;
-				case 'alpha':
-					if ( ! Validate::alpha( $value ) ) {
-						$message[] = $messages['invalid_alpha'];
-					}
-					break;
-				case 'alnum':
-					if ( ! Validate::alnum( $value ) ) {
-						$message[] = $messages['invalid_alnum'];
-					}
-					break;
-				case 'alnumdash':
-					if ( ! Validate::alnumdash( $value ) ) {
-						$message[] = $messages['invalid_alnumdash'];
-					}
-					break;
-				case 'date':
-					if ( ! Validate::date( $value ) ) {
-						$message[] = $messages['invalid_date'];
-					}
-					break;
-				case 'checked':
-					if ( ! Validate::checked( $value ) ) {
-						$message[] = $messages['invalid_checked'];
-					}
-					break;
-				case 'ip':
-					if ( ! Validate::ip( $value ) ) {
-						$message[] = $messages['invalid_ip'];
-					}
-					break;
-				case 'user_login':
-					if ( ! Validate::user_login( $value ) ) {
-						$message[] = $messages['invalid_user_login'];
-					}
-					break;
-				case 'username':
-					if ( ! Validate::username( $value ) ) {
-						$message[] = $messages['invalid_username'];
-					}
-					break;
-				case 'user_email':
-					if ( ! Validate::user_email( $value ) ) {
-						$message[] = $messages['invalid_user_email'];
-					}
-					break;
-				default:
-					break;
+		// Backward compatibility for required field.
+		if ( ! isset( $field['required_field'] ) ) {
+			if ( in_array( 'required', $validate_rules ) ) {
+				$field['required_field'] = 'on';
+			} else {
+				$field['required_field'] = 'off';
 			}
 		}
 
-		// If field is not required, hide message if field is empty
-		if ( ! in_array( 'required', $validate_rules ) &&
-		     ! Validate::required( $value ) ) {
-			$message = array();
-		}
+		$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field_type );
+		if ( class_exists( $class_name ) ) {
+			/** @var \DialogContactForm\Abstracts\Abstract_Field $class */
+			$class = new $class_name;
+			$class->setField( $field );
 
-		// If user custom message exists, use it
-		if ( count( $message ) > 0 && mb_strlen( $field['error_message'], 'UTF-8' ) > 10 ) {
-			$message = array( $field['error_message'] );
+			// If field is required, then check it is not empty
+			if ( 'on' == $field['required_field'] && $class->is_empty( $value ) ) {
+				$message[] = $messages['invalid_required'];
+			}
+
+			// Check if value is acceptable for field type
+			if ( ! $class->validate( $value ) ) {
+				$message[] = $error_message;
+			}
+
+			// If field is not required, hide message if field is empty
+			if ( 'off' == $field['required_field'] && $class->is_empty( $value ) ) {
+				$message = array();
+			}
+
+			// If user custom message exists, use it
+			if ( count( $message ) > 0 && mb_strlen( $field['error_message'], 'UTF-8' ) > 10 ) {
+				$message = array( $field['error_message'] );
+			}
 		}
 
 		// Return field validation messages
