@@ -214,11 +214,11 @@ if ( ! function_exists( 'dcf_default_mail_template' ) ) {
 	 */
 	function dcf_default_mail_template() {
 		$defaults = array(
-			'receiver'    => get_option( 'admin_email' ),
+			'receiver'    => '[system:admin_email]',
 			'senderEmail' => '[your_email]',
 			'senderName'  => '[your_name]',
-			'subject'     => get_option( 'blogname' ) . ': [subject]',
-			'body'        => "[all_fields_table]",
+			'subject'     => '[system:blogname] : [subject]',
+			'body'        => '[all_fields_table]',
 		);
 
 		return $defaults;
