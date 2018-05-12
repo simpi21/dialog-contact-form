@@ -37,6 +37,7 @@ class Admin {
 		add_action( 'admin_menu', array( $this, 'remove_submitdiv' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_meta' ), 10, 2 );
+		add_action( 'admin_menu', array( $this, 'add_entry_menu' ) );
 	}
 
 	/**
@@ -329,6 +330,36 @@ class Admin {
 		 * @param \WP_Post $post The post object.
 		 */
 		do_action( 'dialog_contact_form_save_post', $post_id, $post );
+	}
+
+	public function add_entry_menu() {
+		add_submenu_page(
+			'edit.php?post_type=dialog-contact-form',
+			__( 'Entries', 'dialog-contact-form' ),
+			__( 'Entries', 'dialog-contact-form' ),
+			'manage_options',
+			'dcf-entries',
+			array( $this, 'entries_page' )
+		);
+	}
+
+	public function entries_page() {
+		$tab     = isset( $_GET['tab'] ) ? $_GET['tab'] : 'list';
+		$form_id = isset( $_GET['form_id'] ) ? intval( $_GET['form_id'] ) : 0;
+		$id      = isset( $_GET['id'] ) ? intval( $_GET['id'] ) : 0;
+
+		switch ( $tab ) {
+			case 'view':
+				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/admin/entry/view.php';
+				break;
+			default:
+				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/admin/entry/list.php';
+				break;
+		}
+
+		if ( file_exists( $template ) ) {
+			include $template;
+		}
 	}
 
 	/**

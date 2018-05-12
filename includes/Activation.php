@@ -5,9 +5,25 @@ namespace DialogContactForm;
 class Activation {
 
 	/**
+	 * Instance of the class
+	 *
 	 * @var object
 	 */
-	protected static $instance;
+	private static $instance;
+
+	/**
+	 * Entry database table name
+	 *
+	 * @var string
+	 */
+	private static $table_name = 'dcf_entries';
+
+	/**
+	 * Entry meta table name
+	 *
+	 * @var string
+	 */
+	private static $meta_table_name = 'dcf_entry_meta';
 
 	/**
 	 * @return Activation
@@ -17,20 +33,17 @@ class Activation {
 			self::$instance = new self();
 		}
 
-		return self::$instance;
-	}
+		add_action( 'dialog_contact_form_activation', array( self::$instance, 'add_default_form' ) );
+		add_action( 'dialog_contact_form_activation', array( self::$instance, 'create_tables' ) );
+		add_action( 'dialog_contact_form_deactivate', array( self::$instance, 'delete_tables' ) );
 
-	/**
-	 * Dialog_Contact_Form_Activation constructor.
-	 */
-	public function __construct() {
-		add_action( 'dialog_contact_form_activation', array( $this, 'add_default_form' ) );
+		return self::$instance;
 	}
 
 	/**
 	 * Add sample form on plugin activation
 	 */
-	public function add_default_form() {
+	public static function add_default_form() {
 		$contact_forms = get_posts( array(
 			'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
 			'posts_per_page' => 5,
@@ -57,7 +70,7 @@ class Activation {
 			update_post_meta( $post_id, '_contact_form_config', dcf_default_configuration() );
 			update_post_meta( $post_id, '_contact_form_mail', dcf_default_mail_template() );
 
-			$this->upgrade_to_version_2( $post_id );
+			self::upgrade_to_version_2( $post_id );
 		}
 	}
 
@@ -69,7 +82,7 @@ class Activation {
 	 *
 	 * @return bool
 	 */
-	public function upgrade_to_version_2( $post_id = 0 ) {
+	public static function upgrade_to_version_2( $post_id = 0 ) {
 		$old_option = get_option( 'dialogcf_options' );
 		if ( ! isset( $old_option['display_dialog'], $old_option['dialog_color'] ) ) {
 			return false;
@@ -84,5 +97,62 @@ class Activation {
 		$option['dialog_form_id']           = $post_id;
 
 		return update_option( 'dialog_contact_form', $option );
+	}
+
+	public static function create_tables() {
+		global $wpdb;
+
+		$collate = '';
+
+		if ( $wpdb->has_cap( 'collation' ) ) {
+			if ( ! empty( $wpdb->charset ) ) {
+				$collate .= "DEFAULT CHARACTER SET $wpdb->charset";
+			}
+
+			if ( ! empty( $wpdb->collate ) ) {
+				$collate .= " COLLATE $wpdb->collate";
+			}
+		}
+
+		$table_name      = $wpdb->prefix . self::$table_name;
+		$meta_table_name = $wpdb->prefix . self::$meta_table_name;
+
+		$entries_table_schema = "CREATE TABLE IF NOT EXISTS `{$table_name}` (
+                `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `form_id` bigint(20) unsigned DEFAULT NULL,
+                `user_id` bigint(20) unsigned DEFAULT NULL,
+                `user_ip` varchar(45) DEFAULT NULL,
+                `user_agent` varchar(255) DEFAULT NULL,
+                `referer` varchar(255) DEFAULT NULL,
+                `status` varchar(20) DEFAULT 'publish',
+                `created_at` datetime DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                KEY `form_id` (`form_id`)
+            ) $collate;";
+
+		$meta_table_schema = "CREATE TABLE IF NOT EXISTS `{$meta_table_name}` (
+                `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `entry_id` bigint(20) unsigned DEFAULT NULL,
+                `meta_key` varchar(255) DEFAULT NULL,
+                `meta_value` longtext,
+                PRIMARY KEY (`meta_id`),
+                KEY `meta_key` (`meta_key`),
+                KEY `entry_id` (`entry_id`)
+            ) $collate;";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $entries_table_schema );
+		dbDelta( $meta_table_schema );
+	}
+
+	public function delete_tables() {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			global $wpdb;
+			$table_name      = $wpdb->prefix . self::$table_name;
+			$meta_table_name = $wpdb->prefix . self::$meta_table_name;
+
+			$wpdb->query( "DROP TABLE IF EXISTS `{$table_name}`" );
+			$wpdb->query( "DROP TABLE IF EXISTS `{$meta_table_name}`" );
+		}
 	}
 }
