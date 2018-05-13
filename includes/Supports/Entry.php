@@ -27,22 +27,12 @@ class Entry implements \JsonSerializable {
 
 	private $entries = array();
 
-	public function ___get( $property ) {
-		if ( in_array( $property, $this->entries ) ) {
-			return $this->entries[ $property ];
-		}
-
-		if ( isset( $this->{$property} ) ) {
-			return $this->{$property};
-		}
-
-		return null;
-	}
-
 	/**
 	 * Entry constructor.
+	 *
+	 * @param array $entries
 	 */
-	public function __construct( $entries = [] ) {
+	public function __construct( $entries = array() ) {
 		global $wpdb;
 
 		/*
@@ -66,7 +56,14 @@ class Entry implements \JsonSerializable {
 		return json_encode( $this->entries );
 	}
 
-	public function get( $args ) {
+	/**
+	 * Get entries
+	 *
+	 * @param $args
+	 *
+	 * @return null|object
+	 */
+	public function get_entries( $args ) {
 		$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : 'id';
 		$order    = isset( $args['order'] ) ? $args['order'] : 'desc';
 		$offset   = isset( $args['offset'] ) ? intval( $args['offset'] ) : 0;
@@ -80,6 +77,34 @@ class Entry implements \JsonSerializable {
             ", OBJECT );
 
 		return $items;
+	}
+
+	/**
+	 * Get entry by entry ID
+	 *
+	 * @param int $entry_id
+	 *
+	 * @return array
+	 */
+	public function get( $entry_id ) {
+		$items = $this->db->get_row( $this->db->prepare(
+			"SELECT * FROM $this->table_name WHERE id = %d", $entry_id ),
+			ARRAY_A
+		);
+
+		$entries = $this->db->get_results( $this->db->prepare(
+			"SELECT * FROM $this->meta_table_name WHERE entry_id = %d", $entry_id ),
+			ARRAY_A
+		);
+
+		$_entries = array(
+			'meta_data' => $items,
+		);
+		foreach ( $entries as $entry ) {
+			$_entries[ $entry['meta_key'] ] = $this->unserialize( $entry['meta_value'] );
+		}
+
+		return $_entries;
 	}
 
 	/**
@@ -119,10 +144,6 @@ class Entry implements \JsonSerializable {
 
 	public function delete( $where, $where_format = null ) {
 		$this->db->delete( $this->table_name, $where, $where_format );
-	}
-
-	private function insert_multiple_rows( $table_name, $data ) {
-
 	}
 
 	/**

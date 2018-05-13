@@ -210,7 +210,7 @@ class Entry_List_Table extends \WP_List_Table {
 		$items       = wp_cache_get( $cache_key, $cache_group );
 		if ( false === $items ) {
 			$movie = new Entry();
-			$items = $this->_to_object( $movie->get( $args ) );
+			$items = $this->_to_object( $movie->get_entries( $args ) );
 			wp_cache_set( $cache_key, $items, $cache_group );
 		}
 
