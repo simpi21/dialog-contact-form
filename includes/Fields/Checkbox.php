@@ -47,7 +47,23 @@ class Checkbox extends Abstract_Field {
 	 * @return bool
 	 */
 	public function validate( $value ) {
-		return in_array( $value, $this->get_options() );
+
+		if ( is_string( $value ) ) {
+			return in_array( $value, $this->get_options() );
+		}
+
+		if ( is_array( $value ) ) {
+			$is_valid = array();
+			foreach ( $value as $item ) {
+				if ( ! in_array( $item, $this->get_options() ) ) {
+					$is_valid[] = 'no';
+				}
+			}
+
+			return ! in_array( 'no', $is_valid );
+		}
+
+		return false;
 	}
 
 	/**

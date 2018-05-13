@@ -158,7 +158,9 @@ abstract class Abstract_Field {
 		}
 
 		if ( is_string( $this->field['options'] ) ) {
-			return explode( PHP_EOL, $this->field['options'] );
+			$options = explode( PHP_EOL, $this->field['options'] );
+
+			return array_map( 'trim', $options );
 		}
 
 		if ( empty( $this->field['options'] ) ) {
