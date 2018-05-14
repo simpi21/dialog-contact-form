@@ -1,6 +1,6 @@
 <?php
 
-namespace DialogContactForm\Supports;
+namespace DialogContactForm\Entries;
 
 /**
  * The WP_List_Table class isn't automatically available to plugins,
@@ -104,10 +104,19 @@ class Entry_List_Table extends \WP_List_Table {
 			'id'        => $item->id,
 		), admin_url( 'edit.php' ) );
 
+		$trash_url = add_query_arg( array(
+			'post_type' => 'dialog-contact-form',
+			'page'      => 'dcf-entries',
+			'action'    => 'trash',
+			'entry_id'  => $item->id,
+		), admin_url( 'edit.php' ) );
+
+		$trash_url = wp_nonce_url( $trash_url, 'dcf_entries_list', '_dcf_nonce' );
+
 		//Build row actions
 		$actions = array(
 			'view'  => '<a href="' . $view_url . '">' . __( 'View', 'dialog-contact-from' ) . '</a>',
-			'trash' => '<a href="' . $view_url . '">' . __( 'Trash', 'dialog-contact-from' ) . '</a>',
+			'trash' => '<a href="' . $trash_url . '">' . __( 'Trash', 'dialog-contact-from' ) . '</a>',
 		);
 
 		//Return the title contents
@@ -151,7 +160,7 @@ class Entry_List_Table extends \WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		$actions = array(
-			'delete' => __( 'Delete', 'dialog-contact-from' )
+			'trash' => __( 'Move to Trash', 'dialog-contact-from' )
 		);
 
 		return $actions;
@@ -169,7 +178,7 @@ class Entry_List_Table extends \WP_List_Table {
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
 		// First, lets decide how many records per page to show
-		$per_page = $this->get_items_per_page( 'dcf_entry_per_page', 50 );
+		$per_page = $this->get_items_per_page( 'entries_per_page', 50 );
 
 		// What page the user is currently looking at
 		$current_page = $this->get_pagenum();
@@ -194,7 +203,6 @@ class Entry_List_Table extends \WP_List_Table {
 			'per_page'    => $per_page,
 			'total_pages' => ceil( $total_items / $per_page )
 		) );
-
 	}
 
 	/**
@@ -237,10 +245,10 @@ class Entry_List_Table extends \WP_List_Table {
 	 * @return object
 	 */
 	private function _to_object( $data ) {
-		if ( is_object( $data ) ) {
-			return $data;
+		if ( is_array( $data ) ) {
+			return json_decode( json_encode( $data ), false );
 		}
 
-		return json_decode( json_encode( $data ), false );
+		return $data;
 	}
 }

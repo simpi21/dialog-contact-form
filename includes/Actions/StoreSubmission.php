@@ -3,7 +3,7 @@
 namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Abstract_Action;
-use DialogContactForm\Supports\Entry;
+use DialogContactForm\Entries\Entry;
 
 class StoreSubmission extends Abstract_Action {
 

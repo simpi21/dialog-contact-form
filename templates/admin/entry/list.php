@@ -1,6 +1,6 @@
 <?php
 
-use DialogContactForm\Supports\Entry_List_Table;
+use DialogContactForm\Entries\Entry_List_Table;
 
 ?>
 <div class="wrap">
@@ -21,7 +21,10 @@ use DialogContactForm\Supports\Entry_List_Table;
 	<?php endif; ?>
 
     <form id="movies-filter" method="get" autocomplete="off" accept-charset="utf-8">
+        <input type="hidden" name="post_type" value="<?php echo $_REQUEST['post_type'] ?>"/>
         <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>"/>
+        <input type="hidden" id="_dcf_nonce" name="_dcf_nonce"
+               value="<?php echo wp_create_nonce( 'dcf_entries_list' ); ?>"/>
 		<?php
 
 		//Create an instance of our package class...

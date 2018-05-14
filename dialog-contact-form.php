@@ -206,6 +206,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 
 			if ( $this->is_request( 'admin' ) ) {
 				$this->container['admin']    = \DialogContactForm\Admin::init();
+				$this->container['entries']  = \DialogContactForm\Entries\EntryManager::init();
 				$this->container['settings'] = \DialogContactForm\Settings::init();
 			}
 

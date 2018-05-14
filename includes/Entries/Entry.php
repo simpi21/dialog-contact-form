@@ -1,6 +1,6 @@
 <?php
 
-namespace DialogContactForm\Supports;
+namespace DialogContactForm\Entries;
 
 class Entry implements \JsonSerializable {
 

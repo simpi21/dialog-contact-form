@@ -1,6 +1,6 @@
 <?php
 
-use DialogContactForm\Supports\Entry;
+use DialogContactForm\Entries\Entry;
 
 $entry     = new Entry();
 $data      = $entry->get( $id );
