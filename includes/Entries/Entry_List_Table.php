@@ -23,6 +23,11 @@ class Entry_List_Table extends \WP_List_Table {
 	private $time_format;
 
 	/**
+	 * @var bool
+	 */
+	private $is_trash = false;
+
+	/**
 	 * Entry_List_Table constructor.
 	 */
 	public function __construct() {
@@ -44,7 +49,11 @@ class Entry_List_Table extends \WP_List_Table {
 	 * Message to be displayed when there are no items
 	 */
 	function no_items() {
-		_e( 'No entries found.', 'dialog-contact-from' );
+		if ( isset( $_REQUEST['post_status'] ) && 'trash' === $_REQUEST['post_status'] ) {
+			esc_html_e( 'No entries found in Trash.', 'dialog-contact-from' );
+		} else {
+			esc_html_e( 'No entries found.', 'dialog-contact-from' );
+		}
 	}
 
 	/**
@@ -159,9 +168,19 @@ class Entry_List_Table extends \WP_List_Table {
 	 * @return array
 	 */
 	public function get_bulk_actions() {
-		$actions = array(
-			'trash' => __( 'Move to Trash', 'dialog-contact-from' )
-		);
+		$actions = array();
+
+		if ( current_user_can( 'edit_pages' ) && $this->is_trash ) {
+			$actions['untrash'] = __( 'Restore', 'dialog-contact-from' );
+		}
+
+		if ( current_user_can( 'delete_pages' ) ) {
+			if ( $this->is_trash ) {
+				$actions['delete'] = __( 'Delete Permanently', 'dialog-contact-from' );
+			} else {
+				$actions['trash'] = __( 'Move to Trash', 'dialog-contact-from' );
+			}
+		}
 
 		return $actions;
 	}
@@ -192,8 +211,16 @@ class Entry_List_Table extends \WP_List_Table {
 
 		$this->items = $this->get_items( $args );
 
+		$this->is_trash = isset( $_REQUEST['post_status'] ) && $_REQUEST['post_status'] === 'trash';
+
 		// Total number of items
 		$total_items = $this->count_items();
+
+		if ( $this->is_trash ) {
+			$total_items = $total_items['trash'];
+		} else {
+			$total_items = $total_items['publish'];
+		}
 
 		/**
 		 * REQUIRED. We also have to register our pagination options & calculations.
@@ -213,13 +240,28 @@ class Entry_List_Table extends \WP_List_Table {
 	 * @return bool|mixed|object
 	 */
 	private function get_items( $args ) {
-		$cache_key   = sprintf( 'all-%s', $this->_args["plural"] );
-		$cache_group = sprintf( 'all-%s-group', $this->_args["plural"] );
-		$items       = wp_cache_get( $cache_key, $cache_group );
+		$cache_key = 'entries';
+		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
+
 		if ( false === $items ) {
-			$movie = new Entry();
-			$items = $this->_to_object( $movie->get_entries( $args ) );
-			wp_cache_set( $cache_key, $items, $cache_group );
+			global $wpdb;
+			$table = $wpdb->prefix . "dcf_entries";
+
+			$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : 'id';
+			$order    = isset( $args['order'] ) ? $args['order'] : 'desc';
+			$offset   = isset( $args['offset'] ) ? intval( $args['offset'] ) : 0;
+			$per_page = isset( $args['per_page'] ) ? intval( $args['per_page'] ) : 50;
+
+			$items = $wpdb->get_results( "
+                SELECT * FROM {$table}
+                ORDER BY {$orderby} {$order}
+                LIMIT {$per_page}
+                OFFSET {$offset}
+            ", OBJECT );
+
+			$items = $this->_to_object( $items );
+
+			wp_cache_set( $cache_key, $items, 'dialog-contact-form' );
 		}
 
 		return $items;
@@ -228,13 +270,30 @@ class Entry_List_Table extends \WP_List_Table {
 	/**
 	 * Count items
 	 *
-	 * @return int
+	 * @return array
 	 */
 	private function count_items() {
-		global $wpdb;
-		$table = $wpdb->prefix . "dcf_entries";
+		$counts = wp_cache_get( 'entries_count', 'dialog-contact-form' );
 
-		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM $table" );
+		if ( false === $counts ) {
+			global $wpdb;
+			$table = $wpdb->prefix . "dcf_entries";
+
+			$query   = "SELECT status, COUNT( * ) AS num_entries FROM {$table} GROUP BY status";
+			$results = $wpdb->get_results( $query, ARRAY_A );
+			$counts  = array(
+				'publish' => 0,
+				'trash'   => 0,
+			);
+
+			foreach ( $results as $row ) {
+				$counts[ $row['status'] ] = $row['num_entries'];
+			}
+
+			wp_cache_set( 'entries_count', $counts, 'dialog-contact-form' );
+		}
+
+		return $counts;
 	}
 
 	/**
