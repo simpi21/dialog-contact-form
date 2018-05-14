@@ -16,14 +16,21 @@ class EntryManager {
 	 *
 	 * @var string
 	 */
-	private $table_name = 'dcf_entries';
+	private $table_name;
 
 	/**
 	 * Entry meta table name
 	 *
 	 * @var string
 	 */
-	private $meta_table_name = 'dcf_entry_meta';
+	private $meta_table_name;
+
+	/**
+	 * WordPress Database class
+	 *
+	 * @var \wpdb
+	 */
+	private $db;
 
 	/**
 	 * @return EntryManager
@@ -37,6 +44,12 @@ class EntryManager {
 	}
 
 	public function __construct() {
+		global $wpdb;
+
+		$this->db              = $wpdb;
+		$this->table_name      = $wpdb->prefix . 'dcf_entries';
+		$this->meta_table_name = $wpdb->prefix . 'dcf_entry_meta';
+
 		add_action( 'admin_menu', array( $this, 'add_entry_menu' ) );
 		add_filter( 'set-screen-option', array( $this, 'set_screen' ), 10, 3 );
 		add_action( 'admin_init', array( $this, 'handle_action' ) );
@@ -123,24 +136,15 @@ class EntryManager {
 		$action    = $this->current_action();
 
 		if ( 'trash' == $action ) {
-			if ( is_array( $entry_ids ) ) {
-				$entry_ids = array_map( 'intval', $entry_ids );
-				foreach ( $entry_ids as $id ) {
-					$wpdb->update(
-						$wpdb->prefix . $this->table_name,
-						array( 'status' => 'trash' ),
-						array( 'id' => $id ),
-						'%s', '%d'
-					);
-				}
-			} else {
-				$wpdb->update(
-					$wpdb->prefix . $this->table_name,
-					array( 'status' => 'trash' ),
-					array( 'id' => intval( $entry_ids ) ),
-					'%s', '%d'
-				);
-			}
+			$this->handle_trash_action( $entry_ids );
+		}
+
+		if ( 'untrash' == $action ) {
+			$this->handle_untrash_action( $entry_ids );
+		}
+
+		if ( 'delete' == $action ) {
+			$this->handle_delete_action( $entry_ids );
 		}
 
 		// Redirect to Referer URL if available
@@ -169,5 +173,81 @@ class EntryManager {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Handle Move to Trash Action
+	 *
+	 * @param $entry_ids
+	 */
+	private function handle_trash_action( $entry_ids ) {
+		// Check user can run the action
+		if ( ! current_user_can( 'delete_pages' ) ) {
+			return;
+		}
+
+		if ( is_array( $entry_ids ) ) {
+			$entry_ids = array_map( 'intval', $entry_ids );
+			foreach ( $entry_ids as $id ) {
+				$this->db->update( $this->table_name, array( 'status' => 'trash' ), array( 'id' => $id ),
+					'%s', '%d' );
+			}
+		}
+
+		if ( is_numeric( $entry_ids ) ) {
+			$this->db->update( $this->table_name, array( 'status' => 'trash' ), array( 'id' => intval( $entry_ids ) ),
+				'%s', '%d' );
+		}
+	}
+
+	/**
+	 * Handle Restore Action
+	 *
+	 * @param $entry_ids
+	 */
+	private function handle_untrash_action( $entry_ids ) {
+		// Check user can run the action
+		if ( ! current_user_can( 'edit_pages' ) ) {
+			return;
+		}
+
+		if ( is_array( $entry_ids ) ) {
+			$entry_ids = array_map( 'intval', $entry_ids );
+			foreach ( $entry_ids as $id ) {
+				$this->db->update( $this->table_name, array( 'status' => 'publish' ), array( 'id' => $id ),
+					'%s', '%d' );
+			}
+		}
+
+		if ( is_numeric( $entry_ids ) ) {
+			$this->db->update( $this->table_name, array( 'status' => 'publish' ), array( 'id' => intval( $entry_ids ) ),
+				'%s', '%d' );
+		}
+	}
+
+	/**
+	 * Handle Delete Permanently action
+	 *
+	 * @param int|array $entry_ids entry id or array of entries ids
+	 */
+	private function handle_delete_action( $entry_ids ) {
+		// Check user can run the action
+		if ( ! current_user_can( 'delete_pages' ) ) {
+			return;
+		}
+
+		if ( is_array( $entry_ids ) ) {
+			$entry_ids = array_map( 'intval', $entry_ids );
+			foreach ( $entry_ids as $id ) {
+				$this->db->delete( $this->table_name, array( 'id' => $id ), '%d' );
+				$this->db->delete( $this->meta_table_name, array( 'entry_id' => $id ), '%d' );
+			}
+		}
+
+		if ( is_numeric( $entry_ids ) ) {
+			$id = intval( $entry_ids );
+			$this->db->delete( $this->table_name, array( 'id' => $id ), '%d' );
+			$this->db->delete( $this->meta_table_name, array( 'entry_id' => $id ), '%d' );
+		}
 	}
 }

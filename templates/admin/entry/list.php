@@ -33,6 +33,9 @@ use DialogContactForm\Entries\Entry_List_Table;
 		//Fetch, prepare, sort, and filter our data...
 		$table->prepare_items();
 
+		// Show views
+		$table->views();
+
 		// Show search form
 		$table->search_box( __( 'Search Entry', 'dialog-contact-from' ), 'entry' );
 
