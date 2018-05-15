@@ -124,7 +124,7 @@ class Activation {
                 `user_ip` varchar(45) DEFAULT NULL,
                 `user_agent` varchar(255) DEFAULT NULL,
                 `referer` varchar(255) DEFAULT NULL,
-                `status` varchar(20) DEFAULT 'publish',
+                `status` varchar(20) DEFAULT 'unread',
                 `created_at` datetime DEFAULT NULL,
                 PRIMARY KEY (`id`),
                 KEY `form_id` (`form_id`)

@@ -164,7 +164,7 @@ class Entry implements \JsonSerializable {
 			'user_ip'    => $this->get_remote_ip(),
 			'user_agent' => $this->get_user_agent(),
 			'referer'    => $this->get_referer(),
-			'status'     => 'publish',
+			'status'     => 'unread',
 			'created_at' => $current_time,
 		);
 	}

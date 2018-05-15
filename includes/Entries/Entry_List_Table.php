@@ -23,11 +23,6 @@ class Entry_List_Table extends \WP_List_Table {
 	private $time_format;
 
 	/**
-	 * @var bool
-	 */
-	private $is_trash = false;
-
-	/**
 	 * Entry database table name
 	 *
 	 * @var string
@@ -45,6 +40,21 @@ class Entry_List_Table extends \WP_List_Table {
 	 * @var array
 	 */
 	private $entry_count = array();
+
+	/**
+	 * @var bool
+	 */
+	private $is_unread = true;
+
+	/**
+	 * @var bool
+	 */
+	private $is_read = false;
+
+	/**
+	 * @var bool
+	 */
+	private $is_trash = false;
 
 	/**
 	 * Entry_List_Table constructor.
@@ -187,8 +197,7 @@ class Entry_List_Table extends \WP_List_Table {
 	 * @return string
 	 */
 	public function column_created_at( $item ) {
-		$date        = new \DateTime( $item->created_at );
-		$full_format = $this->date_format . ' ' . $this->time_format;
+		$date = new \DateTime( $item->created_at );
 
 		return '<abbr title="' . $date->format( 'r' ) . '">' . $date->format( $this->date_format ) . '</abbr>';
 	}
@@ -237,7 +246,9 @@ class Entry_List_Table extends \WP_List_Table {
 	 */
 	public function prepare_items() {
 
-		$this->is_trash = isset( $_REQUEST['post_status'] ) && $_REQUEST['post_status'] === 'trash';
+		$this->is_unread = empty( $_REQUEST['post_status'] ) || ( 'unread' === $_REQUEST['post_status'] );
+		$this->is_read   = isset( $_REQUEST['post_status'] ) && $_REQUEST['post_status'] === 'read';
+		$this->is_trash  = isset( $_REQUEST['post_status'] ) && $_REQUEST['post_status'] === 'trash';
 
 		// Build column headers
 		$columns               = $this->get_columns();
@@ -258,20 +269,20 @@ class Entry_List_Table extends \WP_List_Table {
 			'per_page' => $per_page,
 		);
 
-		if ( $this->is_trash ) {
-			$this->items = $this->get_trash_items( $args );
-		} else {
-			$this->items = $this->get_publish_items( $args );
-		}
-
-
 		// Total number of items
 		$total_items = $this->entry_count;
 
+		if ( $this->is_unread ) {
+			$this->items = $this->get_unread_items( $args );
+			$total_items = $total_items['unread'];
+		}
+		if ( $this->is_read ) {
+			$this->items = $this->get_read_items( $args );
+			$total_items = $total_items['read'];
+		}
 		if ( $this->is_trash ) {
+			$this->items = $this->get_trash_items( $args );
 			$total_items = $total_items['trash'];
-		} else {
-			$total_items = $total_items['publish'];
 		}
 
 		/**
@@ -291,25 +302,34 @@ class Entry_List_Table extends \WP_List_Table {
 	 * @return array
 	 */
 	protected function get_views() {
-		$all_url = add_query_arg( [
-			'post_type' => 'dialog-contact-form',
-			'page'      => 'dcf-entries',
-		], admin_url( 'edit.php' ) );
+		$unread_url = add_query_arg( array(
+			'post_type'   => 'dialog-contact-form',
+			'page'        => 'dcf-entries',
+			'post_status' => 'unread',
+		), admin_url( 'edit.php' ) );
+		$read_url   = add_query_arg( array(
+			'post_type'   => 'dialog-contact-form',
+			'page'        => 'dcf-entries',
+			'post_status' => 'read',
+		), admin_url( 'edit.php' ) );
 
-		$trash_url = add_query_arg( [
+		$trash_url = add_query_arg( array(
 			'post_type'   => 'dialog-contact-form',
 			'page'        => 'dcf-entries',
 			'post_status' => 'trash',
-		], admin_url( 'edit.php' ) );
+		), admin_url( 'edit.php' ) );
 
-		$publish_label   = sprintf( __( 'Published (%d)', 'dialog-contact-form' ), $this->entry_count['publish'] );
-		$trash_label     = sprintf( __( 'Trash (%d)', 'dialog-contact-form' ), $this->entry_count['trash'] );
-		$published_class = $this->is_trash ? '' : 'current';
-		$trash_class     = $this->is_trash ? 'current' : '';
+		$unread_label = sprintf( __( 'Unread (%d)', 'dialog-contact-form' ), $this->entry_count['unread'] );
+		$read_label   = sprintf( __( 'Read (%d)', 'dialog-contact-form' ), $this->entry_count['read'] );
+		$trash_label  = sprintf( __( 'Trash (%d)', 'dialog-contact-form' ), $this->entry_count['trash'] );
+		$unread_class = $this->is_unread ? 'current' : '';
+		$read_class   = $this->is_read ? 'current' : '';
+		$trash_class  = $this->is_trash ? 'current' : '';
 
 		return array(
-			'published' => '<a class="' . $published_class . '" href="' . $all_url . '">' . $publish_label . '</a>',
-			'trash'     => '<a class="' . $trash_class . '" href="' . $trash_url . '">' . $trash_label . '</a>',
+			'unread' => '<a class="' . $unread_class . '" href="' . $unread_url . '">' . $unread_label . '</a>',
+			'read'   => '<a class="' . $read_class . '" href="' . $read_url . '">' . $read_label . '</a>',
+			'trash'  => '<a class="' . $trash_class . '" href="' . $trash_url . '">' . $trash_label . '</a>',
 		);
 	}
 
@@ -320,12 +340,37 @@ class Entry_List_Table extends \WP_List_Table {
 	 *
 	 * @return object
 	 */
-	private function get_publish_items( $args ) {
-		$cache_key = sprintf( 'publish_entries_%s', md5( json_encode( $args ) ) );
+	private function get_unread_items( $args ) {
+		$cache_key = sprintf( 'unread_entries_%s', md5( json_encode( $args ) ) );
 		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
 		if ( false === $items ) {
 			$query = $this->db->prepare(
-				"SELECT * FROM `{$this->table_name}` WHERE `status` = 'publish' ORDER BY %s %s LIMIT %d OFFSET %d",
+				"SELECT * FROM `{$this->table_name}` WHERE `status` = 'unread' ORDER BY %s %s LIMIT %d OFFSET %d",
+				$args['orderby'], $args['order'], $args['per_page'], $args['offset']
+			);
+			$items = $this->db->get_results( $query, OBJECT );
+
+			$items = $this->_to_object( $items );
+
+			wp_cache_add( $cache_key, $items, 'dialog-contact-form' );
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Get publish entries
+	 *
+	 * @param array $args
+	 *
+	 * @return object
+	 */
+	private function get_read_items( $args ) {
+		$cache_key = sprintf( 'read_entries_%s', md5( json_encode( $args ) ) );
+		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
+		if ( false === $items ) {
+			$query = $this->db->prepare(
+				"SELECT * FROM `{$this->table_name}` WHERE `status` = 'read' ORDER BY %s %s LIMIT %d OFFSET %d",
 				$args['orderby'], $args['order'], $args['per_page'], $args['offset']
 			);
 			$items = $this->db->get_results( $query, OBJECT );
@@ -378,8 +423,9 @@ class Entry_List_Table extends \WP_List_Table {
 			$query   = "SELECT status, COUNT( * ) AS num_entries FROM {$table} GROUP BY status";
 			$results = $wpdb->get_results( $query, ARRAY_A );
 			$counts  = array(
-				'publish' => 0,
-				'trash'   => 0,
+				'unread' => 0,
+				'read'   => 0,
+				'trash'  => 0,
 			);
 
 			foreach ( $results as $row ) {

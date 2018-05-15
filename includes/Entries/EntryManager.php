@@ -130,7 +130,6 @@ class EntryManager {
 			return;
 		}
 
-		global $wpdb;
 		$referer   = isset( $_REQUEST['_wp_http_referer'] ) ? $_REQUEST['_wp_http_referer'] : null;
 		$entry_ids = isset( $_REQUEST['entry_id'] ) ? $_REQUEST['entry_id'] : 0;
 		$action    = $this->current_action();
@@ -214,13 +213,13 @@ class EntryManager {
 		if ( is_array( $entry_ids ) ) {
 			$entry_ids = array_map( 'intval', $entry_ids );
 			foreach ( $entry_ids as $id ) {
-				$this->db->update( $this->table_name, array( 'status' => 'publish' ), array( 'id' => $id ),
+				$this->db->update( $this->table_name, array( 'status' => 'read' ), array( 'id' => $id ),
 					'%s', '%d' );
 			}
 		}
 
 		if ( is_numeric( $entry_ids ) ) {
-			$this->db->update( $this->table_name, array( 'status' => 'publish' ), array( 'id' => intval( $entry_ids ) ),
+			$this->db->update( $this->table_name, array( 'status' => 'read' ), array( 'id' => intval( $entry_ids ) ),
 				'%s', '%d' );
 		}
 	}

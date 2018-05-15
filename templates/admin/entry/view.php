@@ -2,8 +2,10 @@
 
 use DialogContactForm\Entries\Entry;
 
-$entry     = new Entry();
-$data      = $entry->get( $id );
+$entry = new Entry();
+$data  = $entry->get( $id );
+var_dump( $data );
+$entry->update( array( 'status' => 'read' ), array( 'id' => $id ) );
 $meta_data = array();
 
 if ( isset( $data['meta_data'] ) && is_array( $data['meta_data'] ) ) {
