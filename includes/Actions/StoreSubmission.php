@@ -49,10 +49,6 @@ class StoreSubmission extends Abstract_Action {
 	 * @return bool
 	 */
 	public static function process( $form_id, $data ) {
-
-		// Remove attachment data
-		unset( $data['dcf_attachments'] );
-
 		$entry = new Entry();
 
 		return $entry->insert( $data );

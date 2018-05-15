@@ -22,7 +22,12 @@ $created_at = new \DateTime( $created_at );
 $form_title = get_the_title( $form_id );
 $form_title = sprintf( '%s : Entry # %s', $form_title, $meta_data['id'] );
 
-$fields   = get_post_meta( $form_id, '_contact_form_fields', true );
+$_fields = array();
+$fields  = get_post_meta( $form_id, '_contact_form_fields', true );
+foreach ( $fields as $field ) {
+	$_fields[ $field['field_name'] ] = $field;
+}
+
 $back_url = add_query_arg( array(
 	'post_type' => 'dialog-contact-form',
 	'page'      => 'dcf-entries',
@@ -71,12 +76,25 @@ $back_url = add_query_arg( array(
                     </h2>
                     <div class="inside">
                         <table class="form-table dcf-data-table">
-							<?php foreach ( $fields as $field ) { ?>
+							<?php foreach ( $data as $_key => $value ) {
+								$field = isset( $_fields[ $_key ] ) ? $_fields[ $_key ] : array();
+								?>
                                 <tr>
-                                    <th scope="row"><?php echo $field['field_title']; ?></th>
+                                    <th scope="row">
+										<?php
+										if ( isset( $field['field_title'] ) ) {
+											echo esc_html( $field['field_title'] );
+										} else {
+											if ( 'dcf_attachments' === $_key ) {
+												esc_html_e( 'Attachment', 'dialog-contact-form' );
+											} else {
+												esc_html_e( $_key );
+											}
+										}
+										?>
+                                    </th>
                                     <td>
 										<?php
-										$value = isset( $data[ $field['field_name'] ] ) ? $data[ $field['field_name'] ] : null;
 										if ( is_string( $value ) ) {
 											echo wpautop( $value );
 										} elseif ( is_numeric( $value ) ) {
@@ -86,7 +104,20 @@ $back_url = add_query_arg( array(
 												echo intval( $value );
 											}
 										} elseif ( is_array( $value ) ) {
-											echo implode( '<br>', $value );
+											foreach ( $value as $v_key => $v_value ) {
+												if ( is_string( $v_value ) ) {
+													echo $v_value;
+												} elseif ( is_array( $v_value ) ) {
+													if ( isset( $v_value['attachment_id'] ) && is_numeric( $v_value['attachment_id'] ) ) {
+														$url = wp_get_attachment_url( $v_value['attachment_id'] );
+														echo '<a href="' . $url . '" target="_blank">';
+														echo wp_get_attachment_image( $v_value['attachment_id'] );
+														echo '</a>';
+													} else {
+														echo implode( '<br>', $v_value );
+													}
+												}
+											}
 										}
 										?>
                                     </td>

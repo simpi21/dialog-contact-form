@@ -274,7 +274,7 @@ class Entry_List_Table extends \WP_List_Table {
 
 		$args = array(
 			'orderby'  => ! empty( $_REQUEST['orderby'] ) ? $_REQUEST['orderby'] : 'id',
-			'order'    => ! empty( $_REQUEST['order'] ) ? $_REQUEST['order'] : 'desc',
+			'order'    => ! empty( $_REQUEST['order'] ) ? $_REQUEST['order'] : 'DESC',
 			'offset'   => ( $current_page - 1 ) * $per_page,
 			'per_page' => $per_page,
 		);

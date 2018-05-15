@@ -105,6 +105,7 @@ class EmailNotification extends Abstract_Action {
 	 */
 	public static function process( $form_id, $data ) {
 		$attachments = $data['dcf_attachments'];
+		$attachments = array_column( $attachments, 'attachment_path' );
 		$fields      = get_post_meta( $form_id, '_contact_form_fields', true );
 		$mail        = get_post_meta( $form_id, '_contact_form_mail', true );
 

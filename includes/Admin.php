@@ -14,6 +14,11 @@ class Admin {
 	private $post_type;
 
 	/**
+	 * @var array
+	 */
+	private $entries_count = array();
+
+	/**
 	 * @var object
 	 */
 	private static $instance;
@@ -89,6 +94,8 @@ class Admin {
 		add_action( 'manage_' . $this->post_type . '_posts_custom_column', array( $this, 'content' ), 10, 2 );
 		// Remove Quick Edit from list table
 		add_filter( 'post_row_actions', array( $this, 'post_row_actions' ), 10, 2 );
+
+		$this->entries_count = $this->count_entries();
 	}
 
 	/**
@@ -101,7 +108,8 @@ class Admin {
 		$columns = array(
 			'cb'        => '<input type="checkbox">',
 			'title'     => __( 'Title', 'dialog-contact-form' ),
-			'shortcode' => __( 'Shortcode', 'dialog-contact-form' )
+			'shortcode' => __( 'Shortcode', 'dialog-contact-form' ),
+			'entries'   => __( 'Entries', 'dialog-contact-form' ),
 		);
 
 		return $columns;
@@ -130,6 +138,15 @@ class Admin {
 				<?php
 				break;
 
+			case 'entries':
+				$entry_url   = add_query_arg( array(
+					'post_type' => 'dialog-contact-form',
+					'page'      => 'dcf-entries',
+					'form_id'   => $post_id,
+				), admin_url( 'edit.php' ) );
+				$entry_count = isset( $this->entries_count[ $post_id ] ) ? $this->entries_count[ $post_id ] : 0;
+				echo '<a href="' . esc_url( $entry_url ) . '">' . $entry_count . '</a>';
+				break;
 			default:
 				break;
 		}
@@ -372,5 +389,31 @@ class Admin {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Count form entries
+	 *
+	 * @return array
+	 */
+	private function count_entries() {
+		$counts = wp_cache_get( 'form_entries_count', 'dialog-contact-form' );
+
+		if ( false === $counts ) {
+			global $wpdb;
+			$table = $wpdb->prefix . "dcf_entries";
+
+			$query   = "SELECT form_id, COUNT( * ) AS num_entries FROM {$table} GROUP BY form_id";
+			$results = $wpdb->get_results( $query, ARRAY_A );
+
+			$counts = array();
+			foreach ( $results as $row ) {
+				$counts[ $row['form_id'] ] = intval( $row['num_entries'] );
+			}
+
+			wp_cache_set( 'form_entries_count', $counts, 'dialog-contact-form' );
+		}
+
+		return $counts;
 	}
 }

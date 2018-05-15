@@ -116,6 +116,7 @@ class Attachment {
 		$upload_dir = wp_upload_dir();
 
 		$attachment_dir = join( DIRECTORY_SEPARATOR, array( $upload_dir['basedir'], DIALOG_CONTACT_FORM_UPLOAD_DIR ) );
+		$attachment_url = join( DIRECTORY_SEPARATOR, array( $upload_dir['baseurl'], DIALOG_CONTACT_FORM_UPLOAD_DIR ) );
 
 		// Make attachment directory in upload directory if not already exists
 		if ( ! file_exists( $attachment_dir ) ) {
@@ -164,8 +165,30 @@ class Attachment {
 				$perms = $stat['mode'] & 0000666;
 				@ chmod( $new_file, $perms );
 
-				// Save uploaded file path for later use
-				$attachments[] = $new_file;
+				// Insert the attachment.
+				$attachment    = array(
+					'guid'           => join( DIRECTORY_SEPARATOR, array( $attachment_url, $filename ) ),
+					'post_title'     => preg_replace( '/\.[^.]+$/', '', $file->getClientFilename() ),
+					'post_status'    => 'inherit',
+					'post_mime_type' => $file->getClientMediaType(),
+				);
+				$attachment_id = wp_insert_attachment( $attachment, $new_file );
+
+				// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+				// Generate the metadata for the attachment, and update the database record.
+				$attach_data = wp_generate_attachment_metadata( $attachment_id, $new_file );
+				wp_update_attachment_metadata( $attachment_id, $attach_data );
+
+				if ( ! is_wp_error( $attachment_id ) ) {
+					$attachment['attachment_path'] = $new_file;
+					$attachment['attachment_id']   = $attachment_id;
+
+					// Save uploaded file path for later use
+					$attachments[] = $attachment;
+				}
+
 			} catch ( \Exception $exception ) {
 
 			}

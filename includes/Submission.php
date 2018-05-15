@@ -47,10 +47,6 @@ class Submission {
 		add_action( 'wp_ajax_nopriv_dcf_submit_form', array( $this, 'process_ajax_form_submission' ) );
 		add_action( 'template_redirect', array( $this, 'process_non_ajax_form_submission' ) );
 
-		// Remove mail attachment
-		add_action( 'dcf_after_send_mail', array( $this, 'remove_attachment_file' ), 0, 2 );
-		add_action( 'dcf_after_ajax_send_mail', array( $this, 'remove_attachment_file' ), 0, 2 );
-
 		$this->options = get_option( 'dialog_contact_form' );
 	}
 
@@ -358,16 +354,6 @@ class Submission {
 		$emailNotification = new EmailNotification();
 
 		return $emailNotification->process( $form_id, $data );
-	}
-
-	/**
-	 * Remove attachment after mail sent
-	 *
-	 * @param array $form_options
-	 * @param array $attachments
-	 */
-	public function remove_attachment_file( $form_options, $attachments ) {
-		Attachment::remove( $attachments );
 	}
 
 	/**
