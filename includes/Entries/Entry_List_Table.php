@@ -44,7 +44,7 @@ class Entry_List_Table extends \WP_List_Table {
 	/**
 	 * @var bool
 	 */
-	private $is_unread = true;
+	private $is_unread = false;
 
 	/**
 	 * @var bool
@@ -83,8 +83,14 @@ class Entry_List_Table extends \WP_List_Table {
 	 * Message to be displayed when there are no items
 	 */
 	function no_items() {
-		if ( isset( $_REQUEST['post_status'] ) && 'trash' === $_REQUEST['post_status'] ) {
+		$status = isset( $_REQUEST['post_status'] ) ? $_REQUEST['post_status'] : null;
+
+		if ( 'trash' === $status ) {
 			esc_html_e( 'No entries found in Trash.', 'dialog-contact-from' );
+		} elseif ( 'read' === $status ) {
+			esc_html_e( 'No read entries found.', 'dialog-contact-from' );
+		} elseif ( 'unread' === $status ) {
+			esc_html_e( 'No unread entries found.', 'dialog-contact-from' );
 		} else {
 			esc_html_e( 'No entries found.', 'dialog-contact-from' );
 		}
@@ -161,30 +167,34 @@ class Entry_List_Table extends \WP_List_Table {
 
 		} else {
 			if ( current_user_can( 'edit_pages' ) ) {
-				$trash_url          = add_query_arg( array(
+				$restore_url        = add_query_arg( array(
 					'post_type' => 'dialog-contact-form',
 					'page'      => 'dcf-entries',
 					'action'    => 'untrash',
 					'entry_id'  => $item->id,
 				), admin_url( 'edit.php' ) );
-				$trash_url          = wp_nonce_url( $trash_url, 'dcf_entries_list', '_dcf_nonce' );
-				$actions['untrash'] = '<a href="' . $trash_url . '">' . __( 'Restore', 'dialog-contact-from' ) . '</a>';
+				$restore_url        = wp_nonce_url( $restore_url, 'dcf_entries_list', '_dcf_nonce' );
+				$actions['untrash'] = '<a href="' . $restore_url . '">' . __( 'Restore', 'dialog-contact-from' ) . '</a>';
 			}
 			if ( current_user_can( 'delete_pages' ) ) {
-				$trash_url         = add_query_arg( array(
+				$delete_url        = add_query_arg( array(
 					'post_type' => 'dialog-contact-form',
 					'page'      => 'dcf-entries',
 					'action'    => 'delete',
 					'entry_id'  => $item->id,
 				), admin_url( 'edit.php' ) );
-				$trash_url         = wp_nonce_url( $trash_url, 'dcf_entries_list', '_dcf_nonce' );
-				$actions['delete'] = '<a href="' . $trash_url . '">' . __( 'Delete Permanently', 'dialog-contact-from' ) . '</a>';
+				$delete_url        = wp_nonce_url( $delete_url, 'dcf_entries_list', '_dcf_nonce' );
+				$actions['delete'] = '<a href="' . $delete_url . '">' . __( 'Delete Permanently', 'dialog-contact-from' ) . '</a>';
 			}
 		}
 
 		//Return the title contents
 		$title      = get_the_title( $item->form_id );
 		$form_title = sprintf( '%s <b>(ID: %s)</b>', $title, $item->form_id );
+
+		if ( 'unread' === $item->status ) {
+			$form_title = $form_title . ' - <span class="label-new">' . __( 'new', 'dialog-contact-form' ) . '</span>';
+		}
 
 		return sprintf( '%s %s', $form_title, $this->row_actions( $actions ) );
 	}
@@ -246,9 +256,9 @@ class Entry_List_Table extends \WP_List_Table {
 	 */
 	public function prepare_items() {
 
-		$this->is_unread = empty( $_REQUEST['post_status'] ) || ( 'unread' === $_REQUEST['post_status'] );
-		$this->is_read   = isset( $_REQUEST['post_status'] ) && $_REQUEST['post_status'] === 'read';
-		$this->is_trash  = isset( $_REQUEST['post_status'] ) && $_REQUEST['post_status'] === 'trash';
+		$this->is_unread = isset( $_REQUEST['post_status'] ) && 'unread' === $_REQUEST['post_status'];
+		$this->is_read   = isset( $_REQUEST['post_status'] ) && 'read' === $_REQUEST['post_status'];
+		$this->is_trash  = isset( $_REQUEST['post_status'] ) && 'trash' === $_REQUEST['post_status'];
 
 		// Build column headers
 		$columns               = $this->get_columns();
@@ -275,14 +285,15 @@ class Entry_List_Table extends \WP_List_Table {
 		if ( $this->is_unread ) {
 			$this->items = $this->get_unread_items( $args );
 			$total_items = $total_items['unread'];
-		}
-		if ( $this->is_read ) {
+		} else if ( $this->is_read ) {
 			$this->items = $this->get_read_items( $args );
 			$total_items = $total_items['read'];
-		}
-		if ( $this->is_trash ) {
+		} else if ( $this->is_trash ) {
 			$this->items = $this->get_trash_items( $args );
 			$total_items = $total_items['trash'];
+		} else {
+			$this->items = $this->get_items( $args );
+			$total_items = ( $total_items['unread'] + $total_items['read'] );
 		}
 
 		/**
@@ -302,6 +313,10 @@ class Entry_List_Table extends \WP_List_Table {
 	 * @return array
 	 */
 	protected function get_views() {
+		$all_url    = add_query_arg( array(
+			'post_type' => 'dialog-contact-form',
+			'page'      => 'dcf-entries',
+		), admin_url( 'edit.php' ) );
 		$unread_url = add_query_arg( array(
 			'post_type'   => 'dialog-contact-form',
 			'page'        => 'dcf-entries',
@@ -319,18 +334,47 @@ class Entry_List_Table extends \WP_List_Table {
 			'post_status' => 'trash',
 		), admin_url( 'edit.php' ) );
 
+		$all_count    = ( $this->entry_count['unread'] + $this->entry_count['read'] );
+		$all_label    = sprintf( __( 'All (%d)', 'dialog-contact-form' ), $all_count );
 		$unread_label = sprintf( __( 'Unread (%d)', 'dialog-contact-form' ), $this->entry_count['unread'] );
 		$read_label   = sprintf( __( 'Read (%d)', 'dialog-contact-form' ), $this->entry_count['read'] );
 		$trash_label  = sprintf( __( 'Trash (%d)', 'dialog-contact-form' ), $this->entry_count['trash'] );
 		$unread_class = $this->is_unread ? 'current' : '';
 		$read_class   = $this->is_read ? 'current' : '';
 		$trash_class  = $this->is_trash ? 'current' : '';
+		$all_class    = ! ( $this->is_trash || $this->is_unread || $this->is_read ) ? 'current' : '';
 
 		return array(
+			'all'    => '<a class="' . $all_class . '" href="' . $all_url . '">' . $all_label . '</a>',
 			'unread' => '<a class="' . $unread_class . '" href="' . $unread_url . '">' . $unread_label . '</a>',
 			'read'   => '<a class="' . $read_class . '" href="' . $read_url . '">' . $read_label . '</a>',
 			'trash'  => '<a class="' . $trash_class . '" href="' . $trash_url . '">' . $trash_label . '</a>',
 		);
+	}
+
+	/**
+	 * Get unread & read entries
+	 *
+	 * @param array $args
+	 *
+	 * @return object
+	 */
+	public function get_items( $args ) {
+		$cache_key = sprintf( 'all_entries_%s', md5( json_encode( $args ) ) );
+		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
+		if ( false === $items ) {
+			$query = $this->db->prepare(
+				"SELECT * FROM `{$this->table_name}` WHERE `status` != 'trash' ORDER BY %s %s LIMIT %d OFFSET %d",
+				$args['orderby'], $args['order'], $args['per_page'], $args['offset']
+			);
+			$items = $this->db->get_results( $query, OBJECT );
+
+			$items = $this->_to_object( $items );
+
+			wp_cache_add( $cache_key, $items, 'dialog-contact-form' );
+		}
+
+		return $items;
 	}
 
 	/**

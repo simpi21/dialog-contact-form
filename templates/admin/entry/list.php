@@ -3,6 +3,17 @@
 use DialogContactForm\Entries\Entry_List_Table;
 
 ?>
+<style type="text/css">
+    .label-new {
+        background: green;
+        border-radius: 3px;
+        color: white;
+        display: inline-block;
+        font-size: 12px;
+        line-height: 12px;
+        padding: 2px 4px;
+    }
+</style>
 <div class="wrap">
 
     <h1 class="wp-heading-inline">

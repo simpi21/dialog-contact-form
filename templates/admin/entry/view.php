@@ -4,10 +4,13 @@ use DialogContactForm\Entries\Entry;
 
 $entry = new Entry();
 $data  = $entry->get( $id );
-var_dump( $data );
-$entry->update( array( 'status' => 'read' ), array( 'id' => $id ) );
-$meta_data = array();
 
+// Update status to read
+if ( isset( $data['meta_data']['status'] ) && 'unread' === $data['meta_data']['status'] ) {
+	$entry->update( array( 'status' => 'read' ), array( 'id' => $id ) );
+}
+
+$meta_data = array();
 if ( isset( $data['meta_data'] ) && is_array( $data['meta_data'] ) ) {
 	$meta_data = $data['meta_data'];
 	unset( $data['meta_data'] );
