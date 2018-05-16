@@ -122,6 +122,11 @@ class Entry implements \JsonSerializable {
 		$insert_id = $this->db->insert_id;
 		if ( $insert_id ) {
 
+			// If attachment field is empty, do not record it
+			if ( empty( $data['dcf_attachments'] ) ) {
+				unset( $data['dcf_attachments'] );
+			}
+
 			$_data = array();
 
 			foreach ( $data as $key => $value ) {

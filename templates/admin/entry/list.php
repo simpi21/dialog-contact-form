@@ -2,6 +2,9 @@
 
 use DialogContactForm\Entries\Entry_List_Table;
 
+//Create an instance of our package class...
+$table = new Entry_List_Table();
+
 ?>
 <style type="text/css">
     .label-new {
@@ -36,19 +39,18 @@ use DialogContactForm\Entries\Entry_List_Table;
         <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>"/>
         <input type="hidden" id="_dcf_nonce" name="_dcf_nonce"
                value="<?php echo wp_create_nonce( 'dcf_entries_list' ); ?>"/>
-		<?php
+        <input type="hidden" name="redirect_to" value="<?php echo $table->current_url(); ?>">
 
-		//Create an instance of our package class...
-		$table = new Entry_List_Table();
+		<?php
 
 		//Fetch, prepare, sort, and filter our data...
 		$table->prepare_items();
 
-		// Show views
+		// Show views (all, unread, read, trash)
 		$table->views();
 
 		// Show search form
-		$table->search_box( __( 'Search Entry', 'dialog-contact-from' ), 'entry' );
+		// $table->search_box( __( 'Search Entry', 'dialog-contact-from' ), 'entry' );
 
 		// Display table with data
 		$table->display();

@@ -56,6 +56,24 @@ class Entry_List_Table extends \WP_List_Table {
 	 */
 	private $is_trash = false;
 
+	private $sort_order = array( 'ASC', 'DESC' );
+
+	/**
+	 * Table columns
+	 *
+	 * @var array
+	 */
+	private $columns = array(
+		'id',
+		'form_id',
+		'user_id',
+		'user_ip',
+		'user_agent',
+		'referer',
+		'status',
+		'created_at',
+	);
+
 	/**
 	 * Entry_List_Table constructor.
 	 */
@@ -156,10 +174,11 @@ class Entry_List_Table extends \WP_List_Table {
 
 			if ( current_user_can( 'delete_pages' ) ) {
 				$trash_url        = add_query_arg( array(
-					'post_type' => 'dialog-contact-form',
-					'page'      => 'dcf-entries',
-					'action'    => 'trash',
-					'entry_id'  => $item->id,
+					'post_type'   => 'dialog-contact-form',
+					'page'        => 'dcf-entries',
+					'action'      => 'trash',
+					'entry_id'    => $item->id,
+					'redirect_to' => $this->current_url( 'raw' ),
 				), admin_url( 'edit.php' ) );
 				$trash_url        = wp_nonce_url( $trash_url, 'dcf_entries_list', '_dcf_nonce' );
 				$actions['trash'] = '<a href="' . $trash_url . '">' . __( 'Trash', 'dialog-contact-from' ) . '</a>';
@@ -168,20 +187,22 @@ class Entry_List_Table extends \WP_List_Table {
 		} else {
 			if ( current_user_can( 'edit_pages' ) ) {
 				$restore_url        = add_query_arg( array(
-					'post_type' => 'dialog-contact-form',
-					'page'      => 'dcf-entries',
-					'action'    => 'untrash',
-					'entry_id'  => $item->id,
+					'post_type'   => 'dialog-contact-form',
+					'page'        => 'dcf-entries',
+					'action'      => 'untrash',
+					'entry_id'    => $item->id,
+					'redirect_to' => $this->current_url( 'raw' ),
 				), admin_url( 'edit.php' ) );
 				$restore_url        = wp_nonce_url( $restore_url, 'dcf_entries_list', '_dcf_nonce' );
 				$actions['untrash'] = '<a href="' . $restore_url . '">' . __( 'Restore', 'dialog-contact-from' ) . '</a>';
 			}
 			if ( current_user_can( 'delete_pages' ) ) {
 				$delete_url        = add_query_arg( array(
-					'post_type' => 'dialog-contact-form',
-					'page'      => 'dcf-entries',
-					'action'    => 'delete',
-					'entry_id'  => $item->id,
+					'post_type'   => 'dialog-contact-form',
+					'page'        => 'dcf-entries',
+					'action'      => 'delete',
+					'entry_id'    => $item->id,
+					'redirect_to' => $this->current_url( 'raw' ),
 				), admin_url( 'edit.php' ) );
 				$delete_url        = wp_nonce_url( $delete_url, 'dcf_entries_list', '_dcf_nonce' );
 				$actions['delete'] = '<a href="' . $delete_url . '">' . __( 'Delete Permanently', 'dialog-contact-from' ) . '</a>';
@@ -267,14 +288,14 @@ class Entry_List_Table extends \WP_List_Table {
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
 		// First, lets decide how many records per page to show
-		$per_page = $this->get_items_per_page( 'entries_per_page', 50 );
+		$per_page = intval( $this->get_items_per_page( 'entries_per_page', 50 ) );
 
 		// What page the user is currently looking at
 		$current_page = $this->get_pagenum();
 
 		$args = array(
-			'orderby'  => ! empty( $_REQUEST['orderby'] ) ? $_REQUEST['orderby'] : 'id',
-			'order'    => ! empty( $_REQUEST['order'] ) ? $_REQUEST['order'] : 'DESC',
+			'orderby'  => isset( $_REQUEST['orderby'] ) && in_array( $_REQUEST['orderby'], $this->columns ) ? $_REQUEST['orderby'] : 'id',
+			'order'    => isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], $this->sort_order ) ? $_REQUEST['order'] : 'DESC',
 			'offset'   => ( $current_page - 1 ) * $per_page,
 			'per_page' => $per_page,
 		);
@@ -353,20 +374,40 @@ class Entry_List_Table extends \WP_List_Table {
 	}
 
 	/**
+	 * Get current page url
+	 *
+	 * @param string $context
+	 *
+	 * @return string
+	 */
+	public function current_url( $context = 'display' ) {
+		$protocol = is_ssl() ? 'https://' : 'http://';
+		$host     = $_SERVER['HTTP_HOST'];
+		$url      = $_SERVER['REQUEST_URI'];
+		$full_url = $protocol . $host . $url;
+
+		if ( 'display' == $context ) {
+			return esc_url( $full_url );
+		}
+
+		return esc_url_raw( $full_url );
+	}
+
+	/**
 	 * Get unread & read entries
 	 *
 	 * @param array $args
 	 *
 	 * @return object
 	 */
-	public function get_items( $args ) {
+	private function get_items( $args ) {
 		$cache_key = sprintf( 'all_entries_%s', md5( json_encode( $args ) ) );
 		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
 		if ( false === $items ) {
-			$query = $this->db->prepare(
-				"SELECT * FROM `{$this->table_name}` WHERE `status` != 'trash' ORDER BY %s %s LIMIT %d OFFSET %d",
-				$args['orderby'], $args['order'], $args['per_page'], $args['offset']
-			);
+			$query = "SELECT * FROM {$this->table_name} WHERE status != 'trash'";
+			$query .= " ORDER BY {$args['orderby']} {$args['order']}";
+			$query .= sprintf( " LIMIT %d OFFSET %d", $args['per_page'], $args['offset'] );
+
 			$items = $this->db->get_results( $query, OBJECT );
 
 			$items = $this->_to_object( $items );
@@ -388,10 +429,10 @@ class Entry_List_Table extends \WP_List_Table {
 		$cache_key = sprintf( 'unread_entries_%s', md5( json_encode( $args ) ) );
 		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
 		if ( false === $items ) {
-			$query = $this->db->prepare(
-				"SELECT * FROM `{$this->table_name}` WHERE `status` = 'unread' ORDER BY %s %s LIMIT %d OFFSET %d",
-				$args['orderby'], $args['order'], $args['per_page'], $args['offset']
-			);
+			$query = "SELECT * FROM {$this->table_name} WHERE status = 'unread'";
+			$query .= " ORDER BY {$args['orderby']} {$args['order']}";
+			$query .= sprintf( " LIMIT %d OFFSET %d", $args['per_page'], $args['offset'] );
+
 			$items = $this->db->get_results( $query, OBJECT );
 
 			$items = $this->_to_object( $items );
@@ -413,10 +454,10 @@ class Entry_List_Table extends \WP_List_Table {
 		$cache_key = sprintf( 'read_entries_%s', md5( json_encode( $args ) ) );
 		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
 		if ( false === $items ) {
-			$query = $this->db->prepare(
-				"SELECT * FROM `{$this->table_name}` WHERE `status` = 'read' ORDER BY %s %s LIMIT %d OFFSET %d",
-				$args['orderby'], $args['order'], $args['per_page'], $args['offset']
-			);
+			$query = "SELECT * FROM {$this->table_name} WHERE status = 'read'";
+			$query .= " ORDER BY {$args['orderby']} {$args['order']}";
+			$query .= sprintf( " LIMIT %d OFFSET %d", $args['per_page'], $args['offset'] );
+
 			$items = $this->db->get_results( $query, OBJECT );
 
 			$items = $this->_to_object( $items );
@@ -438,10 +479,10 @@ class Entry_List_Table extends \WP_List_Table {
 		$cache_key = sprintf( 'trash_entries_%s', md5( json_encode( $args ) ) );
 		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
 		if ( false === $items ) {
-			$query = $this->db->prepare(
-				"SELECT * FROM `{$this->table_name}` WHERE `status` = 'trash' ORDER BY %s %s LIMIT %d OFFSET %d",
-				$args['orderby'], $args['order'], $args['per_page'], $args['offset']
-			);
+			$query = "SELECT * FROM {$this->table_name} WHERE status = 'trash'";
+			$query .= " ORDER BY {$args['orderby']} {$args['order']}";
+			$query .= sprintf( " LIMIT %d OFFSET %d", $args['per_page'], $args['offset'] );
+
 			$items = $this->db->get_results( $query, OBJECT );
 
 			$items = $this->_to_object( $items );
