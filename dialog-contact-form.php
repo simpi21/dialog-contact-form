@@ -210,6 +210,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				$this->container['settings'] = \DialogContactForm\Settings::init();
 			}
 
+			$this->container['rest']       = \DialogContactForm\RestApi::init();
 			$this->container['submission'] = \DialogContactForm\Submission::init();
 			$this->container['shortcode']  = \DialogContactForm\Shortcode::init();
 			$this->container['gutenblock'] = \DialogContactForm\GutenbergBlock::init();
@@ -384,7 +385,8 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			}
 
 			$error = __( 'Your installed PHP Version is: ', 'dialog-contact-form' ) . PHP_VERSION . '. ';
-			$error .= sprintf( __( 'The Dialog Contact Form plugin requires PHP version %s or greater.', 'dialog-contact-form' ), $this->min_php );
+			$error .= sprintf( __( 'The Dialog Contact Form plugin requires PHP version %s or greater.',
+				'dialog-contact-form' ), $this->min_php );
 			?>
             <div class="error">
                 <p><?php printf( $error ); ?></p>
@@ -406,12 +408,15 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 
 			$error = '<h1>' . __( 'An Error Occurred', 'dialog-contact-form' ) . '</h1>';
 			$error .= '<h2>' . __( 'Your installed PHP Version is: ', 'dialog-contact-form' ) . PHP_VERSION . '</h2>';
-			$error .= '<p>' . sprintf( __( 'The Dialog Contact Form plugin requires PHP version %s or greater', 'dialog-contact-form' ), $this->min_php ) . '</p>';
-			$error .= '<p>' . sprintf( __( 'The version of your PHP is %s unsupported and old %s. ', 'dialog-contact-form' ),
+			$error .= '<p>' . sprintf( __( 'The Dialog Contact Form plugin requires PHP version %s or greater',
+					'dialog-contact-form' ), $this->min_php ) . '</p>';
+			$error .= '<p>' . sprintf( __( 'The version of your PHP is %s unsupported and old %s. ',
+					'dialog-contact-form' ),
 					'<a href="http://php.net/supported-versions.php" target="_blank"><strong>',
 					'</strong></a>'
 				);
-			$error .= __( 'You should update your PHP software or contact your host regarding this matter.', 'dialog-contact-form' ) . '</p>';
+			$error .= __( 'You should update your PHP software or contact your host regarding this matter.',
+					'dialog-contact-form' ) . '</p>';
 
 			wp_die( $error, __( 'Plugin Activation Error', 'dialog-contact-form' ), array( 'back_link' => true ) );
 		}
