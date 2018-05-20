@@ -160,18 +160,23 @@ class Submission {
 		// If form upload a file, handle here
 		$data['dcf_attachments'] = Attachment::upload( $fields );
 
-		$actions = ActionManager::init();
+		$response = array();
+		$actions  = ActionManager::init();
 		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
 		foreach ( $actions as $action ) {
-			var_dump( $action );
+			$response[ $action->get_id() ] = $action::process( $form_id, $data );
 		}
 
-		$mail_sent = $this->send_mail( $form_id, $data );
-
-		if ( $mail_sent ) {
-			$GLOBALS['_dcf_mail_sent_ok'] = $messages['mail_sent_ok'];
-		} else {
+		// If any action fails, display error message
+		if ( false !== array_search( false, array_values( $response ), true ) ) {
 			$GLOBALS['_dcf_validation_error'] = $messages['mail_sent_ng'];
+		} else {
+			$GLOBALS['_dcf_mail_sent_ok'] = $messages['mail_sent_ok'];
+
+			// @TODO reset form data
+			if ( 'no' !== $config['reset_form'] ) {
+
+			}
 		}
 	}
 
@@ -342,21 +347,6 @@ class Submission {
 	}
 
 	/**
-	 * Send Mail to User
-	 *
-	 * @param int $form_id
-	 * @param array $data
-	 *
-	 * @return bool
-	 */
-	private function send_mail( $form_id, $data ) {
-
-		$emailNotification = new EmailNotification();
-
-		return $emailNotification->process( $form_id, $data );
-	}
-
-	/**
 	 * Check if current submitted form is spam
 	 *
 	 * @param int $form_id
@@ -367,7 +357,7 @@ class Submission {
 		$nonce_field_name  = '_dcf_nonce';
 		$nonce_action_name = '_dcf_submit_form';
 
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		if ( dialog_contact_form()->is_request( 'ajax' ) ) {
 			$nonce_field_name  = 'nonce';
 			$nonce_action_name = 'dialog_contact_form_ajax';
 		}
@@ -444,6 +434,7 @@ class Submission {
 
 		$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $input_type );
 		if ( method_exists( $class_name, 'sanitize' ) ) {
+			/** @var \DialogContactForm\Abstracts\Abstract_Field $class */
 			$class = new $class_name;
 
 			return $class->sanitize( $string );

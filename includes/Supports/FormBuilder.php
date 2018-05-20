@@ -242,8 +242,11 @@ class FormBuilder {
 				<?php $this->get_error_message(); ?>
             </div>
         </div>
-		<?php wp_nonce_field( '_dcf_submit_form', '_dcf_nonce' ); ?>
-        <input type="hidden" name="_user_form_id" value="<?php echo $this->form_id; ?>">
+        <input type="hidden" id="_dcf_nonce" name="_dcf_nonce"
+               value="<?php echo wp_create_nonce( '_dcf_submit_form' ); ?>"/>
+        <input type="hidden" name="_wp_http_referer"
+               value="<?php echo esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ?>"/>
+        <input type="hidden" name="_user_form_id" value="<?php echo $this->form_id; ?>"/>
 
 		<?php
 		foreach ( $this->fields as $field ) {

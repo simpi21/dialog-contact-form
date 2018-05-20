@@ -64,6 +64,12 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		private $min_php = '5.3';
 
 		/**
+		 * Form validation messages
+		 * @var array
+		 */
+		private $validation_messages = array();
+
+		/**
 		 * @return Dialog_Contact_Form
 		 */
 		public static function init() {
@@ -378,7 +384,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 *
 		 * @return void
 		 */
-		function php_version_notice() {
+		public function php_version_notice() {
 
 			if ( $this->is_supported_php() || ! current_user_can( 'manage_options' ) ) {
 				return;
@@ -399,7 +405,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 *
 		 * @return void
 		 */
-		function auto_deactivate() {
+		public function auto_deactivate() {
 			if ( $this->is_supported_php() ) {
 				return;
 			}
@@ -422,28 +428,23 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		}
 
 		/**
-		 * Get dynamic variables that will pass to javaScript variables
+		 * Get validation messages
 		 *
 		 * @return array
 		 */
-		private function localize_script() {
-			$messages  = dcf_validation_messages();
-			$options   = get_dialog_contact_form_option();
-			$_messages = array();
-			foreach ( $messages as $key => $message ) {
-				$_messages[ $key ] = ! empty( $options[ $key ] ) ? $options[ $key ] : $message;
+		public function get_validation_messages() {
+			if ( empty( $this->validation_messages ) ) {
+				$messages  = dcf_validation_messages();
+				$options   = get_dialog_contact_form_option();
+				$_messages = array();
+				foreach ( $messages as $key => $message ) {
+					$_messages[ $key ] = ! empty( $options[ $key ] ) ? $options[ $key ] : $message;
+				}
+
+				$this->validation_messages = $_messages;
 			}
 
-			$variables = array(
-				'ajaxurl'      => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( 'dialog_contact_form_ajax' ),
-				'selector'     => 'dcf-form',
-				'fieldClass'   => 'dcf-has-error',
-				'errorClass'   => 'dcf-error-message',
-				'loadingClass' => 'is-loading',
-			);
-
-			return array_merge( $variables, $_messages );
+			return $this->validation_messages;
 		}
 
 		/**
@@ -453,7 +454,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 *
 		 * @return bool
 		 */
-		private function is_request( $type ) {
+		public function is_request( $type ) {
 			switch ( $type ) {
 				case 'admin':
 					return is_admin();
@@ -466,6 +467,24 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			}
 
 			return false;
+		}
+
+		/**
+		 * Get dynamic variables that will pass to javaScript variables
+		 *
+		 * @return array
+		 */
+		private function localize_script() {
+			$variables = array(
+				'ajaxurl'      => admin_url( 'admin-ajax.php' ),
+				'nonce'        => wp_create_nonce( 'dialog_contact_form_ajax' ),
+				'selector'     => 'dcf-form',
+				'fieldClass'   => 'dcf-has-error',
+				'errorClass'   => 'dcf-error-message',
+				'loadingClass' => 'is-loading',
+			);
+
+			return array_merge( $variables, $this->get_validation_messages() );
 		}
 
 		/**
@@ -495,4 +514,8 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
  * then kicking off the plugin from this point in the file does
  * not affect the page life cycle.
  */
-Dialog_Contact_Form::init();
+function dialog_contact_form() {
+	return Dialog_Contact_Form::init();
+}
+
+dialog_contact_form();
