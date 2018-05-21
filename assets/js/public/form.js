@@ -405,7 +405,7 @@
         // Add action params with form data
         formData.append('action', 'dcf_submit_form');
         // Add nonce field with form data
-        formData.append('nonce', settings.nonce);
+        // formData.append('_dcf_nonce', settings.nonce);
 
         var request = new XMLHttpRequest();
 

@@ -210,8 +210,8 @@ class Entry implements \JsonSerializable {
 	 * @return int
 	 */
 	private function get_form_id() {
-		if ( isset( $_POST['_user_form_id'] ) && is_numeric( $_POST['_user_form_id'] ) ) {
-			return intval( $_POST['_user_form_id'] );
+		if ( isset( $_POST['_dcf_id'] ) && is_numeric( $_POST['_dcf_id'] ) ) {
+			return intval( $_POST['_dcf_id'] );
 		}
 
 		return 0;
@@ -223,8 +223,8 @@ class Entry implements \JsonSerializable {
 	 * @return string
 	 */
 	private function get_referer() {
-		if ( isset( $_POST['_wp_http_referer'] ) && is_string( $_POST['_wp_http_referer'] ) ) {
-			return sanitize_text_field( $_POST['_wp_http_referer'] );
+		if ( isset( $_POST['_dcf_referer'] ) && is_string( $_POST['_dcf_referer'] ) ) {
+			return sanitize_text_field( $_POST['_dcf_referer'] );
 		}
 
 		return '';

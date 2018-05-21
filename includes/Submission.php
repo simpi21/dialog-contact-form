@@ -2,10 +2,8 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\Actions\EmailNotification;
 use DialogContactForm\Fields\Recaptcha;
 use DialogContactForm\Supports\Attachment;
-use DialogContactForm\Supports\Validate;
 
 class Submission {
 
@@ -51,7 +49,7 @@ class Submission {
 	}
 
 	/**
-	 * @param $messages
+	 * Get validation messages
 	 *
 	 * @return array
 	 */
@@ -114,7 +112,7 @@ class Submission {
 	 * Process non AJAX form submission
 	 */
 	public function process_non_ajax_form_submission() {
-		$form_id = isset( $_POST['_user_form_id'] ) ? intval( $_POST['_user_form_id'] ) : 0;
+		$form_id = isset( $_POST['_dcf_id'] ) ? intval( $_POST['_dcf_id'] ) : 0;
 		// If it is spam, do nothing
 		if ( $this->is_spam( $form_id ) ) {
 			return;
@@ -171,11 +169,25 @@ class Submission {
 		if ( false !== array_search( false, array_values( $response ), true ) ) {
 			$GLOBALS['_dcf_validation_error'] = $messages['mail_sent_ng'];
 		} else {
-			$GLOBALS['_dcf_mail_sent_ok'] = $messages['mail_sent_ok'];
 
-			// @TODO reset form data
+			// Process Success Message Action
+			if ( isset( $response['success_message'] ) && $response['success_message'] ) {
+				$GLOBALS['_dcf_mail_sent_ok'] = $response['success_message'];
+			}
+
+			// Reset form Data
 			if ( 'no' !== $config['reset_form'] ) {
+				foreach ( array_keys( $data ) as $input_name ) {
+					if ( isset( $_POST[ $input_name ] ) ) {
+						unset( $_POST[ $input_name ] );
+					}
+				}
+			}
 
+			// Process Redirect Action
+			if ( isset( $response['redirect'] ) && $response['redirect'] ) {
+				wp_safe_redirect( $response['redirect'] );
+				exit();
 			}
 		}
 	}
@@ -186,7 +198,7 @@ class Submission {
 	public function process_ajax_form_submission() {
 		$default_options = dcf_default_options();
 		$options         = wp_parse_args( get_option( 'dialog_contact_form' ), $default_options );
-		$form_id         = isset( $_POST['_user_form_id'] ) ? intval( $_POST['_user_form_id'] ) : 0;
+		$form_id         = isset( $_POST['_dcf_id'] ) ? intval( $_POST['_dcf_id'] ) : 0;
 
 		if ( $this->is_spam( $form_id ) ) {
 			wp_send_json( array(
@@ -355,12 +367,7 @@ class Submission {
 	 */
 	private function is_spam( $form_id = 0 ) {
 		$nonce_field_name  = '_dcf_nonce';
-		$nonce_action_name = '_dcf_submit_form';
-
-		if ( dialog_contact_form()->is_request( 'ajax' ) ) {
-			$nonce_field_name  = 'nonce';
-			$nonce_action_name = 'dialog_contact_form_ajax';
-		}
+		$nonce_action_name = 'dialog_contact_form_nonce';
 
 		// Check if nonce field set
 		if ( ! isset( $_POST[ $nonce_field_name ] ) ) {
