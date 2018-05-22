@@ -74,8 +74,14 @@ class Checkbox extends Abstract_Field {
 	 * @return mixed
 	 */
 	public function sanitize( $value ) {
-		if ( in_array( $value, $this->get_options() ) ) {
+		$options = $this->get_options();
+
+		if ( is_scalar( $value ) && in_array( $value, $options ) ) {
 			return $value;
+		}
+
+		if ( is_array( $value ) ) {
+			return array_intersect( $value, $options );
 		}
 
 		return '';

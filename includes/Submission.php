@@ -45,7 +45,7 @@ class Submission {
 		add_action( 'wp_ajax_nopriv_dcf_submit_form', array( $this, 'process_ajax_form_submission' ) );
 		add_action( 'template_redirect', array( $this, 'process_non_ajax_form_submission' ) );
 
-		$this->options = get_option( 'dialog_contact_form' );
+		$this->options = get_dialog_contact_form_option();
 	}
 
 	/**
@@ -54,17 +54,15 @@ class Submission {
 	 * @return array
 	 */
 	private function get_validation_messages() {
-		if ( $this->messages ) {
-			return $this->messages;
-		}
+		if ( empty( $this->messages ) ) {
+			$messages  = dcf_validation_messages();
+			$_messages = array();
+			foreach ( $messages as $key => $message ) {
+				$_messages[ $key ] = ! empty( $this->options[ $key ] ) ? $this->options[ $key ] : $message;
+			}
 
-		$default  = dcf_validation_messages();
-		$messages = array();
-		foreach ( $default as $key => $message ) {
-			$messages[ $key ] = ! empty( $this->options[ $key ] ) ? $this->options[ $key ] : $message;
+			$this->messages = $_messages;
 		}
-
-		$this->messages = $messages;
 
 		return $this->messages;
 	}
@@ -152,7 +150,16 @@ class Submission {
 			}
 			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
 
-			$data[ $field['field_name'] ] = self::sanitize( $value, $field['field_type'] );
+			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field['field_type'] );
+			if ( class_exists( $class_name ) ) {
+				/** @var \DialogContactForm\Abstracts\Abstract_Field $class */
+				$class = new $class_name;
+				$class->setField( $field );
+
+				$data[ $field['field_name'] ] = $class->sanitize( $value );
+			} else {
+				$data[ $field['field_name'] ] = self::sanitize( $value, $field['field_type'] );
+			}
 		}
 
 		// If form upload a file, handle here
@@ -232,7 +239,16 @@ class Submission {
 			}
 			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
 
-			$data[ $field['field_name'] ] = self::sanitize( $value, $field['field_type'] );
+			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field['field_type'] );
+			if ( class_exists( $class_name ) ) {
+				/** @var \DialogContactForm\Abstracts\Abstract_Field $class */
+				$class = new $class_name;
+				$class->setField( $field );
+
+				$data[ $field['field_name'] ] = $class->sanitize( $value );
+			} else {
+				$data[ $field['field_name'] ] = self::sanitize( $value, $field['field_type'] );
+			}
 		}
 
 		// If form upload a file, handle here
@@ -366,16 +382,13 @@ class Submission {
 	 * @return bool
 	 */
 	private function is_spam( $form_id = 0 ) {
-		$nonce_field_name  = '_dcf_nonce';
-		$nonce_action_name = 'dialog_contact_form_nonce';
-
 		// Check if nonce field set
-		if ( ! isset( $_POST[ $nonce_field_name ] ) ) {
+		if ( ! isset( $_POST['_dcf_nonce'] ) ) {
 			return true;
 		}
 
 		// Check if nonce value is valid
-		if ( ! wp_verify_nonce( $_POST[ $nonce_field_name ], $nonce_action_name ) ) {
+		if ( ! wp_verify_nonce( $_POST['_dcf_nonce'], 'dialog_contact_form_nonce' ) ) {
 			return true;
 		}
 
@@ -416,37 +429,13 @@ class Submission {
 				if ( is_array( $value ) ) {
 					$new_input[ $key ] = self::sanitize( $value, $input_type );
 				} else {
-					$new_input[ $key ] = self::sanitize_string( $value, $input_type );
+					$new_input[ $key ] = sanitize_text_field( $value );
 				}
 			}
 
 			return $new_input;
 		}
 
-		return self::sanitize_string( $input, $input_type );
-	}
-
-	/**
-	 * Sanitize string
-	 *
-	 * @param string $string
-	 * @param string $input_type
-	 *
-	 * @return string
-	 */
-	private static function sanitize_string( $string, $input_type = 'text' ) {
-		if ( is_array( $string ) || is_object( $string ) ) {
-			return $string;
-		}
-
-		$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $input_type );
-		if ( method_exists( $class_name, 'sanitize' ) ) {
-			/** @var \DialogContactForm\Abstracts\Abstract_Field $class */
-			$class = new $class_name;
-
-			return $class->sanitize( $string );
-		}
-
-		return sanitize_text_field( $string );
+		return sanitize_text_field( $input );
 	}
 }
