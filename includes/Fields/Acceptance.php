@@ -2,7 +2,7 @@
 
 namespace DialogContactForm\Fields;
 
-class Hidden extends Text {
+class Acceptance extends Text {
 
 	/**
 	 * Metabox fields
@@ -12,16 +12,15 @@ class Hidden extends Text {
 	protected $metabox_fields = array(
 		// Content
 		'field_type',
-		'field_id',
-		'field_value',
-		// Additional
 		'field_title',
+		'required_field',
+		'field_width',
+		// Advance
+		'field_id',
+		'field_class',
+		// Optional
+		'acceptance_text',
+		'checked_by_default',
 	);
 
-	/**
-	 * Field type
-	 *
-	 * @var string
-	 */
-	protected $type = 'hidden';
 }

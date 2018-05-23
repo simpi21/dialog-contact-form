@@ -3,6 +3,24 @@
 namespace DialogContactForm\Fields;
 
 class Password extends Text {
+
+	/**
+	 * Metabox fields
+	 *
+	 * @var array
+	 */
+	protected $metabox_fields = array(
+		// Content
+		'field_type',
+		'field_title',
+		'placeholder',
+		'required_field',
+		'field_width',
+		// Advance
+		'field_id',
+		'field_class',
+	);
+
 	/**
 	 * Field type
 	 *

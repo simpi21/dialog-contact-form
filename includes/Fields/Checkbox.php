@@ -7,6 +7,25 @@ use DialogContactForm\Abstracts\Abstract_Field;
 class Checkbox extends Abstract_Field {
 
 	/**
+	 * Metabox fields
+	 *
+	 * @var array
+	 */
+	protected $metabox_fields = array(
+		// Content
+		'field_type',
+		'field_title',
+		'options',
+		'field_width',
+		// Advance
+		'field_id',
+		// Additional
+		'field_class',
+		// Optional
+		'inline_list'
+	);
+
+	/**
 	 * Render field html for frontend display
 	 *
 	 * @param array $field

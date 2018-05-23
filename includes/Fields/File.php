@@ -7,6 +7,25 @@ use DialogContactForm\Abstracts\Abstract_Field;
 class File extends Abstract_Field {
 
 	/**
+	 * Metabox fields
+	 *
+	 * @var array
+	 */
+	protected $metabox_fields = array(
+		// Content
+		'field_type',
+		'field_title',
+		'required_field',
+		'field_width',
+		// Advance
+		'field_id',
+		// Optional
+		'max_file_size',
+		'allowed_file_types',
+		'multiple_files',
+	);
+
+	/**
 	 * Render field html for frontend display
 	 *
 	 * @param array $field

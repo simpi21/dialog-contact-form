@@ -7,6 +7,19 @@ use DialogContactForm\Abstracts\Abstract_Field;
 class Recaptcha extends Abstract_Field {
 
 	/**
+	 * Metabox fields
+	 *
+	 * @var array
+	 */
+	protected $metabox_fields = array(
+		// Content
+		'field_type',
+		'field_title',
+		// Advance
+		'field_id',
+	);
+
+	/**
 	 * Render field html for frontend display
 	 *
 	 * @param array $field

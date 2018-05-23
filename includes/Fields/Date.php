@@ -3,6 +3,29 @@
 namespace DialogContactForm\Fields;
 
 class Date extends Text {
+
+	/**
+	 * Metabox fields
+	 *
+	 * @var array
+	 */
+	protected $metabox_fields = array(
+		// Content
+		'field_type',
+		'field_title',
+		'placeholder',
+		'required_field',
+		'field_width',
+		// Advance
+		'field_id',
+		// Additional
+		'field_class',
+		// Optional
+		'min_date',
+		'max_date',
+		'native_html5',
+	);
+
 	/**
 	 * Field type
 	 *
