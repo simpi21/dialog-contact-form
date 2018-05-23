@@ -257,10 +257,16 @@ class Admin {
 
 	/**
 	 * Metabox shortcode callback
+	 *
+	 * @param \WP_Post $post
 	 */
-	public function meta_box_shortcode_cb() {
-		global $post;
-		$shortcode = sprintf( '[dialog_contact_form id=\'%s\']', $post->ID );
+	public function meta_box_shortcode_cb( $post ) {
+		$shortcode   = sprintf( '[dialog_contact_form id=\'%s\']', $post->ID );
+		$preview_url = add_query_arg( array(
+			'dcf_forms_preview' => true,
+			'dcf_forms_iframe'  => true,
+			'form_id'           => $post->ID,
+		), site_url() );
 		?>
         <p><?php esc_html_e( 'Copy this shortcode and paste it into your post, page, or text widget content:
 ', 'dialog-contact-form' ); ?></p>
@@ -275,6 +281,12 @@ class Admin {
         <div class="submitbox" id="submitpost" style="margin: 12px -12px -12px;">
             <input type="hidden" id="post_status" name="post_status" value="publish">
             <div id="major-publishing-actions">
+                <div id="preview-action" style="display: inline-block;">
+                    <a class="preview button" href="<?php echo esc_url( $preview_url ); ?>" target="_blank">
+                        Preview Changes
+                        <span class="screen-reader-text"> (opens in a new window)</span>
+                    </a>
+                </div>
                 <div id="publishing-action">
                     <span class="spinner"></span>
                     <input name="original_publish" type="hidden" id="original_publish" value="Update">
@@ -295,7 +307,7 @@ class Admin {
 	 */
 	public function save_meta( $post_id, $post ) {
 		// If this isn't a 'contact-form' post, don't update it.
-		if ( $post->post_type != $this->post_type ) {
+		if ( $post->post_type !== $this->post_type ) {
 			return;
 		}
 

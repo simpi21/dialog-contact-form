@@ -21,6 +21,16 @@ $form = \DialogContactForm\Supports\FormBuilder::init( $form_id );
             margin-top: 0 !important;
         }
 
+        .dcf-form {
+            max-width: 1024px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .dcf-form .dcf-column {
+            float: left;
+        }
+
         @media screen and ( max-width: 782px ) {
             html {
                 margin-top: 0 !important;
