@@ -319,3 +319,11 @@
 		}
 	}
 }
+
+// Conditional field
+.col-validation,
+.col-error_message,
+.col-field_value,
+.col-acceptance {
+	display: none;
+}

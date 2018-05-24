@@ -52,20 +52,21 @@ if ( ! function_exists( 'dcf_available_field_types' ) ) {
 	 */
 	function dcf_available_field_types() {
 		$fieldType = array(
-			'text'     => esc_html__( 'Single Line Text', 'dialog-contact-form' ),
-			'email'    => esc_html__( 'Email Address', 'dialog-contact-form' ),
-			'url'      => esc_html__( 'Web Address (URL)', 'dialog-contact-form' ),
-			'number'   => esc_html__( 'Number', 'dialog-contact-form' ),
-			'textarea' => esc_html__( 'Multi Line Text', 'dialog-contact-form' ),
-			'password' => esc_html__( 'Password', 'dialog-contact-form' ),
-			'date'     => esc_html__( 'Date', 'dialog-contact-form' ),
-			'time'     => esc_html__( 'Time', 'dialog-contact-form' ),
-			'hidden'   => esc_html__( 'Hidden', 'dialog-contact-form' ),
-			'ip'       => esc_html__( 'IP Address', 'dialog-contact-form' ),
-			'radio'    => esc_html__( 'Multiple choice', 'dialog-contact-form' ),
-			'select'   => esc_html__( 'Dropdown', 'dialog-contact-form' ),
-			'checkbox' => esc_html__( 'Checkbox', 'dialog-contact-form' ),
-			'file'     => esc_html__( 'File', 'dialog-contact-form' ),
+			'text'       => esc_html__( 'Single Line Text', 'dialog-contact-form' ),
+			'email'      => esc_html__( 'Email Address', 'dialog-contact-form' ),
+			'url'        => esc_html__( 'Web Address (URL)', 'dialog-contact-form' ),
+			'number'     => esc_html__( 'Number', 'dialog-contact-form' ),
+			'textarea'   => esc_html__( 'Multi Line Text', 'dialog-contact-form' ),
+			'password'   => esc_html__( 'Password', 'dialog-contact-form' ),
+			'date'       => esc_html__( 'Date', 'dialog-contact-form' ),
+			'time'       => esc_html__( 'Time', 'dialog-contact-form' ),
+			'hidden'     => esc_html__( 'Hidden', 'dialog-contact-form' ),
+			'ip'         => esc_html__( 'IP Address', 'dialog-contact-form' ),
+			'radio'      => esc_html__( 'Multiple choice', 'dialog-contact-form' ),
+			'select'     => esc_html__( 'Dropdown', 'dialog-contact-form' ),
+			'checkbox'   => esc_html__( 'Checkbox', 'dialog-contact-form' ),
+			'acceptance' => esc_html__( 'Acceptance', 'dialog-contact-form' ),
+			'file'       => esc_html__( 'File', 'dialog-contact-form' ),
 		);
 
 		return apply_filters( 'dialog_contact_form_field_types', $fieldType );
@@ -111,10 +112,13 @@ if ( ! function_exists( 'dcf_validation_messages' ) ) {
 				'dialog-contact-form' ),
 
 			// Field validation message
-			'generic_error'         => esc_html__( 'The value you entered for this field is invalid.', 'dialog-contact-form' ),
+			'generic_error'         => esc_html__( 'The value you entered for this field is invalid.',
+				'dialog-contact-form' ),
 			'invalid_required'      => esc_html__( 'Please fill out this field.', 'dialog-contact-form' ),
-			'invalid_too_long'      => esc_html__( 'Please shorten this text to no more than {maxLength} characters. You are currently using {length} characters.', 'dialog-contact-form' ),
-			'invalid_too_short'     => esc_html__( 'Please lengthen this text to {minLength} characters or more. You are currently using {length} characters.', 'dialog-contact-form' ),
+			'invalid_too_long'      => esc_html__( 'Please shorten this text to no more than {maxLength} characters. You are currently using {length} characters.',
+				'dialog-contact-form' ),
+			'invalid_too_short'     => esc_html__( 'Please lengthen this text to {minLength} characters or more. You are currently using {length} characters.',
+				'dialog-contact-form' ),
 			'number_too_small'      => esc_html__( 'Please select a value that is no less than {min}.',
 				'dialog-contact-form' ),
 			'number_too_large'      => esc_html__( 'Please select a value that is no more than {max}.',
@@ -143,7 +147,8 @@ if ( ! function_exists( 'dcf_validation_messages' ) ) {
 			'file_generic_error'    => esc_html__( 'Unknown upload error.', 'dialog-contact-form' ),
 			'required_file'         => esc_html__( 'Please upload a file.', 'dialog-contact-form' ),
 			'required_file_multi'   => esc_html__( 'Please upload at least one file.', 'dialog-contact-form' ),
-			'file_too_large'        => esc_html__( 'Please upload a file no more than {maxSize}.', 'dialog-contact-form' ),
+			'file_too_large'        => esc_html__( 'Please upload a file no more than {maxSize}.',
+				'dialog-contact-form' ),
 			'invalid_file_format'   => esc_html__( 'File format is invalid.', 'dialog-contact-form' ),
 		);
 

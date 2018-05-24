@@ -23,27 +23,10 @@ $_field_number = 100;
                     </button>
                 </p>
 				<?php
-				Metabox::text( array(
-					'id'          => 'field_title',
-					'group'       => 'field',
-					'position'    => $_field_number,
-					'meta_key'    => '_contact_form_fields',
-					'input_class' => 'dcf-input-text dcf-field-title',
-					'label'       => __( 'Field Title', 'dialog-contact-form' ),
-					'description' => __( 'Insert the title for the field.', 'dialog-contact-form' ),
-				) );
-				Metabox::text( array(
-					'id'          => 'field_id',
-					'group'       => 'field',
-					'position'    => $_field_number,
-					'meta_key'    => '_contact_form_fields',
-					'input_class' => 'dcf-input-text dcf-field-id',
-					'label'       => __( 'Field ID', 'dialog-contact-form' ),
-					'description' => __( 'REQUIRED: Field identification name to be entered into email body. Note: Use only lowercase characters, hyphens and underscores.', 'dialog-contact-form' ),
-				) );
 				Metabox::select( array(
 					'id'          => 'field_type',
 					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-field_type',
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Field Type', 'dialog-contact-form' ),
@@ -51,25 +34,51 @@ $_field_number = 100;
 					'input_class' => 'select2 dcf-field-type dcf-input-text',
 					'options'     => dcf_available_field_types(),
 				) );
+				Metabox::text( array(
+					'id'          => 'field_title',
+					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-field_title',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'input_class' => 'dcf-input-text dcf-field-title',
+					'label'       => __( 'Label', 'dialog-contact-form' ),
+					'description' => __( 'Enter the label for the field.', 'dialog-contact-form' ),
+				) );
+				Metabox::text( array(
+					'id'          => 'field_id',
+					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-field_id',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'input_class' => 'dcf-input-text dcf-field-id',
+					'label'       => __( 'Field ID', 'dialog-contact-form' ),
+					'description' => __( 'Please make sure the ID is unique and not used elsewhere in this form. This field allows A-z 0-9 & underscore chars without spaces.',
+						'dialog-contact-form' ),
+				) );
+				Metabox::buttonset( array(
+					'id'          => 'required_field',
+					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-required_field',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'label'       => __( 'Required Field', 'dialog-contact-form' ),
+					'description' => __( 'Check this option to mark the field required. A form will not submit unless all required fields are provided.',
+						'dialog-contact-form' ),
+					'default'     => 'off',
+					'options'     => array(
+						'off' => esc_html__( 'No', 'dialog-contact-form' ),
+						'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+					),
+				) );
 				Metabox::textarea( array(
 					'id'          => 'options',
 					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-addOptions',
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Add options', 'dialog-contact-form' ),
 					'description' => __( 'One option per line.', 'dialog-contact-form' ),
-					'group_class' => 'dcf-input-group col-addOptions',
 					'rows'        => 8,
-					'condition'   => array(
-						'action' => 'show',
-						'rules'  => array(
-							array(
-								'meta_key'   => '_contact_form_fields',
-								'meta_value' => array( 'radio', 'select', 'checkbox' ),
-								'compare'    => 'IN',
-							)
-						),
-					),
 				) );
 				Metabox::number_options( array(
 					'group'       => 'field',
@@ -77,50 +86,32 @@ $_field_number = 100;
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Number Option', 'dialog-contact-form' ),
-					'description' => __( 'This fields is optional but you can set min value, max value and step. For allowing decimal values set step value (e.g. step="0.01" to allow decimals to two decimal places).', 'dialog-contact-form' ),
-					'condition'   => array(
-						'action' => 'show',
-						'rules'  => array(
-							array(
-								'meta_key'   => '_contact_form_fields',
-								'meta_value' => 'number',
-								'compare'    => '=',
-							)
-						),
-					),
+					'description' => __( 'This fields is optional but you can set min value, max value and step. For allowing decimal values set step value (e.g. step="0.01" to allow decimals to two decimal places).',
+						'dialog-contact-form' ),
 				) );
 				Metabox::text( array(
 					'id'          => 'field_value',
 					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-field_value',
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Default Value', 'dialog-contact-form' ),
 					'description' => __( 'Define field default value.', 'dialog-contact-form' ),
 				) );
-				Metabox::buttonset( array(
-					'id'          => 'required_field',
-					'group'       => 'field',
-					'position'    => $_field_number,
-					'meta_key'    => '_contact_form_fields',
-					'label'       => __( 'Required Field', 'dialog-contact-form' ),
-					'description' => __( 'Check this option to mark the field required. A form will not submit unless all required fields are provided.', 'dialog-contact-form' ),
-					'default'     => 'off',
-					'options'     => array(
-						'off' => esc_html__( 'No', 'dialog-contact-form' ),
-						'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
-					),
-				) );
 				Metabox::text( array(
 					'id'          => 'field_class',
 					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-field_class',
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Field Class', 'dialog-contact-form' ),
-					'description' => __( 'Insert additional class(es) (separated by blank space) for more personalization.', 'dialog-contact-form' ),
+					'description' => __( 'Insert additional class(es) (separated by blank space) for more personalization.',
+						'dialog-contact-form' ),
 				) );
 				Metabox::select( array(
 					'id'          => 'field_width',
 					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-field_width',
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Field Width', 'dialog-contact-form' ),
@@ -135,16 +126,18 @@ $_field_number = 100;
 					),
 				) );
 				Metabox::checkbox( array(
-					'id'       => 'validation',
-					'group'    => 'field',
-					'position' => $_field_number,
-					'meta_key' => '_contact_form_fields',
-					'label'    => __( 'Validation', 'dialog-contact-form' ),
-					'options'  => dcf_validation_rules(),
+					'id'          => 'validation',
+					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-validation',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'label'       => __( 'Validation', 'dialog-contact-form' ),
+					'options'     => dcf_validation_rules(),
 				) );
 				Metabox::text( array(
 					'id'          => 'placeholder',
 					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-placeholder',
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
 					'input_class' => 'dcf-input-text dcf-field-placeholder',
@@ -154,10 +147,37 @@ $_field_number = 100;
 				Metabox::text( array(
 					'id'          => 'error_message',
 					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-error_message',
 					'position'    => $_field_number,
 					'meta_key'    => '_contact_form_fields',
 					'label'       => __( 'Error Message', 'dialog-contact-form' ),
-					'description' => __( 'Insert the error message for validation. The length of message must be 10 characters or more. Leave blank for default message.', 'dialog-contact-form' ),
+					'description' => __( 'Insert the error message for validation. The length of message must be 10 characters or more. Leave blank for default message.',
+						'dialog-contact-form' ),
+				) );
+				// Acceptance Field
+				Metabox::textarea( array(
+					'id'          => 'acceptance_text',
+					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-acceptance',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'label'       => __( 'Acceptance Text', 'dialog-contact-form' ),
+					'description' => __( 'Insert acceptance text. you can also use inline html markup.',
+						'dialog-contact-form' ),
+					'default'     => '',
+				) );
+				Metabox::buttonset( array(
+					'id'          => 'checked_by_default',
+					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-acceptance',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'label'       => __( 'Checked by default', 'dialog-contact-form' ),
+					'default'     => 'off',
+					'options'     => array(
+						'off' => esc_html__( 'No', 'dialog-contact-form' ),
+						'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+					),
 				) );
 				?>
             </div>

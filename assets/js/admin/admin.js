@@ -28,6 +28,14 @@
         _value = _this.find(":selected").val();
         _accordion = _this.closest('.dcf-toggle');
 
+        /**
+         * Hide validation field
+         * @since 3.0.0
+         */
+        _accordion.find('.col-validation').hide();
+        _accordion.find('.col-error_message').hide();
+        _accordion.find('.col-field_value').hide();
+
         if ($.inArray(_value, whiteList) >= 0) {
             _accordion.find('.col-addOptions').slideDown('fast');
         } else {
@@ -38,6 +46,16 @@
             _accordion.find('.col-numberOption').slideDown('fast');
         } else {
             _accordion.find('.col-numberOption').slideUp('fast');
+        }
+
+        if (_value === 'acceptance') {
+            _accordion.find('.col-placeholder').slideUp('fast');
+            _accordion.find('.col-field_value').slideUp('fast');
+            _accordion.find('.col-field_class').slideUp('fast');
+
+            _accordion.find('.col-acceptance').slideDown('fast');
+        } else {
+            _accordion.find('.col-acceptance').slideUp('fast');
         }
     }
 

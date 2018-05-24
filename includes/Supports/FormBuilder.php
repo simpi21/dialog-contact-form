@@ -111,6 +111,10 @@ class FormBuilder {
 			return '';
 		}
 
+		if ( 'acceptance' == $setting['field_type'] ) {
+			return '';
+		}
+
 		if ( 'placeholder' == $this->configuration['labelPosition'] ) {
 			return '';
 		}
@@ -262,6 +266,7 @@ class FormBuilder {
 			// Load Field Class if exists
 			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field_type );
 			if ( method_exists( $class_name, 'render' ) ) {
+				/** @var \DialogContactForm\Abstracts\Abstract_Field $field_class */
 				$field_class = new $class_name;
 				$field_class->setFormId( $this->form_id );
 				$field_class->setField( $field );
