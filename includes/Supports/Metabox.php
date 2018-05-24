@@ -14,7 +14,23 @@ class Metabox {
 		$class = isset( $args['input_class'] ) ? esc_attr( $args['input_class'] ) : 'dcf-input-text';
 
 		echo self::field_before( $args );
-		echo sprintf( '<input type="text" class="' . $class . '" value="%1$s" id="' . $input_id . '" name="%3$s">', $value, $args['id'], $name );
+		echo sprintf( '<input type="text" class="' . $class . '" value="%1$s" id="' . $input_id . '" name="%3$s">',
+			$value, $args['id'], $name );
+		echo self::field_after();
+	}
+
+	/**
+	 * Generate text field
+	 *
+	 * @param array $args
+	 */
+	public static function date( array $args ) {
+		list( $name, $value, $input_id ) = self::field_common( $args );
+		$class = isset( $args['input_class'] ) ? esc_attr( $args['input_class'] ) : 'dcf-input-text dcf-date-picker';
+
+		echo self::field_before( $args );
+		echo sprintf( '<input type="text" class="' . $class . '" value="%1$s" id="' . $input_id . '" name="%3$s" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">',
+			$value, $args['id'], $name );
 		echo self::field_after();
 	}
 
@@ -115,7 +131,8 @@ class Metabox {
 			$label   = isset( $args['label'] ) ? $args['label'] : '';
 			$checked = ( 'on' == $value ) ? ' checked="checked"' : '';
 			echo sprintf( '<input type="hidden" name="%1$s" value="off">', $name );
-			echo sprintf( '<label for="%2$s"><input type="checkbox" ' . $checked . ' value="on" id="%2$s" name="%1$s">%3$s</label>', $name, $args['id'], $label );
+			echo sprintf( '<label for="%2$s"><input type="checkbox" ' . $checked . ' value="on" id="%2$s" name="%1$s">%3$s</label>',
+				$name, $args['id'], $label );
 		}
 
 		echo self::field_after();

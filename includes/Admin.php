@@ -339,8 +339,14 @@ class Admin {
 					'validation'         => isset( $field['validation'] ) ? self::sanitize_value( $field['validation'] ) : array(),
 					'placeholder'        => isset( $field['placeholder'] ) ? sanitize_text_field( $field['placeholder'] ) : '',
 					'error_message'      => isset( $field['error_message'] ) ? sanitize_text_field( $field['error_message'] ) : '',
+					// Acceptance Field
 					'acceptance_text'    => isset( $field['acceptance_text'] ) ? wp_kses_post( $field['acceptance_text'] ) : '',
 					'checked_by_default' => isset( $field['checked_by_default'] ) ? sanitize_text_field( $field['checked_by_default'] ) : '',
+					// Date Field
+					'min_date'           => isset( $field['min_date'] ) ? sanitize_text_field( $field['min_date'] ) : '',
+					'max_date'           => isset( $field['max_date'] ) ? sanitize_text_field( $field['max_date'] ) : '',
+					// Date & Time Field
+					'native_html5'       => isset( $field['native_html5'] ) ? sanitize_text_field( $field['native_html5'] ) : '',
 				);
 			}
 

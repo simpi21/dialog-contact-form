@@ -179,6 +179,36 @@ $_field_number = 100;
 						'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
 					),
 				) );
+				// Date
+				Metabox::date( array(
+					'id'          => 'min_date',
+					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-min_date',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'label'       => __( 'Min. Date', 'dialog-contact-form' ),
+				) );
+				Metabox::date( array(
+					'id'          => 'max_date',
+					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-max_date',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'label'       => __( 'Max. Date', 'dialog-contact-form' ),
+				) );
+				Metabox::buttonset( array(
+					'id'          => 'native_html5',
+					'group'       => 'field',
+					'group_class' => 'dcf-input-group col-native_html5',
+					'position'    => $_field_number,
+					'meta_key'    => '_contact_form_fields',
+					'label'       => __( 'Native HTML5', 'dialog-contact-form' ),
+					'default'     => 'on',
+					'options'     => array(
+						'off' => esc_html__( 'No', 'dialog-contact-form' ),
+						'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+					),
+				) );
 				?>
             </div>
         </div>

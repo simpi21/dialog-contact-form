@@ -15,11 +15,9 @@ class Checkbox extends Abstract_Field {
 		// Content
 		'field_type',
 		'field_title',
+		'field_id',
 		'options',
 		'field_width',
-		// Advance
-		'field_id',
-		// Additional
 		'field_class',
 		// Optional
 		'inline_list'

@@ -32,30 +32,46 @@
          * Hide validation field
          * @since 3.0.0
          */
+        _accordion.find('.col-addOptions').hide();
+        _accordion.find('.col-numberOption').hide();
+        _accordion.find('.col-field_value').hide();
+        _accordion.find('.col-acceptance').hide();
+        _accordion.find('.col-min_date').hide();
+        _accordion.find('.col-max_date').hide();
+        _accordion.find('.col-native_html5').hide();
+
         _accordion.find('.col-validation').hide();
         _accordion.find('.col-error_message').hide();
-        _accordion.find('.col-field_value').hide();
+
+        if (_value === 'acceptance') {
+            _accordion.find('.col-placeholder').hide();
+            _accordion.find('.col-field_class').slideUp('fast');
+            _accordion.find('.col-acceptance').slideDown('fast');
+        }
+
+        if (_value === 'checkbox') {
+            _accordion.find('.col-placeholder').hide();
+            _accordion.find('.col-field_class').slideUp('fast');
+            _accordion.find('.col-required_field').slideUp('fast');
+            _accordion.find('.col-addOptions').slideDown('fast');
+        }
+
+        if (_value === 'date') {
+            _accordion.find('.col-min_date').slideDown('fast');
+            _accordion.find('.col-max_date').slideDown('fast');
+            _accordion.find('.col-native_html5').slideDown('fast');
+        }
+
+        if (_value === 'time') {
+            _accordion.find('.col-native_html5').slideDown('fast');
+        }
 
         if ($.inArray(_value, whiteList) >= 0) {
             _accordion.find('.col-addOptions').slideDown('fast');
-        } else {
-            _accordion.find('.col-addOptions').slideUp('fast');
         }
 
         if (_value === 'number') {
             _accordion.find('.col-numberOption').slideDown('fast');
-        } else {
-            _accordion.find('.col-numberOption').slideUp('fast');
-        }
-
-        if (_value === 'acceptance') {
-            _accordion.find('.col-placeholder').slideUp('fast');
-            _accordion.find('.col-field_value').slideUp('fast');
-            _accordion.find('.col-field_class').slideUp('fast');
-
-            _accordion.find('.col-acceptance').slideDown('fast');
-        } else {
-            _accordion.find('.col-acceptance').slideUp('fast');
         }
     }
 
@@ -71,6 +87,14 @@
                 heightStyle: "content",
                 active: false
             });
+        });
+        fieldList.find(".dcf-date-picker").each(function () {
+            $(this).datepicker({
+                dateFormat: 'yy-mm-dd'
+            });
+        });
+        fieldList.find('.dcf-field-type').each(function () {
+            showConditionalFields.call(this);
         });
         updateValidationFieldName();
     });
@@ -152,6 +176,13 @@
                 '#ffc107',
                 '#f44336'
             ]
+        });
+    });
+
+    // Datepicker
+    $(document).find(".dcf-date-picker").each(function () {
+        $(this).datepicker({
+            dateFormat: 'yy-mm-dd'
         });
     });
 

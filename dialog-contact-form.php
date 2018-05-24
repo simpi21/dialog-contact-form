@@ -269,6 +269,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				DIALOG_CONTACT_FORM_ASSETS . '/js/admin' . $suffix . '.js',
 				array(
 					'jquery',
+					'jquery-ui-datepicker',
 					'jquery-ui-tabs',
 					'jquery-ui-sortable',
 					'jquery-ui-accordion',
