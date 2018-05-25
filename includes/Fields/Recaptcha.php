@@ -12,10 +12,8 @@ class Recaptcha extends Abstract_Field {
 	 * @var array
 	 */
 	protected $metabox_fields = array(
-		// Content
 		'field_type',
 		'field_title',
-		// Advance
 		'field_id',
 	);
 

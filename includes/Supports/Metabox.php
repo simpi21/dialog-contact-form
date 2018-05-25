@@ -12,11 +12,17 @@ class Metabox {
 	public static function text( array $args ) {
 		list( $name, $value, $input_id ) = self::field_common( $args );
 		$class = isset( $args['input_class'] ) ? esc_attr( $args['input_class'] ) : 'dcf-input-text';
+		$type  = isset( $args['type'] ) ? esc_attr( $args['type'] ) : 'text';
 
 		echo self::field_before( $args );
-		echo sprintf( '<input type="text" class="' . $class . '" value="%1$s" id="' . $input_id . '" name="%3$s">',
+		echo sprintf( '<input type="' . $type . '" class="' . $class . '" value="%1$s" id="' . $input_id . '" name="%3$s">',
 			$value, $args['id'], $name );
 		echo self::field_after();
+	}
+
+	public static function number( array $args ) {
+		$args['type'] = 'number';
+		self::text( $args );
 	}
 
 	/**
@@ -103,6 +109,35 @@ class Metabox {
 		echo sprintf( '<select name="%1$s" id="%2$s" class="' . $class . '" %3$s>', $name, $input_id, $multiple );
 		foreach ( $args['options'] as $key => $option ) {
 			$selected = ( $value == $key ) ? ' selected="selected"' : '';
+			echo '<option value="' . $key . '" ' . $selected . '>' . $option . '</option>';
+		}
+		echo '</select>';
+
+		echo self::field_after();
+	}
+
+	/**
+	 * Generate select field
+	 *
+	 * @param $args
+	 */
+	public static function mime_type( $args ) {
+		list( $name, $value, $input_id ) = self::field_common( $args );
+
+		$multiple = isset( $args['multiple'] ) ? 'multiple' : '';
+		$class    = isset( $args['input_class'] ) ? esc_attr( $args['input_class'] ) : 'select2 dcf-input-text';
+
+		echo self::field_before( $args );
+
+		$args['options'] = self::allowed_mime_types();
+
+		echo sprintf( '<select name="%1$s" id="%2$s" class="' . $class . '" %3$s>', $name, $input_id, $multiple );
+		foreach ( $args['options'] as $key => $option ) {
+			if ( is_array( $value ) ) {
+				$selected = in_array( $key, $value ) ? ' selected="selected"' : '';
+			} else {
+				$selected = ( $value == $key ) ? ' selected="selected"' : '';
+			}
 			echo '<option value="' . $key . '" ' . $selected . '>' . $option . '</option>';
 		}
 		echo '</select>';
@@ -332,8 +367,8 @@ class Metabox {
 	private static function allowed_mime_types() {
 		$mime_types         = array();
 		$allowed_mime_types = get_allowed_mime_types();
-		foreach ( $allowed_mime_types as $allowed_mime_type ) {
-			$mime_types[ $allowed_mime_type ] = $allowed_mime_type;
+		foreach ( $allowed_mime_types as $extension => $allowed_mime_type ) {
+			$mime_types[ $extension ] = $extension;
 		}
 
 		return $mime_types;

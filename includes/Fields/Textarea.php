@@ -12,18 +12,14 @@ class Textarea extends Abstract_Field {
 	 * @var array
 	 */
 	protected $metabox_fields = array(
-		// Content
 		'field_type',
 		'field_title',
 		'placeholder',
 		'required_field',
 		'field_width',
-		// Advance
 		'field_id',
-		// Additional
 		'field_value',
 		'field_class',
-		// Optional
 		'rows'
 	);
 
@@ -39,13 +35,14 @@ class Textarea extends Abstract_Field {
 			$this->setField( $field );
 		}
 
-		$html = sprintf( '<textarea id="%1$s" class="%2$s" name="%3$s" %5$s %6$s >%4$s</textarea>',
+		$html = sprintf( '<textarea id="%1$s" class="%2$s" name="%3$s" %5$s %6$s %7$s>%4$s</textarea>',
 			$this->get_id(),
 			$this->get_class( 'textarea' ),
 			$this->get_name(),
 			$this->get_value(),
 			$this->get_placeholder(),
-			$this->get_required()
+			$this->get_required(),
+			$this->get_rows_attribute()
 		);
 
 		return $html;
@@ -88,5 +85,18 @@ class Textarea extends Abstract_Field {
 		}
 
 		return esc_textarea( $_POST[ $this->field['field_name'] ] );
+	}
+
+	/**
+	 * Get rows attribute
+	 *
+	 * @return string
+	 */
+	protected function get_rows_attribute() {
+		if ( isset( $this->field['rows'] ) && is_numeric( $this->field['rows'] ) ) {
+			return ' rows="' . intval( $this->field['rows'] ) . '"';
+		}
+
+		return '';
 	}
 }

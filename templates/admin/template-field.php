@@ -221,7 +221,7 @@ $_field_number = 100;
 						'dialog-contact-form' ),
 					'default'     => '2',
 				) );
-				Metabox::select( array(
+				Metabox::mime_type( array(
 					'id'          => 'allowed_file_types',
 					'group'       => 'field',
 					'group_class' => 'dcf-input-group col-allowed_file_types',
@@ -230,7 +230,6 @@ $_field_number = 100;
 					'label'       => __( 'Allowed File Types', 'dialog-contact-form' ),
 					'description' => __( 'Choose file types.', 'dialog-contact-form' ),
 					'multiple'    => true,
-					'options'     => get_allowed_mime_types(),
 				) );
 				Metabox::buttonset( array(
 					'id'          => 'multiple_files',

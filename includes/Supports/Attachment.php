@@ -2,6 +2,8 @@
 
 namespace DialogContactForm\Supports;
 
+use DialogContactForm\Fields\File;
+
 class Attachment {
 
 	/**
@@ -22,11 +24,22 @@ class Attachment {
 	 * Get error message for each uploaded files
 	 *
 	 * @param \DialogContactForm\Supports\UploadedFile $file
-	 * @param bool $is_required
+	 * @param array $field
 	 *
 	 * @return string
 	 */
-	private static function get_file_error( $file, $is_required ) {
+	private static function get_file_error( $file, $field ) {
+		$is_required = false;
+		if ( isset( $field['required_field'] ) && 'on' == $field['required_field'] ) {
+			$is_required = true;
+		}
+
+		// Backward compatibility
+		$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
+		if ( in_array( 'required', $validate_rules ) ) {
+			$is_required = true;
+		}
+
 		$messages = self::get_validation_messages();
 
 		// If file is required and no file uploaded, return require message
@@ -38,8 +51,11 @@ class Attachment {
 			}
 		}
 
+		$file_field = new File();
+		$file_field->setField( $field );
+
 		// check file size here.
-		if ( $file->getSize() > wp_max_upload_size() ) {
+		if ( $file->getSize() > $file_field->get_max_file_size() ) {
 			return $messages['file_too_large'];
 		}
 
@@ -48,7 +64,7 @@ class Attachment {
 		$mime_type = $file_info->file( $file->getFile() );
 
 		// Get file extension from allowed mime types
-		$ext = array_search( $mime_type, get_allowed_mime_types(), true );
+		$ext = array_search( $mime_type, $file_field->get_allowed_mime_types(), true );
 
 		// Check if uploaded file mime type is allowed
 		if ( false === strpos( $ext, $file->getClientExtension() ) ) {
@@ -67,29 +83,18 @@ class Attachment {
 	 */
 	public static function validate( $field ) {
 
-		$is_required = false;
-		if ( isset( $field['required_field'] ) && 'on' == $field['required_field'] ) {
-			$is_required = true;
-		}
-
-		// Backward compatibility
-		$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
-		if ( in_array( 'required', $validate_rules ) ) {
-			$is_required = true;
-		}
-
 		$files = UploadedFile::getUploadedFiles();
 		$file  = isset( $files[ $field['field_name'] ] ) ? $files[ $field['field_name'] ] : false;
 
 		$message = array();
 		if ( $file instanceof UploadedFile ) {
-			$message[] = self::get_file_error( $file, $is_required );
+			$message[] = self::get_file_error( $file, $field );
 		}
 
 		if ( is_array( $file ) ) {
 			foreach ( $file as $_file ) {
 				if ( $_file instanceof UploadedFile ) {
-					$message[] = self::get_file_error( $_file, $is_required );
+					$message[] = self::get_file_error( $_file, $field );
 				}
 			}
 		}

@@ -10,15 +10,12 @@ class Url extends Text {
 	 * @var array
 	 */
 	protected $metabox_fields = array(
-		// Content
 		'field_type',
 		'field_title',
 		'placeholder',
 		'required_field',
 		'field_width',
-		// Advance
 		'field_id',
-		// Additional
 		'field_value',
 		'field_class',
 	);

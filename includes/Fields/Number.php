@@ -12,18 +12,15 @@ class Number extends Abstract_Field {
 	 * @var array
 	 */
 	protected $metabox_fields = array(
-		// Content
 		'field_type',
 		'field_title',
+		'field_id',
 		'placeholder',
 		'required_field',
 		'field_width',
-		// Advance
-		'field_id',
 		'number_min',
 		'number_max',
 		'number_step',
-		// Additional
 		'field_value',
 		'field_class',
 	);
@@ -47,9 +44,9 @@ class Number extends Abstract_Field {
 			$this->get_name(),
 			$this->get_value(),
 			$this->get_placeholder(),
-			$this->get_min(),
-			$this->get_max(),
-			$this->get_step(),
+			$this->get_min_attribute(),
+			$this->get_max_attribute(),
+			$this->get_step_attribute(),
 			$this->get_required()
 		);
 
@@ -100,7 +97,7 @@ class Number extends Abstract_Field {
 	 *
 	 * @return string
 	 */
-	protected function get_min() {
+	protected function get_min_attribute() {
 		if ( empty( $this->field['number_min'] ) ) {
 			return '';
 		}
@@ -113,7 +110,7 @@ class Number extends Abstract_Field {
 	 *
 	 * @return string
 	 */
-	protected function get_max() {
+	protected function get_max_attribute() {
 		if ( empty( $this->field['number_max'] ) ) {
 			return '';
 		}
@@ -126,7 +123,7 @@ class Number extends Abstract_Field {
 	 *
 	 * @return string
 	 */
-	protected function get_step() {
+	protected function get_step_attribute() {
 		if ( empty( $this->field['number_step'] ) ) {
 			return '';
 		}

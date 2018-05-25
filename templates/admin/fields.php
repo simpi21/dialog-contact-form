@@ -253,7 +253,7 @@ if ( ! defined( 'WPINC' ) ) {
 							'dialog-contact-form' ),
 						'default'     => '2',
 					) );
-					Metabox::select( array(
+					Metabox::mime_type( array(
 						'id'          => 'allowed_file_types',
 						'group'       => 'field',
 						'group_class' => 'dcf-input-group col-allowed_file_types',
@@ -262,7 +262,6 @@ if ( ! defined( 'WPINC' ) ) {
 						'label'       => __( 'Allowed File Types', 'dialog-contact-form' ),
 						'description' => __( 'Choose file types.', 'dialog-contact-form' ),
 						'multiple'    => true,
-						'options'     => get_allowed_mime_types(),
 					) );
 					Metabox::buttonset( array(
 						'id'          => 'multiple_files',
@@ -276,6 +275,15 @@ if ( ! defined( 'WPINC' ) ) {
 							'off' => esc_html__( 'No', 'dialog-contact-form' ),
 							'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
 						),
+					) );
+					// Textarea Field
+					Metabox::number( array(
+						'id'          => 'rows',
+						'group'       => 'field',
+						'group_class' => 'dcf-input-group col-rows',
+						'position'    => $_field_number,
+						'meta_key'    => '_contact_form_fields',
+						'label'       => __( 'Rows', 'dialog-contact-form' ),
 					) );
 					?>
                 </div>

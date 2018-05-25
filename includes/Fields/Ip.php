@@ -13,12 +13,10 @@ class Ip extends Text {
 		// Content
 		'field_type',
 		'field_title',
+		'field_id',
 		'placeholder',
 		'required_field',
 		'field_width',
-		// Advance
-		'field_id',
-		// Additional
 		'field_value',
 		'field_class',
 	);

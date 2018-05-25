@@ -84,13 +84,36 @@ class File extends Abstract_Field {
 	 *
 	 * @return int
 	 */
-	private function get_max_file_size() {
+	public function get_max_file_size() {
 		$max_upload_size = wp_max_upload_size();
 		if ( isset( $this->field['max_file_size'] ) && is_numeric( $this->field['max_file_size'] ) ) {
 			$max_upload_size = $this->field['max_file_size'] * pow( 1024, 2 );
 		}
 
 		return (int) $max_upload_size;
+	}
+
+	/**
+	 * Get allowed file types
+	 *
+	 * @return array
+	 */
+	public function get_allowed_mime_types() {
+		$mime_types         = array();
+		$allowed_mime_types = get_allowed_mime_types();
+
+		if ( ! empty( $this->field['allowed_file_types'] ) && is_array( $this->field['allowed_file_types'] ) ) {
+			foreach ( $this->field['allowed_file_types'] as $allowed_file_type ) {
+				if ( ! isset( $allowed_mime_types[ $allowed_file_type ] ) ) {
+					continue;
+				}
+				$mime_types[ $allowed_file_type ] = $allowed_mime_types[ $allowed_file_type ];
+			}
+
+			$mime_types = array_filter( $mime_types );
+		}
+
+		return $mime_types ? $mime_types : $allowed_mime_types;
 	}
 
 	/**
@@ -127,21 +150,6 @@ class File extends Abstract_Field {
 		}
 
 		return '';
-	}
-
-	/**
-	 * Get allowed file types
-	 *
-	 * @return array
-	 */
-	private function allowed_file_types() {
-		$allowed_mime_types = get_allowed_mime_types();
-		$allowed_file_types = array_keys( $allowed_mime_types );
-		if ( ! empty( $this->field['allowed_file_types'] ) ) {
-			$allowed_file_types = $this->field['allowed_file_types'];
-		}
-
-		return $allowed_file_types;
 	}
 
 	/**

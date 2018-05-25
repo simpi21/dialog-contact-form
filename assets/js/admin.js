@@ -42,6 +42,7 @@
         _accordion.find('.col-max_file_size').hide();
         _accordion.find('.col-allowed_file_types').hide();
         _accordion.find('.col-multiple_files').hide();
+        _accordion.find('.col-rows').hide();
 
         _accordion.find('.col-validation').hide();
         _accordion.find('.col-error_message').hide();
@@ -76,12 +77,24 @@
             _accordion.find('.col-multiple_files').slideDown('fast');
         }
 
-        if ($.inArray(_value, whiteList) >= 0) {
-            _accordion.find('.col-addOptions').slideDown('fast');
+        if (_value === 'hidden') {
+            _accordion.find('.col-placeholder').slideUp('fast');
+            _accordion.find('.col-field_class').slideUp('fast');
+            _accordion.find('.col-required_field').slideUp('fast');
+            _accordion.find('.col-field_width').slideUp('fast');
+            _accordion.find('.col-field_value').slideDown('fast');
         }
 
         if (_value === 'number') {
             _accordion.find('.col-numberOption').slideDown('fast');
+        }
+
+        if (_value === 'textarea') {
+            _accordion.find('.col-rows').slideDown('fast');
+        }
+
+        if ($.inArray(_value, whiteList) >= 0) {
+            _accordion.find('.col-addOptions').slideDown('fast');
         }
     }
 

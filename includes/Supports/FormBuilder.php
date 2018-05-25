@@ -254,14 +254,18 @@ class FormBuilder {
 
 		<?php
 		foreach ( $this->fields as $field ) {
-			echo sprintf( '<div class="dcf-column %s">', $field['field_width'] );
+			$field_type = isset( $field['field_type'] ) ? esc_attr( $field['field_type'] ) : 'text';
+			$style      = '';
+			if ( 'hidden' == $field_type ) {
+				$style .= 'style="display: none"';
+			}
+
+			echo sprintf( '<div class="dcf-column %s" %s>', $field['field_width'], $style );
 			echo '<div class="dcf-field">';
 
 			$this->label( $field );
 
 			echo '<div class="dcf-control">';
-
-			$field_type = isset( $field['field_type'] ) ? esc_attr( $field['field_type'] ) : 'text';
 
 			// Load Field Class if exists
 			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field_type );

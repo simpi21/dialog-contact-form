@@ -12,13 +12,11 @@ class Select extends Abstract_Field {
 	 * @var array
 	 */
 	protected $metabox_fields = array(
-		// Content
 		'field_type',
 		'field_title',
 		'required_field',
 		'options',
 		'field_width',
-		// Advance
 		'field_id',
 		'field_class',
 		// Optional
