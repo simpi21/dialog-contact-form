@@ -39,6 +39,9 @@
         _accordion.find('.col-min_date').hide();
         _accordion.find('.col-max_date').hide();
         _accordion.find('.col-native_html5').hide();
+        _accordion.find('.col-max_file_size').hide();
+        _accordion.find('.col-allowed_file_types').hide();
+        _accordion.find('.col-multiple_files').hide();
 
         _accordion.find('.col-validation').hide();
         _accordion.find('.col-error_message').hide();
@@ -64,6 +67,13 @@
 
         if (_value === 'time') {
             _accordion.find('.col-native_html5').slideDown('fast');
+        }
+
+        if (_value === 'file') {
+            _accordion.find('.col-placeholder').hide();
+            _accordion.find('.col-max_file_size').slideDown('fast');
+            _accordion.find('.col-allowed_file_types').slideDown('fast');
+            _accordion.find('.col-multiple_files').slideDown('fast');
         }
 
         if ($.inArray(_value, whiteList) >= 0) {

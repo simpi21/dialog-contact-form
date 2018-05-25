@@ -10,17 +10,13 @@ class Email extends Text {
 	 * @var array
 	 */
 	protected $metabox_fields = array(
-		// Content
 		'field_type',
 		'field_title',
-		'placeholder',
-		'required_field',
-		'field_width',
-		// Advance
 		'field_id',
-		// Additional
-		'field_value',
+		'required_field',
 		'field_class',
+		'placeholder',
+		'field_width',
 	);
 
 	/**

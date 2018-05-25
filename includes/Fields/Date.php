@@ -10,7 +10,6 @@ class Date extends Text {
 	 * @var array
 	 */
 	protected $metabox_fields = array(
-		// Content
 		'field_type',
 		'field_title',
 		'placeholder',
@@ -18,7 +17,6 @@ class Date extends Text {
 		'field_width',
 		'field_id',
 		'field_class',
-		// Optional
 		'min_date',
 		'max_date',
 		'native_html5',

@@ -347,6 +347,10 @@ class Admin {
 					'max_date'           => isset( $field['max_date'] ) ? sanitize_text_field( $field['max_date'] ) : '',
 					// Date & Time Field
 					'native_html5'       => isset( $field['native_html5'] ) ? sanitize_text_field( $field['native_html5'] ) : '',
+					// File Field
+					'max_file_size'      => isset( $field['max_file_size'] ) ? absint( $field['max_file_size'] ) : '',
+					'allowed_file_types' => isset( $field['allowed_file_types'] ) ? self::sanitize_value( $field['allowed_file_types'] ) : array(),
+					'multiple_files'     => isset( $field['multiple_files'] ) ? sanitize_text_field( $field['multiple_files'] ) : '',
 				);
 			}
 

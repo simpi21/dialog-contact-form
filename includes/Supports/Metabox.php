@@ -73,6 +73,35 @@ class Metabox {
 
 		echo sprintf( '<select name="%1$s" id="%2$s" class="' . $class . '" %3$s>', $name, $input_id, $multiple );
 		foreach ( $args['options'] as $key => $option ) {
+			if ( is_array( $value ) ) {
+				$selected = in_array( $key, $value ) ? ' selected="selected"' : '';
+			} else {
+				$selected = ( $value == $key ) ? ' selected="selected"' : '';
+			}
+			echo '<option value="' . $key . '" ' . $selected . '>' . $option . '</option>';
+		}
+		echo '</select>';
+
+		echo self::field_after();
+	}
+
+	/**
+	 * Generate select field
+	 *
+	 * @param $args
+	 */
+	public static function file_size( $args ) {
+		list( $name, $value, $input_id ) = self::field_common( $args );
+
+		$multiple = isset( $args['multiple'] ) ? 'multiple' : '';
+		$class    = isset( $args['input_class'] ) ? esc_attr( $args['input_class'] ) : 'select2 dcf-input-text';
+
+		echo self::field_before( $args );
+
+		$args['options'] = self::get_upload_file_size_options();
+
+		echo sprintf( '<select name="%1$s" id="%2$s" class="' . $class . '" %3$s>', $name, $input_id, $multiple );
+		foreach ( $args['options'] as $key => $option ) {
 			$selected = ( $value == $key ) ? ' selected="selected"' : '';
 			echo '<option value="' . $key . '" ' . $selected . '>' . $option . '</option>';
 		}
@@ -182,8 +211,8 @@ class Metabox {
 	public static function pages_list( array $config ) {
 		list( $name, $value, $input_id ) = self::field_common( $config );
 
-		$multiple = isset( $args['multiple'] ) ? 'multiple' : '';
-		$class    = isset( $args['input_class'] ) ? esc_attr( $args['input_class'] ) : 'select2 dcf-input-text';
+		$multiple = isset( $config['multiple'] ) ? 'multiple' : '';
+		$class    = isset( $config['input_class'] ) ? esc_attr( $config['input_class'] ) : 'select2 dcf-input-text';
 
 		echo self::field_before( $config );
 
@@ -229,7 +258,7 @@ class Metabox {
 
 			if ( isset( $args['position'] ) ) {
 				$id    = sprintf( '%s_%s_%s', $group, $args['id'], $args['position'] );
-				$name  = sprintf( '%s[%s][%s]', $group, $args['position'], $args['id'] );
+				$name  = sprintf( '%s[%s][%s]%s', $group, $args['position'], $args['id'], $multiple );
 				$value = ! empty( $meta[ $args['position'] ][ $args['id'] ] ) ? $meta[ $args['position'] ][ $args['id'] ] : $default;
 			}
 		}
@@ -277,5 +306,36 @@ class Metabox {
 	 */
 	private static function field_after() {
 		return '</div></div>' . PHP_EOL;
+	}
+
+	/**
+	 * creates array of upload sizes based on server limits
+	 * to use in the file_sizes control
+	 * @return array
+	 */
+	private static function get_upload_file_size_options() {
+		$max_file_size = wp_max_upload_size() / pow( 1024, 2 ); //MB
+
+		$sizes = array();
+		for ( $file_size = 1; $file_size <= $max_file_size; $file_size ++ ) {
+			$sizes[ $file_size ] = $file_size . 'MB';
+		}
+
+		return $sizes;
+	}
+
+	/**
+	 * Get allowed mime types list
+	 *
+	 * @return array
+	 */
+	private static function allowed_mime_types() {
+		$mime_types         = array();
+		$allowed_mime_types = get_allowed_mime_types();
+		foreach ( $allowed_mime_types as $allowed_mime_type ) {
+			$mime_types[ $allowed_mime_type ] = $allowed_mime_type;
+		}
+
+		return $mime_types;
 	}
 }

@@ -241,6 +241,42 @@ if ( ! defined( 'WPINC' ) ) {
 							'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
 						),
 					) );
+					// File Field
+					Metabox::file_size( array(
+						'id'          => 'max_file_size',
+						'group'       => 'field',
+						'group_class' => 'dcf-input-group col-max_file_size',
+						'position'    => $_field_number,
+						'meta_key'    => '_contact_form_fields',
+						'label'       => __( 'Max. File Size', 'dialog-contact-form' ),
+						'description' => __( 'If you need to increase max upload size please contact your hosting.',
+							'dialog-contact-form' ),
+						'default'     => '2',
+					) );
+					Metabox::select( array(
+						'id'          => 'allowed_file_types',
+						'group'       => 'field',
+						'group_class' => 'dcf-input-group col-allowed_file_types',
+						'position'    => $_field_number,
+						'meta_key'    => '_contact_form_fields',
+						'label'       => __( 'Allowed File Types', 'dialog-contact-form' ),
+						'description' => __( 'Choose file types.', 'dialog-contact-form' ),
+						'multiple'    => true,
+						'options'     => get_allowed_mime_types(),
+					) );
+					Metabox::buttonset( array(
+						'id'          => 'multiple_files',
+						'group'       => 'field',
+						'group_class' => 'dcf-input-group col-multiple_files',
+						'position'    => $_field_number,
+						'meta_key'    => '_contact_form_fields',
+						'label'       => __( 'Multiple Files', 'dialog-contact-form' ),
+						'default'     => 'off',
+						'options'     => array(
+							'off' => esc_html__( 'No', 'dialog-contact-form' ),
+							'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+						),
+					) );
 					?>
                 </div>
             </div>
