@@ -35,13 +35,17 @@ class File extends Abstract_Field {
 			$this->setField( $field );
 		}
 
-		$accept = '';
-		$html   = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" type="file" %4$s %5$s %6$s>',
+		$name_attribute = $this->get_name();
+		if ( $this->is_multiple() ) {
+			$name_attribute = $name_attribute . '[]';
+		}
+
+		$html = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" type="file" %4$s %5$s %6$s>',
 			$this->get_id(),
 			$this->get_class( 'file' ),
-			$this->get_name(),
-			$this->multiple_files(),
-			$accept,
+			$name_attribute,
+			$this->get_multiple_attribute(),
+			$this->get_accept_attribute(),
 			$this->get_required()
 		);
 
@@ -90,11 +94,34 @@ class File extends Abstract_Field {
 	}
 
 	/**
+	 * Get accept attribute
+	 *
+	 * @return string
+	 */
+	private function get_accept_attribute() {
+		$mimes              = array();
+		$allowed_mime_types = get_allowed_mime_types();
+
+		$file_types = $this->field['allowed_file_types'] ? $this->field['allowed_file_types'] : array();
+		foreach ( $file_types as $file_type ) {
+			if ( isset( $allowed_mime_types[ $file_type ] ) ) {
+				$mimes[] = $allowed_mime_types[ $file_type ];
+			}
+		}
+
+		if ( $mimes ) {
+			return ' accept="' . implode( ',', $mimes ) . '"';
+		}
+
+		return '';
+	}
+
+	/**
 	 * Get multiple file attribute
 	 *
 	 * @return string
 	 */
-	private function multiple_files() {
+	private function get_multiple_attribute() {
 		if ( $this->is_multiple() ) {
 			return ' multiple="true"';
 		}
