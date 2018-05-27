@@ -2,6 +2,7 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\Fields\Recaptcha;
 use DialogContactForm\Supports\Settings_API;
 
 class Settings {
@@ -74,14 +75,16 @@ class Settings {
 		$option_page->add_section( array(
 			'id'          => 'dcf_message_section',
 			'title'       => __( 'General Validation Messages', 'dialog-contact-form' ),
-			'description' => __( 'Define general validation message. This message can be overwrite from each form.', 'dialog-contact-form' ),
+			'description' => __( 'Define general validation message. This message can be overwrite from each form.',
+				'dialog-contact-form' ),
 			'panel'       => 'dcf_message_panel',
 			'priority'    => 40,
 		) );
 		$option_page->add_section( array(
 			'id'          => 'dcf_field_message_section',
 			'title'       => __( 'Field Validation Messages', 'dialog-contact-form' ),
-			'description' => __( 'Define validation message for form fields. These message will be used for all forms.', 'dialog-contact-form' ),
+			'description' => __( 'Define validation message for form fields. These message will be used for all forms.',
+				'dialog-contact-form' ),
 			'panel'       => 'dcf_message_panel',
 			'priority'    => 50,
 		) );
@@ -102,7 +105,8 @@ class Settings {
 		$option_page->add_section( array(
 			'id'          => 'dcf_grecaptcha_section',
 			'title'       => __( 'reCAPTCHA', 'dialog-contact-form' ),
-			'description' => sprintf( __( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse. To use reCAPTCHA, you need to install an API key pair. %sGet your API Keys%s.', 'dialog-contact-form' ),
+			'description' => sprintf( __( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse. To use reCAPTCHA, you need to install an API key pair. %sGet your API Keys%s.',
+				'dialog-contact-form' ),
 				'<a target="_blank" href="https://www.google.com/recaptcha/admin#list">', '</a>' ),
 			'panel'       => 'dcf_integrations_panel',
 			'priority'    => 10,
@@ -164,7 +168,8 @@ class Settings {
 			'id'      => 'encryption',
 			'type'    => 'radio',
 			'name'    => __( 'Encryption', 'dialog-contact-form' ),
-			'desc'    => __( 'If you have SSL/TLS encryption available for that hostname, choose it here', 'dialog-contact-form' ),
+			'desc'    => __( 'If you have SSL/TLS encryption available for that hostname, choose it here',
+				'dialog-contact-form' ),
 			'std'     => '',
 			'section' => 'dcf_smpt_server_section',
 			'options' => array(
@@ -201,7 +206,7 @@ class Settings {
 			'std'      => 'en',
 			'section'  => 'dcf_grecaptcha_section',
 			'priority' => 30,
-			'options'  => dcf_google_recaptcha_lang(),
+			'options'  => Recaptcha::lang(),
 		) );
 		$option_page->add_field( array(
 			'id'       => 'recaptcha_theme',
@@ -305,7 +310,8 @@ class Settings {
 			'type'     => 'textarea',
 			'rows'     => 2,
 			'name'     => __( 'Required input', 'dialog-contact-form' ),
-			'desc'     => __( 'Required field message for input, textarea except radio, select and checkbox field.', 'dialog-contact-form' ),
+			'desc'     => __( 'Required field message for input, textarea except radio, select and checkbox field.',
+				'dialog-contact-form' ),
 			'std'      => $default_options['invalid_required'],
 			'section'  => 'dcf_field_message_section',
 			'priority' => 10,
@@ -325,7 +331,8 @@ class Settings {
 			'type'     => 'textarea',
 			'rows'     => 2,
 			'name'     => __( 'Required select multiple', 'dialog-contact-form' ),
-			'desc'     => __( 'Required field message for select and checkbox fields with multiple values.', 'dialog-contact-form' ),
+			'desc'     => __( 'Required field message for select and checkbox fields with multiple values.',
+				'dialog-contact-form' ),
 			'std'      => $default_options['required_select_multi'],
 			'section'  => 'dcf_field_message_section',
 			'priority' => 12,
@@ -336,7 +343,8 @@ class Settings {
 			'rows'     => 3,
 			'name'     => __( 'Too long', 'dialog-contact-form' ),
 			'desc'     => sprintf(
-				__( 'You can use %s for showing maximum allowed characters and %s for user input value length.', 'dialog-contact-form' ),
+				__( 'You can use %s for showing maximum allowed characters and %s for user input value length.',
+					'dialog-contact-form' ),
 				'<strong>{maxLength}</strong>',
 				'<strong>{length}</strong>'
 			),
@@ -350,7 +358,8 @@ class Settings {
 			'rows'     => 3,
 			'name'     => __( 'Too short', 'dialog-contact-form' ),
 			'desc'     => sprintf(
-				__( 'You can use %s for showing minimum allowed characters and %s for user input value length.', 'dialog-contact-form' ),
+				__( 'You can use %s for showing minimum allowed characters and %s for user input value length.',
+					'dialog-contact-form' ),
 				'<strong>{minLength}</strong>',
 				'<strong>{length}</strong>'
 			),
@@ -407,7 +416,8 @@ class Settings {
 			'type'     => 'textarea',
 			'rows'     => 2,
 			'name'     => __( 'Invalid numeric value', 'dialog-contact-form' ),
-			'desc'     => __( 'Numeric strings consist of optional sign, any number of digits, optional decimal part and optional exponential part.', 'dialog-contact-form' ),
+			'desc'     => __( 'Numeric strings consist of optional sign, any number of digits, optional decimal part and optional exponential part.',
+				'dialog-contact-form' ),
 			'std'      => $default_options['invalid_number'],
 			'section'  => 'dcf_field_message_section',
 			'priority' => 80,
@@ -514,7 +524,7 @@ class Settings {
 
 		// Add MailChimp section fields
 		$option_page->add_field( array(
-			'id'       => 'mail_chimp_api_key',
+			'id'       => 'mailchimp_api_key',
 			'type'     => 'text',
 			'name'     => __( 'API Key', 'dialog-contact-form' ),
 			'std'      => '',

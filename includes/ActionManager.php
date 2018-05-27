@@ -39,7 +39,7 @@ class ActionManager implements
 	public function __construct() {
 		$this->add_action( 'store_submission', new StoreSubmission() );
 		$this->add_action( 'email_notification', new EmailNotification() );
-		// $this->add_action( 'mail_chimp', new MailChimp() );
+		$this->add_action( 'mail_chimp', new MailChimp() );
 		$this->add_action( 'success_message', new SuccessMessage() );
 		$this->add_action( 'redirect', new Redirect() );
 	}

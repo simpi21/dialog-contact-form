@@ -20,6 +20,8 @@ class EmailNotification extends Abstract_Action {
 	public function __construct() {
 		$this->id            = 'email_notification';
 		$this->title         = __( 'Email Notification', 'dialog-contact-form' );
+		$this->meta_group    = 'email_notification';
+		$this->meta_key      = '_contact_form_mail';
 		$this->settings      = array_merge( $this->settings, $this->settings() );
 		self::$system_fields = array(
 			'[system:admin_email]' => get_option( 'admin_email' ),
@@ -177,17 +179,18 @@ class EmailNotification extends Abstract_Action {
 			'receiver'    => array(
 				'type'        => 'text',
 				'id'          => 'receiver',
-				'group'       => 'email_notification',
-				'meta_key'    => '_contact_form_mail',
+				'group'       => $this->meta_group,
+				'meta_key'    => $this->meta_key,
 				'label'       => __( 'Receiver(s)', 'dialog-contact-form' ),
-				'description' => __( 'Define the emails used (separated by comma) to receive emails.', 'dialog-contact-form' ),
+				'description' => __( 'Define the emails used (separated by comma) to receive emails.',
+					'dialog-contact-form' ),
 				'default'     => '[system:admin_email]',
 			),
 			'senderEmail' => array(
 				'type'        => 'text',
 				'id'          => 'senderEmail',
-				'group'       => 'email_notification',
-				'meta_key'    => '_contact_form_mail',
+				'group'       => $this->meta_group,
+				'meta_key'    => $this->meta_key,
 				'label'       => __( 'Sender Email', 'dialog-contact-form' ),
 				'description' => __( 'Define from what email send the message.', 'dialog-contact-form' ),
 				'default'     => '[your_email]',
@@ -195,8 +198,8 @@ class EmailNotification extends Abstract_Action {
 			'senderName'  => array(
 				'type'        => 'text',
 				'id'          => 'senderName',
-				'group'       => 'email_notification',
-				'meta_key'    => '_contact_form_mail',
+				'group'       => $this->meta_group,
+				'meta_key'    => $this->meta_key,
 				'label'       => __( 'Sender Name', 'dialog-contact-form' ),
 				'description' => __( 'Define the sender name that send the message.', 'dialog-contact-form' ),
 				'default'     => '[your_name]',
@@ -204,8 +207,8 @@ class EmailNotification extends Abstract_Action {
 			'subject'     => array(
 				'type'        => 'text',
 				'id'          => 'subject',
-				'group'       => 'email_notification',
-				'meta_key'    => '_contact_form_mail',
+				'group'       => $this->meta_group,
+				'meta_key'    => $this->meta_key,
 				'label'       => __( 'Message Subject', 'dialog-contact-form' ),
 				'description' => __( 'Define the subject of the email sent to you.', 'dialog-contact-form' ),
 				'default'     => '[system:blogname] : [subject]',
@@ -213,8 +216,8 @@ class EmailNotification extends Abstract_Action {
 			'body'        => array(
 				'type'        => 'textarea',
 				'id'          => 'body',
-				'group'       => 'email_notification',
-				'meta_key'    => '_contact_form_mail',
+				'group'       => $this->meta_group,
+				'meta_key'    => $this->meta_key,
 				'label'       => __( 'Message Body', 'dialog-contact-form' ),
 				'description' => sprintf(
 					__( 'Use mail-tags or enter %s for including all fields.', 'dialog-contact-form' ),
@@ -270,21 +273,5 @@ class EmailNotification extends Abstract_Action {
 		$html .= '<hr>';
 
 		return $html;
-	}
-
-	/**
-	 * Save action settings
-	 *
-	 * @param int $post_id
-	 * @param \WP_Post $post
-	 */
-	public function save( $post_id, $post ) {
-		if ( ! empty( $_POST['email_notification'] ) ) {
-			$sanitize_data = $this->sanitize_settings( $_POST['email_notification'] );
-
-			update_post_meta( $post_id, '_contact_form_mail', $sanitize_data );
-		} else {
-			delete_post_meta( $post_id, '_contact_form_mail' );
-		}
 	}
 }

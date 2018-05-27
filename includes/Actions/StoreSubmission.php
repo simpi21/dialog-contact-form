@@ -8,26 +8,11 @@ use DialogContactForm\Entries\Entry;
 class StoreSubmission extends Abstract_Action {
 
 	/**
-	 * Comment status
-	 *
-	 * @var string
-	 */
-	private static $comment_status = 'closed';
-
-	/**
-	 * Ping status
-	 *
-	 * @var string
-	 */
-	private static $ping_status = 'closed';
-
-	/**
 	 * Redirect constructor.
 	 */
 	public function __construct() {
-		$this->id       = 'store_submission';
-		$this->title    = __( 'Store Submission', 'dialog-contact-form' );
-		$this->settings = $this->settings();
+		$this->id    = 'store_submission';
+		$this->title = __( 'Store Submission', 'dialog-contact-form' );
 	}
 
 	/**
@@ -52,9 +37,5 @@ class StoreSubmission extends Abstract_Action {
 		$entry = new Entry();
 
 		return $entry->insert( $data );
-	}
-
-	private function settings() {
-		return array();
 	}
 }

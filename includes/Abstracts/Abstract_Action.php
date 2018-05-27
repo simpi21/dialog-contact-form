@@ -26,16 +26,22 @@ abstract class Abstract_Action {
 	protected $section = 'installed';
 
 	/**
+	 * Icon of the action
+	 *
 	 * @var string
 	 */
 	protected $icon;
 
 	/**
+	 * Timing of the action
+	 *
 	 * @var string
 	 */
 	protected $timing = 'normal';
 
 	/**
+	 * Priority of the action
+	 *
 	 * @var int
 	 */
 	protected $priority = '10';
@@ -46,11 +52,18 @@ abstract class Abstract_Action {
 	protected $settings = array();
 
 	/**
-	 * Abstract_Action constructor.
+	 * Meta key name for holding current action settings
+	 *
+	 * @var string
 	 */
-	public function __construct() {
+	protected $meta_key;
 
-	}
+	/**
+	 * Meta group for sending metadata to save as action settings
+	 *
+	 * @var string
+	 */
+	protected $meta_group;
 
 	/**
 	 * Save action settings
@@ -58,15 +71,23 @@ abstract class Abstract_Action {
 	 * @param int $post_id
 	 * @param \WP_Post $post
 	 */
-	abstract public function save( $post_id, $post );
+	public function save( $post_id, $post ) {
+		if ( ! empty( $_POST[ $this->meta_group ] ) ) {
+			$sanitize_data = $this->sanitize_settings( $_POST[ $this->meta_group ] );
+
+			update_post_meta( $post_id, $this->meta_key, $sanitize_data );
+		} else {
+			delete_post_meta( $post_id, $this->meta_key );
+		}
+	}
 
 	/**
-	 * Process action
+	 * Process current action
 	 *
-	 * @param int $form_id
-	 * @param array $data
+	 * @param int $form_id Contact form ID
+	 * @param array $data User submitted sanitized data
 	 *
-	 * @return string|bool|array
+	 * @return mixed
 	 */
 	public static function process( $form_id, $data ) {
 		// TODO: Implement process() method.

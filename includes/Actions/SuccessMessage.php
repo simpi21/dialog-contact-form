@@ -10,9 +10,11 @@ class SuccessMessage extends Abstract_Action {
 	 * SuccessMessage constructor.
 	 */
 	public function __construct() {
-		$this->id       = 'success_message';
-		$this->title    = __( 'Success Message', 'dialog-contact-form' );
-		$this->settings = $this->settings();
+		$this->id         = 'success_message';
+		$this->title      = __( 'Success Message', 'dialog-contact-form' );
+		$this->meta_group = 'success_message';
+		$this->meta_key   = '_action_success_message';
+		$this->settings   = $this->settings();
 	}
 
 	/**
@@ -39,8 +41,8 @@ class SuccessMessage extends Abstract_Action {
 			'message' => array(
 				'type'        => 'textarea',
 				'id'          => 'message',
-				'group'       => 'success_message',
-				'meta_key'    => '_action_success_message',
+				'group'       => $this->meta_group,
+				'meta_key'    => $this->meta_key,
 				'label'       => __( 'Message', 'dialog-contact-form' ),
 				'description' => __( 'Enter success message. You can also use HTML markup.', 'dialog-contact-form' ),
 				'sanitize'    => array( 'DialogContactForm\\Supports\\Sanitize', 'html' ),
@@ -48,22 +50,5 @@ class SuccessMessage extends Abstract_Action {
 				'default'     => $default,
 			),
 		);
-	}
-
-	/**
-	 * Save action settings
-	 *
-	 * @param int $post_id
-	 * @param \WP_Post $post
-	 */
-	public function save( $post_id, $post ) {
-
-		if ( ! empty( $_POST['success_message'] ) ) {
-			$sanitize_data = $this->sanitize_settings( $_POST['success_message'] );
-
-			update_post_meta( $post_id, '_action_success_message', $sanitize_data );
-		} else {
-			delete_post_meta( $post_id, '_action_success_message' );
-		}
 	}
 }
