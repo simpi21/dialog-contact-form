@@ -2,7 +2,7 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\ActionManager;
+use DialogContactForm\Supports\Metabox;
 
 class Admin {
 
@@ -194,7 +194,7 @@ class Admin {
                     </li>
                     <li class="dcf-tab-list--mail">
                         <a href="#dcf-tab-3">
-							<?php esc_html_e( 'Emails & Actions', 'dialog-contact-form' ); ?>
+							<?php esc_html_e( 'Actions After Submit', 'dialog-contact-form' ); ?>
                         </a>
                     </li>
                     <li class="dcf-tab-list--message">
@@ -211,9 +211,23 @@ class Admin {
                 </div>
                 <div id="dcf-tab-3" class="dcf_options_panel">
 					<?php
+					Metabox::select( array(
+						'id'          => 'after_submit_actions',
+						'group'       => 'actions',
+						'meta_key'    => '_contact_form_actions',
+						'label'       => __( 'Add Actions', 'dialog-contact-form' ),
+						'description' => __( 'Add actions that will be performed after a visitor submits the form (e.g. send an email notification). Choosing an action will add its setting below.',
+							'dialog-contact-form' ),
+						'multiple'    => true,
+						'options'     => $this->get_actions_list( $actions ),
+					) );
+
+					$_actions          = get_post_meta( $post->ID, '_contact_form_actions', true );
+					$supported_actions = isset( $_actions['after_submit_actions'] ) ? $_actions['after_submit_actions'] : array();
 					/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
 					foreach ( $actions as $action ) {
-						echo '<div data-id="closed" class="dcf-toggle dcf-toggle--normal">';
+						$display = in_array( $action->get_id(), $supported_actions ) ? 'block' : 'none';
+						echo '<div data-id="closed" class="dcf-toggle dcf-toggle--normal" style="display:' . $display . ';">';
 						echo '<span class="dcf-toggle-title">' . $action->get_title() . '</span>';
 						echo '<div class="dcf-toggle-inner"><div class="dcf-toggle-content">';
 						if ( $action->get_description() ) {
@@ -318,6 +332,10 @@ class Admin {
 
 		if ( isset( $_POST['messages'] ) ) {
 			update_post_meta( $post_id, '_contact_form_messages', self::sanitize_value( $_POST['messages'] ) );
+		}
+
+		if ( isset( $_POST['actions'] ) ) {
+			update_post_meta( $post_id, '_contact_form_actions', self::sanitize_value( $_POST['actions'] ) );
 		}
 
 		if ( isset( $_POST['field'] ) && is_array( $_POST['field'] ) ) {
@@ -440,5 +458,22 @@ class Admin {
 		}
 
 		return $counts;
+	}
+
+	/**
+	 * List of after submit actions
+	 *
+	 * @param \DialogContactForm\ActionManager $actions
+	 *
+	 * @return array
+	 */
+	private function get_actions_list( $actions ) {
+		$list = array();
+		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
+		foreach ( $actions as $action ) {
+			$list[ $action->get_id() ] = $action->get_title();
+		}
+
+		return $list;
 	}
 }
