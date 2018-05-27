@@ -53,14 +53,14 @@ class Settings {
 			'priority' => 20,
 		) );
 		$option_page->add_panel( array(
-			'id'       => 'dcf_grecaptcha_panel',
-			'title'    => __( 'reCAPTCHA', 'dialog-contact-form' ),
-			'priority' => 30,
-		) );
-		$option_page->add_panel( array(
 			'id'       => 'dcf_smpt_server_panel',
 			'title'    => __( 'SMTP Settings', 'dialog-contact-form' ),
 			'priority' => 40,
+		) );
+		$option_page->add_panel( array(
+			'id'       => 'dcf_integrations_panel',
+			'title'    => __( 'Integrations', 'dialog-contact-form' ),
+			'priority' => 50,
 		) );
 
 		// Add Sections
@@ -70,14 +70,6 @@ class Settings {
 			'description' => '',
 			'panel'       => 'dcf_smpt_server_panel',
 			'priority'    => 20,
-		) );
-		$option_page->add_section( array(
-			'id'          => 'dcf_grecaptcha_section',
-			'title'       => __( 'Google reCAPTCHA', 'dialog-contact-form' ),
-			'description' => sprintf( __( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse. To use reCAPTCHA, you need to install an API key pair. %sGet your API Keys%s.', 'dialog-contact-form' ),
-				'<a target="_blank" href="https://www.google.com/recaptcha/admin#list">', '</a>' ),
-			'panel'       => 'dcf_grecaptcha_panel',
-			'priority'    => 30,
 		) );
 		$option_page->add_section( array(
 			'id'          => 'dcf_message_section',
@@ -105,6 +97,25 @@ class Settings {
 			'title'       => __( 'Dialog/Modal', 'dialog-contact-form' ),
 			'description' => __( 'Configure fixed dialog/modal button at your site footer.', 'dialog-contact-form' ),
 			'panel'       => 'dcf_style_panel',
+			'priority'    => 20,
+		) );
+		$option_page->add_section( array(
+			'id'          => 'dcf_grecaptcha_section',
+			'title'       => __( 'reCAPTCHA', 'dialog-contact-form' ),
+			'description' => sprintf( __( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse. To use reCAPTCHA, you need to install an API key pair. %sGet your API Keys%s.', 'dialog-contact-form' ),
+				'<a target="_blank" href="https://www.google.com/recaptcha/admin#list">', '</a>' ),
+			'panel'       => 'dcf_integrations_panel',
+			'priority'    => 10,
+		) );
+		$option_page->add_section( array(
+			'id'          => 'dcf_mailChimp_section',
+			'title'       => __( 'MailChimp', 'dialog-contact-form' ),
+			'description' => sprintf(
+				__( 'To integrate MailChimp with our forms you need an %sAPI Key%s.', 'dialog-contact-form' ),
+				'<a href="https://kb.mailchimp.com/integrations/api-integrations/about-api-keys" target="_blank">',
+				'</a>'
+			),
+			'panel'       => 'dcf_integrations_panel',
 			'priority'    => 20,
 		) );
 
@@ -203,15 +214,6 @@ class Settings {
 				'light' => esc_html__( 'Light', 'dialog-contact-form' ),
 				'dark'  => esc_html__( 'Dark', 'dialog-contact-form' ),
 			)
-		) );
-		$option_page->add_field( array(
-			'id'       => 'invalid_recaptcha',
-			'type'     => 'textarea',
-			'rows'     => 2,
-			'name'     => __( 'invalid reCAPTCHA', 'dialog-contact-form' ),
-			'std'      => $default_options['invalid_recaptcha'],
-			'section'  => 'dcf_grecaptcha_section',
-			'priority' => 50,
 		) );
 
 		// Add Dialog/Modal section fields
@@ -465,6 +467,15 @@ class Settings {
 			'priority' => 140,
 		) );
 		$option_page->add_field( array(
+			'id'       => 'invalid_recaptcha',
+			'type'     => 'textarea',
+			'rows'     => 2,
+			'name'     => __( 'invalid reCAPTCHA', 'dialog-contact-form' ),
+			'std'      => $default_options['invalid_recaptcha'],
+			'section'  => 'dcf_field_message_section',
+			'priority' => 145,
+		) );
+		$option_page->add_field( array(
 			'id'       => 'invalid_user_login',
 			'type'     => 'textarea',
 			'rows'     => 2,
@@ -499,6 +510,16 @@ class Settings {
 			'std'      => $default_options['generic_error'],
 			'section'  => 'dcf_field_message_section',
 			'priority' => 300,
+		) );
+
+		// Add MailChimp section fields
+		$option_page->add_field( array(
+			'id'       => 'mail_chimp_api_key',
+			'type'     => 'text',
+			'name'     => __( 'API Key', 'dialog-contact-form' ),
+			'std'      => '',
+			'section'  => 'dcf_mailChimp_section',
+			'priority' => 10,
 		) );
 	}
 }

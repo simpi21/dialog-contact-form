@@ -203,6 +203,9 @@ if ( ! function_exists( 'dcf_default_options' ) ) {
 			'dialog_button_color'      => '#f5f5f5',
 			'default_style'            => 'enable',
 			'dialog_button_text'       => esc_html__( 'Leave a message', 'dialog-contact-form' ),
+
+			// Integration
+			'mailChimp_api_key'        => '',
 		);
 
 		$messages = dcf_validation_messages();
