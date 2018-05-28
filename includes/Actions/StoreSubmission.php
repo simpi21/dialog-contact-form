@@ -38,4 +38,17 @@ class StoreSubmission extends Abstract_Action {
 
 		return $entry->insert( $data );
 	}
+
+	/**
+	 * Get action description
+	 *
+	 * @return string
+	 */
+	public function get_description() {
+		$html = '<p class="description">';
+		$html .= esc_html__( 'No settings are available for this action.', 'dialog-contact-form' );
+		$html .= '</p>';
+
+		return $html;
+	}
 }
