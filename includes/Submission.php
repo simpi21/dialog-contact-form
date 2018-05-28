@@ -260,10 +260,16 @@ class Submission {
 		// If form upload a file, handle here
 		$data['dcf_attachments'] = Attachment::upload( $fields );
 
-		$response = array();
-		$actions  = ActionManager::init();
+		$response          = array();
+		$actions           = ActionManager::init();
+		$_actions          = get_post_meta( $form_id, '_contact_form_actions', true );
+		$supported_actions = isset( $_actions['after_submit_actions'] ) ? $_actions['after_submit_actions'] : array();
+
 		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
 		foreach ( $actions as $action ) {
+			if ( ! in_array( $action->get_id(), $supported_actions ) ) {
+				continue;
+			}
 			$response[ $action->get_id() ] = $action::process( $form_id, $data );
 		}
 
