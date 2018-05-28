@@ -227,7 +227,7 @@ class Admin {
 					/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
 					foreach ( $actions as $action ) {
 						$display = in_array( $action->get_id(), $supported_actions ) ? 'block' : 'none';
-						echo '<div data-id="closed" class="dcf-toggle dcf-toggle--normal" style="display:' . $display . ';">';
+						echo '<div id="action-' . $action->get_id() . '" data-id="closed" class="dcf-toggle dcf-toggle-action dcf-toggle--normal" style="display:' . $display . ';">';
 						echo '<span class="dcf-toggle-title">' . $action->get_title() . '</span>';
 						echo '<div class="dcf-toggle-inner"><div class="dcf-toggle-content">';
 						if ( $action->get_description() ) {

@@ -209,4 +209,22 @@
         });
     });
 
+    // Select2
+    $(document).ready(function () {
+        $('select.select2').select2();
+
+        $('#actions_after_submit_actions')
+            .select2()
+            .on("select2:select", function (e) {
+                var selections = $(this).val();
+                $.each(selections, function (index, value) {
+                    $('#action-' + value).slideDown('fast');
+                });
+            })
+            .on("select2:unselect", function (e) {
+                var selection = e.params.data.id;
+                $('#action-' + selection).slideUp('fast');
+            });
+    });
+
 })(jQuery);

@@ -265,10 +265,17 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				DIALOG_CONTACT_FORM_ASSETS . '/lib/wp-color-picker-alpha/wp-color-picker-alpha' . $suffix . '.js',
 				array( 'wp-color-picker' ), '2.1.3', true );
 
+			wp_enqueue_script( 'select2', DIALOG_CONTACT_FORM_ASSETS . '/lib/select2/select2' . $suffix . '.js',
+				array( 'jquery' ), '4.0.5', true );
+
+			wp_enqueue_style( 'select2', DIALOG_CONTACT_FORM_ASSETS . '/css/select2.css',
+				array(), DIALOG_CONTACT_FORM_VERSION, 'all' );
+
 			wp_enqueue_script( $this->plugin_name . '-admin',
 				DIALOG_CONTACT_FORM_ASSETS . '/js/admin' . $suffix . '.js',
 				array(
 					'jquery',
+					'select2',
 					'jquery-ui-datepicker',
 					'jquery-ui-tabs',
 					'jquery-ui-sortable',
