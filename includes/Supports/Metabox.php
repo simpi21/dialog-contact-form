@@ -266,6 +266,20 @@ class Metabox {
 	}
 
 	/**
+	 * Add section
+	 *
+	 * @param array $args
+	 */
+	public static function section( array $args ) {
+		if ( ! empty( $args['label'] ) ) {
+			echo '<h2 class="title">' . $args['label'] . '</h2>';
+		}
+		if ( ! empty( $args['description'] ) ) {
+			echo '<p class="description">' . $args['description'] . '</p>';
+		}
+	}
+
+	/**
 	 * Generate field name and field value
 	 *
 	 * @param $args

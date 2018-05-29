@@ -3,6 +3,7 @@
 namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Config;
 use DialogContactForm\Supports\MailChimpHandler;
 
 class MailChimp extends Abstract_Action {
@@ -45,6 +46,18 @@ class MailChimp extends Abstract_Action {
 			}
 		} catch ( \Exception $exception ) {
 			// $exception->getMessage()
+		}
+
+		$config       = Config::init();
+		$email_fields = array();
+		$text_fields  = array();
+		foreach ( $config->getFormFields() as $field ) {
+			if ( 'email' === $field['field_type'] ) {
+				$email_fields[ $field['field_id'] ] = $field['field_title'];
+			}
+			if ( 'text' === $field['field_type'] ) {
+				$text_fields[ $field['field_id'] ] = $field['field_title'];
+			}
 		}
 
 		return array(
@@ -104,11 +117,32 @@ class MailChimp extends Abstract_Action {
 				),
 			),
 			'mailchimp_fields_map'     => array(
-				'type'     => 'text',
-				'id'       => 'mailchimp_fields_map',
+				'type'  => 'section',
+				'label' => __( 'Field Mapping', 'dialog-contact-form' ),
+			),
+			'mailchimp_map_email'      => array(
+				'type'     => 'select',
+				'id'       => 'mailchimp_map_email',
 				'group'    => $this->meta_group,
 				'meta_key' => $this->meta_key,
-				'label'    => __( 'Field Mapping', 'dialog-contact-form' ),
+				'label'    => __( 'Email Address', 'dialog-contact-form' ),
+				'options'  => $email_fields,
+			),
+			'mailchimp_map_first_name' => array(
+				'type'     => 'select',
+				'id'       => 'mailchimp_map_first_name',
+				'group'    => $this->meta_group,
+				'meta_key' => $this->meta_key,
+				'label'    => __( 'First Name', 'dialog-contact-form' ),
+				'options'  => $text_fields,
+			),
+			'mailchimp_map_last_name'  => array(
+				'type'     => 'select',
+				'id'       => 'mailchimp_map_last_name',
+				'group'    => $this->meta_group,
+				'meta_key' => $this->meta_key,
+				'label'    => __( 'Last Name', 'dialog-contact-form' ),
+				'options'  => $text_fields,
 			),
 		);
 	}
@@ -123,11 +157,22 @@ class MailChimp extends Abstract_Action {
 	 */
 	public static function process( $form_id, $data ) {
 
-		$subscriber = array();
-
-		$subscriber['email_address'] = $data['your_email']; // Temp
-
+		$subscriber      = array();
 		$action_settings = get_post_meta( $form_id, '_action_mailchimp', true );
+
+		if ( empty( $action_settings['mailchimp_map_email'] ) ) {
+			return;
+		}
+
+		$subscriber['email_address'] = $data[ $action_settings['mailchimp_map_email'] ];
+
+		if ( ! empty( $action_settings['mailchimp_map_first_name'] ) ) {
+			$subscriber['merge_fields']['FNAME'] = $data[ $action_settings['mailchimp_map_first_name'] ];
+		}
+
+		if ( ! empty( $action_settings['mailchimp_map_last_name'] ) ) {
+			$subscriber['merge_fields']['LNAME'] = $data[ $action_settings['mailchimp_map_last_name'] ];
+		}
 
 		if ( ! empty( $action_settings['mailchimp_groups'] ) ) {
 			$subscriber['interests'] = [];

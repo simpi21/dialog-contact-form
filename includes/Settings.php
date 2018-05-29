@@ -50,7 +50,7 @@ class Settings {
 		) );
 		$option_page->add_panel( array(
 			'id'       => 'dcf_message_panel',
-			'title'    => __( 'Messages', 'dialog-contact-form' ),
+			'title'    => __( 'Validation Messages', 'dialog-contact-form' ),
 			'priority' => 20,
 		) );
 		$option_page->add_panel( array(

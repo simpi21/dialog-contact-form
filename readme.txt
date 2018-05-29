@@ -13,9 +13,10 @@ Just another WordPress contact form plugin. Simple but flexible.
 
 Just another WordPress contact form plugin. Simple but flexible.
 
-= Features =
+= Features of Dialog Contact Forms include, but are not limited to: =
 * Beginner friendly WordPress contact form plugin.
 * Very simple and lightweight.
+* Form submission via AJAX, allowing a seamless user experience without page refreshes
 * No JavaScript dependency, Written in vanilla JavaScript.
 * Design for modern browser but also works for older browsers.
 * Support creating multiple forms.
@@ -23,13 +24,23 @@ Just another WordPress contact form plugin. Simple but flexible.
 * Support using multiple forms in same page.
 * Option page for SMTP settings for better mail delivery.
 * More than ten input field types.
-* More than fifteen input field validation rules.
-* Option to customize each field validation message.
 * Option to add unlimited fields for each form.
 * Google reCAPTCHA to protect your form from spam.
 * Option to arrange and re-arrange fields as your need.
 * Option to customize mail template as you want.
 * Custom field width: Full, Three Quarters, Two Thirds, Half, One Third, One Quarter.
+* Give your users a success message or redirect them elsewhere after they complete a form.
+
+= For Developers =
+
+The Dialog Contact Form framework is on [GitHub](https://github.com/sayful1/dialog-contact-form)! If you're a developer and want to help make Dialog Contact Form better, check it out.
+
+== Frequently Asked Questions ==
+
+= Where can I report a bug? =
+
+Report bugs, suggest ideas, and participate in development at <a href="https://github.com/sayful1/dialog-contact-form">https://github.com/sayful1/dialog-contact-form</a>.
+
 
 == Installation ==
 
@@ -45,27 +56,36 @@ Installing the plugins is just like installing other WordPress plugins. If you d
 If you still need help. visit [WordPress codex](https://codex.wordpress.org/Managing_Plugins#Installing_Plugins)
 
 
-== Frequently Asked Questions ==
-Do you have questions or issues with Dialog Contact Form? [Ask for support here.](http://wordpress.org/support/plugin/dialog-contact-form)
-
 == Screenshots ==
 
 1. Screenshot of Dialog Contact Form on Dialog.
 2. Screenshot of Dialog Contact Form on Page.
 3. Screenshot of Dialog Contact Form of Setting Page.
 
+== Upgrade Notice ==
+
+= 3.0.0-alpha1 =
+
+Version 3 is a major update. After upgrading to version 3, check form and settings.
+
 == Changelog ==
 
-= version Master =
-* Added     - All form submissions now store on entries.
-* Added     - Add client side validation using The HTML5 constraint validation API.
+= version 3.0.0-alpha1 =
+* Feature   - MailChimp API integration.
+* Feature   - Add entries table to save visitor submitted data.
+* Feature   - Add client side validation using The HTML5 constraint validation API.
+* Feature   - Add Acceptance field type.
+* Feature   - Add "Preview Changes" button to preview form design.
 * Added     - Moved validation message from individual form to settings page.
 * Added     - Add polyfill for ClassList and validityState for IE 9.
 * Added     - Add dcf- prefix in all css class.
-* Added     - Add support for multiple value for checkbox.
-* Added     - Add IP Address field.
-* Added     - Add reCAPTCHA field.
 * Added     - Add action manager for managing multiple form submission actions.
+* Added     - Add support for multiple value for checkbox.
+* Added     - Add IP Address field type.
+* Added     - Add max_file_size, allowed_file_types, multiple_files option for file field.
+* Added     - Add accept attribute on file field.
+* Dev       - Add reCAPTCHA field.
+* Dev       - Add select2 jQuery library for select fields.
 * Dev       - Add PSR4 class loader for loading fields.
 * Dev       - Add UploadedFile helper class for handling file upload.
 * Dev       - Add Attachment class for upload, validate and store attachment.
@@ -133,7 +153,3 @@ Do you have questions or issues with Dialog Contact Form? [Ask for support here.
 
 = version 1.0.0 =
 * Initial release.
-
-== Upgrade Notice ==
-
-Upgrade the plugin to get latest feature and faster speed and compatibility with new version.

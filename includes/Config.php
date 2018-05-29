@@ -40,6 +40,13 @@ class Config {
 	private $form_fields = array();
 
 	/**
+	 * Current form email fields
+	 *
+	 * @var array
+	 */
+	private $email_fields = array();
+
+	/**
 	 * Current form settings
 	 *
 	 * @var array
@@ -73,6 +80,13 @@ class Config {
 	 * @var bool
 	 */
 	private $has_recaptcha = false;
+
+	/**
+	 * MailChimp API key
+	 *
+	 * @var string
+	 */
+	private $mailchimp_api_key = '';
 
 	/**
 	 * If form should reset after successful submission
@@ -119,6 +133,10 @@ class Config {
 			$this->options = get_dialog_contact_form_option();
 		}
 
+		if ( ! empty( $this->options['mailchimp_api_key'] ) ) {
+			$this->mailchimp_api_key = $this->options['mailchimp_api_key'];
+		}
+
 		if ( ! $this->validation_messages ) {
 			$default_messages = dcf_validation_messages();
 			$messages         = array();
@@ -144,6 +162,7 @@ class Config {
 			$messages                  = get_post_meta( $this->form_id, '_contact_form_messages', true );
 			$this->validation_messages = wp_parse_args( $messages, $this->validation_messages );
 
+			// Check if current form has file
 			if ( $this->form_fields ) {
 				$this->field_types = array_unique( array_column( $this->form_fields, 'field_type' ) );
 
@@ -152,12 +171,21 @@ class Config {
 				}
 			}
 
+			// Check if reCAPTCHA is enabled
 			if ( 'yes' === $this->form_settings['recaptcha'] ) {
 				$this->has_recaptcha = true;
 			}
 
+			// If form should reset after submission
 			if ( 'no' === $this->form_settings['reset_form'] ) {
 				$this->reset_form = false;
+			}
+
+			// Generate email fields
+			foreach ( $this->getFormFields() as $form_field ) {
+				if ( 'email' === $form_field['field_type'] ) {
+					$this->email_fields[] = $form_field;
+				}
 			}
 		}
 	}
@@ -273,5 +301,23 @@ class Config {
 	 */
 	public function getMailSendFailMessage() {
 		return esc_attr( $this->validation_messages['mail_sent_ng'] );
+	}
+
+	/**
+	 * Get MailChimp API key
+	 *
+	 * @return string
+	 */
+	public function getMailChimpApiKey() {
+		return $this->mailchimp_api_key;
+	}
+
+	/**
+	 * Get email fields
+	 *
+	 * @return array
+	 */
+	public function getEmailFields() {
+		return $this->email_fields;
 	}
 }
