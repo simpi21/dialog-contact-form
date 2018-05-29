@@ -20,36 +20,45 @@ class Submission {
 	public static function init() {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
+
+			add_action( 'template_redirect', array( self::$instance, 'process_submission' ) );
+			add_action( 'wp_ajax_dcf_submit_form', array( self::$instance, 'process_submission' ) );
+			add_action( 'wp_ajax_nopriv_dcf_submit_form', array( self::$instance, 'process_submission' ) );
 		}
 
 		return self::$instance;
 	}
 
 	/**
-	 * DialogContactFormProcessRequest constructor.
+	 * Process form submission
 	 */
-	public function __construct() {
-		add_action( 'template_redirect', array( $this, 'process_non_ajax_form_submission' ) );
-		add_action( 'wp_ajax_dcf_submit_form', array( $this, 'process_ajax_form_submission' ) );
-		add_action( 'wp_ajax_nopriv_dcf_submit_form', array( $this, 'process_ajax_form_submission' ) );
-	}
+	public function process_submission() {
 
-	/**
-	 * Process non AJAX form submission
-	 */
-	public function process_non_ajax_form_submission() {
-		$form_id = isset( $_POST['_dcf_id'] ) ? intval( $_POST['_dcf_id'] ) : 0;
-		// If it is spam, do nothing
-		if ( $this->is_spam( $form_id ) ) {
+		// Early exist for non AJAX HTTP Request
+		if ( ! ( $this->is_ajax() && isset( $_POST['_dcf_nonce'], $_POST['_dcf_id'] ) ) ) {
 			return;
 		}
 
-		$config = Config::init( $form_id );
+		$form_id = isset( $_POST['_dcf_id'] ) ? intval( $_POST['_dcf_id'] ) : 0;
+		$config  = Config::init( $form_id );
+
+		// If it is spam, do nothing
+		if ( $this->is_spam( $form_id ) ) {
+
+			if ( $this->is_ajax() ) {
+				wp_send_json( array(
+					'status'  => 'fail',
+					'message' => $config->getSpamMessage(),
+				), 403 );
+			}
+
+			return;
+		}
 
 		/**
 		 * @var \DialogContactForm\Config $config
 		 */
-		do_action( 'dcf_before_validation', $config );
+		do_action( 'dialog_contact_form_before_validation', $config );
 
 		$error_data = $this->validate_form_data( $config );
 
@@ -57,10 +66,19 @@ class Submission {
 		 * @var \DialogContactForm\Config $config
 		 * @var array $error_data
 		 */
-		do_action( 'dcf_after_validation', $config, $error_data );
+		do_action( 'dialog_contact_form_after_validation', $config, $error_data );
 
 		// Exit if there is any error
 		if ( count( $error_data ) > 0 ) {
+
+			if ( $this->is_ajax() ) {
+				wp_send_json( array(
+					'status'     => 'fail',
+					'message'    => $config->getValidationErrorMessage(),
+					'validation' => $error_data,
+				), 422 );
+			}
+
 			$GLOBALS['_dcf_errors']           = $error_data;
 			$GLOBALS['_dcf_validation_error'] = $config->getValidationErrorMessage();
 
@@ -107,113 +125,47 @@ class Submission {
 
 		// If any action fails, display error message
 		if ( false !== array_search( false, array_values( $response ), true ) ) {
-			$GLOBALS['_dcf_validation_error'] = $config->getMailSendFailMessage();
-		} else {
-
-			// Process Success Message Action
-			if ( isset( $response['success_message'] ) && $response['success_message'] ) {
-				$GLOBALS['_dcf_mail_sent_ok'] = $response['success_message'];
+			if ( $this->is_ajax() ) {
+				wp_send_json( array(
+					'status'  => 'fail',
+					'message' => $config->getMailSendFailMessage(),
+					'actions' => $response,
+				), 500 );
 			}
 
-			// Reset form Data
-			if ( $config->resetForm() ) {
-				foreach ( array_keys( $data ) as $input_name ) {
-					if ( isset( $_POST[ $input_name ] ) ) {
-						unset( $_POST[ $input_name ] );
-					}
+			$GLOBALS['_dcf_validation_error'] = $config->getMailSendFailMessage();
+
+			return;
+		}
+
+		if ( $this->is_ajax() ) {
+			// Display success message
+			wp_send_json( array(
+				'status'     => 'success',
+				'reset_form' => $config->resetForm(),
+				'actions'    => $response,
+			), 200 );
+		}
+
+		// Process Success Message Action
+		if ( isset( $response['success_message'] ) && $response['success_message'] ) {
+			$GLOBALS['_dcf_mail_sent_ok'] = $response['success_message'];
+		}
+
+		// Reset form Data
+		if ( $config->resetForm() ) {
+			foreach ( array_keys( $data ) as $input_name ) {
+				if ( isset( $_POST[ $input_name ] ) ) {
+					unset( $_POST[ $input_name ] );
 				}
 			}
-
-			// Process Redirect Action
-			if ( isset( $response['redirect'] ) && $response['redirect'] ) {
-				wp_safe_redirect( $response['redirect'] );
-				exit();
-			}
-		}
-	}
-
-	/**
-	 * Process AJAX form submission
-	 */
-	public function process_ajax_form_submission() {
-
-		$form_id = isset( $_POST['_dcf_id'] ) ? intval( $_POST['_dcf_id'] ) : 0;
-		$config  = Config::init( $form_id );
-
-		if ( $this->is_spam( $form_id ) ) {
-			wp_send_json( array(
-				'status'  => 'fail',
-				'message' => $config->getSpamMessage(),
-			), 403 );
 		}
 
-		// Validate form data
-		do_action( 'dcf_before_ajax_validation', $config );
-		$error_data = $this->validate_form_data( $config );
-		do_action( 'dcf_after_ajax_validation', $config, $error_data );
-
-		// If there is a error, send error response
-		if ( $error_data ) {
-			wp_send_json( array(
-				'status'     => 'fail',
-				'message'    => $config->getValidationErrorMessage(),
-				'validation' => $error_data,
-			), 422 );
+		// Process Redirect Action
+		if ( isset( $response['redirect'] ) && $response['redirect'] ) {
+			wp_safe_redirect( $response['redirect'] );
+			exit();
 		}
-
-		// Sanitize form data
-		$data = array();
-		foreach ( $config->getFormFields() as $field ) {
-			if ( 'file' == $field['field_type'] ) {
-				continue;
-			}
-			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
-
-			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field['field_type'] );
-			if ( class_exists( $class_name ) ) {
-				/** @var \DialogContactForm\Abstracts\Abstract_Field $class */
-				$class = new $class_name;
-				$class->setField( $field );
-
-				$data[ $field['field_name'] ] = $class->sanitize( $value );
-			} else {
-				$data[ $field['field_name'] ] = self::sanitize( $value, $field['field_type'] );
-			}
-		}
-
-		// If form upload a file, handle here
-		if ( $config->hasFile() ) {
-			$data['dcf_attachments'] = Attachment::upload( $config->getFormFields() );
-		} else {
-			$data['dcf_attachments'] = array();
-		}
-
-		$response = array();
-		$actions  = ActionManager::init();
-		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
-		foreach ( $actions as $action ) {
-			if ( ! in_array( $action->get_id(), $config->getFormActions() ) ) {
-				continue;
-			}
-			$response[ $action->get_id() ] = $action::process( $form_id, $data );
-		}
-
-		// If any action fails, display error message
-		if ( false !== array_search( false, array_values( $response ), true ) ) {
-			wp_send_json( array(
-				'status'  => 'fail',
-				'message' => $config->getMailSendFailMessage(),
-				'actions' => $response,
-			), 500 );
-		}
-
-		// Display success message
-		$_response = array(
-			'status'     => 'success',
-			'reset_form' => $config->resetForm(),
-			'actions'    => $response,
-		);
-		wp_send_json( $_response, 200 );
 	}
 
 	/**
@@ -368,5 +320,14 @@ class Submission {
 		}
 
 		return sanitize_text_field( $input );
+	}
+
+	/**
+	 * Check current request is AJAX
+	 *
+	 * @return bool
+	 */
+	private function is_ajax() {
+		return defined( 'DOING_AJAX' ) && DOING_AJAX;
 	}
 }
