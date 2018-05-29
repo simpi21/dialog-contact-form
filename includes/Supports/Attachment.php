@@ -113,11 +113,6 @@ class Attachment {
 	public static function upload( $fields ) {
 		$attachments = array();
 
-		// Check if current form has any file field
-		if ( ! in_array( 'file', array_column( $fields, 'field_type' ) ) ) {
-			return $attachments;
-		}
-
 		$upload_dir = wp_upload_dir();
 
 		$attachment_dir = join( DIRECTORY_SEPARATOR, array( $upload_dir['basedir'], DIALOG_CONTACT_FORM_UPLOAD_DIR ) );

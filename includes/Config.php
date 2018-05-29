@@ -135,13 +135,13 @@ class Config {
 		}
 
 		if ( $this->form_id ) {
-			$this->form_fields   = get_post_meta( $form_id, '_contact_form_fields', true );
-			$this->form_settings = get_post_meta( $form_id, '_contact_form_config', true );
+			$this->form_fields   = get_post_meta( $this->form_id, '_contact_form_fields', true );
+			$this->form_settings = get_post_meta( $this->form_id, '_contact_form_config', true );
 
-			$form_actions       = get_post_meta( $form_id, '_contact_form_actions', true );
+			$form_actions       = get_post_meta( $this->form_id, '_contact_form_actions', true );
 			$this->form_actions = isset( $form_actions['after_submit_actions'] ) ? $form_actions['after_submit_actions'] : array();
 
-			$messages                  = get_post_meta( $form_id, '_contact_form_messages', true );
+			$messages                  = get_post_meta( $this->form_id, '_contact_form_messages', true );
 			$this->validation_messages = wp_parse_args( $messages, $this->validation_messages );
 
 			if ( $this->form_fields ) {
@@ -153,7 +153,6 @@ class Config {
 			}
 
 			if ( 'yes' === $this->form_settings['recaptcha'] ) {
-				unset( $this->form_settings['recaptcha'] );
 				$this->has_recaptcha = true;
 			}
 

@@ -8,23 +8,11 @@ use DialogContactForm\Supports\Attachment;
 class Submission {
 
 	/**
+	 * The instance of the class
+	 *
 	 * @var object
 	 */
 	protected static $instance;
-
-	/**
-	 * Form validation messages
-	 *
-	 * @var array
-	 */
-	private $messages = array();
-
-	/**
-	 * Global form options
-	 *
-	 * @var array
-	 */
-	private $options = array();
 
 	/**
 	 * @return Submission
@@ -41,69 +29,9 @@ class Submission {
 	 * DialogContactFormProcessRequest constructor.
 	 */
 	public function __construct() {
+		add_action( 'template_redirect', array( $this, 'process_non_ajax_form_submission' ) );
 		add_action( 'wp_ajax_dcf_submit_form', array( $this, 'process_ajax_form_submission' ) );
 		add_action( 'wp_ajax_nopriv_dcf_submit_form', array( $this, 'process_ajax_form_submission' ) );
-		add_action( 'template_redirect', array( $this, 'process_non_ajax_form_submission' ) );
-
-		$this->options = get_dialog_contact_form_option();
-	}
-
-	/**
-	 * Get validation messages
-	 *
-	 * @return array
-	 */
-	private function get_validation_messages() {
-		if ( empty( $this->messages ) ) {
-			$messages  = dcf_validation_messages();
-			$_messages = array();
-			foreach ( $messages as $key => $message ) {
-				$_messages[ $key ] = ! empty( $this->options[ $key ] ) ? $this->options[ $key ] : $message;
-			}
-
-			$this->messages = $_messages;
-		}
-
-		return $this->messages;
-	}
-
-	/**
-	 * Get for all configurations data
-	 *
-	 * @param array $options options for all form
-	 * @param int $form_id
-	 * @param array $fields
-	 * @param array $config
-	 * @param array $messages
-	 * @param array $mail
-	 *
-	 * @return array
-	 */
-	private static function get_form_data( $options, $form_id, $fields, $config, $messages, $mail ) {
-		$data = array(
-			'global_options' => $options,
-			'form_id'        => $form_id,
-			'form_fields'    => $fields,
-			'form_options'   => $config,
-			'form_messages'  => $messages,
-			'form_mail'      => $mail,
-		);
-
-		return $data;
-	}
-
-	/**
-	 * @param $form_id
-	 *
-	 * @return array
-	 */
-	private static function get_form_settings( $form_id ) {
-		$config   = get_post_meta( $form_id, '_contact_form_config', true );
-		$mail     = get_post_meta( $form_id, '_contact_form_mail', true );
-		$fields   = get_post_meta( $form_id, '_contact_form_fields', true );
-		$messages = get_post_meta( $form_id, '_contact_form_messages', true );
-
-		return array( $config, $mail, $fields, $messages );
 	}
 
 	/**
@@ -304,7 +232,7 @@ class Submission {
 			if ( 'file' == $field['field_type'] ) {
 				$message = Attachment::validate( $field );
 			} else {
-				$message = $this->validate_post_field( $value, $field );
+				$message = $this->validate_post_field( $value, $field, $config );
 			}
 
 			if ( count( $message ) > 0 ) {
@@ -325,11 +253,12 @@ class Submission {
 	 *
 	 * @param mixed $value
 	 * @param array $field
+	 * @param \DialogContactForm\Config $config
 	 *
 	 * @return array
 	 */
-	public function validate_post_field( $value, $field ) {
-		$messages       = $this->get_validation_messages();
+	public function validate_post_field( $value, $field, $config ) {
+		$messages       = $config->getValidationMessages();
 		$message        = array();
 		$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
 		$field_type     = $field['field_type'] ? $field['field_type'] : '';
