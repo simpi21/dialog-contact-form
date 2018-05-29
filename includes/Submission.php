@@ -116,35 +116,32 @@ class Submission {
 			return;
 		}
 
-		$default_options = dcf_default_options();
-		$options         = wp_parse_args( get_option( 'dialog_contact_form' ), $default_options );
-		list( $config, $mail, $fields, $messages ) = self::get_form_settings( $form_id );
-		$form_options = self::get_form_data( $options, $form_id, $fields, $config, $messages, $mail );
+		$config = Config::init( $form_id );
 
 		/**
-		 * @var array $form_options
+		 * @var \DialogContactForm\Config $config
 		 */
-		do_action( 'dcf_before_validation', $form_options );
+		do_action( 'dcf_before_validation', $config );
 
-		$error_data = $this->validate_form_data( $fields, $messages, $config, $options );
+		$error_data = $this->validate_form_data( $config );
 
 		/**
-		 * @var array $form_options
+		 * @var \DialogContactForm\Config $config
 		 * @var array $error_data
 		 */
-		do_action( 'dcf_after_validation', $form_options, $error_data );
+		do_action( 'dcf_after_validation', $config, $error_data );
 
 		// Exit if there is any error
 		if ( count( $error_data ) > 0 ) {
 			$GLOBALS['_dcf_errors']           = $error_data;
-			$GLOBALS['_dcf_validation_error'] = $messages['validation_error'];
+			$GLOBALS['_dcf_validation_error'] = $config->getValidationErrorMessage();
 
 			return;
 		}
 
 		// Sanitize form data
 		$data = array();
-		foreach ( $fields as $field ) {
+		foreach ( $config->getFormFields() as $field ) {
 			if ( 'file' == $field['field_type'] ) {
 				continue;
 			}
@@ -163,16 +160,18 @@ class Submission {
 		}
 
 		// If form upload a file, handle here
-		$data['dcf_attachments'] = Attachment::upload( $fields );
+		if ( $config->hasFile() ) {
+			$data['dcf_attachments'] = Attachment::upload( $config->getFormFields() );
+		} else {
+			$data['dcf_attachments'] = array();
+		}
 
-		$response          = array();
-		$actions           = ActionManager::init();
-		$_actions          = get_post_meta( $form_id, '_contact_form_actions', true );
-		$supported_actions = isset( $_actions['after_submit_actions'] ) ? $_actions['after_submit_actions'] : array();
+		$response = array();
+		$actions  = ActionManager::init();
 
 		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
 		foreach ( $actions as $action ) {
-			if ( ! in_array( $action->get_id(), $supported_actions ) ) {
+			if ( ! in_array( $action->get_id(), $config->getFormActions() ) ) {
 				continue;
 			}
 			$response[ $action->get_id() ] = $action::process( $form_id, $data );
@@ -180,7 +179,7 @@ class Submission {
 
 		// If any action fails, display error message
 		if ( false !== array_search( false, array_values( $response ), true ) ) {
-			$GLOBALS['_dcf_validation_error'] = $messages['mail_sent_ng'];
+			$GLOBALS['_dcf_validation_error'] = $config->getMailSendFailMessage();
 		} else {
 
 			// Process Success Message Action
@@ -189,7 +188,7 @@ class Submission {
 			}
 
 			// Reset form Data
-			if ( 'no' !== $config['reset_form'] ) {
+			if ( $config->resetForm() ) {
 				foreach ( array_keys( $data ) as $input_name ) {
 					if ( isset( $_POST[ $input_name ] ) ) {
 						unset( $_POST[ $input_name ] );
@@ -209,37 +208,34 @@ class Submission {
 	 * Process AJAX form submission
 	 */
 	public function process_ajax_form_submission() {
-		$default_options = dcf_default_options();
-		$options         = wp_parse_args( get_option( 'dialog_contact_form' ), $default_options );
-		$form_id         = isset( $_POST['_dcf_id'] ) ? intval( $_POST['_dcf_id'] ) : 0;
+
+		$form_id = isset( $_POST['_dcf_id'] ) ? intval( $_POST['_dcf_id'] ) : 0;
+		$config  = Config::init( $form_id );
 
 		if ( $this->is_spam( $form_id ) ) {
 			wp_send_json( array(
 				'status'  => 'fail',
-				'message' => esc_attr( $options['spam_message'] ),
+				'message' => $config->getSpamMessage(),
 			), 403 );
 		}
 
-		list( $config, $mail, $fields, $messages ) = self::get_form_settings( $form_id );
-		$form_options = self::get_form_data( $options, $form_id, $fields, $config, $messages, $mail );
-
 		// Validate form data
-		do_action( 'dcf_before_ajax_validation', $form_options );
-		$error_data = $this->validate_form_data( $fields, $messages, $config, $options );
-		do_action( 'dcf_after_ajax_validation', $form_options, $error_data );
+		do_action( 'dcf_before_ajax_validation', $config );
+		$error_data = $this->validate_form_data( $config );
+		do_action( 'dcf_after_ajax_validation', $config, $error_data );
 
 		// If there is a error, send error response
 		if ( $error_data ) {
 			wp_send_json( array(
 				'status'     => 'fail',
-				'message'    => esc_attr( $messages['validation_error'] ),
+				'message'    => $config->getValidationErrorMessage(),
 				'validation' => $error_data,
 			), 422 );
 		}
 
 		// Sanitize form data
 		$data = array();
-		foreach ( $fields as $field ) {
+		foreach ( $config->getFormFields() as $field ) {
 			if ( 'file' == $field['field_type'] ) {
 				continue;
 			}
@@ -258,16 +254,17 @@ class Submission {
 		}
 
 		// If form upload a file, handle here
-		$data['dcf_attachments'] = Attachment::upload( $fields );
+		if ( $config->hasFile() ) {
+			$data['dcf_attachments'] = Attachment::upload( $config->getFormFields() );
+		} else {
+			$data['dcf_attachments'] = array();
+		}
 
-		$response          = array();
-		$actions           = ActionManager::init();
-		$_actions          = get_post_meta( $form_id, '_contact_form_actions', true );
-		$supported_actions = isset( $_actions['after_submit_actions'] ) ? $_actions['after_submit_actions'] : array();
-
+		$response = array();
+		$actions  = ActionManager::init();
 		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
 		foreach ( $actions as $action ) {
-			if ( ! in_array( $action->get_id(), $supported_actions ) ) {
+			if ( ! in_array( $action->get_id(), $config->getFormActions() ) ) {
 				continue;
 			}
 			$response[ $action->get_id() ] = $action::process( $form_id, $data );
@@ -277,16 +274,15 @@ class Submission {
 		if ( false !== array_search( false, array_values( $response ), true ) ) {
 			wp_send_json( array(
 				'status'  => 'fail',
-				'message' => esc_attr( $messages['mail_sent_ng'] ),
+				'message' => $config->getMailSendFailMessage(),
 				'actions' => $response,
 			), 500 );
 		}
 
 		// Display success message
-		$reset_form = get_post_meta( $form_id, '_contact_form_config', true );
-		$_response  = array(
+		$_response = array(
 			'status'     => 'success',
-			'reset_form' => ( 'no' !== $reset_form['reset_form'] ),
+			'reset_form' => $config->resetForm(),
 			'actions'    => $response,
 		);
 		wp_send_json( $_response, 200 );
@@ -295,17 +291,14 @@ class Submission {
 	/**
 	 * Validate user submitted form data
 	 *
-	 * @param array $fields
-	 * @param array $messages
-	 * @param array $config
-	 * @param array $options
+	 * @param \DialogContactForm\Config $config
 	 *
 	 * @return mixed
 	 */
-	private function validate_form_data( $fields, $messages, $config, $options ) {
+	private function validate_form_data( $config ) {
 		// Validate Form Data
 		$errorData = array();
-		foreach ( $fields as $field ) {
+		foreach ( $config->getFormFields() as $field ) {
 			$field_name = isset( $field['field_name'] ) ? $field['field_name'] : '';
 			$value      = isset( $_POST[ $field_name ] ) ? $_POST[ $field_name ] : null;
 			if ( 'file' == $field['field_type'] ) {
@@ -320,11 +313,8 @@ class Submission {
 		}
 
 		// If Google reCAPTCHA enabled, verify it
-		$messages = $this->get_validation_messages();
-		if ( isset( $config['recaptcha'] ) && $config['recaptcha'] === 'yes' ) {
-			if ( ! Recaptcha::_validate() ) {
-				$errorData['dcf_recaptcha'] = array( $messages['invalid_recaptcha'] );
-			}
+		if ( $config->hasRecaptcha() && ! Recaptcha::_validate() ) {
+			$errorData['dcf_recaptcha'] = array( $config->getInvalidRecaptchaMessage() );
 		}
 
 		return $errorData;
