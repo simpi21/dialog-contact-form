@@ -8,6 +8,7 @@ use DialogContactForm\Actions\MailChimp;
 use DialogContactForm\Actions\Redirect;
 use DialogContactForm\Actions\StoreSubmission;
 use DialogContactForm\Actions\SuccessMessage;
+use DialogContactForm\Actions\Webhook;
 use Traversable;
 
 class ActionManager implements
@@ -40,6 +41,7 @@ class ActionManager implements
 		$this->add_action( 'store_submission', new StoreSubmission() );
 		$this->add_action( 'email_notification', new EmailNotification() );
 		$this->add_action( 'mail_chimp', new MailChimp() );
+		$this->add_action( 'webhook', new Webhook() );
 		$this->add_action( 'success_message', new SuccessMessage() );
 		$this->add_action( 'redirect', new Redirect() );
 	}

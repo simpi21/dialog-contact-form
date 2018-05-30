@@ -6,6 +6,11 @@ use DialogContactForm\Abstracts\Abstract_Action;
 use DialogContactForm\Config;
 use DialogContactForm\Supports\MailChimpHandler;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class MailChimp extends Abstract_Action {
 
 	private $api_key;

@@ -5,6 +5,11 @@ namespace DialogContactForm\Actions;
 use DialogContactForm\Abstracts\Abstract_Action;
 use DialogContactForm\Entries\Entry;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class StoreSubmission extends Abstract_Action {
 
 	/**

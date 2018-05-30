@@ -4,6 +4,11 @@ namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Abstract_Action;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class SuccessMessage extends Abstract_Action {
 
 	/**
