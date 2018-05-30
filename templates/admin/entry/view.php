@@ -2,6 +2,11 @@
 
 use DialogContactForm\Entries\Entry;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 $entry = new Entry();
 $data  = $entry->get( $id );
 

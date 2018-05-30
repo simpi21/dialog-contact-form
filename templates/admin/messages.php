@@ -2,9 +2,9 @@
 
 use DialogContactForm\Supports\Metabox;
 
-// If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 $messages = dcf_validation_messages();

@@ -2,6 +2,11 @@
 
 namespace DialogContactForm\Supports;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * A simple wrapper class of static methods sanitizing value.
  *

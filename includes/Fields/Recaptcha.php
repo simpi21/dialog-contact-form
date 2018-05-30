@@ -4,6 +4,11 @@ namespace DialogContactForm\Fields;
 
 use DialogContactForm\Abstracts\Abstract_Field;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Recaptcha extends Abstract_Field {
 
 	/**

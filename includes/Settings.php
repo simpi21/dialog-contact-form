@@ -5,6 +5,11 @@ namespace DialogContactForm;
 use DialogContactForm\Fields\Recaptcha;
 use DialogContactForm\Supports\Settings_API;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Settings {
 
 	/**

@@ -3,6 +3,7 @@
 namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Config;
 use DialogContactForm\Supports\Mailer;
 
 // Exit if accessed directly
@@ -105,19 +106,18 @@ class EmailNotification extends Abstract_Action {
 	/**
 	 * Process action
 	 *
-	 * @param int $form_id
+	 * @param \DialogContactForm\Config $config
 	 * @param array $data
 	 *
 	 * @return bool
 	 */
-	public static function process( $form_id, $data ) {
+	public static function process( $config, $data ) {
 		$attachments = $data['dcf_attachments'];
 		$attachments = array_column( $attachments, 'attachment_path' );
-		$fields      = get_post_meta( $form_id, '_contact_form_fields', true );
-		$mail        = get_post_meta( $form_id, '_contact_form_mail', true );
+		$mail        = get_post_meta( $config->getFormId(), '_contact_form_mail', true );
 
 		$form_fields = array();
-		foreach ( $fields as $field ) {
+		foreach ( $config->getFormFields() as $field ) {
 			if ( 'file' == $field['field_type'] ) {
 				continue;
 			}

@@ -5,6 +5,11 @@ namespace DialogContactForm;
 use DialogContactForm\Fields\Recaptcha;
 use DialogContactForm\Supports\Attachment;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Submission {
 
 	/**
@@ -120,7 +125,7 @@ class Submission {
 			if ( ! in_array( $action->get_id(), $config->getFormActions() ) ) {
 				continue;
 			}
-			$response[ $action->get_id() ] = $action::process( $form_id, $data );
+			$response[ $action->get_id() ] = $action::process( $config, $data );
 		}
 
 		// If any action fails, display error message

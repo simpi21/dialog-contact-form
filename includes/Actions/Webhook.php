@@ -23,14 +23,15 @@ class Webhook extends Abstract_Action {
 	}
 
 	/**
-	 * Process action
+	 * Process current action
 	 *
-	 * @param int $form_id
-	 * @param array $data
+	 * @param \DialogContactForm\Config $config Contact form configurations
+	 * @param array $data User submitted sanitized data
 	 *
-	 * @return string
+	 * @return mixed
 	 */
-	public static function process( $form_id, $data ) {
+	public static function process( $config, $data ) {
+		$form_id  = $config->getFormId();
 		$settings = get_post_meta( $form_id, '_action_webhook', true );
 
 		if ( empty( $settings['webhook_url'] ) ) {
@@ -44,7 +45,7 @@ class Webhook extends Abstract_Action {
 			);
 
 			$body['fields'] = $data;
-			$body['meta']   = array();
+			$body['meta']   = $config->getMetaData();
 		} else {
 			$body              = $data;
 			$body['form_id']   = $settings['id'];

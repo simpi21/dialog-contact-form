@@ -23,15 +23,15 @@ class SuccessMessage extends Abstract_Action {
 	}
 
 	/**
-	 * Process action
+	 * Process current action
 	 *
-	 * @param int $form_id
-	 * @param array $data
+	 * @param \DialogContactForm\Config $config Contact form configurations
+	 * @param array $data User submitted sanitized data
 	 *
-	 * @return string
+	 * @return mixed
 	 */
-	public static function process( $form_id, $data ) {
-		$message = get_post_meta( $form_id, '_action_success_message', true );
+	public static function process( $config, $data ) {
+		$message = get_post_meta( $config->getFormId(), '_action_success_message', true );
 		if ( empty( $message['message'] ) ) {
 			return false;
 		}

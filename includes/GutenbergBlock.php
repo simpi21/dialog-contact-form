@@ -2,6 +2,11 @@
 
 namespace DialogContactForm;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Adds Gutenberg Forms block.
  */

@@ -23,15 +23,15 @@ class Redirect extends Abstract_Action {
 	}
 
 	/**
-	 * Process action
+	 * Process current action
 	 *
-	 * @param int $form_id
-	 * @param array $data
+	 * @param \DialogContactForm\Config $config Contact form configurations
+	 * @param array $data User submitted sanitized data
 	 *
-	 * @return string
+	 * @return mixed
 	 */
-	public static function process( $form_id, $data ) {
-		$_redirect   = get_post_meta( $form_id, '_action_redirect', true );
+	public static function process( $config, $data ) {
+		$_redirect   = get_post_meta( $config->getFormId(), '_action_redirect', true );
 		$redirect_to = ! empty( $_redirect['redirect_to'] ) ? $_redirect['redirect_to'] : 'same';
 		$page_id     = ! empty( $_redirect['page_id'] ) ? intval( $_redirect['page_id'] ) : 0;
 		$url         = ! empty( $_redirect['url'] ) ? esc_url( $_redirect['url'] ) : null;

@@ -2,6 +2,11 @@
 
 namespace DialogContactForm\Supports;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Dialog_Contact_Form_Mailer
  */

@@ -155,17 +155,16 @@ class MailChimp extends Abstract_Action {
 	}
 
 	/**
-	 * Process action
+	 * Process current action
 	 *
-	 * @param int $form_id Contact form ID
+	 * @param \DialogContactForm\Config $config Contact form configurations
 	 * @param array $data User submitted sanitized data
 	 *
 	 * @return boolean
 	 */
-	public static function process( $form_id, $data ) {
-
+	public static function process( $config, $data ) {
 		$subscriber      = array();
-		$action_settings = get_post_meta( $form_id, '_action_mailchimp', true );
+		$action_settings = get_post_meta( $config->getFormId(), '_action_mailchimp', true );
 
 		if ( empty( $action_settings['mailchimp_map_email'] ) ) {
 			return;

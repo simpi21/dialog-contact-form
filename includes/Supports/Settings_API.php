@@ -2,6 +2,11 @@
 
 namespace DialogContactForm\Supports;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Very simple WordPress Settings API wrapper class
  *

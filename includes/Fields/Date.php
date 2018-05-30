@@ -2,6 +2,11 @@
 
 namespace DialogContactForm\Fields;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Date extends Text {
 
 	/**

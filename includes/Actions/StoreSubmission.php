@@ -31,14 +31,14 @@ class StoreSubmission extends Abstract_Action {
 	}
 
 	/**
-	 * Process action
+	 * Process current action
 	 *
-	 * @param int $form_id
-	 * @param array $data
+	 * @param \DialogContactForm\Config $config Contact form configurations
+	 * @param array $data User submitted sanitized data
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
-	public static function process( $form_id, $data ) {
+	public static function process( $config, $data ) {
 		$entry = new Entry();
 
 		return $entry->insert( $data );

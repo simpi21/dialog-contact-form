@@ -4,6 +4,11 @@ namespace DialogContactForm\Abstracts;
 
 use DialogContactForm\Supports\Metabox;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 abstract class Abstract_Action {
 
 	/**
@@ -84,12 +89,12 @@ abstract class Abstract_Action {
 	/**
 	 * Process current action
 	 *
-	 * @param int $form_id Contact form ID
+	 * @param \DialogContactForm\Config $config Contact form configurations
 	 * @param array $data User submitted sanitized data
 	 *
 	 * @return mixed
 	 */
-	public static function process( $form_id, $data ) {
+	public static function process( $config, $data ) {
 		// TODO: Implement process() method.
 	}
 

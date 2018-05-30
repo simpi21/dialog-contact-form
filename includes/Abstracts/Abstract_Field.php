@@ -2,6 +2,11 @@
 
 namespace DialogContactForm\Abstracts;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 abstract class Abstract_Field {
 
 	/**

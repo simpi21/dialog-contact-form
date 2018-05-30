@@ -1,11 +1,13 @@
 <?php
-// If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+use DialogContactForm\Supports\FormBuilder;
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 $form_id = isset( $_GET['form_id'] ) ? intval( $_GET['form_id'] ) : 0;
-$form = \DialogContactForm\Supports\FormBuilder::init( $form_id );
+$form = FormBuilder::init( $form_id );
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>

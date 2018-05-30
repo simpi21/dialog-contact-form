@@ -2,6 +2,11 @@
 
 namespace DialogContactForm\Entries;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Entry implements \JsonSerializable {
 
 	/**

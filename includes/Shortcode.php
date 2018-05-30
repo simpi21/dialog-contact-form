@@ -4,6 +4,11 @@ namespace DialogContactForm;
 
 use DialogContactForm\Supports\FormBuilder;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Shortcode {
 
 	/**

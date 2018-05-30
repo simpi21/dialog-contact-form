@@ -2,6 +2,11 @@
 
 use DialogContactForm\Entries\Entry_List_Table;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //Create an instance of our package class...
 $table = new Entry_List_Table();
 

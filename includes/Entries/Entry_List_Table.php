@@ -2,6 +2,11 @@
 
 namespace DialogContactForm\Entries;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * The WP_List_Table class isn't automatically available to plugins,
  * So we need to check if it's available and load it if necessary.

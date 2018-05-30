@@ -2,6 +2,11 @@
 
 namespace DialogContactForm;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Config {
 
 	/**
@@ -40,11 +45,11 @@ class Config {
 	private $form_fields = array();
 
 	/**
-	 * Current form email fields
+	 * Meta information for current submission
 	 *
 	 * @var array
 	 */
-	private $email_fields = array();
+	private $meta_data = array();
 
 	/**
 	 * Current form settings
@@ -180,13 +185,6 @@ class Config {
 			if ( 'no' === $this->form_settings['reset_form'] ) {
 				$this->reset_form = false;
 			}
-
-			// Generate email fields
-			foreach ( $this->getFormFields() as $form_field ) {
-				if ( 'email' === $form_field['field_type'] ) {
-					$this->email_fields[] = $form_field;
-				}
-			}
 		}
 	}
 
@@ -313,11 +311,71 @@ class Config {
 	}
 
 	/**
-	 * Get email fields
+	 * Get form meta information
+	 *
+	 * @param null $current_time
 	 *
 	 * @return array
 	 */
-	public function getEmailFields() {
-		return $this->email_fields;
+	public function getMetaData( $current_time = null ) {
+		if ( ! $this->meta_data ) {
+			if ( ! $current_time ) {
+				$current_time = current_time( 'mysql' );
+			}
+
+			return array(
+				'form_id'    => $this->getFormId(),
+				'user_id'    => get_current_user_id(),
+				'user_ip'    => $this->getRemoteIp(),
+				'user_agent' => $this->getUserAgent(),
+				'referer'    => $this->getReferer(),
+				'created_at' => $current_time,
+			);
+		}
+
+		return $this->meta_data;
+	}
+
+	/**
+	 * Get user IP address
+	 *
+	 * @return string
+	 */
+	public function getRemoteIp() {
+		if ( empty( $_SERVER['REMOTE_ADDR'] ) ) {
+			return '';
+		}
+
+		if ( filter_var( $_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP ) !== false ) {
+			return $_SERVER['REMOTE_ADDR'];
+		}
+
+		return '';
+	}
+
+	/**
+	 * Get user browser name
+	 *
+	 * @return string
+	 */
+	public function getUserAgent() {
+		if ( isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
+			return substr( $_SERVER['HTTP_USER_AGENT'], 0, 254 );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Get form referer
+	 *
+	 * @return string
+	 */
+	private function getReferer() {
+		if ( isset( $_POST['_dcf_referer'] ) && is_string( $_POST['_dcf_referer'] ) ) {
+			return sanitize_text_field( $_POST['_dcf_referer'] );
+		}
+
+		return '';
 	}
 }

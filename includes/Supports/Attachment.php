@@ -4,6 +4,11 @@ namespace DialogContactForm\Supports;
 
 use DialogContactForm\Fields\File;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Attachment {
 
 	/**

@@ -11,6 +11,11 @@ use DialogContactForm\Actions\SuccessMessage;
 use DialogContactForm\Actions\Webhook;
 use Traversable;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class ActionManager implements
 	\IteratorAggregate,
 	\JsonSerializable,
