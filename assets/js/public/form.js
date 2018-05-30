@@ -17,6 +17,7 @@
         invalid_required: 'Please fill out this field.',
         required_select: 'Please select a value.',
         required_select_multi: 'Please select at least one value.',
+        required_checkbox: 'Please check this field.',
         invalid_email: 'Please enter an email address.',
         invalid_url: 'Please enter a URL.',
         invalid_too_short: 'Please lengthen this text to {minLength} characters or more. You are currently using {length} characters.',
@@ -74,7 +75,7 @@
             if (field.type === 'select-multiple') return localSettings.required_select_multi;
             if (field.type === 'select-one') return localSettings.required_select;
             if (field.type === 'radio') return localSettings.required_select;
-            if (field.type === 'checkbox') return localSettings.required_select_multi;
+            if (field.type === 'checkbox') return localSettings.required_checkbox;
             return localSettings.invalid_required;
         }
 

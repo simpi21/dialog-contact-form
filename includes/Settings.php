@@ -317,11 +317,21 @@ class Settings {
 			'priority' => 10,
 		) );
 		$option_page->add_field( array(
+			'id'       => 'required_checkbox',
+			'type'     => 'textarea',
+			'rows'     => 2,
+			'name'     => __( 'Required checkbox', 'dialog-contact-form' ),
+			'desc'     => __( 'Required field message for checkbox field.', 'dialog-contact-form' ),
+			'std'      => $default_options['required_checkbox'],
+			'section'  => 'dcf_field_message_section',
+			'priority' => 11,
+		) );
+		$option_page->add_field( array(
 			'id'       => 'required_select',
 			'type'     => 'textarea',
 			'rows'     => 2,
 			'name'     => __( 'Required select', 'dialog-contact-form' ),
-			'desc'     => __( 'Required field message for radio, select and checkbox field.', 'dialog-contact-form' ),
+			'desc'     => __( 'Required field message for radio and select field.', 'dialog-contact-form' ),
 			'std'      => $default_options['required_select'],
 			'section'  => 'dcf_field_message_section',
 			'priority' => 11,

@@ -50,7 +50,9 @@ class MailChimp extends Abstract_Action {
 
 		$config       = Config::init();
 		$email_fields = array();
-		$text_fields  = array();
+		$text_fields  = array(
+			'' => __( '-- No Value --', 'dialog-contact-form' )
+		);
 		foreach ( $config->getFormFields() as $field ) {
 			if ( 'email' === $field['field_type'] ) {
 				$email_fields[ $field['field_id'] ] = $field['field_title'];
@@ -79,7 +81,7 @@ class MailChimp extends Abstract_Action {
 				'id'          => 'mailchimp_api_key',
 				'group'       => $this->meta_group,
 				'meta_key'    => $this->meta_key,
-				'input_class' => 'dcf-input-text dcf-field-mailchimp_api_key',
+				'group_class' => 'dcf-input-group col-mailchimp_api_key',
 				'label'       => __( 'Custom API Key', 'dialog-contact-form' ),
 				'description' => __( 'Use this field to set a custom API Key for the current form.',
 					'dialog-contact-form' ),

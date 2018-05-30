@@ -227,4 +227,43 @@
             });
     });
 
+    // Action --- Redirect
+    function processRedirectAction(redirect) {
+        if ('page' === redirect) {
+            $('.col-redirect-url').slideUp('first');
+            $('.col-redirect-page_id').slideDown('first');
+        } else if ('url' === redirect) {
+            $('.col-redirect-page_id').slideUp('first');
+            $('.col-redirect-url').slideDown('first');
+        } else {
+            $('.col-redirect-page_id').slideUp('first');
+            $('.col-redirect-url').slideUp('first');
+        }
+    }
+
+    $(document).on('change', '#redirect_redirect_to', function () {
+        var redirect = $(this).find(":selected").val();
+        processRedirectAction(redirect);
+    });
+
+    $(document).ready(function () {
+        var redirect = $('#redirect_redirect_to').find(":selected").val();
+        processRedirectAction(redirect);
+    });
+
+    // Action --- MailChimp
+    function processMailChimpAction(value) {
+        if ('custom' === value) {
+            $('.col-mailchimp_api_key').slideDown('first');
+        } else {
+            $('.col-mailchimp_api_key').slideUp('first');
+        }
+    }
+
+    $(document).on('change', '#mailchimp_mailchimp_api_key_source', function () {
+        var source = $(this).find(":selected").val();
+        processMailChimpAction(source);
+    });
+
+
 })(jQuery);
