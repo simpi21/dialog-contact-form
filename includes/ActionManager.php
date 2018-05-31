@@ -5,6 +5,7 @@ namespace DialogContactForm;
 use DialogContactForm\Abstracts\Abstract_Action;
 use DialogContactForm\Actions\EmailNotification;
 use DialogContactForm\Actions\MailChimp;
+use DialogContactForm\Actions\Mailpoet3;
 use DialogContactForm\Actions\Redirect;
 use DialogContactForm\Actions\StoreSubmission;
 use DialogContactForm\Actions\SuccessMessage;
@@ -45,7 +46,8 @@ class ActionManager implements
 	public function __construct() {
 		$this->add_action( 'store_submission', new StoreSubmission() );
 		$this->add_action( 'email_notification', new EmailNotification() );
-		$this->add_action( 'mail_chimp', new MailChimp() );
+		$this->add_action( 'mailchimp', new MailChimp() );
+		$this->add_action( 'mailpoet3', new Mailpoet3() );
 		$this->add_action( 'webhook', new Webhook() );
 		$this->add_action( 'success_message', new SuccessMessage() );
 		$this->add_action( 'redirect', new Redirect() );
