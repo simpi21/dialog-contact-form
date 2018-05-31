@@ -5,6 +5,7 @@ namespace DialogContactForm;
 use DialogContactForm\Abstracts\Abstract_Action;
 use DialogContactForm\Actions\EmailNotification;
 use DialogContactForm\Actions\MailChimp;
+use DialogContactForm\Actions\Mailpoet;
 use DialogContactForm\Actions\Mailpoet3;
 use DialogContactForm\Actions\Redirect;
 use DialogContactForm\Actions\StoreSubmission;
@@ -47,6 +48,7 @@ class ActionManager implements
 		$this->add_action( 'store_submission', new StoreSubmission() );
 		$this->add_action( 'email_notification', new EmailNotification() );
 		$this->add_action( 'mailchimp', new MailChimp() );
+		$this->add_action( 'mailpoet', new Mailpoet() );
 		$this->add_action( 'mailpoet3', new Mailpoet3() );
 		$this->add_action( 'webhook', new Webhook() );
 		$this->add_action( 'success_message', new SuccessMessage() );
