@@ -149,4 +149,22 @@ class Mailpoet3 extends Abstract_Action {
 			),
 		);
 	}
+
+	/**
+	 * Get action description
+	 *
+	 * @return string
+	 */
+	public function get_description() {
+		// If MailPoet is not available, then exit
+		if ( class_exists( '\\MailPoet\\API\\API' ) ) {
+			return '';
+		}
+
+		$html = '<p class="description">';
+		$html .= esc_html__( 'MailPoet (version 3) is not installed or activated.', 'dialog-contact-form' );
+		$html .= '</p>';
+
+		return $html;
+	}
 }

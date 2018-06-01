@@ -141,4 +141,22 @@ class Mailpoet extends Abstract_Action {
 			),
 		);
 	}
+
+	/**
+	 * Get action description
+	 *
+	 * @return string
+	 */
+	public function get_description() {
+		// If MailPoet is not available, then exit
+		if ( class_exists( 'WYSIJA' ) ) {
+			return '';
+		}
+
+		$html = '<p class="description">';
+		$html .= esc_html__( 'MailPoet is not installed or activated.', 'dialog-contact-form' );
+		$html .= '</p>';
+
+		return $html;
+	}
 }

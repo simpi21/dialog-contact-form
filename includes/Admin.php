@@ -236,7 +236,7 @@ class Admin {
 						echo '<span class="dcf-toggle-title">' . $action->get_title() . '</span>';
 						echo '<div class="dcf-toggle-inner"><div class="dcf-toggle-content">';
 						if ( $action->get_description() ) {
-							echo '<p class="description">' . $action->get_description() . '</p>';
+							echo $action->get_description();
 						}
 						$action->build_fields();
 						echo '</div></div>';
