@@ -84,15 +84,14 @@ class EntryManager {
 		$form_id = isset( $_GET['form_id'] ) ? intval( $_GET['form_id'] ) : 0;
 		$id      = isset( $_GET['entry_id'] ) ? intval( $_GET['entry_id'] ) : 0;
 
-		switch ( $tab ) {
-			case 'view':
-				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/admin/entry/view.php';
-				break;
-			case 'list':
-				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/admin/entry/list.php';
-				break;
-			default:
-				break;
+		$template = DIALOG_CONTACT_FORM_TEMPLATES . '/admin/entry/form-list.php';
+
+		if ( 'view' === $tab && $id ) {
+			$template = DIALOG_CONTACT_FORM_TEMPLATES . '/admin/entry/view.php';
+		}
+
+		if ( 'list' === $tab && $form_id ) {
+			$template = DIALOG_CONTACT_FORM_TEMPLATES . '/admin/entry/list.php';
 		}
 
 		if ( file_exists( $template ) ) {
