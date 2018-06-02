@@ -68,7 +68,12 @@ class ActionManager implements
 	 * @return array
 	 */
 	public function getActions() {
-		return $this->actions;
+		$actions = $this->actions;
+
+		// Sort by priority
+		usort( $actions, array( $this, 'sortByPriority' ) );
+
+		return $actions;
 	}
 
 	/**
@@ -88,7 +93,7 @@ class ActionManager implements
 	 * @since 5.0.0
 	 */
 	public function getIterator() {
-		return new \ArrayIterator( $this->actions );
+		return new \ArrayIterator( $this->getActions() );
 	}
 
 	/**
@@ -98,7 +103,7 @@ class ActionManager implements
 	 * @since 5.1.0
 	 */
 	public function count() {
-		return count( $this->actions );
+		return count( $this->getActions() );
 	}
 
 	/**
@@ -115,6 +120,18 @@ class ActionManager implements
 			}
 
 			return $action;
-		}, $this->actions );
+		}, $this->getActions() );
+	}
+
+	/**
+	 * Sort action by priority
+	 *
+	 * @param \DialogContactForm\Abstracts\Abstract_Action $actionA
+	 * @param \DialogContactForm\Abstracts\Abstract_Action $actionB
+	 *
+	 * @return mixed
+	 */
+	private function sortByPriority( $actionA, $actionB ) {
+		return $actionA->get_priority() - $actionB->get_priority();
 	}
 }

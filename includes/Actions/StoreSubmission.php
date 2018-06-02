@@ -16,8 +16,9 @@ class StoreSubmission extends Abstract_Action {
 	 * Redirect constructor.
 	 */
 	public function __construct() {
-		$this->id    = 'store_submission';
-		$this->title = __( 'Store Submission', 'dialog-contact-form' );
+		$this->priority = 10;
+		$this->id       = 'store_submission';
+		$this->title    = __( 'Store Submission', 'dialog-contact-form' );
 	}
 
 	/**

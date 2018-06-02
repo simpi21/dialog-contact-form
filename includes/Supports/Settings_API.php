@@ -73,11 +73,11 @@ class Settings_API {
 	 *
 	 * @param array $menu_fields
 	 *
-	 * @return WP_Error|Settings_API
+	 * @return \WP_Error|Settings_API
 	 */
 	public function add_menu( array $menu_fields ) {
 		if ( ! isset( $menu_fields['page_title'], $menu_fields['menu_title'], $menu_fields['menu_slug'] ) ) {
-			return new WP_Error( 'field_not_set', 'Required key is not set properly for creating menu.' );
+			return new \WP_Error( 'field_not_set', 'Required key is not set properly for creating menu.' );
 		}
 
 		$this->menu_fields = $menu_fields;
@@ -92,11 +92,11 @@ class Settings_API {
 	 *
 	 * @param array $panel
 	 *
-	 * @return WP_Error|$this
+	 * @return \WP_Error|$this
 	 */
 	public function add_panel( array $panel ) {
 		if ( ! isset( $panel['id'], $panel['title'] ) ) {
-			return new WP_Error( 'field_not_set', 'Required key is not set properly for creating tab.' );
+			return new \WP_Error( 'field_not_set', 'Required key is not set properly for creating tab.' );
 		}
 
 		$this->panels[] = $panel;
@@ -222,11 +222,11 @@ class Settings_API {
 	 *
 	 * @param array $field
 	 *
-	 * @return WP_Error|$this
+	 * @return \WP_Error|$this
 	 */
 	public function add_field( array $field ) {
 		if ( ! isset( $field['id'], $field['name'] ) ) {
-			return new WP_Error( 'field_not_set', 'Required key is not set properly for creating tab.' );
+			return new \WP_Error( 'field_not_set', 'Required key is not set properly for creating tab.' );
 		}
 
 		$this->fields[] = $field;

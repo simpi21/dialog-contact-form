@@ -19,6 +19,7 @@ class MailChimp extends Abstract_Action {
 	 * MailChimp constructor.
 	 */
 	public function __construct() {
+		$this->priority   = 30;
 		$this->id         = 'mail_chimp';
 		$this->title      = __( 'MailChimp', 'dialog-contact-form' );
 		$this->meta_group = 'mailchimp';

@@ -24,6 +24,7 @@ class EmailNotification extends Abstract_Action {
 	 * Email constructor.
 	 */
 	public function __construct() {
+		$this->priority      = 20;
 		$this->id            = 'email_notification';
 		$this->title         = __( 'Email Notification', 'dialog-contact-form' );
 		$this->meta_group    = 'email_notification';

@@ -49,7 +49,7 @@ abstract class Abstract_Action {
 	 *
 	 * @var int
 	 */
-	protected $priority = '10';
+	protected $priority = 100;
 
 	/**
 	 * @var array

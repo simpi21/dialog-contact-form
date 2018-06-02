@@ -15,6 +15,7 @@ class SuccessMessage extends Abstract_Action {
 	 * SuccessMessage constructor.
 	 */
 	public function __construct() {
+		$this->priority   = 290;
 		$this->id         = 'success_message';
 		$this->title      = __( 'Success Message', 'dialog-contact-form' );
 		$this->meta_group = 'success_message';

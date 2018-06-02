@@ -16,6 +16,7 @@ class Mailpoet extends Abstract_Action {
 	 * MailChimp constructor.
 	 */
 	public function __construct() {
+		$this->priority   = 40;
 		$this->id         = 'mailpoet';
 		$this->title      = __( 'MailPoet', 'dialog-contact-form' );
 		$this->meta_group = 'mailpoet';

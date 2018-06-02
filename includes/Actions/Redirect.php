@@ -15,6 +15,7 @@ class Redirect extends Abstract_Action {
 	 * Redirect constructor.
 	 */
 	public function __construct() {
+		$this->priority   = 300;
 		$this->id         = 'redirect';
 		$this->title      = __( 'Redirect', 'dialog-contact-form' );
 		$this->meta_group = 'redirect';

@@ -15,6 +15,7 @@ class Webhook extends Abstract_Action {
 	 * Redirect constructor.
 	 */
 	public function __construct() {
+		$this->priority   = 60;
 		$this->id         = 'webhook';
 		$this->title      = __( 'Webhook', 'dialog-contact-form' );
 		$this->meta_group = 'webhook';
