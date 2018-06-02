@@ -99,8 +99,6 @@ class Admin {
 		add_action( 'manage_' . $this->post_type . '_posts_custom_column', array( $this, 'content' ), 10, 2 );
 		// Remove Quick Edit from list table
 		add_filter( 'post_row_actions', array( $this, 'post_row_actions' ), 10, 2 );
-
-		$this->entries_count = $this->count_entries();
 	}
 
 	/**
@@ -149,7 +147,7 @@ class Admin {
 					'page'      => 'dcf-entries',
 					'form_id'   => $post_id,
 				), admin_url( 'edit.php' ) );
-				$entry_count = isset( $this->entries_count[ $post_id ] ) ? $this->entries_count[ $post_id ] : 0;
+				$entry_count = isset( $this->count_entries()[ $post_id ] ) ? $this->count_entries()[ $post_id ] : 0;
 				echo '<a href="' . esc_url( $entry_url ) . '">' . $entry_count . '</a>';
 				break;
 			default:
@@ -447,9 +445,8 @@ class Admin {
 	 * @return array
 	 */
 	private function count_entries() {
-		$counts = wp_cache_get( 'form_entries_count', 'dialog-contact-form' );
 
-		if ( false === $counts ) {
+		if ( ! $this->entries_count ) {
 			global $wpdb;
 			$table = $wpdb->prefix . "dcf_entries";
 
@@ -461,10 +458,10 @@ class Admin {
 				$counts[ $row['form_id'] ] = intval( $row['num_entries'] );
 			}
 
-			wp_cache_set( 'form_entries_count', $counts, 'dialog-contact-form' );
+			$this->entries_count = $counts;
 		}
 
-		return $counts;
+		return $this->entries_count;
 	}
 
 	/**

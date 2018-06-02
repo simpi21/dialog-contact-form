@@ -1,6 +1,7 @@
 <?php
 
 use DialogContactForm\Entries\Entry;
+use DialogContactForm\Supports\Browser;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,6 +21,14 @@ if ( isset( $data['meta_data'] ) && is_array( $data['meta_data'] ) ) {
 	$meta_data = $data['meta_data'];
 	unset( $data['meta_data'] );
 }
+
+$browser    = new Browser( $meta_data['user_agent'] );
+$user_agent = sprintf(
+	'%s / %s %s',
+	$browser->getPlatform(),
+	$browser->getBrowser(),
+	$browser->getVersion()
+);
 
 $form_id    = isset( $meta_data['form_id'] ) ? $meta_data['form_id'] : 0;
 $created_at = isset( $meta_data['created_at'] ) ? $meta_data['created_at'] : 0;
@@ -167,7 +176,7 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
                             <li>
                                 <span class="label"><?php esc_html_e( 'User agent', 'dialog-contact-form' ); ?></span>
                                 <span class="sep">:</span>
-                                <span class="value"><?php echo $meta_data['user_agent']; ?></span>
+                                <span class="value"><?php echo $user_agent; ?></span>
                             </li>
                             <li>
                                 <span class="label"><?php esc_html_e( 'Date', 'dialog-contact-form' ); ?></span>

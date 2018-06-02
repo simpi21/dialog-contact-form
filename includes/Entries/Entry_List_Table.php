@@ -3,6 +3,8 @@
 namespace DialogContactForm\Entries;
 
 // Exit if accessed directly
+use DialogContactForm\Supports\Browser;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -80,6 +82,11 @@ class Entry_List_Table extends \WP_List_Table {
 	);
 
 	/**
+	 * @var Browser
+	 */
+	private $browser;
+
+	/**
 	 * Entry_List_Table constructor.
 	 */
 	public function __construct() {
@@ -98,6 +105,7 @@ class Entry_List_Table extends \WP_List_Table {
 		$this->db          = $wpdb;
 		$this->table_name  = $wpdb->prefix . 'dcf_entries';
 		$this->entry_count = $this->count_items();
+		$this->browser     = new Browser();
 
 		parent::__construct( $args );
 	}
@@ -258,6 +266,19 @@ class Entry_List_Table extends \WP_List_Table {
 		}
 
 		return $actions;
+	}
+
+	public function column_user_agent( $item ) {
+		$user_agent = $item->user_agent;
+		if ( $this->browser instanceof Browser ) {
+			$this->browser->setUserAgent( $user_agent );
+			$platform   = $this->browser->getPlatform();
+			$browser    = $this->browser->getBrowser();
+			$version    = $this->browser->getVersion();
+			$user_agent = sprintf( '%s / %s %s', $platform, $browser, $version );
+		}
+
+		return $user_agent;
 	}
 
 	/**
