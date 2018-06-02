@@ -166,49 +166,32 @@ class Entry_List_Table extends \WP_List_Table {
 	 * @return string
 	 */
 	public function column_title( $item ) {
-		$actions = array();
+		$actions  = array();
+		$url_args = array(
+			'post_type'   => 'dialog-contact-form',
+			'page'        => 'dcf-entries',
+			'entry_id'    => $item->id,
+			'redirect_to' => $this->current_url( 'raw' ),
+		);
 
 		if ( ! $this->is_trash ) {
-			$view_url        = add_query_arg( array(
-				'post_type' => 'dialog-contact-form',
-				'page'      => 'dcf-entries',
-				'tab'       => 'view',
-				'id'        => $item->id,
-			), admin_url( 'edit.php' ) );
+			$view_url        = add_query_arg( $url_args + array( 'tab' => 'view' ), admin_url( 'edit.php' ) );
 			$actions['view'] = '<a href="' . $view_url . '">' . __( 'View', 'dialog-contact-from' ) . '</a>';
 
 			if ( current_user_can( 'delete_pages' ) ) {
-				$trash_url        = add_query_arg( array(
-					'post_type'   => 'dialog-contact-form',
-					'page'        => 'dcf-entries',
-					'action'      => 'trash',
-					'entry_id'    => $item->id,
-					'redirect_to' => $this->current_url( 'raw' ),
-				), admin_url( 'edit.php' ) );
+				$trash_url        = add_query_arg( $url_args + array( 'action' => 'trash' ), admin_url( 'edit.php' ) );
 				$trash_url        = wp_nonce_url( $trash_url, 'dcf_entries_list', '_dcf_nonce' );
 				$actions['trash'] = '<a href="' . $trash_url . '">' . __( 'Trash', 'dialog-contact-from' ) . '</a>';
 			}
 
 		} else {
 			if ( current_user_can( 'edit_pages' ) ) {
-				$restore_url        = add_query_arg( array(
-					'post_type'   => 'dialog-contact-form',
-					'page'        => 'dcf-entries',
-					'action'      => 'untrash',
-					'entry_id'    => $item->id,
-					'redirect_to' => $this->current_url( 'raw' ),
-				), admin_url( 'edit.php' ) );
+				$restore_url        = add_query_arg( $url_args + array( 'action' => 'untrash' ), admin_url( 'edit.php' ) );
 				$restore_url        = wp_nonce_url( $restore_url, 'dcf_entries_list', '_dcf_nonce' );
 				$actions['untrash'] = '<a href="' . $restore_url . '">' . __( 'Restore', 'dialog-contact-from' ) . '</a>';
 			}
 			if ( current_user_can( 'delete_pages' ) ) {
-				$delete_url        = add_query_arg( array(
-					'post_type'   => 'dialog-contact-form',
-					'page'        => 'dcf-entries',
-					'action'      => 'delete',
-					'entry_id'    => $item->id,
-					'redirect_to' => $this->current_url( 'raw' ),
-				), admin_url( 'edit.php' ) );
+				$delete_url        = add_query_arg( $url_args + array( 'action' => 'delete' ), admin_url( 'edit.php' ) );
 				$delete_url        = wp_nonce_url( $delete_url, 'dcf_entries_list', '_dcf_nonce' );
 				$actions['delete'] = '<a href="' . $delete_url . '">' . __( 'Delete Permanently', 'dialog-contact-from' ) . '</a>';
 			}
@@ -339,26 +322,22 @@ class Entry_List_Table extends \WP_List_Table {
 	 * @return array
 	 */
 	protected function get_views() {
-		$all_url    = add_query_arg( array(
+		$all_url_args = array(
 			'post_type' => 'dialog-contact-form',
 			'page'      => 'dcf-entries',
-		), admin_url( 'edit.php' ) );
-		$unread_url = add_query_arg( array(
-			'post_type'   => 'dialog-contact-form',
-			'page'        => 'dcf-entries',
-			'post_status' => 'unread',
-		), admin_url( 'edit.php' ) );
-		$read_url   = add_query_arg( array(
-			'post_type'   => 'dialog-contact-form',
-			'page'        => 'dcf-entries',
-			'post_status' => 'read',
-		), admin_url( 'edit.php' ) );
+		);
+		if ( isset( $_REQUEST['form_id'] ) && is_numeric( $_REQUEST['form_id'] ) ) {
+			$all_url_args['form_id'] = intval( $_REQUEST['form_id'] );
+		}
 
-		$trash_url = add_query_arg( array(
-			'post_type'   => 'dialog-contact-form',
-			'page'        => 'dcf-entries',
-			'post_status' => 'trash',
-		), admin_url( 'edit.php' ) );
+		$unread_url_args = $all_url_args + array( 'post_status' => 'unread' );
+		$read_url_args   = $all_url_args + array( 'post_status' => 'read' );
+		$trash_url_args  = $all_url_args + array( 'post_status' => 'trash' );
+
+		$all_url    = add_query_arg( $all_url_args, admin_url( 'edit.php' ) );
+		$unread_url = add_query_arg( $unread_url_args, admin_url( 'edit.php' ) );
+		$read_url   = add_query_arg( $read_url_args, admin_url( 'edit.php' ) );
+		$trash_url  = add_query_arg( $trash_url_args, admin_url( 'edit.php' ) );
 
 		$all_count    = ( $this->entry_count['unread'] + $this->entry_count['read'] );
 		$all_label    = sprintf( __( 'All (%d)', 'dialog-contact-form' ), $all_count );
@@ -395,7 +374,7 @@ class Entry_List_Table extends \WP_List_Table {
 			return esc_url( $full_url );
 		}
 
-		return esc_url_raw( $full_url );
+		return rawurlencode( $full_url );
 	}
 
 	/**
@@ -410,6 +389,9 @@ class Entry_List_Table extends \WP_List_Table {
 		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
 		if ( false === $items ) {
 			$query = "SELECT * FROM {$this->table_name} WHERE status != 'trash'";
+			if ( isset( $_REQUEST['form_id'] ) && is_numeric( $_REQUEST['form_id'] ) ) {
+				$query .= sprintf( " AND form_id = %d", intval( $_REQUEST['form_id'] ) );
+			}
 			$query .= " ORDER BY {$args['orderby']} {$args['order']}";
 			$query .= sprintf( " LIMIT %d OFFSET %d", $args['per_page'], $args['offset'] );
 
@@ -435,6 +417,9 @@ class Entry_List_Table extends \WP_List_Table {
 		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
 		if ( false === $items ) {
 			$query = "SELECT * FROM {$this->table_name} WHERE status = 'unread'";
+			if ( isset( $_REQUEST['form_id'] ) && is_numeric( $_REQUEST['form_id'] ) ) {
+				$query .= sprintf( " AND form_id = %d", intval( $_REQUEST['form_id'] ) );
+			}
 			$query .= " ORDER BY {$args['orderby']} {$args['order']}";
 			$query .= sprintf( " LIMIT %d OFFSET %d", $args['per_page'], $args['offset'] );
 
@@ -460,6 +445,9 @@ class Entry_List_Table extends \WP_List_Table {
 		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
 		if ( false === $items ) {
 			$query = "SELECT * FROM {$this->table_name} WHERE status = 'read'";
+			if ( isset( $_REQUEST['form_id'] ) && is_numeric( $_REQUEST['form_id'] ) ) {
+				$query .= sprintf( " AND form_id = %d", intval( $_REQUEST['form_id'] ) );
+			}
 			$query .= " ORDER BY {$args['orderby']} {$args['order']}";
 			$query .= sprintf( " LIMIT %d OFFSET %d", $args['per_page'], $args['offset'] );
 
@@ -485,6 +473,9 @@ class Entry_List_Table extends \WP_List_Table {
 		$items     = wp_cache_get( $cache_key, 'dialog-contact-form' );
 		if ( false === $items ) {
 			$query = "SELECT * FROM {$this->table_name} WHERE status = 'trash'";
+			if ( isset( $_REQUEST['form_id'] ) && is_numeric( $_REQUEST['form_id'] ) ) {
+				$query .= sprintf( " AND form_id = %d", intval( $_REQUEST['form_id'] ) );
+			}
 			$query .= " ORDER BY {$args['orderby']} {$args['order']}";
 			$query .= sprintf( " LIMIT %d OFFSET %d", $args['per_page'], $args['offset'] );
 
@@ -510,7 +501,11 @@ class Entry_List_Table extends \WP_List_Table {
 			global $wpdb;
 			$table = $wpdb->prefix . "dcf_entries";
 
-			$query   = "SELECT status, COUNT( * ) AS num_entries FROM {$table} GROUP BY status";
+			$query = "SELECT status, COUNT( * ) AS num_entries FROM {$table}";
+			if ( isset( $_REQUEST['form_id'] ) && is_numeric( $_REQUEST['form_id'] ) ) {
+				$query .= sprintf( " WHERE form_id = %d", intval( $_REQUEST['form_id'] ) );
+			}
+			$query   .= " GROUP BY status";
 			$results = $wpdb->get_results( $query, ARRAY_A );
 			$counts  = array(
 				'unread' => 0,

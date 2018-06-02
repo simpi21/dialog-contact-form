@@ -276,7 +276,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				array(
 					'jquery',
 					'select2',
-					'jquery-ui-datepicker',
 					'jquery-ui-tabs',
 					'jquery-ui-sortable',
 					'jquery-ui-accordion',

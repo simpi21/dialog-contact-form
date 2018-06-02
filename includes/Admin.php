@@ -224,11 +224,13 @@ class Admin {
 						'description' => __( 'Add actions that will be performed after a visitor submits the form (e.g. send an email notification). Choosing an action will add its setting below.',
 							'dialog-contact-form' ),
 						'multiple'    => true,
+						'default'     => array( 'store_submission', 'success_message', 'redirect' ),
 						'options'     => $this->get_actions_list( $actions ),
 					) );
 
 					$_actions          = get_post_meta( $post->ID, '_contact_form_actions', true );
-					$supported_actions = isset( $_actions['after_submit_actions'] ) ? $_actions['after_submit_actions'] : array();
+					$default_actions   = array( 'store_submission', 'success_message', 'redirect' );
+					$supported_actions = isset( $_actions['after_submit_actions'] ) ? $_actions['after_submit_actions'] : $default_actions;
 					/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
 					foreach ( $actions as $action ) {
 						$display = in_array( $action->get_id(), $supported_actions ) ? 'block' : 'none';
@@ -451,7 +453,7 @@ class Admin {
 			global $wpdb;
 			$table = $wpdb->prefix . "dcf_entries";
 
-			$query   = "SELECT form_id, COUNT( * ) AS num_entries FROM {$table} GROUP BY form_id";
+			$query   = "SELECT form_id, COUNT( * ) AS num_entries FROM {$table} WHERE status != 'trash' GROUP BY form_id";
 			$results = $wpdb->get_results( $query, ARRAY_A );
 
 			$counts = array();

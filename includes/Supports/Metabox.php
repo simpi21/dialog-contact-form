@@ -37,10 +37,10 @@ class Metabox {
 	 */
 	public static function date( array $args ) {
 		list( $name, $value, $input_id ) = self::field_common( $args );
-		$class = isset( $args['input_class'] ) ? esc_attr( $args['input_class'] ) : 'dcf-input-text dcf-date-picker';
+		$class = isset( $args['input_class'] ) ? esc_attr( $args['input_class'] ) : 'dcf-input-text';
 
 		echo self::field_before( $args );
-		echo sprintf( '<input type="text" class="' . $class . '" value="%1$s" id="' . $input_id . '" name="%3$s" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">',
+		echo sprintf( '<input type="date" class="' . $class . '" value="%1$s" id="' . $input_id . '" name="%3$s" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">',
 			$value, $args['id'], $name );
 		echo self::field_after();
 	}

@@ -69,7 +69,22 @@ class Settings {
 			'priority' => 50,
 		) );
 
-		// Add Sections
+
+		// SMTP Server Settings
+		self::smtp_server_settings( $option_page );
+		self::validation_messages( $option_page, $default_options );
+		self::dialog_settings( $option_page, $default_options );
+		self::recaptcha_settings( $option_page );
+		self::mailchimp_settings( $option_page );
+		self::general_settings( $option_page );
+	}
+
+	/**
+	 * SMTP Server settings
+	 *
+	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 */
+	private static function smtp_server_settings( $option_page ) {
 		$option_page->add_section( array(
 			'id'          => 'dcf_smpt_server_section',
 			'title'       => __( 'SMTP Server Settings', 'dialog-contact-form' ),
@@ -77,58 +92,7 @@ class Settings {
 			'panel'       => 'dcf_smpt_server_panel',
 			'priority'    => 20,
 		) );
-		$option_page->add_section( array(
-			'id'          => 'dcf_message_section',
-			'title'       => __( 'General Validation Messages', 'dialog-contact-form' ),
-			'description' => __( 'Define general validation message. This message can be overwrite from each form.',
-				'dialog-contact-form' ),
-			'panel'       => 'dcf_message_panel',
-			'priority'    => 40,
-		) );
-		$option_page->add_section( array(
-			'id'          => 'dcf_field_message_section',
-			'title'       => __( 'Field Validation Messages', 'dialog-contact-form' ),
-			'description' => __( 'Define validation message for form fields. These message will be used for all forms.',
-				'dialog-contact-form' ),
-			'panel'       => 'dcf_message_panel',
-			'priority'    => 50,
-		) );
-		$option_page->add_section( array(
-			'id'          => 'dcf_style_section',
-			'title'       => __( 'Style', 'dialog-contact-form' ),
-			'description' => __( 'Define form style.', 'dialog-contact-form' ),
-			'panel'       => 'dcf_style_panel',
-			'priority'    => 10,
-		) );
-		$option_page->add_section( array(
-			'id'          => 'dcf_dialog_section',
-			'title'       => __( 'Dialog/Modal', 'dialog-contact-form' ),
-			'description' => __( 'Configure fixed dialog/modal button at your site footer.', 'dialog-contact-form' ),
-			'panel'       => 'dcf_style_panel',
-			'priority'    => 20,
-		) );
-		$option_page->add_section( array(
-			'id'          => 'dcf_grecaptcha_section',
-			'title'       => __( 'reCAPTCHA', 'dialog-contact-form' ),
-			'description' => sprintf( __( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse. To use reCAPTCHA, you need to install an API key pair. %sGet your API Keys%s.',
-				'dialog-contact-form' ),
-				'<a target="_blank" href="https://www.google.com/recaptcha/admin#list">', '</a>' ),
-			'panel'       => 'dcf_integrations_panel',
-			'priority'    => 10,
-		) );
-		$option_page->add_section( array(
-			'id'          => 'dcf_mailChimp_section',
-			'title'       => __( 'MailChimp', 'dialog-contact-form' ),
-			'description' => sprintf(
-				__( 'To integrate MailChimp with our forms you need an %sAPI Key%s.', 'dialog-contact-form' ),
-				'<a href="https://kb.mailchimp.com/integrations/api-integrations/about-api-keys" target="_blank">',
-				'</a>'
-			),
-			'panel'       => 'dcf_integrations_panel',
-			'priority'    => 20,
-		) );
 
-		// Add SMTP Server settings section fields
 		$option_page->add_field( array(
 			'id'      => 'mailer',
 			'type'    => 'checkbox',
@@ -183,92 +147,31 @@ class Settings {
 				'ssl' => esc_attr__( 'Use SSL encryption', 'dialog-contact-form' ),
 			)
 		) );
+	}
 
-		// Add Google reCAPTCHA fields
-		$option_page->add_field( array(
-			'id'       => 'recaptcha_site_key',
-			'type'     => 'text',
-			'name'     => __( 'Site key', 'dialog-contact-form' ),
-			'desc'     => __( 'Enter google reCAPTCHA API site key', 'dialog-contact-form' ),
-			'std'      => '',
-			'priority' => 10,
-			'section'  => 'dcf_grecaptcha_section'
+	/**
+	 * Validation messages
+	 *
+	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 * @param array $default_options
+	 */
+	private static function validation_messages( $option_page, $default_options ) {
+		// Add Sections
+		$option_page->add_section( array(
+			'id'          => 'dcf_message_section',
+			'title'       => __( 'General Validation Messages', 'dialog-contact-form' ),
+			'description' => __( 'Define general validation message. This message can be overwrite from each form.',
+				'dialog-contact-form' ),
+			'panel'       => 'dcf_message_panel',
+			'priority'    => 40,
 		) );
-		$option_page->add_field( array(
-			'id'       => 'recaptcha_secret_key',
-			'type'     => 'text',
-			'name'     => __( 'Secret key', 'dialog-contact-form' ),
-			'desc'     => __( 'Enter google reCAPTCHA API secret key', 'dialog-contact-form' ),
-			'std'      => '',
-			'priority' => 20,
-			'section'  => 'dcf_grecaptcha_section'
-		) );
-		$option_page->add_field( array(
-			'id'       => 'recaptcha_lang',
-			'type'     => 'select',
-			'name'     => __( 'Language', 'dialog-contact-form' ),
-			'desc'     => __( 'Enter google reCAPTCHA API secret key', 'dialog-contact-form' ),
-			'std'      => 'en',
-			'section'  => 'dcf_grecaptcha_section',
-			'priority' => 30,
-			'options'  => Recaptcha::lang(),
-		) );
-		$option_page->add_field( array(
-			'id'       => 'recaptcha_theme',
-			'type'     => 'radio',
-			'name'     => __( 'Theme', 'dialog-contact-form' ),
-			'std'      => 'light',
-			'section'  => 'dcf_grecaptcha_section',
-			'priority' => 40,
-			'options'  => array(
-				'light' => esc_html__( 'Light', 'dialog-contact-form' ),
-				'dark'  => esc_html__( 'Dark', 'dialog-contact-form' ),
-			)
-		) );
-
-		// Add Dialog/Modal section fields
-		$option_page->add_field( array(
-			'id'      => 'dialog_button_text',
-			'type'    => 'text',
-			'name'    => __( 'Dialog button text', 'dialog-contact-form' ),
-			'std'     => $default_options['dialog_button_text'],
-			'section' => 'dcf_dialog_section'
-		) );
-		$option_page->add_field( array(
-			'id'      => 'dialog_button_background',
-			'type'    => 'color',
-			'name'    => __( 'Dialog button background', 'dialog-contact-form' ),
-			'std'     => $default_options['dialog_button_background'],
-			'section' => 'dcf_dialog_section'
-		) );
-		$option_page->add_field( array(
-			'id'      => 'dialog_button_color',
-			'type'    => 'color',
-			'name'    => __( 'Dialog button color', 'dialog-contact-form' ),
-			'std'     => $default_options['dialog_button_color'],
-			'section' => 'dcf_dialog_section'
-		) );
-		$option_page->add_field( array(
-			'id'      => 'dialog_form_id',
-			'type'    => 'form_list',
-			'name'    => __( 'Choose Form', 'dialog-contact-form' ),
-			'std'     => '',
-			'section' => 'dcf_dialog_section',
-			'options' => array(),
-		) );
-
-		// Add Style section fields
-		$option_page->add_field( array(
-			'id'      => 'default_style',
-			'type'    => 'radio',
-			'name'    => __( 'Default Style', 'dialog-contact-form' ),
-			'desc'    => __( 'Disable plugin default style if you want to style by yourself.', 'dialog-contact-form' ),
-			'std'     => 'enable',
-			'section' => 'dcf_style_section',
-			'options' => array(
-				'enable'  => esc_html__( 'Enable', 'dialog-contact-form' ),
-				'disable' => esc_html__( 'Disable', 'dialog-contact-form' ),
-			)
+		$option_page->add_section( array(
+			'id'          => 'dcf_field_message_section',
+			'title'       => __( 'Field Validation Messages', 'dialog-contact-form' ),
+			'description' => __( 'Define validation message for form fields. These message will be used for all forms.',
+				'dialog-contact-form' ),
+			'panel'       => 'dcf_message_panel',
+			'priority'    => 50,
 		) );
 
 		// Add Validation Messages section fields
@@ -329,7 +232,7 @@ class Settings {
 			'desc'     => __( 'Required field message for checkbox field.', 'dialog-contact-form' ),
 			'std'      => $default_options['required_checkbox'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 11,
+			'priority' => 20,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'required_select',
@@ -339,7 +242,7 @@ class Settings {
 			'desc'     => __( 'Required field message for radio and select field.', 'dialog-contact-form' ),
 			'std'      => $default_options['required_select'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 11,
+			'priority' => 30,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'required_select_multi',
@@ -350,7 +253,7 @@ class Settings {
 				'dialog-contact-form' ),
 			'std'      => $default_options['required_select_multi'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 12,
+			'priority' => 40,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'invalid_too_long',
@@ -365,7 +268,7 @@ class Settings {
 			),
 			'std'      => $default_options['invalid_too_long'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 20,
+			'priority' => 50,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'invalid_too_short',
@@ -380,7 +283,7 @@ class Settings {
 			),
 			'std'      => $default_options['invalid_too_short'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 30,
+			'priority' => 60,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'number_too_large',
@@ -393,7 +296,7 @@ class Settings {
 			),
 			'std'      => $default_options['number_too_large'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 40,
+			'priority' => 70,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'number_too_small',
@@ -406,7 +309,7 @@ class Settings {
 			),
 			'std'      => $default_options['number_too_small'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 50,
+			'priority' => 80,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'invalid_email',
@@ -415,7 +318,7 @@ class Settings {
 			'name'     => __( 'Invalid email', 'dialog-contact-form' ),
 			'std'      => $default_options['invalid_email'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 60,
+			'priority' => 90,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'invalid_url',
@@ -424,7 +327,7 @@ class Settings {
 			'name'     => __( 'Invalid URL', 'dialog-contact-form' ),
 			'std'      => $default_options['invalid_url'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 70,
+			'priority' => 100,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'invalid_number',
@@ -435,43 +338,7 @@ class Settings {
 				'dialog-contact-form' ),
 			'std'      => $default_options['invalid_number'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 80,
-		) );
-		$option_page->add_field( array(
-			'id'       => 'invalid_int',
-			'type'     => 'textarea',
-			'rows'     => 2,
-			'name'     => __( 'Invalid integer', 'dialog-contact-form' ),
-			'std'      => $default_options['invalid_int'],
-			'section'  => 'dcf_field_message_section',
-			'priority' => 90,
-		) );
-		$option_page->add_field( array(
-			'id'       => 'invalid_alpha',
-			'type'     => 'textarea',
-			'rows'     => 2,
-			'name'     => __( 'Invalid alphabetic letters', 'dialog-contact-form' ),
-			'std'      => $default_options['invalid_alpha'],
-			'section'  => 'dcf_field_message_section',
-			'priority' => 100,
-		) );
-		$option_page->add_field( array(
-			'id'       => 'invalid_alnum',
-			'type'     => 'textarea',
-			'rows'     => 2,
-			'name'     => __( 'Invalid alphanumeric characters', 'dialog-contact-form' ),
-			'std'      => $default_options['invalid_alnum'],
-			'section'  => 'dcf_field_message_section',
 			'priority' => 110,
-		) );
-		$option_page->add_field( array(
-			'id'       => 'invalid_alnumdash',
-			'type'     => 'textarea',
-			'rows'     => 2,
-			'name'     => __( 'Invalid alphanumeric characters, dashes and underscores', 'dialog-contact-form' ),
-			'std'      => $default_options['invalid_alnumdash'],
-			'section'  => 'dcf_field_message_section',
-			'priority' => 120,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'invalid_date',
@@ -480,7 +347,7 @@ class Settings {
 			'name'     => __( 'Invalid date', 'dialog-contact-form' ),
 			'std'      => $default_options['invalid_date'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 130,
+			'priority' => 120,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'invalid_ip',
@@ -489,7 +356,7 @@ class Settings {
 			'name'     => __( 'Invalid IP', 'dialog-contact-form' ),
 			'std'      => $default_options['invalid_ip'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 140,
+			'priority' => 130,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'invalid_recaptcha',
@@ -498,34 +365,7 @@ class Settings {
 			'name'     => __( 'invalid reCAPTCHA', 'dialog-contact-form' ),
 			'std'      => $default_options['invalid_recaptcha'],
 			'section'  => 'dcf_field_message_section',
-			'priority' => 145,
-		) );
-		$option_page->add_field( array(
-			'id'       => 'invalid_user_login',
-			'type'     => 'textarea',
-			'rows'     => 2,
-			'name'     => __( 'Invalid user login', 'dialog-contact-form' ),
-			'std'      => $default_options['invalid_user_login'],
-			'section'  => 'dcf_field_message_section',
-			'priority' => 150,
-		) );
-		$option_page->add_field( array(
-			'id'       => 'invalid_username',
-			'type'     => 'textarea',
-			'rows'     => 2,
-			'name'     => __( 'Invalid username', 'dialog-contact-form' ),
-			'std'      => $default_options['invalid_username'],
-			'section'  => 'dcf_field_message_section',
-			'priority' => 160,
-		) );
-		$option_page->add_field( array(
-			'id'       => 'invalid_user_email',
-			'type'     => 'textarea',
-			'rows'     => 2,
-			'name'     => __( 'Invalid user email', 'dialog-contact-form' ),
-			'std'      => $default_options['invalid_user_email'],
-			'section'  => 'dcf_field_message_section',
-			'priority' => 170,
+			'priority' => 140,
 		) );
 		$option_page->add_field( array(
 			'id'       => 'generic_error',
@@ -536,6 +376,129 @@ class Settings {
 			'section'  => 'dcf_field_message_section',
 			'priority' => 300,
 		) );
+	}
+
+	/**
+	 * Dialog/Model settings
+	 *
+	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 * @param array $default_options
+	 */
+	private static function dialog_settings( $option_page, $default_options ) {
+		$option_page->add_section( array(
+			'id'          => 'dcf_dialog_section',
+			'title'       => __( 'Dialog/Modal', 'dialog-contact-form' ),
+			'description' => __( 'Configure fixed dialog/modal button at your site footer.', 'dialog-contact-form' ),
+			'panel'       => 'dcf_style_panel',
+			'priority'    => 20,
+		) );
+
+		// Add Dialog/Modal section fields
+		$option_page->add_field( array(
+			'id'      => 'dialog_button_text',
+			'type'    => 'text',
+			'name'    => __( 'Dialog button text', 'dialog-contact-form' ),
+			'std'     => $default_options['dialog_button_text'],
+			'section' => 'dcf_dialog_section'
+		) );
+		$option_page->add_field( array(
+			'id'      => 'dialog_button_background',
+			'type'    => 'color',
+			'name'    => __( 'Dialog button background', 'dialog-contact-form' ),
+			'std'     => $default_options['dialog_button_background'],
+			'section' => 'dcf_dialog_section'
+		) );
+		$option_page->add_field( array(
+			'id'      => 'dialog_button_color',
+			'type'    => 'color',
+			'name'    => __( 'Dialog button color', 'dialog-contact-form' ),
+			'std'     => $default_options['dialog_button_color'],
+			'section' => 'dcf_dialog_section'
+		) );
+		$option_page->add_field( array(
+			'id'      => 'dialog_form_id',
+			'type'    => 'form_list',
+			'name'    => __( 'Choose Form', 'dialog-contact-form' ),
+			'std'     => '',
+			'section' => 'dcf_dialog_section',
+			'options' => array(),
+		) );
+	}
+
+	/**
+	 * Dialog/Model settings
+	 *
+	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 */
+	private static function recaptcha_settings( $option_page ) {
+		$option_page->add_section( array(
+			'id'          => 'dcf_grecaptcha_section',
+			'title'       => __( 'reCAPTCHA', 'dialog-contact-form' ),
+			'description' => sprintf( __( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse. To use reCAPTCHA, you need to install an API key pair. %sGet your API Keys%s.',
+				'dialog-contact-form' ),
+				'<a target="_blank" href="https://www.google.com/recaptcha/admin#list">', '</a>' ),
+			'panel'       => 'dcf_integrations_panel',
+			'priority'    => 10,
+		) );// Add Google reCAPTCHA fields
+		$option_page->add_field( array(
+			'id'       => 'recaptcha_site_key',
+			'type'     => 'text',
+			'name'     => __( 'Site key', 'dialog-contact-form' ),
+			'desc'     => __( 'Enter google reCAPTCHA API site key', 'dialog-contact-form' ),
+			'std'      => '',
+			'priority' => 10,
+			'section'  => 'dcf_grecaptcha_section'
+		) );
+		$option_page->add_field( array(
+			'id'       => 'recaptcha_secret_key',
+			'type'     => 'text',
+			'name'     => __( 'Secret key', 'dialog-contact-form' ),
+			'desc'     => __( 'Enter google reCAPTCHA API secret key', 'dialog-contact-form' ),
+			'std'      => '',
+			'priority' => 20,
+			'section'  => 'dcf_grecaptcha_section'
+		) );
+		$option_page->add_field( array(
+			'id'       => 'recaptcha_lang',
+			'type'     => 'select',
+			'name'     => __( 'Language', 'dialog-contact-form' ),
+			'desc'     => __( 'Enter google reCAPTCHA API secret key', 'dialog-contact-form' ),
+			'std'      => 'en',
+			'section'  => 'dcf_grecaptcha_section',
+			'priority' => 30,
+			'options'  => Recaptcha::lang(),
+		) );
+		$option_page->add_field( array(
+			'id'       => 'recaptcha_theme',
+			'type'     => 'radio',
+			'name'     => __( 'Theme', 'dialog-contact-form' ),
+			'std'      => 'light',
+			'section'  => 'dcf_grecaptcha_section',
+			'priority' => 40,
+			'options'  => array(
+				'light' => esc_html__( 'Light', 'dialog-contact-form' ),
+				'dark'  => esc_html__( 'Dark', 'dialog-contact-form' ),
+			)
+		) );
+	}
+
+	/**
+	 * Dialog/Model settings
+	 *
+	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 */
+	private static function mailchimp_settings( $option_page ) {
+		$option_page->add_section( array(
+			'id'          => 'dcf_mailChimp_section',
+			'title'       => __( 'MailChimp', 'dialog-contact-form' ),
+			'description' => sprintf(
+				__( 'To integrate MailChimp with our forms you need an %sAPI Key%s.', 'dialog-contact-form' ),
+				'<a href="https://kb.mailchimp.com/integrations/api-integrations/about-api-keys" target="_blank">',
+				'</a>'
+			),
+			'panel'       => 'dcf_integrations_panel',
+			'priority'    => 20,
+		) );
 
 		// Add MailChimp section fields
 		$option_page->add_field( array(
@@ -545,6 +508,36 @@ class Settings {
 			'std'      => '',
 			'section'  => 'dcf_mailChimp_section',
 			'priority' => 10,
+		) );
+	}
+
+	/**
+	 * Dialog/Model settings
+	 *
+	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 */
+	private static function general_settings( $option_page ) {
+		// Add Sections
+		$option_page->add_section( array(
+			'id'          => 'dcf_style_section',
+			'title'       => __( 'Style', 'dialog-contact-form' ),
+			'description' => __( 'Define form style.', 'dialog-contact-form' ),
+			'panel'       => 'dcf_style_panel',
+			'priority'    => 10,
+		) );
+
+		// Add Style section fields
+		$option_page->add_field( array(
+			'id'      => 'default_style',
+			'type'    => 'radio',
+			'name'    => __( 'Default Style', 'dialog-contact-form' ),
+			'desc'    => __( 'Disable plugin default style if you want to style by yourself.', 'dialog-contact-form' ),
+			'std'     => 'enable',
+			'section' => 'dcf_style_section',
+			'options' => array(
+				'enable'  => esc_html__( 'Enable', 'dialog-contact-form' ),
+				'disable' => esc_html__( 'Disable', 'dialog-contact-form' ),
+			)
 		) );
 	}
 }

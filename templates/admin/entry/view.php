@@ -33,10 +33,18 @@ foreach ( $fields as $field ) {
 	$_fields[ $field['field_name'] ] = $field;
 }
 
-$back_url = add_query_arg( array(
-	'post_type' => 'dialog-contact-form',
-	'page'      => 'dcf-entries',
-), admin_url( 'edit.php' ) );
+if ( ! empty( $_REQUEST['redirect_to'] ) ) {
+	$back_url = esc_url( rawurldecode( $_REQUEST['redirect_to'] ) );
+} else {
+	$back_url_args = array(
+		'post_type' => 'dialog-contact-form',
+		'page'      => 'dcf-entries',
+	);
+	if ( isset( $_REQUEST['form_id'] ) && is_numeric( $_REQUEST['form_id'] ) ) {
+		$back_url_args['form_id'] = intval( $_REQUEST['form_id'] );
+	}
+	$back_url = add_query_arg( $back_url_args, admin_url( 'edit.php' ) );
+}
 
 ?>
 <style type="text/css">

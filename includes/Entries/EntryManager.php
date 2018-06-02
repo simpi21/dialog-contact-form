@@ -82,18 +82,16 @@ class EntryManager {
 	public function entries_page() {
 		$tab     = isset( $_GET['tab'] ) ? $_GET['tab'] : 'list';
 		$form_id = isset( $_GET['form_id'] ) ? intval( $_GET['form_id'] ) : 0;
-		$id      = isset( $_GET['id'] ) ? intval( $_GET['id'] ) : 0;
+		$id      = isset( $_GET['entry_id'] ) ? intval( $_GET['entry_id'] ) : 0;
 
 		switch ( $tab ) {
 			case 'view':
 				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/admin/entry/view.php';
 				break;
-			case 'trash':
-				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/admin/entry/trash-list.php';
-				break;
 			case 'list':
-			default:
 				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/admin/entry/list.php';
+				break;
+			default:
 				break;
 		}
 
@@ -135,9 +133,10 @@ class EntryManager {
 			return;
 		}
 
-		$referer   = isset( $_REQUEST['_wp_http_referer'] ) ? $_REQUEST['_wp_http_referer'] : null;
-		$entry_ids = isset( $_REQUEST['entry_id'] ) ? $_REQUEST['entry_id'] : 0;
-		$action    = $this->current_action();
+		$redirect_to = ! empty( $_REQUEST['redirect_to'] ) ? rawurldecode( $_REQUEST['redirect_to'] ) : null;
+		$referer     = isset( $_REQUEST['_wp_http_referer'] ) ? $_REQUEST['_wp_http_referer'] : null;
+		$entry_ids   = isset( $_REQUEST['entry_id'] ) ? $_REQUEST['entry_id'] : 0;
+		$action      = $this->current_action();
 
 		if ( 'trash' == $action ) {
 			$this->handle_trash_action( $entry_ids );
@@ -154,6 +153,12 @@ class EntryManager {
 		// Redirect to Referer URL if available
 		if ( ! empty( $referer ) ) {
 			wp_safe_redirect( $referer );
+			exit();
+		}
+
+		// Redirect to URL if available
+		if ( filter_var( $redirect_to, FILTER_VALIDATE_URL ) !== false ) {
+			wp_safe_redirect( $redirect_to );
 			exit();
 		}
 	}
