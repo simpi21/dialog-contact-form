@@ -285,6 +285,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 						'meta_key'    => '_contact_form_fields',
 						'label'       => __( 'Rows', 'dialog-contact-form' ),
 					) );
+					// Autocomplete Field
+					Metabox::select( array(
+						'id'          => 'autocomplete',
+						'group'       => 'field',
+						'input_class' => 'dcf-input-text dcf-input-autocomplete',
+						'group_class' => 'dcf-input-group col-autocomplete',
+						'position'    => $_field_number,
+						'meta_key'    => '_contact_form_fields',
+						'label'       => __( 'Autocomplete', 'dialog-contact-form' ),
+						'options'     => array()
+					) );
 					?>
                 </div>
             </div>

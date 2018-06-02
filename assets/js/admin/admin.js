@@ -265,5 +265,19 @@
         processMailChimpAction(source);
     });
 
+    // AutoComplete attribute
+    $(document).ready(function () {
+        var data = $.map(DialogContactForm.autocomplete, function (obj, index) {
+            return {
+                id: index,
+                text: obj
+            };
+        });
+
+        $('select.dcf-input-autocomplete').select2({
+            data: data
+        });
+    });
+
 
 })(jQuery);

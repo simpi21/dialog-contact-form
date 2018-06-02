@@ -340,3 +340,39 @@ if ( ! function_exists( 'get_dialog_contact_form_option' ) ) {
 		return $value;
 	}
 }
+
+if ( ! function_exists( 'dcf_autocomplete_attribute_values' ) ) {
+	/**
+	 * List of possible value for input autocomplete attribute
+	 *
+	 * @return array
+	 */
+	function dcf_autocomplete_attribute_values() {
+		return array(
+			'off'                => __( 'Off', 'dialog-contact-form' ),
+			'on'                 => __( 'On', 'dialog-contact-form' ),
+			'name'               => __( 'Full name', 'dialog-contact-form' ),
+			'honorific-prefix'   => __( 'Prefix or title (e.g. "Mr.", "Ms.", "Dr.")', 'dialog-contact-form' ),
+			'given-name'         => __( 'First name', 'dialog-contact-form' ),
+			'additional-name'    => __( 'Middle name', 'dialog-contact-form' ),
+			'family-name'        => __( 'Last name', 'dialog-contact-form' ),
+			'honorific-suffix'   => __( 'Suffix (e.g. "Jr.", "B.Sc.")', 'dialog-contact-form' ),
+			'nickname'           => __( 'nickname', 'dialog-contact-form' ),
+			'email'              => __( 'email', 'dialog-contact-form' ),
+			'username'           => __( 'username', 'dialog-contact-form' ),
+			'current-password'   => __( 'current-password', 'dialog-contact-form' ),
+			'new-password'       => __( 'new-password', 'dialog-contact-form' ),
+			'organization-title' => __( 'Job title (e.g. "Software Engineer")', 'dialog-contact-form' ),
+			'organization'       => __( 'organization', 'dialog-contact-form' ),
+			'street-address'     => __( 'street-address', 'dialog-contact-form' ),
+			'address-line1'      => __( 'address-line1', 'dialog-contact-form' ),
+			'address-line2'      => __( 'address-line2', 'dialog-contact-form' ),
+			'address-line3'      => __( 'address-line3', 'dialog-contact-form' ),
+			'country'            => __( 'country', 'dialog-contact-form' ),
+			'country-name'       => __( 'country-name', 'dialog-contact-form' ),
+			'postal-code'        => __( 'postal-code', 'dialog-contact-form' ),
+			'tel'                => __( 'Full telephone number', 'dialog-contact-form' ),
+			'url'                => __( 'URL', 'dialog-contact-form' ),
+		);
+	}
+}

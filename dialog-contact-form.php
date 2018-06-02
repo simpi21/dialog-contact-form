@@ -282,6 +282,10 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 					'wp-color-picker-alpha'
 				),
 				DIALOG_CONTACT_FORM_VERSION, true );
+
+			wp_localize_script( $this->plugin_name . '-admin', 'DialogContactForm', array(
+				'autocomplete' => dcf_autocomplete_attribute_values(),
+			) );
 		}
 
 		/**
