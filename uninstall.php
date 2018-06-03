@@ -15,7 +15,7 @@ if ( ! function_exists( 'dcf_delete_plugin_data' ) ) {
 		$_posts = get_posts(
 			array(
 				'posts_per_page' => - 1,
-				'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
+				'post_type'      => 'dialog-contact-form',
 				'post_status'    => 'any',
 			)
 		);
@@ -37,4 +37,7 @@ if ( ! function_exists( 'dcf_delete_plugin_data' ) ) {
 	}
 }
 
-dcf_delete_plugin_data();
+$option = get_option( 'dialog_contact_form' );
+if ( 'yes' === $option['delete_data_on_uninstallation'] ) {
+	dcf_delete_plugin_data();
+}

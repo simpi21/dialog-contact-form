@@ -49,8 +49,8 @@ class Settings {
 
 		// Add settings page tab
 		$option_page->add_panel( array(
-			'id'       => 'dcf_style_panel',
-			'title'    => __( 'Form Style', 'dialog-contact-form' ),
+			'id'       => 'dcf_general_settings_panel',
+			'title'    => __( 'General Settings', 'dialog-contact-form' ),
 			'priority' => 10,
 		) );
 		$option_page->add_panel( array(
@@ -71,12 +71,12 @@ class Settings {
 
 
 		// SMTP Server Settings
+		self::general_settings( $option_page );
+		self::dialog_settings( $option_page, $default_options );
 		self::smtp_server_settings( $option_page );
 		self::validation_messages( $option_page, $default_options );
-		self::dialog_settings( $option_page, $default_options );
 		self::recaptcha_settings( $option_page );
 		self::mailchimp_settings( $option_page );
-		self::general_settings( $option_page );
 	}
 
 	/**
@@ -389,7 +389,7 @@ class Settings {
 			'id'          => 'dcf_dialog_section',
 			'title'       => __( 'Dialog/Modal', 'dialog-contact-form' ),
 			'description' => __( 'Configure fixed dialog/modal button at your site footer.', 'dialog-contact-form' ),
-			'panel'       => 'dcf_style_panel',
+			'panel'       => 'dcf_general_settings_panel',
 			'priority'    => 20,
 		) );
 
@@ -520,23 +520,37 @@ class Settings {
 		// Add Sections
 		$option_page->add_section( array(
 			'id'          => 'dcf_style_section',
-			'title'       => __( 'Style', 'dialog-contact-form' ),
-			'description' => __( 'Define form style.', 'dialog-contact-form' ),
-			'panel'       => 'dcf_style_panel',
+			'title'       => __( 'General Options', 'dialog-contact-form' ),
+			'description' => __( 'Plugin general options.', 'dialog-contact-form' ),
+			'panel'       => 'dcf_general_settings_panel',
 			'priority'    => 10,
 		) );
 
 		// Add Style section fields
 		$option_page->add_field( array(
-			'id'      => 'default_style',
-			'type'    => 'radio',
-			'name'    => __( 'Default Style', 'dialog-contact-form' ),
-			'desc'    => __( 'Disable plugin default style if you want to style by yourself.', 'dialog-contact-form' ),
-			'std'     => 'enable',
-			'section' => 'dcf_style_section',
-			'options' => array(
+			'id'       => 'default_style',
+			'type'     => 'radio',
+			'name'     => __( 'Default Style', 'dialog-contact-form' ),
+			'desc'     => __( 'Disable plugin default style if you want to style by yourself.', 'dialog-contact-form' ),
+			'std'      => 'enable',
+			'section'  => 'dcf_style_section',
+			'priority' => 10,
+			'options'  => array(
 				'enable'  => esc_html__( 'Enable', 'dialog-contact-form' ),
 				'disable' => esc_html__( 'Disable', 'dialog-contact-form' ),
+			)
+		) );
+		$option_page->add_field( array(
+			'id'       => 'delete_data_on_uninstallation',
+			'type'     => 'radio',
+			'name'     => __( 'Delete plugin data', 'dialog-contact-form' ),
+			'desc'     => __( 'Choose Yes to delete all "Dialog Contact Form" data when uninstall this plugin.', 'dialog-contact-form' ),
+			'std'      => 'no',
+			'section'  => 'dcf_style_section',
+			'priority' => 20,
+			'options'  => array(
+				'yes' => esc_html__( 'Yes', 'dialog-contact-form' ),
+				'no'  => esc_html__( 'No', 'dialog-contact-form' ),
 			)
 		) );
 	}
