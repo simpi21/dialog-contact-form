@@ -161,8 +161,12 @@ class Config {
 			$this->form_fields   = get_post_meta( $this->form_id, '_contact_form_fields', true );
 			$this->form_settings = get_post_meta( $this->form_id, '_contact_form_config', true );
 
-			$form_actions       = get_post_meta( $this->form_id, '_contact_form_actions', true );
-			$this->form_actions = isset( $form_actions['after_submit_actions'] ) ? $form_actions['after_submit_actions'] : array();
+			$form_actions = get_post_meta( $this->form_id, '_contact_form_actions', true );
+			$form_actions = isset( $form_actions['after_submit_actions'] ) ? $form_actions['after_submit_actions'] : array();
+			if ( empty( $form_actions ) ) {
+				$form_actions = array( 'email_notification', 'success_message', 'redirect' );
+			}
+			$this->form_actions = $form_actions;
 
 			$messages                  = get_post_meta( $this->form_id, '_contact_form_messages', true );
 			$this->validation_messages = wp_parse_args( $messages, $this->validation_messages );
@@ -182,7 +186,7 @@ class Config {
 			}
 
 			// If form should reset after submission
-			if ( 'no' === $this->form_settings['reset_form'] ) {
+			if ( isset( $this->form_settings['reset_form'] ) && 'no' === $this->form_settings['reset_form'] ) {
 				$this->reset_form = false;
 			}
 		}

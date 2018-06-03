@@ -153,8 +153,10 @@ if ( ! function_exists( 'dcf_default_configuration' ) ) {
 	function dcf_default_configuration() {
 		$defaults = array(
 			'labelPosition' => 'both',
-			'btnAlign'      => 'left',
 			'btnLabel'      => esc_html__( 'Send', 'dialog-contact-form' ),
+			'btnAlign'      => 'left',
+			'reset_form'    => 'yes',
+			'recaptcha'     => 'no',
 		);
 
 		return $defaults;
@@ -349,8 +351,8 @@ if ( ! function_exists( 'dcf_autocomplete_attribute_values' ) ) {
 	 */
 	function dcf_autocomplete_attribute_values() {
 		return array(
-			'off'                => __( 'Off', 'dialog-contact-form' ),
 			'on'                 => __( 'On', 'dialog-contact-form' ),
+			'off'                => __( 'Off', 'dialog-contact-form' ),
 			'name'               => __( 'Full name', 'dialog-contact-form' ),
 			'honorific-prefix'   => __( 'Prefix or title (e.g. "Mr.", "Ms.", "Dr.")', 'dialog-contact-form' ),
 			'given-name'         => __( 'First name', 'dialog-contact-form' ),
