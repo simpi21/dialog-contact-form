@@ -26,6 +26,14 @@ if ( ! function_exists( 'dcf_delete_plugin_data' ) ) {
 
 		// Delete plugin options
 		delete_option( 'dialog_contact_form' );
+
+		// Delete tables
+		global $wpdb;
+		$table_name      = $wpdb->prefix . 'dcf_entries';
+		$meta_table_name = $wpdb->prefix . 'dcf_entry_meta';
+
+		$wpdb->query( "DROP TABLE IF EXISTS {$table_name}" );
+		$wpdb->query( "DROP TABLE IF EXISTS {$meta_table_name}" );
 	}
 }
 
