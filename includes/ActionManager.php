@@ -53,6 +53,11 @@ class ActionManager implements
 		$this->add_action( 'webhook', new Webhook() );
 		$this->add_action( 'success_message', new SuccessMessage() );
 		$this->add_action( 'redirect', new Redirect() );
+
+		/**
+		 * Give other plugin option to add their own action(s)
+		 */
+		do_action( 'dialog_contact_form/actions', $this );
 	}
 
 	/**

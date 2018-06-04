@@ -22,16 +22,6 @@ class StoreSubmission extends Abstract_Action {
 	}
 
 	/**
-	 * Save action settings
-	 *
-	 * @param int $post_id
-	 * @param \WP_Post $post
-	 */
-	public function save( $post_id, $post ) {
-		// TODO: Implement save() method.
-	}
-
-	/**
 	 * Process current action
 	 *
 	 * @param \DialogContactForm\Config $config Contact form configurations
