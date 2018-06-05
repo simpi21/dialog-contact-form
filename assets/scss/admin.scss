@@ -38,12 +38,12 @@ code.mailtag.code {
 .dcf-fields-list {
 	box-sizing: border-box;
 	border: 1px solid #E0E0E0;
-	padding: 8px;
 	margin-bottom: 6px;
 	cursor: pointer;
 	min-width: 200px;
 	max-width: 100%;
 	width: 100%;
+	height: 30px;
 
 	&.is-half {
 		min-width: auto;
@@ -60,6 +60,11 @@ code.mailtag.code {
 	}
 
 	i {
+		background: #f1f1f1;
+		box-sizing: border-box;
+		padding: 8px;
 		margin-right: 5px;
+		width: 30px;
+		height: 30px;
 	}
 }

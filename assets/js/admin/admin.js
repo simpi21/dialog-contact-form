@@ -13,10 +13,12 @@
      * Update validation field name
      */
     function updateValidationFieldName() {
-        return;
         fieldList.find('.dcf-toggle').each(function (index) {
             $(this).find('input,textarea,select').each(function () {
-                $(this).attr('name', $(this).attr('name').replace(/\[\d+\]/g, '[' + index + ']'));
+                var nameAttr = $(this).attr('name');
+                if (!!nameAttr) {
+                    $(this).attr('name', nameAttr.replace(/\[\d+\]/g, '[' + index + ']'));
+                }
             });
         });
     }
