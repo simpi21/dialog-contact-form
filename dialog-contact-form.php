@@ -216,9 +216,10 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		public function init_classes() {
 
 			if ( $this->is_request( 'admin' ) ) {
-				$this->container['admin']    = \DialogContactForm\Admin::init();
-				$this->container['entries']  = \DialogContactForm\Entries\EntryManager::init();
-				$this->container['settings'] = \DialogContactForm\Settings::init();
+				$this->container['admin']     = \DialogContactForm\Admin::init();
+				$this->container['entries']   = \DialogContactForm\Entries\EntryManager::init();
+				$this->container['settings']  = \DialogContactForm\Settings::init();
+				$this->container['adminajax'] = \DialogContactForm\AdminAjax::init();
 			}
 
 			$this->container['rest']       = \DialogContactForm\RestApi::init();
@@ -259,6 +260,10 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 
 			wp_enqueue_style( $this->plugin_name . '-admin',
 				DIALOG_CONTACT_FORM_ASSETS . '/css/admin.css',
+				array( 'wp-color-picker' ), DIALOG_CONTACT_FORM_VERSION, 'all' );
+
+			wp_enqueue_style( $this->plugin_name . '-icons',
+				DIALOG_CONTACT_FORM_ASSETS . '/fontawesome/css/fontawesome-all.min.css',
 				array( 'wp-color-picker' ), DIALOG_CONTACT_FORM_VERSION, 'all' );
 
 			wp_enqueue_script( 'wp-color-picker-alpha',

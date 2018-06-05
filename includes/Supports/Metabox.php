@@ -30,6 +30,12 @@ class Metabox {
 		self::text( $args );
 	}
 
+	public static function hidden( array $args ) {
+		list( $name, $value, $input_id ) = self::field_common( $args );
+
+		echo '<input type="hidden" value="' . $value . '" id="' . $input_id . '" name="' . $name . '">';
+	}
+
 	/**
 	 * Generate text field
 	 *

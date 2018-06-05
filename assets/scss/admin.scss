@@ -15,13 +15,51 @@
 	background-color: rgba(#000, 0.1);
 }
 
-.col-addOptions,
-.col-numberOption {
-	display: none;
-}
-
 code.mailtag.code {
 	display: inline-block;
 	margin: 0 5px 5px 0;
 	padding: 5px 8px;
+}
+
+.dcf-fields-list-wrapper {
+	box-sizing: border-box;
+
+	&:before,
+	&:after {
+		display: table;
+		content: '';
+	}
+
+	&:after {
+		clear: both;
+	}
+}
+
+.dcf-fields-list {
+	box-sizing: border-box;
+	border: 1px solid #E0E0E0;
+	padding: 8px;
+	margin-bottom: 6px;
+	cursor: pointer;
+	min-width: 200px;
+	max-width: 100%;
+	width: 100%;
+
+	&.is-half {
+		min-width: auto;
+		width: calc(50% - 3px);
+
+		&.is-first {
+			float: left;
+			margin-right: 3px;
+		}
+		&.is-last {
+			float: right;
+			margin-left: 3px;
+		}
+	}
+
+	i {
+		margin-right: 5px;
+	}
 }

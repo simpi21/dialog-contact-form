@@ -38,6 +38,18 @@ abstract class Abstract_Field {
 	protected $has_error = false;
 
 	/**
+	 * Get metabox fields settings for current field type
+	 *
+	 * @var array
+	 */
+	protected $metabox_fields = array(
+		'field_type',
+		'field_id',
+		'field_title',
+		'field_width',
+	);
+
+	/**
 	 * Render field html for frontend display
 	 *
 	 * @param array $field
@@ -218,6 +230,15 @@ abstract class Abstract_Field {
 	 */
 	public function setField( $field ) {
 		$this->field = $field;
+	}
+
+	/**
+	 * Get metabox fields settings for current field type
+	 *
+	 * @return array
+	 */
+	public function getMetaboxFields() {
+		return $this->metabox_fields;
 	}
 
 	/**

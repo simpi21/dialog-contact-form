@@ -62,11 +62,12 @@ if ( ! function_exists( 'dcf_available_field_types' ) ) {
 			'time'       => esc_html__( 'Time', 'dialog-contact-form' ),
 			'hidden'     => esc_html__( 'Hidden', 'dialog-contact-form' ),
 			'ip'         => esc_html__( 'IP Address', 'dialog-contact-form' ),
-			'radio'      => esc_html__( 'Multiple choice', 'dialog-contact-form' ),
-			'select'     => esc_html__( 'Dropdown', 'dialog-contact-form' ),
-			'checkbox'   => esc_html__( 'Checkbox', 'dialog-contact-form' ),
-			'acceptance' => esc_html__( 'Acceptance', 'dialog-contact-form' ),
+			'radio'      => esc_html__( 'Radio List', 'dialog-contact-form' ),
+			'select'     => esc_html__( 'Select', 'dialog-contact-form' ),
+			'checkbox'   => esc_html__( 'Checkbox List', 'dialog-contact-form' ),
+			'acceptance' => esc_html__( 'Single Checkbox', 'dialog-contact-form' ),
 			'file'       => esc_html__( 'File', 'dialog-contact-form' ),
+			'html'       => esc_html__( 'HTML', 'dialog-contact-form' ),
 		);
 
 		return apply_filters( 'dialog_contact_form_field_types', $fieldType );

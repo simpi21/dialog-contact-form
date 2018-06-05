@@ -23,8 +23,7 @@ class Checkbox extends Abstract_Field {
 		'options',
 		'field_width',
 		'field_class',
-		// Optional
-		'inline_list'
+		'autocomplete',
 	);
 
 	/**

@@ -15,7 +15,6 @@ class Ip extends Text {
 	 * @var array
 	 */
 	protected $metabox_fields = array(
-		// Content
 		'field_type',
 		'field_title',
 		'field_id',

@@ -2,12 +2,14 @@
 
 namespace DialogContactForm\Fields;
 
+use DialogContactForm\Abstracts\Abstract_Field;
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Email extends Text {
+class Html extends Abstract_Field {
 
 	/**
 	 * Metabox fields
@@ -18,19 +20,20 @@ class Email extends Text {
 		'field_type',
 		'field_title',
 		'field_id',
-		'required_field',
-		'field_class',
 		'field_width',
-		'autocomplete',
-		'placeholder',
+		'html',
 	);
 
 	/**
-	 * Field type
+	 * Render field html for frontend display
 	 *
-	 * @var string
+	 * @param array $field
+	 *
+	 * @return string
 	 */
-	protected $type = 'email';
+	public function render( $field = array() ) {
+		// TODO: Implement render() method.
+	}
 
 	/**
 	 * Validate field value
@@ -40,17 +43,24 @@ class Email extends Text {
 	 * @return bool
 	 */
 	public function validate( $value ) {
-		return filter_var( $value, FILTER_VALIDATE_EMAIL ) !== false;
+		// TODO: Implement validate() method.
 	}
 
 	/**
 	 * Sanitize field value
 	 *
 	 * @param mixed $value
-	 *
-	 * @return string
 	 */
 	public function sanitize( $value ) {
-		return sanitize_email( $value );
+		// TODO: Implement sanitize() method.
+	}
+
+	/**
+	 * Get field value
+	 *
+	 * @return mixed
+	 */
+	protected function get_value() {
+		// TODO: Implement get_value() method.
 	}
 }

@@ -24,8 +24,6 @@ class Select extends Abstract_Field {
 		'field_width',
 		'field_id',
 		'field_class',
-		// Optional
-		'multiple_selection'
 	);
 
 	/**

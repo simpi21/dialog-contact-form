@@ -128,26 +128,35 @@
         connectToSortable: "#shaplaFieldList",
         helper: "clone",
         stop: function (event, ui) {
-            template = $('#shaplaFieldTemplate').html();
-            var type = $(this).data('type');
-            ui.helper.replaceWith(template);
-            fieldList.find(".dcf-toggle").each(function () {
-                $(this).accordion({
-                    header: '.dcf-toggle-title',
-                    collapsible: true,
-                    heightStyle: "content",
-                    active: false
-                });
+            $.ajax({
+                method: 'POST',
+                url: ajaxurl,
+                data: {
+                    action: 'dcf_field_settings',
+                    type: $(this).data('type'),
+                },
+                success: function (template) {
+                    ui.helper.replaceWith(template);
+
+                    fieldList.find(".dcf-toggle").each(function () {
+                        $(this).accordion({
+                            header: '.dcf-toggle-title',
+                            collapsible: true,
+                            heightStyle: "content",
+                            active: false
+                        });
+                    });
+                    fieldList.find(".dcf-date-picker").each(function () {
+                        $(this).datepicker({
+                            dateFormat: 'yy-mm-dd'
+                        });
+                    });
+                    fieldList.find('.dcf-field-type').each(function () {
+                        showConditionalFields.call(this);
+                    });
+                    updateValidationFieldName();
+                }
             });
-            fieldList.find(".dcf-date-picker").each(function () {
-                $(this).datepicker({
-                    dateFormat: 'yy-mm-dd'
-                });
-            });
-            fieldList.find('.dcf-field-type').each(function () {
-                showConditionalFields.call(this);
-            });
-            updateValidationFieldName();
         }
     });
 

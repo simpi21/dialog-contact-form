@@ -19,12 +19,12 @@ class Text extends Abstract_Field {
 	protected $metabox_fields = array(
 		'field_type',
 		'field_title',
-		'placeholder',
-		'required_field',
-		'field_width',
 		'field_id',
-		'field_value',
+		'required_field',
 		'field_class',
+		'field_width',
+		'autocomplete',
+		'placeholder',
 	);
 
 	/**

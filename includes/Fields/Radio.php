@@ -24,8 +24,6 @@ class Radio extends Abstract_Field {
 		'field_width',
 		'field_id',
 		'field_class',
-		// Optional
-		'inline_list'
 	);
 
 	/**
