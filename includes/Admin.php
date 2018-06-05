@@ -272,6 +272,24 @@ class Admin {
 			'side',
 			'high'
 		);
+		add_meta_box(
+			'dialog-contact-form-fields',
+			__( 'Fields', 'dialog-contact-form' ),
+			array( $this, 'form_fields' ),
+			$this->post_type,
+			'side',
+			'high'
+		);
+	}
+
+	/**
+	 * @param \WP_Post $post
+	 */
+	public function form_fields( $post ) {
+		?>
+        <div class="dcf-fields-list" data-type="text">Single Line Text</div>
+        <div class="dcf-fields-list" data-type="email">Email</div>
+		<?php
 	}
 
 	/**

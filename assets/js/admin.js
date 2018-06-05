@@ -13,6 +13,7 @@
      * Update validation field name
      */
     function updateValidationFieldName() {
+        return;
         fieldList.find('.dcf-toggle').each(function (index) {
             $(this).find('input,textarea,select').each(function () {
                 $(this).attr('name', $(this).attr('name').replace(/\[\d+\]/g, '[' + index + ']'));
@@ -120,6 +121,34 @@
             showConditionalFields.call(this);
         });
         updateValidationFieldName();
+    });
+
+    // Draggable
+    $(".dcf-fields-list").draggable({
+        connectToSortable: "#shaplaFieldList",
+        helper: "clone",
+        stop: function (event, ui) {
+            template = $('#shaplaFieldTemplate').html();
+            var type = $(this).data('type');
+            ui.helper.replaceWith(template);
+            fieldList.find(".dcf-toggle").each(function () {
+                $(this).accordion({
+                    header: '.dcf-toggle-title',
+                    collapsible: true,
+                    heightStyle: "content",
+                    active: false
+                });
+            });
+            fieldList.find(".dcf-date-picker").each(function () {
+                $(this).datepicker({
+                    dateFormat: 'yy-mm-dd'
+                });
+            });
+            fieldList.find('.dcf-field-type').each(function () {
+                showConditionalFields.call(this);
+            });
+            updateValidationFieldName();
+        }
     });
 
     // Delete Field

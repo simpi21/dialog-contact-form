@@ -278,6 +278,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 					'select2',
 					'jquery-ui-tabs',
 					'jquery-ui-sortable',
+					'jquery-ui-draggable',
 					'jquery-ui-accordion',
 					'wp-color-picker-alpha'
 				),
