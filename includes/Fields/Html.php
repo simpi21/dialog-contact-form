@@ -19,7 +19,6 @@ class Html extends Abstract_Field {
 	protected $metabox_fields = array(
 		'field_type',
 		'field_title',
-		'field_id',
 		'field_width',
 		'html',
 	);
