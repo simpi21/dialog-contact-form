@@ -112,11 +112,9 @@ class FormBuilder {
 	 * @return string
 	 */
 	public function label( $setting, $echo = true ) {
-		if ( 'hidden' == $setting['field_type'] ) {
-			return '';
-		}
+		$no_label_fields = array( 'hidden', 'acceptance', 'html' );
 
-		if ( 'acceptance' == $setting['field_type'] ) {
+		if ( in_array( $setting['field_type'], $no_label_fields ) ) {
 			return '';
 		}
 

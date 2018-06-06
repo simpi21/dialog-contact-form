@@ -31,7 +31,11 @@ class Html extends Abstract_Field {
 	 * @return string
 	 */
 	public function render( $field = array() ) {
-		// TODO: Implement render() method.
+		if ( empty( $this->field['html'] ) ) {
+			return '';
+		}
+
+		return wp_filter_post_kses( $this->field['html'] );
 	}
 
 	/**
@@ -42,16 +46,18 @@ class Html extends Abstract_Field {
 	 * @return bool
 	 */
 	public function validate( $value ) {
-		// TODO: Implement validate() method.
+		return false;
 	}
 
 	/**
 	 * Sanitize field value
 	 *
 	 * @param mixed $value
+	 *
+	 * @return null
 	 */
 	public function sanitize( $value ) {
-		// TODO: Implement sanitize() method.
+		return null;
 	}
 
 	/**
@@ -60,6 +66,6 @@ class Html extends Abstract_Field {
 	 * @return mixed
 	 */
 	protected function get_value() {
-		// TODO: Implement get_value() method.
+		return null;
 	}
 }
