@@ -23,6 +23,7 @@ class Time extends Text {
 		'field_id',
 		'field_class',
 		'native_html5',
+		'autocomplete',
 	);
 
 	/**

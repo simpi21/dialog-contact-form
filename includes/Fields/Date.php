@@ -22,6 +22,7 @@ class Date extends Text {
 		'field_width',
 		'field_id',
 		'field_class',
+		'autocomplete',
 		'min_date',
 		'max_date',
 		'native_html5',

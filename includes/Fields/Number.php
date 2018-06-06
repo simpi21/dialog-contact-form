@@ -28,6 +28,7 @@ class Number extends Abstract_Field {
 		'number_step',
 		'field_value',
 		'field_class',
+		'autocomplete',
 	);
 
 	/**

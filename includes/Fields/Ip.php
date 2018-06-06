@@ -23,6 +23,7 @@ class Ip extends Text {
 		'field_width',
 		'field_value',
 		'field_class',
+		'autocomplete',
 	);
 
 	/**

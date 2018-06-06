@@ -428,6 +428,7 @@ class Admin {
 					'validation'         => isset( $field['validation'] ) ? self::sanitize_value( $field['validation'] ) : array(),
 					'placeholder'        => isset( $field['placeholder'] ) ? sanitize_text_field( $field['placeholder'] ) : '',
 					'error_message'      => isset( $field['error_message'] ) ? sanitize_text_field( $field['error_message'] ) : '',
+					'autocomplete'       => isset( $field['autocomplete'] ) ? sanitize_text_field( $field['autocomplete'] ) : '',
 					// Acceptance Field
 					'acceptance_text'    => isset( $field['acceptance_text'] ) ? wp_kses_post( $field['acceptance_text'] ) : '',
 					'checked_by_default' => isset( $field['checked_by_default'] ) ? sanitize_text_field( $field['checked_by_default'] ) : '',

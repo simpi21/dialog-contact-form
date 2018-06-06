@@ -25,7 +25,8 @@ class Textarea extends Abstract_Field {
 		'field_id',
 		'field_value',
 		'field_class',
-		'rows'
+		'rows',
+		'autocomplete',
 	);
 
 	/**

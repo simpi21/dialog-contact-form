@@ -23,6 +23,7 @@ class Url extends Text {
 		'field_id',
 		'field_value',
 		'field_class',
+		'autocomplete',
 	);
 
 	/**

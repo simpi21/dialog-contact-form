@@ -25,11 +25,21 @@ class Metabox {
 		echo self::field_after();
 	}
 
+	/**
+	 * Generate number field
+	 *
+	 * @param array $args
+	 */
 	public static function number( array $args ) {
 		$args['type'] = 'number';
 		self::text( $args );
 	}
 
+	/**
+	 * Generate hidden field
+	 *
+	 * @param array $args
+	 */
 	public static function hidden( array $args ) {
 		list( $name, $value, $input_id ) = self::field_common( $args );
 

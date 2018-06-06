@@ -294,7 +294,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'position'    => $_field_number,
 							'meta_key'    => '_contact_form_fields',
 							'label'       => __( 'Autocomplete', 'dialog-contact-form' ),
-							'options'     => array()
+							'options'     => dcf_autocomplete_attribute_values()
 						),
 						'html'               => array(
 							'type'        => 'textarea',
