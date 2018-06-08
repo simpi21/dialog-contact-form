@@ -39,17 +39,9 @@ class Text extends Abstract_Field {
 			$this->setField( $field );
 		}
 
-		$html = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" value="%4$s" type="%5$s" %6$s %7$s>',
-			$this->get_id(),
-			$this->get_class( 'input' ),
-			$this->get_name(),
-			$this->get_value(),
-			$this->get_type(),
-			$this->get_placeholder_attribute(),
-			$this->get_required_attribute()
-		);
+		$this->input_class = 'input';
 
-		return $html;
+		return '<input ' . $this->generate_attributes() . '>';
 	}
 
 	/**

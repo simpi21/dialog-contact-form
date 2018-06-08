@@ -50,6 +50,13 @@ abstract class Abstract_Field {
 	);
 
 	/**
+	 * Input CSS class
+	 *
+	 * @var string
+	 */
+	protected $input_class;
+
+	/**
 	 * Render field html for frontend display
 	 *
 	 * @param array $field
@@ -84,11 +91,11 @@ abstract class Abstract_Field {
 	/**
 	 * Generate input attribute
 	 *
-	 * @param bool $echo
+	 * @param bool $string
 	 *
 	 * @return array|string
 	 */
-	protected function generate_attributes( $echo = true ) {
+	protected function generate_attributes( $string = true ) {
 		$input_type = $this->get_type();
 		$attributes = array(
 			'type'         => $input_type,
@@ -96,9 +103,12 @@ abstract class Abstract_Field {
 			'class'        => $this->get_class(),
 			'name'         => $this->get_name(),
 			'placeholder'  => $this->get_placeholder(),
-			'value'        => $this->get_value(),
 			'autocomplete' => $this->get_autocomplete(),
 		);
+
+		if ( ! in_array( $input_type, array( 'textarea', 'file' ) ) ) {
+			$attributes['value'] = $this->get_value();
+		}
 
 		if ( ! in_array( $input_type, array( 'hidden', 'image', 'submit', 'reset', 'button' ) ) ) {
 			$attributes['required'] = $this->is_required();
@@ -127,11 +137,34 @@ abstract class Abstract_Field {
 			$attributes['tabindex']   = '-1';
 		}
 
-		if ( ! $echo ) {
-			return $attributes;
+		if ( ! $string ) {
+			return array_filter( $attributes );
 		}
 
-		echo $attributes;
+		$string = array_map( function ( $key, $value ) {
+			if ( empty( $value ) && 'value' !== $key ) {
+				return null;
+			}
+			if ( in_array( $key, array( 'required', 'checked' ) ) && $value ) {
+				return $key;
+			}
+
+			// If boolean value
+			if ( is_bool( $value ) ) {
+				return sprintf( '%s="%s"', $key, $value ? 'true' : 'false' );
+			}
+
+			// If array value
+			if ( is_array( $value ) ) {
+				return sprintf( '%s="%s"', $key, implode( " ", $value ) );
+			}
+
+			// If string value
+			return sprintf( '%s="%s"', $key, esc_attr( $value ) );
+
+		}, array_keys( $attributes ), array_values( $attributes ) );
+
+		return implode( ' ', array_filter( $string ) );
 	}
 
 	/**
@@ -160,7 +193,10 @@ abstract class Abstract_Field {
 	 * @return string
 	 */
 	protected function get_class( $default = '' ) {
-		$class = $default;
+		if ( ! empty( $default ) ) {
+			$this->input_class = $default;
+		}
+		$class = $this->input_class;
 		if ( ! empty( $this->field['field_class'] ) ) {
 			$class = $this->field['field_class'];
 		}
