@@ -49,11 +49,11 @@ class Number extends Abstract_Field {
 			$this->get_class( 'input' ),
 			$this->get_name(),
 			$this->get_value(),
-			$this->get_placeholder(),
+			$this->get_placeholder_attribute(),
 			$this->get_min_attribute(),
 			$this->get_max_attribute(),
 			$this->get_step_attribute(),
-			$this->get_required()
+			$this->get_required_attribute()
 		);
 
 		return $html;

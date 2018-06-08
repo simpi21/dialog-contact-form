@@ -46,8 +46,8 @@ class Textarea extends Abstract_Field {
 			$this->get_class( 'textarea' ),
 			$this->get_name(),
 			$this->get_value(),
-			$this->get_placeholder(),
-			$this->get_required(),
+			$this->get_placeholder_attribute(),
+			$this->get_required_attribute(),
 			$this->get_rows_attribute()
 		);
 

@@ -45,7 +45,7 @@ class Select extends Abstract_Field {
 			'<select id="%1$s" class="%4$s" name="%2$s" %3$s>',
 			$this->get_id(),
 			$this->get_name(),
-			$this->get_required(),
+			$this->get_required_attribute(),
 			$this->get_class( 'select' )
 		);
 

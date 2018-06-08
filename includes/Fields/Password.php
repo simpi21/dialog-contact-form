@@ -49,8 +49,8 @@ class Password extends Text {
 			$this->get_class( 'input' ),
 			$this->get_name(),
 			$this->get_type(),
-			$this->get_placeholder(),
-			$this->get_required()
+			$this->get_placeholder_attribute(),
+			$this->get_required_attribute()
 		);
 
 		return $html;

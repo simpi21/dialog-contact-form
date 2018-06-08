@@ -51,7 +51,7 @@ class File extends Abstract_Field {
 			$name_attribute,
 			$this->get_multiple_attribute(),
 			$this->get_accept_attribute(),
-			$this->get_required()
+			$this->get_required_attribute()
 		);
 
 		return $html;

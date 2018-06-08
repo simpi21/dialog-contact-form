@@ -47,7 +47,7 @@ class Acceptance extends Text {
 			$this->get_id(),
 			$this->get_name(),
 			$this->get_acceptance_text(),
-			$this->get_required(),
+			$this->get_required_attribute(),
 			( 'on' == $value ) ? ' checked' : ''
 		);
 

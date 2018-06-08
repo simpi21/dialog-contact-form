@@ -24,6 +24,7 @@ class Radio extends Abstract_Field {
 		'field_width',
 		'field_id',
 		'field_class',
+		'autocomplete',
 	);
 
 	/**
@@ -48,7 +49,7 @@ class Radio extends Abstract_Field {
 				$this->get_name(),
 				esc_attr( $option ),
 				$checked,
-				$this->get_required(),
+				$this->get_required_attribute(),
 				$this->get_class( 'dcf-radio-container' ),
 				$radio_id
 			);

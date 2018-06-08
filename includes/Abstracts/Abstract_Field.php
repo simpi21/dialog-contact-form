@@ -82,6 +82,59 @@ abstract class Abstract_Field {
 	abstract protected function get_value();
 
 	/**
+	 * Generate input attribute
+	 *
+	 * @param bool $echo
+	 *
+	 * @return array|string
+	 */
+	protected function generate_attributes( $echo = true ) {
+		$input_type = $this->get_type();
+		$attributes = array(
+			'type'         => $input_type,
+			'id'           => $this->get_id(),
+			'class'        => $this->get_class(),
+			'name'         => $this->get_name(),
+			'placeholder'  => $this->get_placeholder(),
+			'value'        => $this->get_value(),
+			'autocomplete' => $this->get_autocomplete(),
+		);
+
+		if ( ! in_array( $input_type, array( 'hidden', 'image', 'submit', 'reset', 'button' ) ) ) {
+			$attributes['required'] = $this->is_required();
+		}
+
+		if ( 'file' === $input_type ) {
+			$attributes['accept'] = $this->get_accept();
+		}
+
+		if ( 'radio' === $input_type || 'checkbox' === $input_type ) {
+			// $attributes['checked'] = $this->get_checked();
+		}
+
+		if ( 'number' === $input_type ) {
+			// $attributes['max'] = $this->get_max();
+			// $attributes['min'] = $this->get_min();
+			// $attributes['step'] = $this->get_step();
+		}
+
+		if ( 'email' === $input_type || 'file' === $input_type ) {
+			// $attributes['multiple'] = $this->get_multiple();
+		}
+
+		if ( 'hidden' === $input_type ) {
+			$attributes['spellcheck'] = false;
+			$attributes['tabindex']   = '-1';
+		}
+
+		if ( ! $echo ) {
+			return $attributes;
+		}
+
+		echo $attributes;
+	}
+
+	/**
 	 * Get field name attribute
 	 *
 	 * @return string
@@ -129,7 +182,54 @@ abstract class Abstract_Field {
 			return '';
 		}
 
+		return esc_attr( $this->field['placeholder'] );
+	}
+
+	/**
+	 * Generate placeholder attribute for current field
+	 *
+	 * @return string
+	 */
+	protected function get_placeholder_attribute() {
+		if ( empty( $this->field['placeholder'] ) ) {
+			return '';
+		}
+
 		return sprintf( ' placeholder="%s"', esc_attr( $this->field['placeholder'] ) );
+	}
+
+	/**
+	 * Generate autocomplete for current field
+	 *
+	 * @return string
+	 */
+	public function get_autocomplete() {
+		if ( empty( $this->field['autocomplete'] ) ) {
+			return '';
+		}
+
+		return esc_attr( $this->field['autocomplete'] );
+	}
+
+	/**
+	 * Check current field is required
+	 *
+	 * @return bool
+	 */
+	public function is_required() {
+		if ( empty( $this->field['required_field'] ) ) {
+			return false;
+		}
+
+		if ( 'on' == $this->field['required_field'] ) {
+			return true;
+		}
+		// Backward compatibility
+		if ( is_array( $this->field['validation'] ) && in_array( 'required', $this->field['validation'] ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -137,7 +237,7 @@ abstract class Abstract_Field {
 	 *
 	 * @return string
 	 */
-	protected function get_required() {
+	protected function get_required_attribute() {
 		if ( ! empty( $this->field['required_field'] ) ) {
 			if ( 'on' == $this->field['required_field'] ) {
 				return ' required';
@@ -162,6 +262,33 @@ abstract class Abstract_Field {
 	 */
 	public function get_type() {
 		return $this->type;
+	}
+
+	/**
+	 * Get accept for file field
+	 *
+	 * @return string
+	 */
+	private function get_accept() {
+		if ( 'file' !== $this->get_type() ) {
+			return '';
+		}
+
+		$mimes              = array();
+		$allowed_mime_types = get_allowed_mime_types();
+
+		$file_types = $this->field['allowed_file_types'] ? $this->field['allowed_file_types'] : array();
+		foreach ( $file_types as $file_type ) {
+			if ( isset( $allowed_mime_types[ $file_type ] ) ) {
+				$mimes[] = $allowed_mime_types[ $file_type ];
+			}
+		}
+
+		if ( $mimes ) {
+			return implode( ',', $mimes );
+		}
+
+		return '';
 	}
 
 	/**

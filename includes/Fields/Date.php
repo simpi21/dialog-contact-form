@@ -51,8 +51,8 @@ class Date extends Text {
 			$this->get_name(),
 			$this->get_value(),
 			$type,
-			$this->get_placeholder(),
-			$this->get_required(),
+			$this->get_placeholder_attribute(),
+			$this->get_required_attribute(),
 			$this->get_min_date(),
 			$this->get_max_date()
 		);
