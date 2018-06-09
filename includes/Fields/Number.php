@@ -32,6 +32,20 @@ class Number extends Abstract_Field {
 	);
 
 	/**
+	 * Field type
+	 *
+	 * @var string
+	 */
+	protected $type = 'number';
+
+	/**
+	 * Input CSS class
+	 *
+	 * @var string
+	 */
+	protected $input_class = 'input';
+
+	/**
 	 * Render field html for frontend display
 	 *
 	 * @param array $field
@@ -43,20 +57,7 @@ class Number extends Abstract_Field {
 			$this->setField( $field );
 		}
 
-		$html = sprintf(
-			'<input id="%1$s" class="%2$s" name="%3$s" value="%4$s" type="number" %5$s %6$s %7$s %8$s %9$s>',
-			$this->get_id(),
-			$this->get_class( 'input' ),
-			$this->get_name(),
-			$this->get_value(),
-			$this->get_placeholder_attribute(),
-			$this->get_min_attribute(),
-			$this->get_max_attribute(),
-			$this->get_step_attribute(),
-			$this->get_required_attribute()
-		);
-
-		return $html;
+		return '<input ' . $this->generate_attributes() . '>';
 	}
 
 	/**

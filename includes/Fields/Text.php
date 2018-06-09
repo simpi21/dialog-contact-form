@@ -28,6 +28,13 @@ class Text extends Abstract_Field {
 	);
 
 	/**
+	 * Input CSS class
+	 *
+	 * @var string
+	 */
+	protected $input_class = 'input';
+
+	/**
 	 * Render field html for frontend display
 	 *
 	 * @param array $field
@@ -38,8 +45,6 @@ class Text extends Abstract_Field {
 		if ( ! empty( $field ) ) {
 			$this->setField( $field );
 		}
-
-		$this->input_class = 'input';
 
 		return '<input ' . $this->generate_attributes() . '>';
 	}

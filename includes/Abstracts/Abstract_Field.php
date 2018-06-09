@@ -106,30 +106,27 @@ abstract class Abstract_Field {
 			'autocomplete' => $this->get_autocomplete(),
 		);
 
-		if ( ! in_array( $input_type, array( 'textarea', 'file' ) ) ) {
+		if ( ! in_array( $input_type, array( 'textarea', 'file', 'password' ) ) ) {
 			$attributes['value'] = $this->get_value();
-		}
-
-		if ( ! in_array( $input_type, array( 'hidden', 'image', 'submit', 'reset', 'button' ) ) ) {
-			$attributes['required'] = $this->is_required();
 		}
 
 		if ( 'file' === $input_type ) {
 			$attributes['accept'] = $this->get_accept();
 		}
 
+		if ( 'number' === $input_type ) {
+			$attributes['max']  = $this->get_max();
+			$attributes['min']  = $this->get_min();
+			$attributes['step'] = $this->get_step();
+		}
+
+		if ( 'date' === $input_type ) {
+			$attributes['max'] = $this->get_max_date();
+			$attributes['min'] = $this->get_min_date();
+		}
+
 		if ( 'radio' === $input_type || 'checkbox' === $input_type ) {
 			// $attributes['checked'] = $this->get_checked();
-		}
-
-		if ( 'number' === $input_type ) {
-			// $attributes['max'] = $this->get_max();
-			// $attributes['min'] = $this->get_min();
-			// $attributes['step'] = $this->get_step();
-		}
-
-		if ( 'email' === $input_type || 'file' === $input_type ) {
-			// $attributes['multiple'] = $this->get_multiple();
 		}
 
 		if ( 'hidden' === $input_type ) {
@@ -137,15 +134,34 @@ abstract class Abstract_Field {
 			$attributes['tabindex']   = '-1';
 		}
 
-		if ( ! $string ) {
-			return array_filter( $attributes );
+		if ( 'email' === $input_type || 'file' === $input_type ) {
+			$attributes['multiple'] = $this->get_multiple();
 		}
 
+		if ( ! in_array( $input_type, array( 'hidden', 'image', 'submit', 'reset', 'button' ) ) ) {
+			$attributes['required'] = $this->is_required();
+		}
+
+		if ( $string ) {
+			return $this->array_to_attributes( $attributes );
+		}
+
+		return array_filter( $attributes );
+	}
+
+	/**
+	 * Convert array to input attributes
+	 *
+	 * @param array $attributes
+	 *
+	 * @return string
+	 */
+	protected function array_to_attributes( $attributes ) {
 		$string = array_map( function ( $key, $value ) {
 			if ( empty( $value ) && 'value' !== $key ) {
 				return null;
 			}
-			if ( in_array( $key, array( 'required', 'checked' ) ) && $value ) {
+			if ( in_array( $key, array( 'required', 'checked', 'multiple' ) ) && $value ) {
 				return $key;
 			}
 
@@ -292,6 +308,63 @@ abstract class Abstract_Field {
 	}
 
 	/**
+	 * Get min attribute
+	 *
+	 * @return string
+	 */
+	protected function get_min() {
+		if ( empty( $this->field['number_min'] ) ) {
+			return '';
+		}
+
+		return floatval( $this->field['number_min'] );
+	}
+
+	/**
+	 * Get max attribute
+	 *
+	 * @return string
+	 */
+	protected function get_max() {
+		if ( empty( $this->field['number_max'] ) ) {
+			return '';
+		}
+
+		return floatval( $this->field['number_max'] );
+	}
+
+	/**
+	 * Get step attribute
+	 *
+	 * @return string
+	 */
+	protected function get_step() {
+		if ( empty( $this->field['number_step'] ) ) {
+			return '';
+		}
+
+		return floatval( $this->field['number_step'] );
+	}
+
+	/**
+	 * Get min date
+	 *
+	 * @return string
+	 */
+	protected function get_min_date() {
+		return '';
+	}
+
+	/**
+	 * Get max date
+	 *
+	 * @return string
+	 */
+	protected function get_max_date() {
+		return '';
+	}
+
+	/**
 	 * Get field type
 	 *
 	 * @return string
@@ -415,5 +488,14 @@ abstract class Abstract_Field {
 		$value = preg_replace( '/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $value );
 
 		return empty( $value );
+	}
+
+	/**
+	 * Check if field support multiple file upload
+	 *
+	 * @return bool
+	 */
+	protected function get_multiple() {
+		return ( isset( $this->field['multiple'] ) && 'on' === $this->field['multiple'] );
 	}
 }

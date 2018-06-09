@@ -23,6 +23,7 @@ class Email extends Text {
 		'field_width',
 		'autocomplete',
 		'placeholder',
+		'multiple',
 	);
 
 	/**

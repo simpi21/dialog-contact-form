@@ -31,8 +31,14 @@ class Metabox {
 	 * @param array $args
 	 */
 	public static function number( array $args ) {
-		$args['type'] = 'number';
-		self::text( $args );
+		list( $name, $value, $input_id ) = self::field_common( $args );
+		$class = isset( $args['input_class'] ) ? esc_attr( $args['input_class'] ) : 'dcf-input-text';
+		$step  = isset( $args['step'] ) ? 'step="' . esc_attr( $args['step'] ) . '"' : '';
+
+		echo self::field_before( $args );
+		echo sprintf( '<input type="number" class="' . $class . '" value="%1$s" id="' . $input_id . '" name="%3$s" ' . $step . '>',
+			$value, $args['id'], $name );
+		echo self::field_after();
 	}
 
 	/**

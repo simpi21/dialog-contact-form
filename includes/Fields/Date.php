@@ -35,29 +35,23 @@ class Date extends Text {
 	 */
 	protected $type = 'date';
 
+	/**
+	 * Render field html for frontend display
+	 *
+	 * @param array $field
+	 *
+	 * @return string
+	 */
 	public function render( $field = array() ) {
 		if ( ! empty( $field ) ) {
 			$this->setField( $field );
 		}
 
-		$type = $this->get_type();
 		if ( ! $this->is_html_date() ) {
-			$type = 'text';
+			$this->type = 'text';
 		}
 
-		$html = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" value="%4$s" type="%5$s" %6$s %7$s %8$s %9$s>',
-			$this->get_id(),
-			$this->get_class( 'input' ),
-			$this->get_name(),
-			$this->get_value(),
-			$type,
-			$this->get_placeholder_attribute(),
-			$this->get_required_attribute(),
-			$this->get_min_date(),
-			$this->get_max_date()
-		);
-
-		return $html;
+		return '<input ' . $this->generate_attributes() . '>';
 	}
 
 	/**
@@ -95,7 +89,7 @@ class Date extends Text {
 			return '';
 		}
 
-		return sprintf( ' min="%s"', $this->field['min_date'] );
+		return esc_attr( $this->field['min_date'] );
 	}
 
 	/**
@@ -112,7 +106,7 @@ class Date extends Text {
 			return '';
 		}
 
-		return sprintf( ' max="%s"', $this->field['max_date'] );
+		return esc_attr( $this->field['max_date'] );
 	}
 
 	/**

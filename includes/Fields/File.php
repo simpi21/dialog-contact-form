@@ -25,7 +25,7 @@ class File extends Abstract_Field {
 		'field_width',
 		'max_file_size',
 		'allowed_file_types',
-		'multiple_files',
+		'multiple',
 	);
 
 	/**
@@ -163,6 +163,6 @@ class File extends Abstract_Field {
 	 * @return bool
 	 */
 	private function is_multiple() {
-		return ( isset( $this->field['multiple_files'] ) && 'on' === $this->field['multiple_files'] );
+		return ( isset( $this->field['multiple'] ) && 'on' === $this->field['multiple'] );
 	}
 }
