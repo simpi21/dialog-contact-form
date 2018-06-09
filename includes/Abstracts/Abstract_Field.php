@@ -151,7 +151,7 @@ abstract class Abstract_Field {
 			'placeholder' => $this->get_placeholder(),
 		);
 
-		if ( 'textarea' !== $input_type ) {
+		if ( ! in_array( $input_type, array( 'textarea', 'select' ) ) ) {
 			$attributes['type'] = $input_type;
 		}
 
@@ -163,7 +163,7 @@ abstract class Abstract_Field {
 			$attributes['autocomplete'] = $this->get_autocomplete();
 		}
 
-		if ( ! in_array( $input_type, array( 'textarea', 'file', 'password' ) ) ) {
+		if ( ! in_array( $input_type, array( 'textarea', 'file', 'password', 'select' ) ) ) {
 			$attributes['value'] = $this->get_value();
 		}
 
@@ -180,10 +180,6 @@ abstract class Abstract_Field {
 		if ( 'date' === $input_type ) {
 			$attributes['max'] = $this->get_max_date();
 			$attributes['min'] = $this->get_min_date();
-		}
-
-		if ( 'radio' === $input_type || 'checkbox' === $input_type ) {
-			// $attributes['checked'] = $this->get_checked();
 		}
 
 		if ( 'hidden' === $input_type ) {
@@ -301,7 +297,17 @@ abstract class Abstract_Field {
 	 *
 	 * @return mixed
 	 */
-	abstract protected function get_value();
+	protected function get_value() {
+		if ( isset( $_POST[ $this->field['field_name'] ] ) ) {
+			return esc_attr( $_POST[ $this->field['field_name'] ] );
+		}
+
+		if ( ! empty( $this->field['field_value'] ) ) {
+			return esc_attr( $this->field['field_value'] );
+		}
+
+		return null;
+	}
 
 	/**
 	 * Get accept for file field
@@ -449,42 +455,6 @@ abstract class Abstract_Field {
 		}, array_keys( $attributes ), array_values( $attributes ) );
 
 		return implode( ' ', array_filter( $string ) );
-	}
-
-	/**
-	 * Generate placeholder attribute for current field
-	 *
-	 * @return string
-	 */
-	protected function get_placeholder_attribute() {
-		if ( empty( $this->field['placeholder'] ) ) {
-			return '';
-		}
-
-		return sprintf( ' placeholder="%s"', esc_attr( $this->field['placeholder'] ) );
-	}
-
-	/**
-	 * Get required attribute text
-	 *
-	 * @return string
-	 */
-	protected function get_required_attribute() {
-		if ( ! empty( $this->field['required_field'] ) ) {
-			if ( 'on' == $this->field['required_field'] ) {
-				return ' required';
-			}
-			if ( 'off' == $this->field['required_field'] ) {
-				return '';
-			}
-		}
-
-		// Backward compatibility
-		if ( is_array( $this->field['validation'] ) && in_array( 'required', $this->field['validation'] ) ) {
-			return ' required';
-		}
-
-		return '';
 	}
 
 	/**

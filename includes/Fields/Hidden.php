@@ -31,13 +31,13 @@ class Hidden extends Text {
 	/**
 	 * Get field value
 	 *
-	 * @return mixed
+	 * @return string
 	 */
 	protected function get_value() {
-		if ( empty( $this->field['field_value'] ) ) {
-			return '';
+		if ( ! empty( $this->field['field_value'] ) ) {
+			return esc_attr( $this->field['field_value'] );
 		}
 
-		return esc_attr( $this->field['field_value'] );
+		return '';
 	}
 }

@@ -21,9 +21,7 @@ class Ip extends Text {
 		'placeholder',
 		'required_field',
 		'field_width',
-		'field_value',
 		'field_class',
-		'autocomplete',
 	);
 
 	/**

@@ -89,10 +89,14 @@ class Textarea extends Abstract_Field {
 	 * @return mixed
 	 */
 	protected function get_value() {
-		if ( empty( $_POST[ $this->field['field_name'] ] ) ) {
-			return null;
+		if ( isset( $_POST[ $this->field['field_name'] ] ) ) {
+			return esc_textarea( $_POST[ $this->field['field_name'] ] );
 		}
 
-		return esc_textarea( $_POST[ $this->field['field_name'] ] );
+		if ( ! empty( $this->field['field_value'] ) ) {
+			return esc_textarea( $this->field['field_value'] );
+		}
+
+		return null;
 	}
 }

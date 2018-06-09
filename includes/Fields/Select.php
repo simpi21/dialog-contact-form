@@ -12,6 +12,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Select extends Abstract_Field {
 
 	/**
+	 * Field type
+	 *
+	 * @var string
+	 */
+	protected $type = 'select';
+
+	/**
+	 * Input CSS class
+	 *
+	 * @var string
+	 */
+	protected $input_class = 'dcf-select';
+
+	/**
 	 * Metabox fields
 	 *
 	 * @var array
@@ -24,7 +38,9 @@ class Select extends Abstract_Field {
 		'field_width',
 		'field_id',
 		'field_class',
+		'field_value',
 		'autocomplete',
+		'placeholder',
 	);
 
 	/**
@@ -38,23 +54,24 @@ class Select extends Abstract_Field {
 		if ( ! empty( $field ) ) {
 			$this->setField( $field );
 		}
-		$options = $this->get_options();
+		$options    = $this->get_options();
+		$value      = $this->get_value();
+		$attributes = $this->build_attributes( false );
+
+		if ( ! empty( $this->field['placeholder'] ) ) {
+			unset( $attributes['placeholder'] );
+			$attributes['data-placeholder'] = $this->get_placeholder();
+		}
 
 		$html = '<div class="dcf-select-container">';
-		$html .= sprintf(
-			'<select id="%1$s" class="%4$s" name="%2$s" %3$s>',
-			$this->get_id(),
-			$this->get_name(),
-			$this->get_required_attribute(),
-			$this->get_class( 'select' )
-		);
+		$html .= '<select ' . $this->array_to_attributes( $attributes ) . '>';
 
 		if ( ! empty( $this->field['placeholder'] ) ) {
 			$html .= sprintf( '<option value="">%s</option>', esc_attr( $this->field['placeholder'] ) );
 		}
 		foreach ( $options as $option ) {
 			$option   = trim( $option );
-			$selected = ( $this->get_value() == $option ) ? ' selected' : '';
+			$selected = ( $value == $option ) ? ' selected' : '';
 			$html     .= sprintf( '<option value="%1$s" %2$s>%1$s</option>', esc_attr( $option ), $selected );
 		}
 		$html .= '</select>';
@@ -87,18 +104,5 @@ class Select extends Abstract_Field {
 		}
 
 		return '';
-	}
-
-	/**
-	 * Get field value
-	 *
-	 * @return mixed
-	 */
-	protected function get_value() {
-		if ( empty( $_POST[ $this->field['field_name'] ] ) ) {
-			return null;
-		}
-
-		return esc_attr( $_POST[ $this->field['field_name'] ] );
 	}
 }

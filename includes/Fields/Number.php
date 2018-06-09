@@ -85,17 +85,4 @@ class Number extends Abstract_Field {
 
 		return intval( $value );
 	}
-
-	/**
-	 * Get field value
-	 *
-	 * @return mixed
-	 */
-	protected function get_value() {
-		if ( empty( $_POST[ $this->field['field_name'] ] ) ) {
-			return null;
-		}
-
-		return esc_attr( $_POST[ $this->field['field_name'] ] );
-	}
 }
