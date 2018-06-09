@@ -29,6 +29,13 @@ class File extends Abstract_Field {
 	);
 
 	/**
+	 * Field type
+	 *
+	 * @var string
+	 */
+	protected $type = 'file';
+
+	/**
 	 * Render field html for frontend display
 	 *
 	 * @param array $field
@@ -40,21 +47,15 @@ class File extends Abstract_Field {
 			$this->setField( $field );
 		}
 
-		$name_attribute = $this->get_name();
+		$attributes = $this->build_attributes( false );
+
 		if ( $this->is_multiple() ) {
-			$name_attribute = $name_attribute . '[]';
+			$attributes['name'] = $this->get_name() . '[]';
 		}
 
-		$html = sprintf( '<input id="%1$s" class="%2$s" name="%3$s" type="file" %4$s %5$s %6$s>',
-			$this->get_id(),
-			$this->get_class( 'file' ),
-			$name_attribute,
-			$this->get_multiple_attribute(),
-			$this->get_accept_attribute(),
-			$this->get_required_attribute()
-		);
+		$attributes = $this->array_to_attributes( $attributes );
 
-		return $html;
+		return '<input ' . $attributes . '>';
 	}
 
 	/**
@@ -119,50 +120,5 @@ class File extends Abstract_Field {
 		}
 
 		return $mime_types ? $mime_types : $allowed_mime_types;
-	}
-
-	/**
-	 * Get accept attribute
-	 *
-	 * @return string
-	 */
-	private function get_accept_attribute() {
-		$mimes              = array();
-		$allowed_mime_types = get_allowed_mime_types();
-
-		$file_types = $this->field['allowed_file_types'] ? $this->field['allowed_file_types'] : array();
-		foreach ( $file_types as $file_type ) {
-			if ( isset( $allowed_mime_types[ $file_type ] ) ) {
-				$mimes[] = $allowed_mime_types[ $file_type ];
-			}
-		}
-
-		if ( $mimes ) {
-			return ' accept="' . implode( ',', $mimes ) . '"';
-		}
-
-		return '';
-	}
-
-	/**
-	 * Get multiple file attribute
-	 *
-	 * @return string
-	 */
-	private function get_multiple_attribute() {
-		if ( $this->is_multiple() ) {
-			return ' multiple="true"';
-		}
-
-		return '';
-	}
-
-	/**
-	 * Check if field support multiple file upload
-	 *
-	 * @return bool
-	 */
-	private function is_multiple() {
-		return ( isset( $this->field['multiple'] ) && 'on' === $this->field['multiple'] );
 	}
 }

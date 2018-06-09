@@ -12,6 +12,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Radio extends Abstract_Field {
 
 	/**
+	 * Field type
+	 *
+	 * @var string
+	 */
+	protected $type = 'radio';
+
+	/**
+	 * Input CSS class
+	 *
+	 * @var string
+	 */
+	protected $input_class = 'dcf-radio';
+
+	/**
 	 * Metabox fields
 	 *
 	 * @var array
@@ -39,20 +53,32 @@ class Radio extends Abstract_Field {
 			$this->setField( $field );
 		}
 
+		$id    = $this->get_id();
+		$value = $this->get_value();
+		$class = $this->get_class();
+		$name  = $this->get_name();
+
 		$html = '';
 		foreach ( $this->get_options() as $option ) {
-			$option   = trim( $option );
-			$checked  = ( $this->get_value() == $option ) ? ' checked' : '';
-			$radio_id = $this->get_id() . '-' . sanitize_title_with_dashes( $option );
-			$html     .= sprintf(
-				'<label for="%6$s" class="%5$s"><input type="radio" id="%6$s" name="%1$s" value="%2$s"%3$s%4$s> %2$s</label>',
-				$this->get_name(),
-				esc_attr( $option ),
-				$checked,
-				$this->get_required_attribute(),
-				$this->get_class( 'dcf-radio-container' ),
-				$radio_id
+			$option = trim( $option );
+			if ( empty( $option ) ) {
+				continue;
+			}
+
+			$radio_id   = sanitize_title_with_dashes( $id . '_' . $option );
+			$attributes = array(
+				'type'     => 'radio',
+				'id'       => $radio_id,
+				'class'    => $class,
+				'name'     => $name,
+				'value'    => esc_attr( $option ),
+				'required' => $this->is_required(),
+				'checked'  => ( $option === $value ),
 			);
+
+			$html .= '<label for="' . $radio_id . '" class="dcf-radio-container">';
+			$html .= '<input ' . $this->array_to_attributes( $attributes ) . '> ' . esc_attr( $option );
+			$html .= '</label>';
 		}
 
 		return $html;

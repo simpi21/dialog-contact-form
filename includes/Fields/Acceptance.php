@@ -10,6 +10,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Acceptance extends Text {
 
 	/**
+	 * Field type
+	 *
+	 * @var string
+	 */
+	protected $type = 'checkbox';
+
+	/**
+	 * Input CSS class
+	 *
+	 * @var string
+	 */
+	protected $input_class = 'dcf-checkbox';
+
+	/**
 	 * Metabox fields
 	 *
 	 * @var array
@@ -41,15 +55,16 @@ class Acceptance extends Text {
 			$value = 'on';
 		}
 
-		$html = sprintf( '<input type="hidden" name="%s" value="off">', $this->get_name() );
-		$html .= sprintf(
-			'<label class="dcf-checkbox-container"><input type="checkbox" id="%1$s" name="%2$s" value="on" %4$s %5$s> %3$s</label>',
-			$this->get_id(),
-			$this->get_name(),
-			$this->get_acceptance_text(),
-			$this->get_required_attribute(),
-			( 'on' == $value ) ? ' checked' : ''
-		);
+		$attributes          = $this->build_attributes( false );
+		$attributes['value'] = 'on';
+		if ( 'on' == $value ) {
+			$attributes['checked'] = true;
+		}
+
+		$html = '<input type="hidden" name="' . $this->get_name() . '" value="off">';
+		$html .= '<label class="dcf-checkbox-container">';
+		$html .= '<input ' . $this->array_to_attributes( $attributes ) . '> ' . $this->get_acceptance_text();
+		$html .= '</label>';
 
 		return $html;
 	}

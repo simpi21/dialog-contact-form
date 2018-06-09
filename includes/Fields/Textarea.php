@@ -26,8 +26,21 @@ class Textarea extends Abstract_Field {
 		'field_value',
 		'field_class',
 		'rows',
-		'autocomplete',
 	);
+
+	/**
+	 * Field type
+	 *
+	 * @var string
+	 */
+	protected $type = 'textarea';
+
+	/**
+	 * Input CSS class
+	 *
+	 * @var string
+	 */
+	protected $input_class = 'textarea';
 
 	/**
 	 * Render field html for frontend display
@@ -41,17 +54,7 @@ class Textarea extends Abstract_Field {
 			$this->setField( $field );
 		}
 
-		$html = sprintf( '<textarea id="%1$s" class="%2$s" name="%3$s" %5$s %6$s %7$s>%4$s</textarea>',
-			$this->get_id(),
-			$this->get_class( 'textarea' ),
-			$this->get_name(),
-			$this->get_value(),
-			$this->get_placeholder_attribute(),
-			$this->get_required_attribute(),
-			$this->get_rows_attribute()
-		);
-
-		return $html;
+		return '<textarea ' . $this->build_attributes() . '>' . $this->get_value() . '</textarea>';
 	}
 
 	/**
@@ -91,18 +94,5 @@ class Textarea extends Abstract_Field {
 		}
 
 		return esc_textarea( $_POST[ $this->field['field_name'] ] );
-	}
-
-	/**
-	 * Get rows attribute
-	 *
-	 * @return string
-	 */
-	protected function get_rows_attribute() {
-		if ( isset( $this->field['rows'] ) && is_numeric( $this->field['rows'] ) ) {
-			return ' rows="' . intval( $this->field['rows'] ) . '"';
-		}
-
-		return '';
 	}
 }

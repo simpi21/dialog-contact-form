@@ -57,7 +57,7 @@ class Number extends Abstract_Field {
 			$this->setField( $field );
 		}
 
-		return '<input ' . $this->generate_attributes() . '>';
+		return '<input ' . $this->build_attributes() . '>';
 	}
 
 	/**
@@ -97,44 +97,5 @@ class Number extends Abstract_Field {
 		}
 
 		return esc_attr( $_POST[ $this->field['field_name'] ] );
-	}
-
-	/**
-	 * Get min attribute
-	 *
-	 * @return string
-	 */
-	protected function get_min_attribute() {
-		if ( empty( $this->field['number_min'] ) ) {
-			return '';
-		}
-
-		return sprintf( ' min="%s"', floatval( $this->field['number_min'] ) );
-	}
-
-	/**
-	 * Get max attribute
-	 *
-	 * @return string
-	 */
-	protected function get_max_attribute() {
-		if ( empty( $this->field['number_max'] ) ) {
-			return '';
-		}
-
-		return sprintf( ' max="%s"', floatval( $this->field['number_max'] ) );
-	}
-
-	/**
-	 * Get step attribute
-	 *
-	 * @return string
-	 */
-	protected function get_step_attribute() {
-		if ( empty( $this->field['number_step'] ) ) {
-			return '';
-		}
-
-		return sprintf( ' step="%s"', floatval( $this->field['number_step'] ) );
 	}
 }

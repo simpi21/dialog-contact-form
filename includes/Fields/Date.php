@@ -51,7 +51,7 @@ class Date extends Text {
 			$this->type = 'text';
 		}
 
-		return '<input ' . $this->generate_attributes() . '>';
+		return '<input ' . $this->build_attributes() . '>';
 	}
 
 	/**

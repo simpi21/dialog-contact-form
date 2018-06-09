@@ -12,6 +12,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Checkbox extends Abstract_Field {
 
 	/**
+	 * Field type
+	 *
+	 * @var string
+	 */
+	protected $type = 'checkbox';
+
+	/**
+	 * Input CSS class
+	 *
+	 * @var string
+	 */
+	protected $input_class = 'dcf-checkbox';
+
+	/**
 	 * Metabox fields
 	 *
 	 * @var array
@@ -40,6 +54,7 @@ class Checkbox extends Abstract_Field {
 
 		$id    = $this->get_id();
 		$value = $this->get_value();
+		$class = $this->get_class();
 		$name  = $this->get_name() . '[]';
 
 		$html = '';
@@ -48,12 +63,18 @@ class Checkbox extends Abstract_Field {
 			if ( empty( $option ) ) {
 				continue;
 			}
-			$checked     = is_array( $value ) && in_array( $option, $value ) ? ' checked' : '';
-			$checkbox_id = sanitize_title_with_dashes( $id . '_' . $option );
-			$html        .= sprintf(
-				'<label class="dcf-checkbox-container"><input type="checkbox" name="%1$s" value="%2$s" id="%3$s" %4$s> %2$s</label>',
-				$name, esc_attr( $option ), $checkbox_id, $checked
+
+			$attributes = array(
+				'type'    => 'checkbox',
+				'id'      => sanitize_title_with_dashes( $id . '_' . $option ),
+				'class'   => $class,
+				'name'    => $name,
+				'value'   => esc_attr( $option ),
+				'checked' => in_array( $option, $value ),
 			);
+			$html       .= '<label class="dcf-checkbox-container">';
+			$html       .= '<input ' . $this->array_to_attributes( $attributes ) . '> ' . esc_attr( $option );
+			$html       .= '</label>';
 		}
 
 		return $html;

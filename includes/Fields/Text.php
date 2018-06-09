@@ -46,7 +46,7 @@ class Text extends Abstract_Field {
 			$this->setField( $field );
 		}
 
-		return '<input ' . $this->generate_attributes() . '>';
+		return '<input ' . $this->build_attributes() . '>';
 	}
 
 	/**
