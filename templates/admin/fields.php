@@ -58,7 +58,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'group_class' => 'dcf-input-group col-field_type',
 							'position'    => $_field_number,
 							'meta_key'    => '_contact_form_fields',
-							'default'     => $_field['field_type'],
 						),
 						'field_title'        => array(
 							'type'        => 'text',
@@ -70,7 +69,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'input_class' => 'dcf-input-text dcf-field-title',
 							'label'       => __( 'Label', 'dialog-contact-form' ),
 							'description' => __( 'Enter the label for the field.', 'dialog-contact-form' ),
-							'default'     => $_field['field_title'],
 						),
 						'field_id'           => array(
 							'type'        => 'text',
@@ -83,7 +81,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'label'       => __( 'Field ID', 'dialog-contact-form' ),
 							'description' => __( 'Please make sure the ID is unique and not used elsewhere in this form. This field allows A-z 0-9 & underscore chars without spaces.',
 								'dialog-contact-form' ),
-							'default'     => $_field['field_id'],
 						),
 						'required_field'     => array(
 							'type'        => 'buttonset',
@@ -111,17 +108,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'label'       => __( 'Add options', 'dialog-contact-form' ),
 							'description' => __( 'One option per line.', 'dialog-contact-form' ),
 							'rows'        => 8,
-							'default'     => $_field['options'],
-						),
-						'number_options'     => array(
-							'type'        => 'number_options',
-							'group'       => 'field',
-							'group_class' => 'dcf-input-group col-numberOption',
-							'position'    => $_field_number,
-							'meta_key'    => '_contact_form_fields',
-							'label'       => __( 'Number Option', 'dialog-contact-form' ),
-							'description' => __( 'This fields is optional but you can set min value, max value and step. For allowing decimal values set step value (e.g. step="0.01" to allow decimals to two decimal places).',
-								'dialog-contact-form' ),
 						),
 						'number_min'         => array(
 							'type'        => 'number',
@@ -131,7 +117,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'position'    => $_field_number,
 							'meta_key'    => '_contact_form_fields',
 							'step'        => '0.01',
-							'label'       => __( 'Min Number', 'dialog-contact-form' ),
+							'label'       => __( 'Minimum Value', 'dialog-contact-form' ),
+							'description' => __( 'Specifies the minimum value allowed. (optional)', 'dialog-contact-form' ),
 						),
 						'number_max'         => array(
 							'type'        => 'number',
@@ -141,7 +128,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'position'    => $_field_number,
 							'meta_key'    => '_contact_form_fields',
 							'step'        => '0.01',
-							'label'       => __( 'Max Number', 'dialog-contact-form' ),
+							'label'       => __( 'Maximum Value', 'dialog-contact-form' ),
+							'description' => __( 'Specifies the maximum value allowed. (optional)', 'dialog-contact-form' ),
 						),
 						'number_step'        => array(
 							'type'        => 'number',
@@ -164,7 +152,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'meta_key'    => '_contact_form_fields',
 							'label'       => __( 'Default Value', 'dialog-contact-form' ),
 							'description' => __( 'Define field default value.', 'dialog-contact-form' ),
-							'default'     => $_field['field_value'],
 						),
 						'field_class'        => array(
 							'type'        => 'text',
@@ -176,7 +163,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'label'       => __( 'Field Class', 'dialog-contact-form' ),
 							'description' => __( 'Insert additional class(es) (separated by blank space) for more personalization.',
 								'dialog-contact-form' ),
-							'default'     => $_field['field_class'],
 						),
 						'field_width'        => array(
 							'type'        => 'select',
@@ -187,7 +173,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'meta_key'    => '_contact_form_fields',
 							'label'       => __( 'Field Width', 'dialog-contact-form' ),
 							'description' => __( 'Set field length.', 'dialog-contact-form' ),
-							'default'     => $_field['field_width'],
 							'options'     => array(
 								'is-12' => esc_html__( 'Full', 'dialog-contact-form' ),
 								'is-9'  => esc_html__( 'Three Quarters', 'dialog-contact-form' ),
@@ -207,7 +192,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'input_class' => 'dcf-input-text dcf-field-placeholder',
 							'label'       => __( 'Placeholder Text', 'dialog-contact-form' ),
 							'description' => __( 'Insert placeholder message.', 'dialog-contact-form' ),
-							'default'     => $_field['placeholder'],
 						),
 						'acceptance_text'    => array(
 							'type'        => 'textarea',
@@ -220,7 +204,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'description' => __( 'Insert acceptance text. you can also use inline html markup.',
 								'dialog-contact-form' ),
 							'rows'        => 3,
-							'default'     => $_field['acceptance_text'],
 						),
 						'checked_by_default' => array(
 							'type'        => 'buttonset',
@@ -230,7 +213,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'position'    => $_field_number,
 							'meta_key'    => '_contact_form_fields',
 							'label'       => __( 'Checked by default', 'dialog-contact-form' ),
-							'default'     => $_field['checked_by_default'],
+							'default'     => 'off',
 							'options'     => array(
 								'off' => esc_html__( 'No', 'dialog-contact-form' ),
 								'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
@@ -244,7 +227,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'position'    => $_field_number,
 							'meta_key'    => '_contact_form_fields',
 							'label'       => __( 'Min. Date', 'dialog-contact-form' ),
-							'default'     => $_field['min_date'],
 						),
 						'max_date'           => array(
 							'type'        => 'date',
@@ -254,7 +236,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'position'    => $_field_number,
 							'meta_key'    => '_contact_form_fields',
 							'label'       => __( 'Max. Date', 'dialog-contact-form' ),
-							'default'     => $_field['max_date'],
 						),
 						'native_html5'       => array(
 							'type'        => 'buttonset',
@@ -264,7 +245,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'position'    => $_field_number,
 							'meta_key'    => '_contact_form_fields',
 							'label'       => __( 'Native HTML5', 'dialog-contact-form' ),
-							'default'     => $_field['native_html5'],
+							'default'     => 'on',
 							'options'     => array(
 								'off' => esc_html__( 'No', 'dialog-contact-form' ),
 								'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
@@ -280,7 +261,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'label'       => __( 'Max. File Size', 'dialog-contact-form' ),
 							'description' => __( 'If you need to increase max upload size please contact your hosting.',
 								'dialog-contact-form' ),
-							'default'     => $_field['max_file_size'],
 						),
 						'allowed_file_types' => array(
 							'type'        => 'mime_type',
@@ -292,7 +272,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'label'       => __( 'Allowed File Types', 'dialog-contact-form' ),
 							'description' => __( 'Choose file types.', 'dialog-contact-form' ),
 							'multiple'    => true,
-							'default'     => $_field['allowed_file_types'],
 						),
 						'multiple'           => array(
 							'type'        => 'buttonset',
@@ -302,7 +281,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'position'    => $_field_number,
 							'meta_key'    => '_contact_form_fields',
 							'label'       => __( 'Multiple', 'dialog-contact-form' ),
-							'default'     => $_field['multiple'],
+							'default'     => 'off',
 							'options'     => array(
 								'off' => esc_html__( 'No', 'dialog-contact-form' ),
 								'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
