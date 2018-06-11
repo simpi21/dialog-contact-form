@@ -10,8 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div id="shaplaFieldList">
 	<?php
 	global $post;
-	$_fields = get_post_meta( $post->ID, '_contact_form_fields', true );
-	$_fields = is_array( $_fields ) ? $_fields : array();
+	$_fields     = get_post_meta( $post->ID, '_contact_form_fields', true );
+	$_fields     = is_array( $_fields ) ? $_fields : array();
+	$field_types = dcf_available_field_types();
 
 	if ( ! isset( $_GET['action'] ) && count( $_fields ) === 0 ) {
 		$_fields = dcf_default_fields();
@@ -37,10 +38,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 			$class     = new $class_name;
 			$supported = $class->getMetaboxFields();
 		}
+
+		$_type = isset( $field_types[ $_field['field_type'] ] ) ? $field_types[ $_field['field_type'] ] : null;
 		?>
         <div data-id="closed" class="dcf-toggle dcf-toggle--normal">
             <span class="dcf-toggle-title">
-                <?php esc_html_e( $_field['field_title'] ); ?>
+                <?php
+                if ( ! empty( $_type['icon'] ) ) {
+	                echo '<span class="dcf-toggle-title--icon"><i class="' . $_type['icon'] . '"></i></span>';
+                }
+                echo '<span class="dcf-toggle-title--label">' . esc_html( $_field['field_title'] ) . '</span>';
+                ?>
             </span>
             <div class="dcf-toggle-inner">
                 <div class="dcf-toggle-content">

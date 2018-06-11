@@ -114,7 +114,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ), 30 );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
-			add_action( 'admin_footer', array( $this, 'form_template' ), 0 );
 			add_action( 'phpmailer_init', array( $this, 'phpmailer_config' ) );
 
 			do_action( 'dialog_contact_form_init', $this );
@@ -327,18 +326,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			wp_register_script( 'dialog-contact-form-recaptcha', $captcha_url, '', null, true );
 
 			wp_localize_script( $this->plugin_name, 'DialogContactForm', $this->localize_script() );
-		}
-
-		/**
-		 * Load field template on admin
-		 */
-		public function form_template() {
-			global $post_type;
-			if ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE ) {
-				return;
-			}
-
-			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/template-field.php';
 		}
 
 		/**

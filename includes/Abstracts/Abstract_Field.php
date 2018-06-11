@@ -16,6 +16,13 @@ abstract class Abstract_Field {
 	 */
 	protected $type = 'text';
 
+																																																																																																					/**
+	 * Font Awesome Icon class
+	 *
+	 * @var string
+	 */
+	protected $icon;
+
 	/**
 	 * Current form ID
 	 *

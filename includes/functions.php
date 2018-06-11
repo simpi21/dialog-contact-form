@@ -52,22 +52,70 @@ if ( ! function_exists( 'dcf_available_field_types' ) ) {
 	 */
 	function dcf_available_field_types() {
 		$fieldType = array(
-			'text'       => esc_html__( 'Single Line Text', 'dialog-contact-form' ),
-			'email'      => esc_html__( 'Email Address', 'dialog-contact-form' ),
-			'url'        => esc_html__( 'Web Address (URL)', 'dialog-contact-form' ),
-			'number'     => esc_html__( 'Number', 'dialog-contact-form' ),
-			'textarea'   => esc_html__( 'Multi Line Text', 'dialog-contact-form' ),
-			'password'   => esc_html__( 'Password', 'dialog-contact-form' ),
-			'date'       => esc_html__( 'Date', 'dialog-contact-form' ),
-			'time'       => esc_html__( 'Time', 'dialog-contact-form' ),
-			'hidden'     => esc_html__( 'Hidden', 'dialog-contact-form' ),
-			'ip'         => esc_html__( 'IP Address', 'dialog-contact-form' ),
-			'radio'      => esc_html__( 'Radio List', 'dialog-contact-form' ),
-			'select'     => esc_html__( 'Select', 'dialog-contact-form' ),
-			'checkbox'   => esc_html__( 'Checkbox List', 'dialog-contact-form' ),
-			'acceptance' => esc_html__( 'Single Checkbox', 'dialog-contact-form' ),
-			'file'       => esc_html__( 'File', 'dialog-contact-form' ),
-			'html'       => esc_html__( 'HTML', 'dialog-contact-form' ),
+			'text'       => array(
+				'label' => esc_html__( 'Text', 'dialog-contact-form' ),
+				'icon'  => 'fas fa-text-width',
+			),
+			'textarea'   => array(
+				'label' => esc_html__( 'Textarea', 'dialog-contact-form' ),
+				'icon'  => 'fas fa-paragraph',
+			),
+			'acceptance' => array(
+				'label' => esc_html__( 'Acceptance', 'dialog-contact-form' ),
+				'icon'  => 'far fa-check-square',
+			),
+			'checkbox'   => array(
+				'label' => esc_html__( 'Checkbox', 'dialog-contact-form' ),
+				'icon'  => 'fas fa-list',
+			),
+			'email'      => array(
+				'label' => esc_html__( 'Email', 'dialog-contact-form' ),
+				'icon'  => 'far fa-envelope',
+			),
+			'password'   => array(
+				'label' => esc_html__( 'Password', 'dialog-contact-form' ),
+				'icon'  => 'fas fa-key',
+			),
+			'number'     => array(
+				'label' => esc_html__( 'Number', 'dialog-contact-form' ),
+				'icon'  => 'fas fa-sort-numeric-up',
+			),
+			'hidden'     => array(
+				'label' => esc_html__( 'Hidden', 'dialog-contact-form' ),
+				'icon'  => 'far fa-eye-slash',
+			),
+			'date'       => array(
+				'label' => esc_html__( 'Date', 'dialog-contact-form' ),
+				'icon'  => 'far fa-calendar-alt',
+			),
+			'time'       => array(
+				'label' => esc_html__( 'Time', 'dialog-contact-form' ),
+				'icon'  => 'far fa-clock',
+			),
+			'url'        => array(
+				'label' => esc_html__( 'URL', 'dialog-contact-form' ),
+				'icon'  => 'fas fa-link',
+			),
+			'ip'         => array(
+				'label' => esc_html__( 'IP Address', 'dialog-contact-form' ),
+				'icon'  => 'fas fa-mouse-pointer',
+			),
+			'radio'      => array(
+				'label' => esc_html__( 'Radio', 'dialog-contact-form' ),
+				'icon'  => 'far fa-dot-circle',
+			),
+			'select'     => array(
+				'label' => esc_html__( 'Select', 'dialog-contact-form' ),
+				'icon'  => 'fas fa-angle-down',
+			),
+			'file'       => array(
+				'label' => esc_html__( 'File', 'dialog-contact-form' ),
+				'icon'  => 'fas fa-upload',
+			),
+			'html'       => array(
+				'label' => esc_html__( 'HTML', 'dialog-contact-form' ),
+				'icon'  => 'fas fa-code',
+			),
 		);
 
 		return apply_filters( 'dialog_contact_form_field_types', $fieldType );
@@ -231,7 +279,7 @@ if ( ! function_exists( 'dcf_google_recaptcha_lang' ) ) {
 	 * @return array
 	 */
 	function dcf_google_recaptcha_lang() {
-		return \DialogContactForm\Fields\Recaptcha::lang();
+		return \DialogContactForm\Fields\Recaptcha2::lang();
 	}
 }
 

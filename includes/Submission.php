@@ -2,7 +2,7 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\Fields\Recaptcha;
+use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Supports\Attachment;
 
 // Exit if accessed directly
@@ -198,7 +198,7 @@ class Submission {
 		}
 
 		// If Google reCAPTCHA enabled, verify it
-		if ( $config->hasRecaptcha() && ! Recaptcha::_validate() ) {
+		if ( $config->hasRecaptcha() && ! Recaptcha2::_validate() ) {
 			$errorData['dcf_recaptcha'] = array( $config->getInvalidRecaptchaMessage() );
 		}
 

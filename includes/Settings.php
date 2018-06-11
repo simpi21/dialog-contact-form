@@ -2,7 +2,7 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\Fields\Recaptcha;
+use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Supports\Settings_API;
 
 // Exit if accessed directly
@@ -472,7 +472,7 @@ class Settings {
 			'std'      => 'en',
 			'section'  => 'dcf_grecaptcha_section',
 			'priority' => 30,
-			'options'  => Recaptcha::lang(),
+			'options'  => Recaptcha2::lang(),
 		) );
 		$option_page->add_field( array(
 			'id'       => 'recaptcha_theme',

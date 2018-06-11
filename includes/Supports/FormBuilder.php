@@ -3,6 +3,8 @@
 namespace DialogContactForm\Supports;
 
 // Exit if accessed directly
+use DialogContactForm\Fields\Recaptcha2;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -143,42 +145,6 @@ class FormBuilder {
 	}
 
 	/**
-	 * Generate Google reCAPTCHA field
-	 *
-	 * @param array $options
-	 *
-	 * @return string
-	 */
-	public function reCAPTCHA( $options ) {
-		if ( ! ( isset( $this->configuration['recaptcha'] ) && $this->configuration['recaptcha'] == 'yes' ) ) {
-			return;
-		}
-
-		if ( empty( $options['recaptcha_site_key'] ) || empty( $options['recaptcha_secret_key'] ) ) {
-			return;
-		}
-
-		wp_enqueue_script( 'dialog-contact-form-recaptcha' );
-
-		echo '<div class="dcf-column is-12">';
-		echo '<div class="dcf-field">';
-		printf(
-			'<div class="g-recaptcha" data-sitekey="%1$s" data-theme="%2$s"></div>',
-			esc_attr( $options['recaptcha_site_key'] ),
-			esc_attr( $options['recaptcha_theme'] )
-		);
-		echo '<div class="dcf-control">';
-		echo '<input type="hidden" name="dcf_recaptcha">';
-
-		// Show error message if any
-		if ( isset( $this->errors['dcf_recaptcha'][0] ) ) {
-			echo '<span class="dcf-error-message">' . esc_attr( $this->errors['dcf_recaptcha'][0] ) . '</span>';
-		}
-
-		echo '</div></div></div>' . PHP_EOL;
-	}
-
-	/**
 	 * Get success message
 	 *
 	 * @return null|string
@@ -293,7 +259,9 @@ class FormBuilder {
 		}
 
 		// If Google reCAPTCHA, add here
-		$this->reCAPTCHA( $this->options );
+		$recaptcha = new Recaptcha2();
+		$recaptcha->setFormId( $this->form_id );
+		echo $recaptcha->render();
 
 		// Submit button
 		if ( $submit_button ) {

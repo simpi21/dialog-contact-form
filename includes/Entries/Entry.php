@@ -185,15 +185,24 @@ class Entry implements \JsonSerializable {
 	 * @return string
 	 */
 	private function get_remote_ip() {
-		if ( empty( $_SERVER['REMOTE_ADDR'] ) ) {
-			return '';
+		$server_ip_keys = array(
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR',
+		);
+
+		foreach ( $server_ip_keys as $key ) {
+			if ( isset( $_SERVER[ $key ] ) && filter_var( $_SERVER[ $key ], FILTER_VALIDATE_IP ) ) {
+				return $_SERVER[ $key ];
+			}
 		}
 
-		if ( filter_var( $_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP ) !== false ) {
-			return $_SERVER['REMOTE_ADDR'];
-		}
-
-		return '';
+		// Fallback local ip.
+		return '127.0.0.1';
 	}
 
 	/**

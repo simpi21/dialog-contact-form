@@ -5,8 +5,7 @@
         confirmDelete,
         _this,
         _value,
-        _accordion,
-        template;
+        _accordion;
 
     /**
      * Update validation field name
@@ -72,12 +71,11 @@
         _value = _this.val();
         _accordion = _this.closest('.dcf-toggle');
         // Set field title as accordion header
-        _accordion.find('.dcf-toggle-title').text(_value);
+        _accordion.find('.dcf-toggle-title--label').text(_value);
         // Set field title as placeholder text
         _accordion.find('.dcf-field-placeholder').val(_value);
         // Set field title as field id
-        _accordion.find('.dcf-field-id')
-            .val(_value.replace(/[\W_]+/g, "_").toLowerCase())
+        _accordion.find('.dcf-field-id').val(_value.replace(/[\W_]+/g, "_").toLowerCase());
     });
 
     // Make Form Fields Sortable
@@ -138,7 +136,7 @@
 
         $('#actions_after_submit_actions')
             .select2()
-            .on("select2:select", function (e) {
+            .on("select2:select", function () {
                 var selections = $(this).val();
                 $.each(selections, function (index, value) {
                     $('#action-' + value).slideDown('fast');

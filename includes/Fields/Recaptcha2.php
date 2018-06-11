@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Recaptcha extends Abstract_Field {
+class Recaptcha2 extends Abstract_Field {
 
 	/**
 	 * Google reCAPTCHA site verify API endpoint
@@ -25,6 +25,8 @@ class Recaptcha extends Abstract_Field {
 		'field_type',
 		'field_title',
 		'field_id',
+		'recaptcha_size',
+		'recaptcha_style',
 	);
 
 	/**
@@ -35,7 +37,42 @@ class Recaptcha extends Abstract_Field {
 	 * @return string
 	 */
 	public function render( $field = array() ) {
-		// TODO: Implement render() method.
+		if ( ! empty( $field ) ) {
+			$this->setField( $field );
+		}
+
+		$form_config = get_post_meta( $this->form_id, '_contact_form_config', true );
+
+		if ( ! ( isset( $form_config['recaptcha'] ) && $form_config['recaptcha'] === 'yes' ) ) {
+			return null;
+		}
+
+		$site_key   = get_dialog_contact_form_option( 'recaptcha_site_key' );
+		$secret_key = get_dialog_contact_form_option( 'recaptcha_secret_key' );
+		$theme      = get_dialog_contact_form_option( 'recaptcha_theme' );
+
+		if ( empty( $site_key ) || empty( $secret_key ) ) {
+			return null;
+		}
+
+		wp_enqueue_script( 'dialog-contact-form-recaptcha' );
+
+		$html = '<div class="dcf-column is-12">';
+		$html .= '<div class="dcf-field">';
+		$html .= sprintf( '<div class="g-recaptcha" data-sitekey="%1$s" data-theme="%2$s"></div>',
+			esc_attr( $site_key ), esc_attr( $theme )
+		);
+		$html .= '<div class="dcf-control">';
+		$html .= '<input type="hidden" name="dcf_recaptcha">';
+
+		// Show error message if any
+		if ( isset( $GLOBALS['_dcf_errors']['dcf_recaptcha'][0] ) ) {
+			$html .= '<span class="dcf-error-message">' . esc_attr( $GLOBALS['_dcf_errors']['dcf_recaptcha'][0] ) . '</span>';
+		}
+
+		$html .= '</div></div></div>' . PHP_EOL;
+
+		return $html;
 	}
 
 	/**
@@ -64,7 +101,11 @@ class Recaptcha extends Abstract_Field {
 	 * @return mixed
 	 */
 	protected function get_value() {
-		// TODO: Implement get_value() method.
+		if ( isset( $_POST['g-recaptcha-response'] ) ) {
+			return esc_attr( $_POST['g-recaptcha-response'] );
+		}
+
+		return null;
 	}
 
 	/**
@@ -181,14 +222,23 @@ class Recaptcha extends Abstract_Field {
 	 * @return string
 	 */
 	private static function get_remote_ip_addr() {
-		if ( empty( $_SERVER['REMOTE_ADDR'] ) ) {
-			return '';
+		$server_ip_keys = array(
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR',
+		);
+
+		foreach ( $server_ip_keys as $key ) {
+			if ( isset( $_SERVER[ $key ] ) && filter_var( $_SERVER[ $key ], FILTER_VALIDATE_IP ) ) {
+				return $_SERVER[ $key ];
+			}
 		}
 
-		if ( filter_var( $_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP ) !== false ) {
-			return $_SERVER['REMOTE_ADDR'];
-		}
-
-		return '';
+		// Fallback local ip.
+		return '127.0.0.1';
 	}
 }

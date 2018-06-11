@@ -286,58 +286,20 @@ class Admin {
 	 * @param \WP_Post $post
 	 */
 	public function form_fields( $post ) {
-		?>
-        <div class="dcf-fields-list-wrapper">
-            <div class="dcf-fields-list is-half is-first" data-type="text">
-                <i class="fas fa-text-width"></i> <span>Text</span>
-            </div>
-            <div class="dcf-fields-list is-half is-last" data-type="textarea">
-                <i class="fas fa-paragraph"></i> <span>Textarea</span>
-            </div>
-            <div class="dcf-fields-list is-half is-first" data-type="acceptance">
-                <i class="far fa-check-square"></i> <span>Acceptance</span>
-            </div>
-            <div class="dcf-fields-list is-half is-last" data-type="checkbox">
-                <i class="fas fa-list"></i> <span>Checkbox</span>
-            </div>
-            <div class="dcf-fields-list is-half is-first" data-type="radio">
-                <i class="far fa-dot-circle"></i> <span>Radio</span>
-            </div>
-            <div class="dcf-fields-list is-half is-last" data-type="select">
-                <i class="fas fa-angle-down"></i> <span>Select</span>
-            </div>
-            <div class="dcf-fields-list is-half is-first" data-type="email">
-                <i class="far fa-envelope"></i> <span>Email</span>
-            </div>
-            <div class="dcf-fields-list is-half is-last" data-type="date">
-                <i class="far fa-calendar-alt"></i> <span>Date</span>
-            </div>
-            <div class="dcf-fields-list is-half is-first" data-type="time">
-                <i class="far fa-clock"></i> <span>Time</span>
-            </div>
-            <div class="dcf-fields-list is-half is-last" data-type="url">
-                <i class="fas fa-link"></i> <span>URL</span>
-            </div>
-            <div class="dcf-fields-list is-half is-first" data-type="number">
-                <i class="fas fa-sort-numeric-up"></i> <span>Number</span>
-            </div>
-            <div class="dcf-fields-list is-half is-last" data-type="password">
-                <i class="fas fa-key"></i> <span>Password</span>
-            </div>
-            <div class="dcf-fields-list is-half is-first" data-type="hidden">
-                <i class="far fa-eye-slash"></i> <span>Hidden</span>
-            </div>
-            <div class="dcf-fields-list is-half is-last" data-type="ip">
-                <i class="fas fa-mouse-pointer"></i> <span>IP Address</span>
-            </div>
-            <div class="dcf-fields-list is-half is-first" data-type="file">
-                <i class="fas fa-upload"></i> <span>File Uploader</span>
-            </div>
-            <div class="dcf-fields-list is-half is-last" data-type="html">
-                <i class="fas fa-code"></i> <span>HTML</span>
-            </div>
-        </div>
-		<?php
+		$field_types = dcf_available_field_types();
+		echo '<div class="dcf-fields-list-wrapper">';
+
+		$index         = 0;
+		$default_class = 'dcf-fields-list is-half';
+
+		foreach ( $field_types as $type => $info ) {
+			$class = ( $index % 2 === 0 ) ? $default_class . ' is-first' : $default_class . ' is-last';
+			echo '<div class="' . $class . '" data-type="' . $type . '">';
+			echo '<i class="' . esc_attr( $info['icon'] ) . '"></i> <span>' . $info['label'] . '</span>';
+			echo '</div>';
+			$index ++;
+		}
+		echo '</div>';
 	}
 
 	/**

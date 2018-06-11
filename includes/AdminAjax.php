@@ -33,9 +33,8 @@ class AdminAjax {
 			wp_send_json_error( __( 'Required fields are not set properly.', 'dialog-contact-form' ), 422 );
 		}
 
-		$accepted_types = dcf_available_field_types();
-
-		$field_type = isset( $_POST['type'] ) && in_array( $_POST['type'], array_keys( $accepted_types ) ) ? $_POST['type'] : null;
+		$_types     = dcf_available_field_types();
+		$field_type = isset( $_POST['type'] ) && in_array( $_POST['type'], array_keys( $_types ) ) ? $_POST['type'] : null;
 		$settings   = self::field_settings( $field_type );
 
 		$supported  = array();
@@ -50,7 +49,12 @@ class AdminAjax {
 		?>
         <div data-id="closed" class="dcf-toggle dcf-toggle--normal">
         <span class="dcf-toggle-title">
-                <?php esc_html_e( 'Untitled', 'dialog-contact-form' ); ?>
+                <?php
+                if ( ! empty( $_types[ $field_type ]['icon'] ) ) {
+	                echo '<span class="dcf-toggle-title--icon"><i class="' . $_types[ $field_type ]['icon'] . '"></i></span>';
+                }
+                echo '<span class="dcf-toggle-title--label">' . esc_html__( 'Untitled', 'dialog-contact-form' ) . '</span>';
+                ?>
             </span>
             <div class="dcf-toggle-inner">
                 <div class="dcf-toggle-content">
