@@ -286,7 +286,7 @@ class Admin {
 	 * @param \WP_Post $post
 	 */
 	public function form_fields( $post ) {
-		$field_types = dcf_available_field_types();
+		$field_types = Utils::field_types();
 		echo '<div class="dcf-fields-list-wrapper">';
 
 		$index         = 0;

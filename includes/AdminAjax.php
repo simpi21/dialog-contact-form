@@ -33,7 +33,7 @@ class AdminAjax {
 			wp_send_json_error( __( 'Required fields are not set properly.', 'dialog-contact-form' ), 422 );
 		}
 
-		$_types     = dcf_available_field_types();
+		$_types     = Utils::field_types();
 		$field_type = isset( $_POST['type'] ) && in_array( $_POST['type'], array_keys( $_types ) ) ? $_POST['type'] : null;
 		$settings   = self::field_settings( $field_type );
 

@@ -5,6 +5,7 @@ namespace DialogContactForm\Actions;
 use DialogContactForm\Abstracts\Abstract_Action;
 use DialogContactForm\Config;
 use DialogContactForm\Supports\Mailer;
+use DialogContactForm\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -114,7 +115,7 @@ class EmailNotification extends Abstract_Action {
 	 */
 	public static function process( $config, $data ) {
 		$attachments = $data['dcf_attachments'];
-		$attachments = array_column( $attachments, 'attachment_path' );
+		$attachments = Utils::array_column( $attachments, 'attachment_path' );
 		$mail        = get_post_meta( $config->getFormId(), '_contact_form_mail', true );
 
 		$form_fields = array();
@@ -136,8 +137,8 @@ class EmailNotification extends Abstract_Action {
 			);
 		}
 
-		$_keys   = array_merge( array_keys( self::$system_fields ), array_column( $form_fields, 'placeholder' ) );
-		$_values = array_merge( array_values( self::$system_fields ), array_column( $form_fields, 'value' ) );
+		$_keys   = array_merge( array_keys( self::$system_fields ), Utils::array_column( $form_fields, 'placeholder' ) );
+		$_values = array_merge( array_values( self::$system_fields ), Utils::array_column( $form_fields, 'value' ) );
 
 		$subject = $mail['subject'];
 		$subject = str_replace( $_keys, $_values, $subject );

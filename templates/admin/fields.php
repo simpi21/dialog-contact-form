@@ -1,6 +1,7 @@
 <?php
 
 use DialogContactForm\Supports\Metabox;
+use DialogContactForm\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	global $post;
 	$_fields     = get_post_meta( $post->ID, '_contact_form_fields', true );
 	$_fields     = is_array( $_fields ) ? $_fields : array();
-	$field_types = dcf_available_field_types();
+	$field_types = Utils::field_types();
 
 	if ( ! isset( $_GET['action'] ) && count( $_fields ) === 0 ) {
 		$_fields = dcf_default_fields();

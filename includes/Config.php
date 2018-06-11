@@ -173,7 +173,7 @@ class Config {
 
 			// Check if current form has file
 			if ( $this->form_fields ) {
-				$this->field_types = array_unique( array_column( $this->form_fields, 'field_type' ) );
+				$this->field_types = array_unique( Utils::array_column( $this->form_fields, 'field_type' ) );
 
 				if ( in_array( 'file', $this->field_types ) ) {
 					$this->has_file = true;
