@@ -62,7 +62,7 @@ class Shortcode {
 	 * Display dialog button
 	 */
 	public function dialog_button() {
-		$options = get_dialog_contact_form_option();
+		$options = Utils::get_option();
 		$form_id = isset( $options['dialog_form_id'] ) ? intval( $options['dialog_form_id'] ) : 0;
 		$form    = FormBuilder::init( $form_id );
 

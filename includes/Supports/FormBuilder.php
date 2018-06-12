@@ -4,6 +4,7 @@ namespace DialogContactForm\Supports;
 
 // Exit if accessed directly
 use DialogContactForm\Fields\Recaptcha2;
+use DialogContactForm\Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -77,7 +78,7 @@ class FormBuilder {
 	 * @param int $form_id
 	 */
 	public function __construct( $form_id = 0 ) {
-		$this->options         = get_dialog_contact_form_option();
+		$this->options         = Utils::get_option();
 		$this->errors          = isset( $GLOBALS['_dcf_errors'] ) ? $GLOBALS['_dcf_errors'] : array();
 		$this->success_message = isset( $GLOBALS['_dcf_mail_sent_ok'] ) ? $GLOBALS['_dcf_mail_sent_ok'] : null;
 		$this->error_message   = isset( $GLOBALS['_dcf_validation_error'] ) ? $GLOBALS['_dcf_validation_error'] : null;

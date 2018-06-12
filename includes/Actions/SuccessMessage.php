@@ -3,6 +3,7 @@
 namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -41,7 +42,7 @@ class SuccessMessage extends Abstract_Action {
 	}
 
 	private function settings() {
-		$default = get_dialog_contact_form_option( 'mail_sent_ok' );
+		$default = Utils::get_option( 'mail_sent_ok' );
 
 		return array(
 			'message' => array(

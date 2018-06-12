@@ -3,6 +3,7 @@
 namespace DialogContactForm\Fields;
 
 use DialogContactForm\Abstracts\Abstract_Field;
+use DialogContactForm\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -47,9 +48,9 @@ class Recaptcha2 extends Abstract_Field {
 			return null;
 		}
 
-		$site_key   = get_dialog_contact_form_option( 'recaptcha_site_key' );
-		$secret_key = get_dialog_contact_form_option( 'recaptcha_secret_key' );
-		$theme      = get_dialog_contact_form_option( 'recaptcha_theme' );
+		$site_key   = Utils::get_option( 'recaptcha_site_key' );
+		$secret_key = Utils::get_option( 'recaptcha_secret_key' );
+		$theme      = Utils::get_option( 'recaptcha_theme' );
 
 		if ( empty( $site_key ) || empty( $secret_key ) ) {
 			return null;
@@ -114,7 +115,7 @@ class Recaptcha2 extends Abstract_Field {
 	 * @return bool
 	 */
 	public static function _validate() {
-		$secret_key   = get_dialog_contact_form_option( 'recaptcha_secret_key' );
+		$secret_key   = Utils::get_option( 'recaptcha_secret_key' );
 		$captcha_code = isset( $_POST['g-recaptcha-response'] ) ? $_POST['g-recaptcha-response'] : null;
 		if ( empty( $captcha_code ) || empty( $secret_key ) ) {
 			return false;

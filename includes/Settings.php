@@ -34,7 +34,7 @@ class Settings {
 	 * Plugin settings
 	 */
 	public static function settings() {
-		$default_options = dcf_default_options();
+		$default_options = Utils::default_options();
 		$option_page     = Settings_API::init();
 
 		// Add settings page

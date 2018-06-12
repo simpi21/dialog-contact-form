@@ -71,9 +71,21 @@ class Activation {
 
 		if ( is_int( $post_id ) ) {
 			update_post_meta( $post_id, '_contact_form_fields', dcf_default_fields() );
-			update_post_meta( $post_id, '_contact_form_messages', dcf_validation_messages() );
-			update_post_meta( $post_id, '_contact_form_config', dcf_default_configuration() );
-			update_post_meta( $post_id, '_contact_form_mail', dcf_default_mail_template() );
+			update_post_meta( $post_id, '_contact_form_messages', Utils::validation_messages() );
+			update_post_meta( $post_id, '_contact_form_mail', array(
+				'receiver'    => '[system:admin_email]',
+				'senderEmail' => '[your_email]',
+				'senderName'  => '[your_name]',
+				'subject'     => '[system:blogname] : [subject]',
+				'body'        => '[all_fields_table]',
+			) );
+			update_post_meta( $post_id, '_contact_form_config', array(
+				'labelPosition' => 'both',
+				'btnLabel'      => esc_html__( 'Send', 'dialog-contact-form' ),
+				'btnAlign'      => 'left',
+				'reset_form'    => 'yes',
+				'recaptcha'     => 'no',
+			) );
 
 			self::upgrade_to_version_2( $post_id );
 		}
@@ -97,7 +109,7 @@ class Activation {
 			return false;
 		}
 
-		$option                             = dcf_default_options();
+		$option                             = Utils::default_options();
 		$option['dialog_button_background'] = $old_option['dialog_color'];
 		$option['dialog_form_id']           = $post_id;
 

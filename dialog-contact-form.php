@@ -287,10 +287,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 					'wp-color-picker-alpha'
 				),
 				DIALOG_CONTACT_FORM_VERSION, true );
-
-			wp_localize_script( $this->plugin_name . '-admin', 'DialogContactForm', array(
-				'autocomplete' => dcf_autocomplete_attribute_values(),
-			) );
 		}
 
 		/**
@@ -443,7 +439,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 */
 		public function get_validation_messages() {
 			if ( empty( $this->validation_messages ) ) {
-				$messages  = dcf_validation_messages();
+				$messages  = \DialogContactForm\Utils::validation_messages();
 				$options   = get_dialog_contact_form_option();
 				$_messages = array();
 				foreach ( $messages as $key => $message ) {

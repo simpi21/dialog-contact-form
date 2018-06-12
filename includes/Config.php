@@ -135,7 +135,7 @@ class Config {
 
 
 		if ( ! $this->options ) {
-			$this->options = get_dialog_contact_form_option();
+			$this->options = Utils::get_option();
 		}
 
 		if ( ! empty( $this->options['mailchimp_api_key'] ) ) {
@@ -143,7 +143,7 @@ class Config {
 		}
 
 		if ( ! $this->validation_messages ) {
-			$default_messages = dcf_validation_messages();
+			$default_messages = Utils::validation_messages();
 			$messages         = array();
 			foreach ( $default_messages as $key => $message ) {
 				if ( ! empty( $this->options[ $key ] ) ) {

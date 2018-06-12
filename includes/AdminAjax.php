@@ -348,7 +348,7 @@ class AdminAjax {
 				'position'    => $index,
 				'meta_key'    => '_contact_form_fields',
 				'label'       => __( 'Autocomplete', 'dialog-contact-form' ),
-				'options'     => dcf_autocomplete_attribute_values()
+				'options'     => Utils::autocomplete_values()
 			),
 			'html'               => array(
 				'type'        => 'textarea',

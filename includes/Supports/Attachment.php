@@ -3,6 +3,7 @@
 namespace DialogContactForm\Supports;
 
 use DialogContactForm\Fields\File;
+use DialogContactForm\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,8 +16,8 @@ class Attachment {
 	 * @return array
 	 */
 	private static function get_validation_messages() {
-		$options  = get_dialog_contact_form_option();
-		$default  = dcf_validation_messages();
+		$options  = Utils::get_option();
+		$default  = Utils::validation_messages();
 		$messages = array();
 		foreach ( $default as $key => $message ) {
 			$messages[ $key ] = ! empty( $options[ $key ] ) ? $options[ $key ] : $message;

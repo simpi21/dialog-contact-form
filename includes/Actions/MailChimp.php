@@ -5,6 +5,7 @@ namespace DialogContactForm\Actions;
 use DialogContactForm\Abstracts\Abstract_Action;
 use DialogContactForm\Config;
 use DialogContactForm\Supports\MailChimpHandler;
+use DialogContactForm\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -32,7 +33,7 @@ class MailChimp extends Abstract_Action {
 	 */
 	private function settings() {
 		if ( empty( $this->api_key ) ) {
-			$this->api_key = get_dialog_contact_form_option( 'mailchimp_api_key' );
+			$this->api_key = Utils::get_option( 'mailchimp_api_key' );
 		}
 		$meta = get_post_meta( get_the_ID(), '_action_mailchimp', true );
 
@@ -190,7 +191,7 @@ class MailChimp extends Abstract_Action {
 		}
 
 		if ( 'default' === $action_settings['mailchimp_api_key_source'] ) {
-			$api_key = get_dialog_contact_form_option( 'mailchimp_api_key' );
+			$api_key = Utils::get_option( 'mailchimp_api_key' );
 		} else {
 			$api_key = $action_settings['mailchimp_api_key'];
 		}

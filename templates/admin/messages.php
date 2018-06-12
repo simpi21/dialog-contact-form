@@ -1,13 +1,14 @@
 <?php
 
 use DialogContactForm\Supports\Metabox;
+use DialogContactForm\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$messages = dcf_validation_messages();
+$messages = Utils::validation_messages();
 
 Metabox::textarea( array(
 	'id'       => 'mail_sent_ng',
