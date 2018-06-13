@@ -369,7 +369,7 @@ class AdminAjax {
 				'position'    => $index,
 				'meta_key'    => '_contact_form_fields',
 				'label'       => __( 'Validation', 'dialog-contact-form' ),
-				'options'     => dcf_validation_rules(),
+				'options'     => Utils::validation_rules(),
 			),
 			'error_message'      => array(// @depreciated
 				'type'        => 'text',

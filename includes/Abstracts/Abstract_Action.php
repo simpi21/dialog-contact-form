@@ -190,6 +190,15 @@ abstract class Abstract_Action {
 	}
 
 	/**
+	 * Get action meta key
+	 *
+	 * @return string
+	 */
+	public function get_meta_key() {
+		return $this->meta_key;
+	}
+
+	/**
 	 * Build metabox fields
 	 */
 	public function build_fields() {

@@ -5,48 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! function_exists( 'get_dialog_contact_form_option' ) ) {
-	/**
-	 * Get contact form option
-	 *
-	 * @param null $option
-	 * @param bool $default
-	 *
-	 * @return mixed
-	 */
-	function get_dialog_contact_form_option( $option = null, $default = false ) {
-		return \DialogContactForm\Utils::get_option( $option, $default );
-	}
-}
-
-if ( ! function_exists( 'dcf_validation_rules' ) ) {
-	/**
-	 * All available validation rules
-	 *
-	 * @return array
-	 */
-	function dcf_validation_rules() {
-		$validationField = array(
-			'user_login' => esc_html__( 'User Login', 'dialog-contact-form' ),
-			'username'   => esc_html__( 'Username', 'dialog-contact-form' ),
-			'user_email' => esc_html__( 'User Email', 'dialog-contact-form' ),
-		);
-
-		return apply_filters( 'dialog_contact_form/validation_rules', $validationField );
-	}
-}
-
-if ( ! function_exists( 'dcf_google_recaptcha_lang' ) ) {
-	/**
-	 * Google reCAPTCHA languages
-	 *
-	 * @return array
-	 */
-	function dcf_google_recaptcha_lang() {
-		return \DialogContactForm\Fields\Recaptcha2::lang();
-	}
-}
-
 if ( ! function_exists( 'dcf_default_fields' ) ) {
 	/**
 	 * Dialog contact form default fields

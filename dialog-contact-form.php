@@ -297,9 +297,10 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 
 			$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-			$enabled_style = get_dialog_contact_form_option( 'default_style', 'enable' );
-			$hl            = get_dialog_contact_form_option( 'recaptcha_lang', 'en' );
-			$hl            = in_array( $hl, array_keys( dcf_google_recaptcha_lang() ) ) ? $hl : 'en';
+			$enabled_style = \DialogContactForm\Utils::get_option( 'default_style', 'enable' );
+			$hl            = \DialogContactForm\Utils::get_option( 'recaptcha_lang', 'en' );
+			$lang          = \DialogContactForm\Fields\Recaptcha2::lang();
+			$hl            = in_array( $hl, array_keys( $lang ) ) ? $hl : 'en';
 			$captcha_url   = add_query_arg( array( 'hl' => $hl ), 'https://www.google.com/recaptcha/api.js' );
 
 			if ( 'disable' != $enabled_style ) {
@@ -440,7 +441,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		public function get_validation_messages() {
 			if ( empty( $this->validation_messages ) ) {
 				$messages  = \DialogContactForm\Utils::validation_messages();
-				$options   = get_dialog_contact_form_option();
+				$options   = \DialogContactForm\Utils::get_option();
 				$_messages = array();
 				foreach ( $messages as $key => $message ) {
 					$_messages[ $key ] = ! empty( $options[ $key ] ) ? $options[ $key ] : $message;

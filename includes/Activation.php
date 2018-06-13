@@ -2,6 +2,8 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\Templates\ContactUs;
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -70,22 +72,8 @@ class Activation {
 		) );
 
 		if ( is_int( $post_id ) ) {
-			update_post_meta( $post_id, '_contact_form_fields', dcf_default_fields() );
-			update_post_meta( $post_id, '_contact_form_messages', Utils::validation_messages() );
-			update_post_meta( $post_id, '_contact_form_mail', array(
-				'receiver'    => '[system:admin_email]',
-				'senderEmail' => '[your_email]',
-				'senderName'  => '[your_name]',
-				'subject'     => '[system:blogname] : [subject]',
-				'body'        => '[all_fields_table]',
-			) );
-			update_post_meta( $post_id, '_contact_form_config', array(
-				'labelPosition' => 'both',
-				'btnLabel'      => esc_html__( 'Send', 'dialog-contact-form' ),
-				'btnAlign'      => 'left',
-				'reset_form'    => 'yes',
-				'recaptcha'     => 'no',
-			) );
+			$contact_form = new ContactUs();
+			$contact_form->run( $post_id );
 
 			self::upgrade_to_version_2( $post_id );
 		}
@@ -116,6 +104,9 @@ class Activation {
 		return update_option( 'dialog_contact_form', $option );
 	}
 
+	/**
+	 * Create plugin tables
+	 */
 	public static function create_tables() {
 		global $wpdb;
 
@@ -162,6 +153,9 @@ class Activation {
 		dbDelta( $meta_table_schema );
 	}
 
+	/**
+	 * Delete tables on deactivation when debug mode
+	 */
 	public function delete_tables() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			global $wpdb;

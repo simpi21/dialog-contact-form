@@ -158,6 +158,21 @@ class Utils {
 	}
 
 	/**
+	 * All available validation rules
+	 *
+	 * @return array
+	 */
+	public static function validation_rules() {
+		$validationField = array(
+			'user_login' => esc_html__( 'User Login', 'dialog-contact-form' ),
+			'username'   => esc_html__( 'Username', 'dialog-contact-form' ),
+			'user_email' => esc_html__( 'User Email', 'dialog-contact-form' ),
+		);
+
+		return apply_filters( 'dialog_contact_form/validation_rules', $validationField );
+	}
+
+	/**
 	 * Dialog contact form default messages
 	 *
 	 * @return array
