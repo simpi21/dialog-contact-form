@@ -5,7 +5,46 @@
 @import 'admin/buttonset';
 @import 'admin/toggle';
 @import "components/modal";
+@import "components/columns";
 @import "admin/modal";
+
+.dcf-columns,
+.dcf-column,
+.dcf-template {
+	box-sizing: border-box;
+}
+
+.dcf-template {
+	padding: 0.75rem;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	text-decoration: none;
+	border: 1px solid #f1f1f1;
+	background-color: #ffffff;
+	color: #444444;
+	transition: all 300ms;
+	border-radius: 4px;
+
+	&:hover {
+		background-color: #1ea9ea;
+		border-color: #1ea9ea;
+		color: #fff;
+
+		.dcf-template-title,
+		.dcf-template-description {
+			color: #fff;
+		}
+	}
+
+	&-title {
+		margin: 0 0 0.75rem;
+	}
+
+	&-description {
+		margin: 0;
+	}
+}
 
 .sp-card {
 	box-sizing: border-box;

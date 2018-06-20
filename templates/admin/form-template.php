@@ -19,18 +19,22 @@ $templates = TemplateManager::init();
             <button class="modal-close" data-dismiss="modal"></button>
         </div>
         <div class="modal-card-body">
-            <div class="dcf-columns">
-                <div class="dcf-templates">
-					<?php
-					/** @var \DialogContactForm\Abstracts\Abstract_Form_Template $template */
-					foreach ( $templates as $template ) {
-						echo '<div class="dcf-template">';
-						echo '<h3>' . $template->get_title() . '</h3>';
-						echo '<p>' . $template->get_description() . '</p>';
-						echo '</div>';
-					}
-					?>
-                </div>
+            <div class="dcf-columns dcf-templates">
+				<?php
+				/** @var \DialogContactForm\Abstracts\Abstract_Form_Template $template */
+				foreach ( $templates as $template ) {
+					$url = add_query_arg( array(
+						'action'   => 'dcf_new_form',
+						'template' => $template->get_id(),
+					), admin_url( 'admin-ajax.php' ) );
+					echo '<div class="dcf-column is-6">';
+					echo '<a class="dcf-template" href="' . esc_url( $url ) . '">';
+					echo '<h3 class="dcf-template-title">' . $template->get_title() . '</h3>';
+					echo '<p class="dcf-template-description">' . $template->get_description() . '</p>';
+					echo '</a>';
+					echo '</div>';
+				}
+				?>
             </div>
         </div>
     </div>

@@ -2,6 +2,7 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\Abstracts\Abstract_Form_Template;
 use DialogContactForm\Supports\Metabox;
 
 class AdminAjax {
@@ -23,11 +24,15 @@ class AdminAjax {
 			self::$instance = new self();
 
 			add_action( 'wp_ajax_dcf_field_settings', array( self::$instance, 'get_field_settings' ) );
+			add_action( 'wp_ajax_dcf_new_form', array( self::$instance, 'add_new_form' ) );
 		}
 
 		return self::$instance;
 	}
 
+	/**
+	 * Get field settings
+	 */
 	public static function get_field_settings() {
 		if ( ! isset( $_POST['type'] ) ) {
 			wp_send_json_error( __( 'Required fields are not set properly.', 'dialog-contact-form' ), 422 );
@@ -84,6 +89,14 @@ class AdminAjax {
 		die();
 	}
 
+	/**
+	 * Form field settings
+	 *
+	 * @param string $type
+	 * @param int $index
+	 *
+	 * @return array
+	 */
 	private static function field_settings( $type = 'text', $index = 100 ) {
 		return array(
 			'field_type'         => array(
@@ -383,5 +396,43 @@ class AdminAjax {
 					'dialog-contact-form' ),
 			),
 		);
+	}
+
+	/**
+	 * Add new form from template
+	 * @internal Abstract_Form_Template $template
+	 */
+	public static function add_new_form() {
+		if ( ! isset( $_REQUEST['template'] ) ) {
+			wp_die( __( 'Form template is not set properly.', 'dialog-contact-form' ) );
+		}
+
+		$templates = TemplateManager::init();
+		$template  = $templates[ $_REQUEST['template'] ];
+		if ( ! $template instanceof Abstract_Form_Template ) {
+			wp_die( __( 'Form template is not available.', 'dialog-contact-form' ) );
+		}
+
+		$post_id = wp_insert_post( array(
+			'post_title'     => $template->get_title(),
+			'post_status'    => 'publish',
+			'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
+			'comment_status' => 'closed',
+			'ping_status'    => 'closed',
+		) );
+
+		if ( is_wp_error( $post_id ) ) {
+			wp_die( __( 'Could not create form.', 'dialog-contact-form' ) );
+		}
+
+		$template->run( $post_id );
+
+		$redirect_url = add_query_arg( array(
+			'post'   => $post_id,
+			'action' => 'edit',
+		), admin_url( 'post.php' ) );
+
+		wp_safe_redirect( $redirect_url );
+		exit();
 	}
 }

@@ -8,7 +8,7 @@ use DialogContactForm\Templates\ContactUs;
 use DialogContactForm\Templates\EventRegistration;
 use Traversable;
 
-class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countable {
+class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countable, \ArrayAccess {
 
 	/**
 	 * @var object
@@ -109,6 +109,65 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	 */
 	public function count() {
 		return count( $this->getTemplates() );
+	}
+
+	/**
+	 * Whether a offset exists
+	 * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+	 *
+	 * @param mixed $offset An offset to check for.
+	 *
+	 * @return boolean true on success or false on failure.
+	 * @since 5.0.0
+	 */
+	public function offsetExists( $offset ) {
+		return isset( $this->templates[ $offset ] );
+	}
+
+	/**
+	 * Offset to retrieve
+	 * @link http://php.net/manual/en/arrayaccess.offsetget.php
+	 *
+	 * @param mixed $offset The offset to retrieve.
+	 *
+	 * @return mixed Can return all value types.
+	 * @since 5.0.0
+	 */
+	public function offsetGet( $offset ) {
+		if ( $this->offsetExists( $offset ) ) {
+			return $this->templates[ $offset ];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Offset to set
+	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
+	 *
+	 * @param mixed $offset The offset to assign the value to.
+	 * @param mixed $value The value to set.
+	 *
+	 * @return void
+	 * @since 5.0.0
+	 */
+	public function offsetSet( $offset, $value ) {
+		$this->add_template( $offset, $value );
+	}
+
+	/**
+	 * Offset to unset
+	 * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+	 *
+	 * @param mixed $offset The offset to unset.
+	 *
+	 * @return void
+	 * @since 5.0.0
+	 */
+	public function offsetUnset( $offset ) {
+		if ( $this->offsetExists( $offset ) ) {
+			unset( $this->templates[ $offset ] );
+		}
 	}
 
 	/**
