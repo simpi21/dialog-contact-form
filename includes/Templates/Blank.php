@@ -3,6 +3,7 @@
 namespace DialogContactForm\Templates;
 
 use DialogContactForm\Abstracts\Abstract_Form_Template;
+use DialogContactForm\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -34,7 +35,13 @@ class Blank extends Abstract_Form_Template {
 	 * @return array
 	 */
 	protected function form_settings() {
-		return array();
+		return array(
+			'labelPosition' => 'both',
+			'btnLabel'      => '',
+			'btnAlign'      => 'left',
+			'reset_form'    => 'yes',
+			'recaptcha'     => 'no',
+		);
 	}
 
 	/**
@@ -43,7 +50,15 @@ class Blank extends Abstract_Form_Template {
 	 * @return array
 	 */
 	protected function form_actions() {
-		return array();
+		return array(
+			'store_submission' => array(),
+			'success_message'  => array(
+				'message' => Utils::get_option( 'mail_sent_ok' )
+			),
+			'redirect'         => array(
+				'redirect_to' => 'same',
+			),
+		);
 	}
 
 	/**
@@ -52,6 +67,9 @@ class Blank extends Abstract_Form_Template {
 	 * @return array
 	 */
 	protected function form_validation_messages() {
-		return array();
+		return array(
+			'mail_sent_ng'     => Utils::get_option( 'mail_sent_ng' ),
+			'validation_error' => Utils::get_option( 'validation_error' ),
+		);
 	}
 }

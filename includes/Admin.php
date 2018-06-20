@@ -411,6 +411,8 @@ class Admin {
 			}
 
 			update_post_meta( $post_id, '_contact_form_fields', $_data );
+		} else {
+			delete_post_meta( $post_id, '_contact_form_fields' );
 		}
 
 		$actions = ActionManager::init();

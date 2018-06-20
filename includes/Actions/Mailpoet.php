@@ -95,8 +95,8 @@ class Mailpoet extends Abstract_Action {
 
 		/** @var \WYSIJA_model_list $model_list */
 		$model_list     = \WYSIJA::get( 'list', 'model' );
-		$mailpoet_lists = $model_list->get( [ 'name', 'list_id' ], array( 'is_enabled' => 1 ) );
-		$options        = [];
+		$mailpoet_lists = $model_list->get( array( 'name', 'list_id' ), array( 'is_enabled' => 1 ) );
+		$options        = array();
 
 		foreach ( $mailpoet_lists as $list ) {
 			$options[ $list['list_id'] ] = $list['name'];

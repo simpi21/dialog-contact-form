@@ -91,7 +91,7 @@ class Mailpoet3 extends Abstract_Action {
 		}
 
 		$mailpoet3_lists = \MailPoet\API\API::MP( 'v1' )->getLists();
-		$options         = [];
+		$options         = array();
 
 		foreach ( $mailpoet3_lists as $list ) {
 			$options[ $list['id'] ] = $list['name'];

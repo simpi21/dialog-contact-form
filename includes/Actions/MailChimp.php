@@ -42,13 +42,15 @@ class MailChimp extends Abstract_Action {
 
 		try {
 			$handler = new MailchimpHandler( $this->api_key );
-			$list    = $handler->get_lists()['lists'];
+			$lists   = $handler->get_lists();
+			$list    = $lists['lists'];
 			if ( ! empty( $list ) ) {
 				$mailchimp_list = $list;
 			}
 
 			if ( ! empty( $meta['mailchimp_list'] ) ) {
-				$groups           = $handler->get_groups( $meta['mailchimp_list'] )['groups'];
+				$_groups          = $handler->get_groups( $meta['mailchimp_list'] );
+				$groups           = $_groups['groups'];
 				$mailchimp_groups = empty( $groups ) ? array() : $groups;
 			}
 		} catch ( \Exception $exception ) {
@@ -61,6 +63,9 @@ class MailChimp extends Abstract_Action {
 			'' => __( '-- No Value --', 'dialog-contact-form' )
 		);
 		foreach ( $config->getFormFields() as $field ) {
+			if ( empty( $field['field_type'] ) ) {
+				continue;
+			}
 			if ( 'email' === $field['field_type'] ) {
 				$email_fields[ $field['field_id'] ] = $field['field_title'];
 			}
@@ -183,7 +188,7 @@ class MailChimp extends Abstract_Action {
 		}
 
 		if ( ! empty( $action_settings['mailchimp_groups'] ) ) {
-			$subscriber['interests'] = [];
+			$subscriber['interests'] = array();
 
 			foreach ( $action_settings['mailchimp_groups'] as $mailchimp_group ) {
 				$subscriber['interests'][ $mailchimp_group ] = true;
@@ -205,9 +210,9 @@ class MailChimp extends Abstract_Action {
 			$end_point = sprintf( 'lists/%s/members/%s', $action_settings['mailchimp_list'],
 				md5( strtolower( $subscriber['email_address'] ) ) );
 
-			$response = $handler->post( $end_point, $subscriber, [
+			$response = $handler->post( $end_point, $subscriber, array(
 				'method' => 'PUT', // Add or Update
-			] );
+			) );
 
 			if ( 200 !== $response['code'] ) {
 				// Show server error message to admin user

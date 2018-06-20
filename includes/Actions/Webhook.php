@@ -53,9 +53,9 @@ class Webhook extends Abstract_Action {
 			$body['form_name'] = get_the_title( $form_id );
 		}
 
-		$args = [
+		$args = array(
 			'body' => $body,
-		];
+		);
 
 		/**
 		 * Forms webhook request arguments.
