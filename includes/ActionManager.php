@@ -18,10 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class ActionManager implements
-	\IteratorAggregate,
-	\JsonSerializable,
-	\Countable {
+class ActionManager implements \IteratorAggregate, \JsonSerializable, \Countable {
 
 	/**
 	 * @var object

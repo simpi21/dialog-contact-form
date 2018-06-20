@@ -1,7 +1,11 @@
 // sass --watch assets/scss/admin.scss:assets/css/admin.css --style compressed
+@import "utilities/variables";
+@import "utilities/mixins";
 @import 'admin/meta-box';
 @import 'admin/buttonset';
 @import 'admin/toggle';
+@import "components/modal";
+@import "admin/modal";
 
 .sp-card {
 	box-sizing: border-box;

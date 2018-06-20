@@ -15,7 +15,7 @@ class EventRegistration extends Abstract_Form_Template {
 	public function __construct() {
 		$this->id          = 'event_registration';
 		$this->title       = __( 'Event Registration', 'dialog-contact-form' );
-		$this->description = __( 'Allow your users to contact you with this simple contact form. You can add and remove fields as needed.', 'dialog-contact-form' );
+		$this->description = __( 'Allow user to register for your next event this easy to complete form. You can add and remove fields as needed.', 'dialog-contact-form' );
 	}
 
 	/**

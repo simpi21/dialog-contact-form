@@ -33,6 +33,13 @@ abstract class Abstract_Form_Template {
 	protected $description;
 
 	/**
+	 * Priority of the template
+	 *
+	 * @var int
+	 */
+	protected $priority = 100;
+
+	/**
 	 * Form fields
 	 *
 	 * @return array
@@ -87,5 +94,56 @@ abstract class Abstract_Form_Template {
 				update_post_meta( $post_id, $action->get_meta_key(), $action_value );
 			}
 		}
+	}
+
+	/**
+	 * Get Priority
+	 *
+	 * Returns the priority for an action.
+	 *
+	 * @return int
+	 */
+	public function get_priority() {
+		return intval( $this->priority );
+	}
+
+	/**
+	 * Get settings as array
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'id'          => $this->get_id(),
+			'title'       => $this->get_title(),
+			'description' => $this->get_description(),
+		);
+	}
+
+	/**
+	 * Returns the id of an template.
+	 *
+	 * @return string
+	 */
+	public function get_id() {
+		return $this->id;
+	}
+
+	/**
+	 * Returns the title of an template.
+	 *
+	 * @return string
+	 */
+	public function get_title() {
+		return $this->title;
+	}
+
+	/**
+	 * Returns the description of an template.
+	 *
+	 * @return string
+	 */
+	public function get_description() {
+		return $this->description;
 	}
 }

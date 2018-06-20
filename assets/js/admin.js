@@ -186,4 +186,15 @@
         processMailChimpAction(source);
     });
 
+    // Add new Form
+    $('body.post-type-dialog-contact-form').on('click', '.page-title-action', function (e) {
+        e.preventDefault();
+        $('#modal-form-template').addClass('is-active');
+    });
+
+    $(document).on('click', '[data-dismiss="modal"]', function (e) {
+        e.preventDefault();
+        $(this).closest('.modal').removeClass('is-active');
+    });
+
 })(jQuery);
