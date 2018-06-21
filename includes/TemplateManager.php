@@ -9,6 +9,7 @@ use DialogContactForm\Templates\ContactUs;
 use DialogContactForm\Templates\DataErasureRequest;
 use DialogContactForm\Templates\DataExportRequest;
 use DialogContactForm\Templates\EventRegistration;
+use DialogContactForm\Templates\GeneralEnquiry;
 use Traversable;
 
 class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countable, \ArrayAccess {
@@ -39,6 +40,7 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 		$this->add_template( 'contact_us', new ContactUs() );
 		$this->add_template( 'event_registration', new EventRegistration() );
 		$this->add_template( 'collect_feedback', new CollectFeedback() );
+		$this->add_template( 'general_enquiry', new GeneralEnquiry() );
 		$this->add_template( 'data_erasure_request', new DataErasureRequest() );
 		$this->add_template( 'data_export_request', new DataExportRequest() );
 
