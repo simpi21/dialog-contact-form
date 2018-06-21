@@ -16,7 +16,7 @@ abstract class Abstract_Field {
 	 */
 	protected $type = 'text';
 
-																																																																																																					/**
+	/**
 	 * Font Awesome Icon class
 	 *
 	 * @var string
@@ -423,7 +423,8 @@ abstract class Abstract_Field {
 			return true;
 		}
 		// Backward compatibility
-		if ( is_array( $this->field['validation'] ) && in_array( 'required', $this->field['validation'] ) ) {
+		$validation = isset( $this->field['validation'] ) ? (array) $this->field['validation'] : array();
+		if ( in_array( 'required', $validation ) ) {
 			return true;
 		}
 

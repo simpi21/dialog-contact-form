@@ -125,13 +125,14 @@ class FormBuilder {
 			return '';
 		}
 
+		$validation    = isset( $setting['validation'] ) ? (array) $setting['validation'] : array();
 		$required_abbr = '';
 		if ( isset( $setting['required_field'] ) && 'on' == $setting['required_field'] ) {
 			$required_abbr = sprintf( '&nbsp;<abbr class="dcf-required" title="%s">*</abbr>',
 				esc_html__( 'Required', 'dialog-contact-form' )
 			);
 		} // Backward compatibility
-        elseif ( in_array( 'required', $setting['validation'] ) ) {
+        elseif ( in_array( 'required', $validation ) ) {
 			$required_abbr = sprintf( '&nbsp;<abbr class="dcf-required" title="%s">*</abbr>',
 				esc_html__( 'Required', 'dialog-contact-form' )
 			);

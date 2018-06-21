@@ -18,7 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	if ( count( $_fields ) > 0 ) {
 		foreach ( $_fields as $_field_number => $_field ) {
 			$is_required_field = 'off';
-			if ( is_array( $_field['validation'] ) && in_array( 'required', $_field['validation'] ) ) {
+			$validation        = isset( $_field['validation'] ) ? (array) $_field['validation'] : array();
+			if ( in_array( 'required', $validation ) ) {
 				$is_required_field = 'on';
 			}
 			if ( isset( $_field['required_field'] ) && in_array( $_field['required_field'], array( 'on', 'off' ) ) ) {

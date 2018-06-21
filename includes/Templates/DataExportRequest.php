@@ -10,13 +10,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class ContactUs extends Abstract_Form_Template {
+class DataExportRequest extends Abstract_Form_Template {
 
 	public function __construct() {
-		$this->priority    = 20;
-		$this->id          = 'contact_us';
-		$this->title       = __( 'Contact Us', 'dialog-contact-form' );
-		$this->description = __( 'Allow your users to contact you with this simple contact form. You can add and remove fields as needed.', 'dialog-contact-form' );
+		$this->priority    = 50;
+		$this->id          = 'data_export_request';
+		$this->title       = __( 'Data Export Request', 'dialog-contact-form' );
+		$this->description = __( 'Includes action to add users to WordPress\' personal data export tool, allowing admins to comply with the GDPR and other privacy regulations from the site\'s front end.', 'dialog-contact-form' );
 	}
 
 	/**
@@ -27,14 +27,10 @@ class ContactUs extends Abstract_Form_Template {
 	protected function form_fields() {
 		return array(
 			array(
-				'field_type'     => 'text',
-				'field_id'       => 'name',
-				'field_name'     => 'name',
-				'field_title'    => __( 'Name', 'dialog-contact-form' ),
-				'required_field' => 'off',
-				'field_width'    => 'is-6',
-				'autocomplete'   => 'name',
-				'placeholder'    => 'John Doe',
+				'field_type'  => 'html',
+				'field_width' => 'is-12',
+				'field_title' => __( 'HTML', 'dialog-contact-form' ),
+				'html'        => __( 'Submit this form to request a personal data export from the site administrator.', 'dialog-contact-form' ),
 			),
 			array(
 				'field_type'     => 'email',
@@ -42,25 +38,9 @@ class ContactUs extends Abstract_Form_Template {
 				'field_id'       => 'email',
 				'field_name'     => 'email',
 				'required_field' => 'on',
-				'field_width'    => 'is-6',
+				'field_width'    => 'is-12',
 				'autocomplete'   => 'email',
 				'placeholder'    => 'mail@example.com',
-			),
-			array(
-				'field_type'     => 'text',
-				'field_title'    => __( 'Subject', 'dialog-contact-form' ),
-				'field_id'       => 'subject',
-				'field_name'     => 'subject',
-				'required_field' => 'off',
-				'field_width'    => 'is-12',
-			),
-			array(
-				'field_type'     => 'textarea',
-				'field_title'    => __( 'Message', 'dialog-contact-form' ),
-				'field_id'       => 'message',
-				'field_name'     => 'message',
-				'required_field' => 'on',
-				'field_width'    => 'is-12',
 			),
 		);
 	}
@@ -91,12 +71,12 @@ class ContactUs extends Abstract_Form_Template {
 			'email_notification' => array(
 				'receiver'    => '[system:admin_email]',
 				'senderEmail' => '[email]',
-				'senderName'  => '[name]',
-				'subject'     => '[system:blogname] : [subject]',
-				'body'        => '[all_fields_table]',
+				'senderName'  => '',
+				'subject'     => 'Data Export Request from [email]',
+				'body'        => '[email] has requested an export of the data you have collected from them on [system:siteurl]. ',
 			),
 			'success_message'    => array(
-				'message' => Utils::get_option( 'mail_sent_ok' )
+				'message' => __( 'Your form has been successfully submitted.', 'dialog-contact-form' ),
 			),
 			'redirect'           => array(
 				'redirect_to' => 'same',
