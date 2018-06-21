@@ -248,10 +248,10 @@ class FormBuilder {
 				echo $field_class->render();
 			}
 
-			do_action( 'dialog_contact_form_render_field', $this->form_id, $field, $field_type );
+			do_action( 'dialog_contact_form/render_field', $this->form_id, $field, $field_type );
 
 			// Show error message if any
-			if ( isset( $this->errors[ $field['field_name'] ][0] ) ) {
+			if ( isset( $field['field_name'], $this->errors[ $field['field_name'] ][0] ) ) {
 				echo '<div class="dcf-error-message">' . esc_attr( $this->errors[ $field['field_name'] ][0] ) . '</div>';
 			}
 

@@ -3,6 +3,8 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Actions\DataErasureRequest;
+use DialogContactForm\Actions\DataExportRequest;
 use DialogContactForm\Actions\EmailNotification;
 use DialogContactForm\Actions\MailChimp;
 use DialogContactForm\Actions\Mailpoet;
@@ -48,6 +50,8 @@ class ActionManager implements \IteratorAggregate, \JsonSerializable, \Countable
 		$this->add_action( 'mailpoet', new Mailpoet() );
 		$this->add_action( 'mailpoet3', new Mailpoet3() );
 		$this->add_action( 'webhook', new Webhook() );
+		$this->add_action( 'data_export_request', new DataExportRequest() );
+		$this->add_action( 'data_erasure_request', new DataErasureRequest() );
 		$this->add_action( 'success_message', new SuccessMessage() );
 		$this->add_action( 'redirect', new Redirect() );
 

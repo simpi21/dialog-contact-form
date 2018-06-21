@@ -67,18 +67,21 @@ class DataExportRequest extends Abstract_Form_Template {
 	 */
 	protected function form_actions() {
 		return array(
-			'store_submission'   => array(),
-			'email_notification' => array(
+			'store_submission'    => array(),
+			'data_export_request' => array(
+				'user_email' => 'email',
+			),
+			'email_notification'  => array(
 				'receiver'    => '[system:admin_email]',
 				'senderEmail' => '[email]',
 				'senderName'  => '',
 				'subject'     => 'Data Export Request from [email]',
 				'body'        => '[email] has requested an export of the data you have collected from them on [system:siteurl]. ',
 			),
-			'success_message'    => array(
+			'success_message'     => array(
 				'message' => __( 'Your form has been successfully submitted.', 'dialog-contact-form' ),
 			),
-			'redirect'           => array(
+			'redirect'            => array(
 				'redirect_to' => 'same',
 			),
 		);

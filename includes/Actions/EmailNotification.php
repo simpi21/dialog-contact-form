@@ -3,7 +3,6 @@
 namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Abstract_Action;
-use DialogContactForm\Config;
 use DialogContactForm\Supports\Mailer;
 use DialogContactForm\Utils;
 
@@ -255,6 +254,9 @@ class EmailNotification extends Abstract_Action {
 
 		$name_placeholders = array();
 		foreach ( $fields as $field ) {
+			if ( empty( $field['field_name'] ) ) {
+				continue;
+			}
 			if ( 'file' == $field['field_type'] ) {
 				continue;
 			}
