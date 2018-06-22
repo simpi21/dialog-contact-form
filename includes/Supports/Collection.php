@@ -40,6 +40,15 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	}
 
 	/**
+	 * Get the array representation of the current element.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return $this->getCollections();
+	}
+
+	/**
 	 * Whether an offset exists
 	 *
 	 * @param mixed $key An offset to check for.
@@ -175,6 +184,6 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 * @since 5.4.0
 	 */
 	public function jsonSerialize() {
-		return $this->getCollections();
+		return $this->toArray();
 	}
 }

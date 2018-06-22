@@ -61,10 +61,10 @@ class Activation {
 			return;
 		}
 
-		$post_title = esc_html__( 'Contact Form 1', 'dialog-contact-form' );
+		$contact_form = new ContactUs();
 
 		$post_id = wp_insert_post( array(
-			'post_title'     => $post_title,
+			'post_title'     => $contact_form->get_title(),
 			'post_status'    => 'publish',
 			'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
 			'comment_status' => 'closed',
@@ -72,7 +72,6 @@ class Activation {
 		) );
 
 		if ( is_int( $post_id ) ) {
-			$contact_form = new ContactUs();
 			$contact_form->run( $post_id );
 
 			self::upgrade_to_version_2( $post_id );

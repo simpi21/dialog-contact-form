@@ -142,12 +142,13 @@ class Admin {
 				break;
 
 			case 'entries':
-				$entry_url   = add_query_arg( array(
+				$entry_url     = add_query_arg( array(
 					'post_type' => 'dialog-contact-form',
 					'page'      => 'dcf-entries',
 					'form_id'   => $post_id,
 				), admin_url( 'edit.php' ) );
-				$entry_count = isset( $this->count_entries()[ $post_id ] ) ? $this->count_entries()[ $post_id ] : 0;
+				$count_entries = $this->count_entries();
+				$entry_count   = isset( $count_entries[ $post_id ] ) ? $count_entries[ $post_id ] : 0;
 				echo '<a href="' . esc_url( $entry_url ) . '">' . $entry_count . '</a>';
 				break;
 			default:
@@ -427,7 +428,7 @@ class Admin {
 		 * @param int $post_id The post ID.
 		 * @param \WP_Post $post The post object.
 		 */
-		do_action( 'dialog_contact_form_save_post', $post_id, $post );
+		do_action( 'dialog_contact_form/save_post', $post_id, $post );
 	}
 
 	/**

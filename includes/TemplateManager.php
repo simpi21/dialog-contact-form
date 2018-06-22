@@ -38,15 +38,15 @@ class TemplateManager extends Collection {
 	}
 
 	public function __construct() {
-		$this->add_template( 'blank', new Blank() );
-		$this->add_template( 'contact_us', new ContactUs() );
-		$this->add_template( 'event_registration', new EventRegistration() );
-		$this->add_template( 'collect_feedback', new CollectFeedback() );
-		$this->add_template( 'general_enquiry', new GeneralEnquiry() );
-		$this->add_template( 'data_erasure_request', new DataErasureRequest() );
-		$this->add_template( 'data_export_request', new DataExportRequest() );
-		$this->add_template( 'job_application', new JobApplication() );
-		$this->add_template( 'quote_request', new QuoteRequest() );
+		$this->add( 'blank', new Blank() );
+		$this->add( 'contact_us', new ContactUs() );
+		$this->add( 'event_registration', new EventRegistration() );
+		$this->add( 'collect_feedback', new CollectFeedback() );
+		$this->add( 'general_enquiry', new GeneralEnquiry() );
+		$this->add( 'data_erasure_request', new DataErasureRequest() );
+		$this->add( 'data_export_request', new DataExportRequest() );
+		$this->add( 'job_application', new JobApplication() );
+		$this->add( 'quote_request', new QuoteRequest() );
 
 		/**
 		 * Give other plugin option to add their own template(s)
@@ -67,34 +67,23 @@ class TemplateManager extends Collection {
 	}
 
 	/**
-	 * @param string $template_name
-	 * @param  \DialogContactForm\Abstracts\Template $template
+	 * Template to set
+	 *
+	 * @param string $template_name The offset to assign the value to.
+	 * @param Template $template The value to set.
 	 */
-	public function add_template( $template_name, $template ) {
+	public function add( $template_name, $template ) {
 		if ( $template instanceof Template ) {
 			$this->collections[ $template_name ] = $template;
 		}
 	}
 
 	/**
-	 * Offset to set
-	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
+	 * Get the array representation of the current element.
 	 *
-	 * @param mixed $offset The offset to assign the value to.
-	 * @param mixed $value The value to set.
+	 * @return array
 	 */
-	public function add( $offset, $value ) {
-		$this->add_template( $offset, $value );
-	}
-
-	/**
-	 * Specify data which should be serialized to JSON
-	 * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-	 * @return mixed data which can be serialized by json_encode,
-	 * which is a value of any type other than a resource.
-	 * @since 5.4.0
-	 */
-	public function jsonSerialize() {
+	public function toArray() {
 		return array_map( function ( $template ) {
 			if ( $template instanceof Template ) {
 				return $template->toArray();
@@ -107,8 +96,8 @@ class TemplateManager extends Collection {
 	/**
 	 * Sort action by priority
 	 *
-	 * @param \DialogContactForm\Abstracts\Template $templateA
-	 * @param \DialogContactForm\Abstracts\Template $templateB
+	 * @param Template $templateA
+	 * @param Template $templateB
 	 *
 	 * @return mixed
 	 */

@@ -44,16 +44,16 @@ class ActionManager extends Collection {
 	}
 
 	public function __construct() {
-		$this->add_action( 'store_submission', new StoreSubmission() );
-		$this->add_action( 'email_notification', new EmailNotification() );
-		$this->add_action( 'mailchimp', new MailChimp() );
-		$this->add_action( 'mailpoet', new Mailpoet() );
-		$this->add_action( 'mailpoet3', new Mailpoet3() );
-		$this->add_action( 'webhook', new Webhook() );
-		$this->add_action( 'data_export_request', new DataExportRequest() );
-		$this->add_action( 'data_erasure_request', new DataErasureRequest() );
-		$this->add_action( 'success_message', new SuccessMessage() );
-		$this->add_action( 'redirect', new Redirect() );
+		$this->add( 'store_submission', new StoreSubmission() );
+		$this->add( 'email_notification', new EmailNotification() );
+		$this->add( 'mailchimp', new MailChimp() );
+		$this->add( 'mailpoet', new Mailpoet() );
+		$this->add( 'mailpoet3', new Mailpoet3() );
+		$this->add( 'webhook', new Webhook() );
+		$this->add( 'data_export_request', new DataExportRequest() );
+		$this->add( 'data_erasure_request', new DataErasureRequest() );
+		$this->add( 'success_message', new SuccessMessage() );
+		$this->add( 'redirect', new Redirect() );
 
 		/**
 		 * Give other plugin option to add their own action(s)
@@ -74,34 +74,23 @@ class ActionManager extends Collection {
 	}
 
 	/**
-	 * @param string $action_name
-	 * @param  \DialogContactForm\Abstracts\Action $action
+	 * Action to set
+	 *
+	 * @param string $action_name The action name to assign the value to.
+	 * @param Action $action The action to set.
 	 */
-	public function add_action( $action_name, $action ) {
+	public function add( $action_name, $action ) {
 		if ( $action instanceof Action ) {
 			$this->collections[ $action_name ] = $action;
 		}
 	}
 
 	/**
-	 * Offset to set
-	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
+	 * Get the array representation of the current element.
 	 *
-	 * @param mixed $offset The offset to assign the value to.
-	 * @param mixed $value The value to set.
+	 * @return array
 	 */
-	public function add( $offset, $value ) {
-		$this->add_action( $offset, $value );
-	}
-
-	/**
-	 * Specify data which should be serialized to JSON
-	 * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-	 * @return mixed data which can be serialized by json_encode,
-	 * which is a value of any type other than a resource.
-	 * @since 5.4.0
-	 */
-	public function jsonSerialize() {
+	public function toArray() {
 		return array_map( function ( $action ) {
 			if ( $action instanceof Action ) {
 				return $action->toArray();
@@ -114,8 +103,8 @@ class ActionManager extends Collection {
 	/**
 	 * Sort action by priority
 	 *
-	 * @param \DialogContactForm\Abstracts\Action $actionA
-	 * @param \DialogContactForm\Abstracts\Action $actionB
+	 * @param Action $actionA
+	 * @param Action $actionB
 	 *
 	 * @return mixed
 	 */

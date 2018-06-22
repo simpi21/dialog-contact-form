@@ -17,10 +17,9 @@ class Shortcode {
 	private static $instance;
 
 	/**
-	 * Main DialogContactFormShortcode Instance
-	 * Ensures only one instance of DialogContactFormShortcode is loaded or can be loaded.
+	 * Ensures only one instance of the class is loaded or can be loaded.
 	 *
-	 * @return Shortcode - Main instance
+	 * @return self - Main instance
 	 */
 	public static function init() {
 		if ( is_null( self::$instance ) ) {
@@ -31,7 +30,7 @@ class Shortcode {
 	}
 
 	/**
-	 * Dialog_Contact_Form_Shortcode constructor.
+	 * Shortcode constructor.
 	 */
 	public function __construct() {
 		add_shortcode( 'dialog_contact_form', array( $this, 'contact_form' ) );
@@ -41,13 +40,12 @@ class Shortcode {
 	/**
 	 * Dialog Contact Form Shortcode
 	 *
-	 * @param  array $atts
-	 * @param  null $content
+	 * @param  array $attributes
 	 *
 	 * @return string
 	 */
-	public function contact_form( $atts, $content = null ) {
-		if ( empty( $atts['id'] ) ) {
+	public function contact_form( $attributes ) {
+		if ( empty( $attributes['id'] ) ) {
 			if ( current_user_can( 'manage_options' ) ) {
 				return esc_html__( 'Dialog Contact form now required a form ID attribute. Please update your shortcode.', 'dialog-contact-form' );
 			}
@@ -55,7 +53,7 @@ class Shortcode {
 			return '';
 		}
 
-		return FormBuilder::init( intval( $atts['id'] ) )->form();
+		return FormBuilder::init( intval( $attributes['id'] ) )->form();
 	}
 
 	/**

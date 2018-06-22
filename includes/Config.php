@@ -151,7 +151,7 @@ class Config {
 					unset( $this->options[ $key ] );
 					continue;
 				}
-				$messages[ $key ] = ! empty( $this->options[ $key ] ) ? $this->options[ $key ] : $message;
+				$messages[ $key ] = $message;
 			}
 
 			$this->validation_messages = $messages;

@@ -2,6 +2,8 @@
 
 namespace DialogContactForm;
 
+use WP_REST_Server;
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -56,7 +58,7 @@ class RestApi {
 	public function rest_api_init() {
 		register_rest_route( self::$namespace, '/entries', array(
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_entries' ),
 				'permission_callback' => array( $this, 'can_read_entries' ),
 				'args'                => array(
