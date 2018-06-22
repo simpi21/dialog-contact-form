@@ -2,7 +2,7 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Actions\DataErasureRequest;
 use DialogContactForm\Actions\DataExportRequest;
 use DialogContactForm\Actions\EmailNotification;
@@ -84,10 +84,10 @@ class ActionManager implements \IteratorAggregate, \JsonSerializable, \Countable
 
 	/**
 	 * @param string $action_name
-	 * @param  \DialogContactForm\Abstracts\Abstract_Action $action
+	 * @param  \DialogContactForm\Abstracts\Action $action
 	 */
 	public function add_action( $action_name, $action ) {
-		if ( $action instanceof Abstract_Action ) {
+		if ( $action instanceof Action ) {
 			$this->actions[ $action_name ] = $action;
 		}
 	}
@@ -121,7 +121,7 @@ class ActionManager implements \IteratorAggregate, \JsonSerializable, \Countable
 	 */
 	public function jsonSerialize() {
 		return array_map( function ( $action ) {
-			if ( $action instanceof Abstract_Action ) {
+			if ( $action instanceof Action ) {
 				return $action->toArray();
 			}
 
@@ -132,8 +132,8 @@ class ActionManager implements \IteratorAggregate, \JsonSerializable, \Countable
 	/**
 	 * Sort action by priority
 	 *
-	 * @param \DialogContactForm\Abstracts\Abstract_Action $actionA
-	 * @param \DialogContactForm\Abstracts\Abstract_Action $actionB
+	 * @param \DialogContactForm\Abstracts\Action $actionA
+	 * @param \DialogContactForm\Abstracts\Action $actionB
 	 *
 	 * @return mixed
 	 */

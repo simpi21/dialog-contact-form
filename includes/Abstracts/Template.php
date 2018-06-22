@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-abstract class Abstract_Form_Template {
+abstract class Template {
 
 	/**
 	 * Form unique id
@@ -84,7 +84,7 @@ abstract class Abstract_Form_Template {
 		) );
 
 		$actions = ActionManager::init();
-		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
+		/** @var \DialogContactForm\Abstracts\Action $action */
 		foreach ( $actions as $action ) {
 			if ( ! in_array( $action->get_id(), $form_actions_list ) ) {
 				continue;

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-abstract class Abstract_Action {
+abstract class Action {
 
 	/**
 	 * Unique slug for an action

@@ -2,14 +2,14 @@
 
 namespace DialogContactForm\Fields;
 
-use DialogContactForm\Abstracts\Abstract_Field;
+use DialogContactForm\Abstracts\Field;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Checkbox extends Abstract_Field {
+class Checkbox extends Field {
 
 	/**
 	 * Field type

@@ -2,7 +2,7 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\Abstracts\Abstract_Form_Template;
+use DialogContactForm\Abstracts\Template;
 use DialogContactForm\Supports\Metabox;
 
 class AdminAjax {
@@ -45,7 +45,7 @@ class AdminAjax {
 		$supported  = array();
 		$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field_type );
 		if ( class_exists( $class_name ) ) {
-			/** @var \DialogContactForm\Abstracts\Abstract_Field $class */
+			/** @var \DialogContactForm\Abstracts\Field $class */
 			$class     = new $class_name;
 			$supported = $class->getMetaboxFields();
 		}
@@ -409,7 +409,7 @@ class AdminAjax {
 
 		$templates = TemplateManager::init();
 		$template  = $templates[ $_REQUEST['template'] ];
-		if ( ! $template instanceof Abstract_Form_Template ) {
+		if ( ! $template instanceof Template ) {
 			wp_die( __( 'Form template is not available.', 'dialog-contact-form' ) );
 		}
 

@@ -2,7 +2,7 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\Abstracts\Abstract_Form_Template;
+use DialogContactForm\Abstracts\Template;
 use DialogContactForm\Templates\Blank;
 use DialogContactForm\Templates\CollectFeedback;
 use DialogContactForm\Templates\ContactUs;
@@ -75,10 +75,10 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 
 	/**
 	 * @param string $template_name
-	 * @param  \DialogContactForm\Abstracts\Abstract_Form_Template $template
+	 * @param  \DialogContactForm\Abstracts\Template $template
 	 */
 	public function add_template( $template_name, $template ) {
-		if ( $template instanceof Abstract_Form_Template ) {
+		if ( $template instanceof Template ) {
 			$this->collections[ $template_name ] = $template;
 		}
 	}
@@ -102,7 +102,7 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	 */
 	public function jsonSerialize() {
 		return array_map( function ( $template ) {
-			if ( $template instanceof Abstract_Form_Template ) {
+			if ( $template instanceof Template ) {
 				return $template->toArray();
 			}
 
@@ -182,8 +182,8 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	/**
 	 * Sort action by priority
 	 *
-	 * @param \DialogContactForm\Abstracts\Abstract_Form_Template $templateA
-	 * @param \DialogContactForm\Abstracts\Abstract_Form_Template $templateB
+	 * @param \DialogContactForm\Abstracts\Template $templateA
+	 * @param \DialogContactForm\Abstracts\Template $templateB
 	 *
 	 * @return mixed
 	 */

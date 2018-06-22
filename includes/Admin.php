@@ -229,7 +229,7 @@ class Admin {
 					$_actions          = get_post_meta( $post->ID, '_contact_form_actions', true );
 					$default_actions   = array( 'store_submission', 'success_message', 'redirect' );
 					$supported_actions = isset( $_actions['after_submit_actions'] ) ? $_actions['after_submit_actions'] : $default_actions;
-					/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
+					/** @var \DialogContactForm\Abstracts\Action $action */
 					foreach ( $actions as $action ) {
 						$display = in_array( $action->get_id(), $supported_actions ) ? 'block' : 'none';
 						echo '<div id="action-' . $action->get_id() . '" data-id="closed" class="dcf-toggle dcf-toggle-action dcf-toggle--normal" style="display:' . $display . ';">';
@@ -416,7 +416,7 @@ class Admin {
 		}
 
 		$actions = ActionManager::init();
-		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
+		/** @var \DialogContactForm\Abstracts\Action $action */
 		foreach ( $actions as $action ) {
 			$action->save( $post_id, $post );
 		}
@@ -507,7 +507,7 @@ class Admin {
 	 */
 	private function get_actions_list( $actions ) {
 		$list = array();
-		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
+		/** @var \DialogContactForm\Abstracts\Action $action */
 		foreach ( $actions as $action ) {
 			$list[ $action->get_id() ] = $action->get_title();
 		}

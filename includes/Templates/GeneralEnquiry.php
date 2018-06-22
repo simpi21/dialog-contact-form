@@ -3,10 +3,10 @@
 namespace DialogContactForm\Templates;
 
 
-use DialogContactForm\Abstracts\Abstract_Form_Template;
+use DialogContactForm\Abstracts\Template;
 use DialogContactForm\Utils;
 
-class GeneralEnquiry extends Abstract_Form_Template {
+class GeneralEnquiry extends Template {
 
 	public function __construct() {
 		$this->priority    = 60;

@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			$supported  = array();
 			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $_field['field_type'] );
 			if ( class_exists( $class_name ) ) {
-				/** @var \DialogContactForm\Abstracts\Abstract_Field $class */
+				/** @var \DialogContactForm\Abstracts\Field $class */
 				$class     = new $class_name;
 				$supported = $class->getMetaboxFields();
 			}

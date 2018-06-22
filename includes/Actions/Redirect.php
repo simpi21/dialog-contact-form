@@ -2,14 +2,14 @@
 
 namespace DialogContactForm\Actions;
 
-use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Abstracts\Action;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Redirect extends Abstract_Action {
+class Redirect extends Action {
 
 	/**
 	 * Redirect constructor.

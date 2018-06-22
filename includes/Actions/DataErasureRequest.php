@@ -2,10 +2,10 @@
 
 namespace DialogContactForm\Actions;
 
-use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Config;
 
-class DataErasureRequest extends Abstract_Action {
+class DataErasureRequest extends Action {
 
 	/**
 	 * DataErasureRequest constructor.

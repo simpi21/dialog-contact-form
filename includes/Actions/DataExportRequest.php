@@ -2,7 +2,7 @@
 
 namespace DialogContactForm\Actions;
 
-use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Config;
 
 // Exit if accessed directly
@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class DataExportRequest extends Abstract_Action {
+class DataExportRequest extends Action {
 
 	/**
 	 * DataExport constructor.

@@ -2,7 +2,7 @@
 
 namespace DialogContactForm\Fields;
 
-use DialogContactForm\Abstracts\Abstract_Field;
+use DialogContactForm\Abstracts\Field;
 use DialogContactForm\Utils;
 
 // Exit if accessed directly
@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Recaptcha2 extends Abstract_Field {
+class Recaptcha2 extends Field {
 
 	/**
 	 * Google reCAPTCHA site verify API endpoint

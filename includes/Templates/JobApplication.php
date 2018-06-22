@@ -2,10 +2,10 @@
 
 namespace DialogContactForm\Templates;
 
-use DialogContactForm\Abstracts\Abstract_Form_Template;
+use DialogContactForm\Abstracts\Template;
 use DialogContactForm\Utils;
 
-class JobApplication extends Abstract_Form_Template {
+class JobApplication extends Template {
 
 	public function __construct() {
 		$this->priority    = 70;
@@ -151,6 +151,7 @@ class JobApplication extends Abstract_Form_Template {
 				'field_name'     => 'previous_job_description',
 				'required_field' => 'off',
 				'field_width'    => 'is-12',
+				'rows'           => 5,
 			),
 			array(
 				'field_type'  => 'html',

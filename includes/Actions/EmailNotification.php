@@ -2,7 +2,7 @@
 
 namespace DialogContactForm\Actions;
 
-use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Supports\Mailer;
 use DialogContactForm\Utils;
 
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class EmailNotification extends Abstract_Action {
+class EmailNotification extends Action {
 
 	/**
 	 * Hold value from WordPress option

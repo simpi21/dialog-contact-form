@@ -2,14 +2,14 @@
 
 namespace DialogContactForm\Actions;
 
-use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Abstracts\Action;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Webhook extends Abstract_Action {
+class Webhook extends Action {
 
 	/**
 	 * Redirect constructor.

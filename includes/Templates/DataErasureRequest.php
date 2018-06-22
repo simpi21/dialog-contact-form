@@ -2,7 +2,7 @@
 
 namespace DialogContactForm\Templates;
 
-use DialogContactForm\Abstracts\Abstract_Form_Template;
+use DialogContactForm\Abstracts\Template;
 use DialogContactForm\Utils;
 
 // Exit if accessed directly
@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class DataErasureRequest extends Abstract_Form_Template {
+class DataErasureRequest extends Template {
 
 	public function __construct() {
 		$this->priority    = 40;

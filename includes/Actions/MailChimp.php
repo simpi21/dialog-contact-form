@@ -2,7 +2,7 @@
 
 namespace DialogContactForm\Actions;
 
-use DialogContactForm\Abstracts\Abstract_Action;
+use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Config;
 use DialogContactForm\Supports\MailChimpHandler;
 use DialogContactForm\Utils;
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class MailChimp extends Abstract_Action {
+class MailChimp extends Action {
 
 	private $api_key;
 

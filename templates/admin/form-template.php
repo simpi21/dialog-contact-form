@@ -21,7 +21,7 @@ $templates = TemplateManager::init();
         <div class="modal-card-body">
             <div class="dcf-columns dcf-templates">
 				<?php
-				/** @var \DialogContactForm\Abstracts\Abstract_Form_Template $template */
+				/** @var \DialogContactForm\Abstracts\Template $template */
 				foreach ( $templates as $template ) {
 					$url = add_query_arg( array(
 						'action'   => 'dcf_new_form',

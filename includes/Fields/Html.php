@@ -2,14 +2,14 @@
 
 namespace DialogContactForm\Fields;
 
-use DialogContactForm\Abstracts\Abstract_Field;
+use DialogContactForm\Abstracts\Field;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Html extends Abstract_Field {
+class Html extends Field {
 
 	/**
 	 * Metabox fields

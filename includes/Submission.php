@@ -100,7 +100,7 @@ class Submission {
 
 			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field['field_type'] );
 			if ( class_exists( $class_name ) ) {
-				/** @var \DialogContactForm\Abstracts\Abstract_Field $class */
+				/** @var \DialogContactForm\Abstracts\Field $class */
 				$class = new $class_name;
 				$class->setField( $field );
 
@@ -120,7 +120,7 @@ class Submission {
 		$response = array();
 		$actions  = ActionManager::init();
 
-		/** @var \DialogContactForm\Abstracts\Abstract_Action $action */
+		/** @var \DialogContactForm\Abstracts\Action $action */
 		foreach ( $actions as $action ) {
 			if ( ! in_array( $action->get_id(), $config->getFormActions() ) ) {
 				continue;
@@ -233,7 +233,7 @@ class Submission {
 
 		$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field_type );
 		if ( class_exists( $class_name ) ) {
-			/** @var \DialogContactForm\Abstracts\Abstract_Field $class */
+			/** @var \DialogContactForm\Abstracts\Field $class */
 			$class = new $class_name;
 			$class->setField( $field );
 

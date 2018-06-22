@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-abstract class Abstract_Field {
+abstract class Field {
 
 	/**
 	 * Field type
