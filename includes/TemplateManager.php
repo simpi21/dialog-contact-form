@@ -10,6 +10,7 @@ use DialogContactForm\Templates\DataErasureRequest;
 use DialogContactForm\Templates\DataExportRequest;
 use DialogContactForm\Templates\EventRegistration;
 use DialogContactForm\Templates\GeneralEnquiry;
+use DialogContactForm\Templates\JobApplication;
 use Traversable;
 
 class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countable, \ArrayAccess {
@@ -22,7 +23,7 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	/**
 	 * @var array
 	 */
-	protected $templates = array();
+	protected $collections = array();
 
 	/**
 	 * @return TemplateManager
@@ -43,6 +44,7 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 		$this->add_template( 'general_enquiry', new GeneralEnquiry() );
 		$this->add_template( 'data_erasure_request', new DataErasureRequest() );
 		$this->add_template( 'data_export_request', new DataExportRequest() );
+		$this->add_template( 'job_application', new JobApplication() );
 
 		/**
 		 * Give other plugin option to add their own template(s)
@@ -62,8 +64,8 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	/**
 	 * @return array
 	 */
-	public function getTemplates() {
-		$actions = $this->templates;
+	public function getCollections() {
+		$actions = $this->collections;
 
 		// Sort by priority
 		usort( $actions, array( $this, 'sortByPriority' ) );
@@ -77,7 +79,7 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	 */
 	public function add_template( $template_name, $template ) {
 		if ( $template instanceof Abstract_Form_Template ) {
-			$this->templates[ $template_name ] = $template;
+			$this->collections[ $template_name ] = $template;
 		}
 	}
 
@@ -88,7 +90,7 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	 * @since 5.0.0
 	 */
 	public function getIterator() {
-		return new \ArrayIterator( $this->getTemplates() );
+		return new \ArrayIterator( $this->getCollections() );
 	}
 
 	/**
@@ -99,14 +101,13 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	 * @since 5.4.0
 	 */
 	public function jsonSerialize() {
-
 		return array_map( function ( $template ) {
 			if ( $template instanceof Abstract_Form_Template ) {
 				return $template->toArray();
 			}
 
 			return $template;
-		}, $this->getTemplates() );
+		}, $this->getCollections() );
 	}
 
 	/**
@@ -116,7 +117,7 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	 * @since 5.1.0
 	 */
 	public function count() {
-		return count( $this->getTemplates() );
+		return count( $this->getCollections() );
 	}
 
 	/**
@@ -129,7 +130,7 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	 * @since 5.0.0
 	 */
 	public function offsetExists( $offset ) {
-		return isset( $this->templates[ $offset ] );
+		return isset( $this->collections[ $offset ] );
 	}
 
 	/**
@@ -143,7 +144,7 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	 */
 	public function offsetGet( $offset ) {
 		if ( $this->offsetExists( $offset ) ) {
-			return $this->templates[ $offset ];
+			return $this->collections[ $offset ];
 		}
 
 		return null;
@@ -174,7 +175,7 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	 */
 	public function offsetUnset( $offset ) {
 		if ( $this->offsetExists( $offset ) ) {
-			unset( $this->templates[ $offset ] );
+			unset( $this->collections[ $offset ] );
 		}
 	}
 
