@@ -246,18 +246,16 @@ class EmailNotification extends Action {
 		if ( ! $post instanceof \WP_Post ) {
 			return '';
 		}
-		$fields = get_post_meta( $post->ID, '_contact_form_fields', true );
-		$fields = is_array( $fields ) ? $fields : array();
-		if ( ! isset( $_GET['action'] ) && count( $fields ) < 1 ) {
-			$fields = dcf_default_fields();
-		}
+		$fields           = get_post_meta( $post->ID, '_contact_form_fields', true );
+		$fields           = is_array( $fields ) ? $fields : array();
+		$black_list_types = array( 'file', 'html', 'hidden' );
 
 		$name_placeholders = array();
 		foreach ( $fields as $field ) {
 			if ( empty( $field['field_name'] ) ) {
 				continue;
 			}
-			if ( 'file' == $field['field_type'] ) {
+			if ( in_array( $field['field_type'], $black_list_types ) ) {
 				continue;
 			}
 			$name_placeholders[] = '[' . $field['field_name'] . ']';

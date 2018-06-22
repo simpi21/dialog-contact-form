@@ -66,13 +66,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		private $min_php = '5.3';
 
 		/**
-		 * Form validation messages
-		 *
-		 * @var array
-		 */
-		private $validation_messages = array();
-
-		/**
 		 * Ensures only one instance of the class is loaded or can be loaded.
 		 *
 		 * @return Dialog_Contact_Form
@@ -80,44 +73,33 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		public static function init() {
 			if ( is_null( self::$instance ) ) {
 				self::$instance = new self();
+
+				// define constants
+				self::$instance->define_constants();
+
+				if ( ! self::$instance->is_supported_php() ) {
+					register_activation_hook( __FILE__, array( self::$instance, 'auto_deactivate' ) );
+					add_action( 'admin_notices', array( self::$instance, 'php_version_notice' ) );
+
+					return self::$instance;
+				}
+
+				// Include Classes
+				spl_autoload_register( array( self::$instance, 'include_classes' ) );
+
+				register_activation_hook( __FILE__, array( self::$instance, 'plugin_activation' ) );
+				register_deactivation_hook( __FILE__, array( self::$instance, 'plugin_deactivate' ) );
+
+				// initialize the classes
+				add_action( 'plugins_loaded', array( self::$instance, 'init_classes' ) );
+				add_action( 'plugins_loaded', array( self::$instance, 'load_plugin_textdomain' ) );
+				add_action( 'admin_footer', array( self::$instance, 'form_template' ), 0 );
+				add_action( 'phpmailer_init', array( self::$instance, 'phpmailer_config' ) );
+
+				do_action( 'dialog_contact_form_init', self::$instance );
 			}
 
 			return self::$instance;
-		}
-
-		/**
-		 * DialogContactForm constructor.
-		 */
-		public function __construct() {
-
-			// define constants
-			$this->define_constants();
-
-			if ( ! $this->is_supported_php() ) {
-				register_activation_hook( __FILE__, array( $this, 'auto_deactivate' ) );
-				add_action( 'admin_notices', array( $this, 'php_version_notice' ) );
-
-				return;
-			}
-
-			// Include Classes
-			$this->include_classes();
-
-			// include files
-			$this->include_files();
-
-			register_activation_hook( __FILE__, array( $this, 'plugin_activation' ) );
-			register_deactivation_hook( __FILE__, array( $this, 'plugin_deactivate' ) );
-
-			// initialize the classes
-			add_action( 'plugins_loaded', array( $this, 'init_classes' ) );
-			add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
-			add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ), 30 );
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
-			add_action( 'admin_footer', array( $this, 'form_template' ), 0 );
-			add_action( 'phpmailer_init', array( $this, 'phpmailer_config' ) );
-
-			do_action( 'dialog_contact_form_init', $this );
 		}
 
 		/**
@@ -139,73 +121,53 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * Define plugin constants
 		 */
 		private function define_constants() {
-			$this->define( 'DIALOG_CONTACT_FORM', $this->plugin_name );
-			$this->define( 'DIALOG_CONTACT_FORM_POST_TYPE', $this->post_type );
-			$this->define( 'DIALOG_CONTACT_FORM_VERSION', $this->version );
-			$this->define( 'DIALOG_CONTACT_FORM_FILE', __FILE__ );
-			$this->define( 'DIALOG_CONTACT_FORM_PATH', dirname( DIALOG_CONTACT_FORM_FILE ) );
-			$this->define( 'DIALOG_CONTACT_FORM_INCLUDES', DIALOG_CONTACT_FORM_PATH . '/includes' );
-			$this->define( 'DIALOG_CONTACT_FORM_TEMPLATES', DIALOG_CONTACT_FORM_PATH . '/templates' );
-			$this->define( 'DIALOG_CONTACT_FORM_URL', plugins_url( '', DIALOG_CONTACT_FORM_FILE ) );
-			$this->define( 'DIALOG_CONTACT_FORM_ASSETS', DIALOG_CONTACT_FORM_URL . '/assets' );
-			$this->define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', 'dcf-attachments' );
-		}
-
-		/**
-		 * Define constant if not already set.
-		 *
-		 * @param string $name Constant name.
-		 * @param string|bool $value Constant value.
-		 */
-		private function define( $name, $value ) {
-			if ( ! defined( $name ) ) {
-				define( $name, $value );
-			}
-		}
-
-		/**
-		 * Includes plugin files
-		 */
-		private function include_files() {
-			include_once DIALOG_CONTACT_FORM_INCLUDES . '/functions.php';
+			define( 'DIALOG_CONTACT_FORM', $this->plugin_name );
+			define( 'DIALOG_CONTACT_FORM_POST_TYPE', $this->post_type );
+			define( 'DIALOG_CONTACT_FORM_VERSION', $this->version );
+			define( 'DIALOG_CONTACT_FORM_FILE', __FILE__ );
+			define( 'DIALOG_CONTACT_FORM_PATH', dirname( DIALOG_CONTACT_FORM_FILE ) );
+			define( 'DIALOG_CONTACT_FORM_INCLUDES', DIALOG_CONTACT_FORM_PATH . '/includes' );
+			define( 'DIALOG_CONTACT_FORM_TEMPLATES', DIALOG_CONTACT_FORM_PATH . '/templates' );
+			define( 'DIALOG_CONTACT_FORM_URL', plugins_url( '', DIALOG_CONTACT_FORM_FILE ) );
+			define( 'DIALOG_CONTACT_FORM_ASSETS', DIALOG_CONTACT_FORM_URL . '/assets' );
+			define( 'DIALOG_CONTACT_FORM_UPLOAD_DIR', 'dcf-attachments' );
 		}
 
 		/**
 		 * Include classes
+		 *
+		 * @param string $className class name
 		 */
-		private function include_classes() {
-			spl_autoload_register( function ( $class ) {
+		private function include_classes( $className ) {
+			if ( class_exists( $className ) ) {
+				return;
+			}
 
-				if ( class_exists( $class ) ) {
-					return;
-				}
+			// project-specific namespace prefix
+			$prefix = 'DialogContactForm\\';
 
-				// project-specific namespace prefix
-				$prefix = 'DialogContactForm\\';
+			// base directory for the namespace prefix
+			$base_dir = DIALOG_CONTACT_FORM_INCLUDES . DIRECTORY_SEPARATOR;
 
-				// base directory for the namespace prefix
-				$base_dir = DIALOG_CONTACT_FORM_INCLUDES . DIRECTORY_SEPARATOR;
+			// does the class use the namespace prefix?
+			$len = strlen( $prefix );
+			if ( strncmp( $prefix, $className, $len ) !== 0 ) {
+				// no, move to the next registered autoloader
+				return;
+			}
 
-				// does the class use the namespace prefix?
-				$len = strlen( $prefix );
-				if ( strncmp( $prefix, $class, $len ) !== 0 ) {
-					// no, move to the next registered autoloader
-					return;
-				}
+			// get the relative class name
+			$relative_class = substr( $className, $len );
 
-				// get the relative class name
-				$relative_class = substr( $class, $len );
+			// replace the namespace prefix with the base directory, replace namespace
+			// separators with directory separators in the relative class name, append
+			// with .php
+			$file = $base_dir . str_replace( '\\', '/', $relative_class ) . '.php';
 
-				// replace the namespace prefix with the base directory, replace namespace
-				// separators with directory separators in the relative class name, append
-				// with .php
-				$file = $base_dir . str_replace( '\\', '/', $relative_class ) . '.php';
-
-				// if the file exists, require it
-				if ( file_exists( $file ) ) {
-					require_once $file;
-				}
-			} );
+			// if the file exists, require it
+			if ( file_exists( $file ) ) {
+				require_once $file;
+			}
 		}
 
 		/**
@@ -222,6 +184,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				$this->container['adminajax'] = \DialogContactForm\AdminAjax::init();
 			}
 
+			$this->container['scripts']    = \DialogContactForm\Scripts::init();
 			$this->container['rest']       = \DialogContactForm\RestApi::init();
 			$this->container['submission'] = \DialogContactForm\Submission::init();
 			$this->container['shortcode']  = \DialogContactForm\Shortcode::init();
@@ -243,87 +206,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			if ( file_exists( $mofile_global ) ) {
 				load_textdomain( $this->plugin_name, $mofile_global );
 			}
-		}
-
-		/**
-		 * Load admin scripts
-		 *
-		 * @param $hook
-		 */
-		public function admin_scripts( $hook ) {
-			global $post_type;
-			if ( ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE ) && ( 'dialog-contact-form_page_dcf-settings' != $hook ) ) {
-				return;
-			}
-
-			$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
-
-			wp_enqueue_style( $this->plugin_name . '-admin',
-				DIALOG_CONTACT_FORM_ASSETS . '/css/admin.css',
-				array( 'wp-color-picker' ), DIALOG_CONTACT_FORM_VERSION, 'all' );
-
-			wp_enqueue_style( $this->plugin_name . '-icons',
-				DIALOG_CONTACT_FORM_ASSETS . '/fontawesome/css/fontawesome-all.min.css',
-				array( 'wp-color-picker' ), DIALOG_CONTACT_FORM_VERSION, 'all' );
-
-			wp_enqueue_script( 'wp-color-picker-alpha',
-				DIALOG_CONTACT_FORM_ASSETS . '/lib/wp-color-picker-alpha/wp-color-picker-alpha' . $suffix . '.js',
-				array( 'wp-color-picker' ), '2.1.3', true );
-
-			wp_enqueue_script( 'select2', DIALOG_CONTACT_FORM_ASSETS . '/lib/select2/select2' . $suffix . '.js',
-				array( 'jquery' ), '4.0.5', true );
-
-			wp_enqueue_style( 'select2', DIALOG_CONTACT_FORM_ASSETS . '/css/select2.css',
-				array(), DIALOG_CONTACT_FORM_VERSION, 'all' );
-
-			wp_enqueue_script( $this->plugin_name . '-admin',
-				DIALOG_CONTACT_FORM_ASSETS . '/js/admin' . $suffix . '.js',
-				array(
-					'jquery',
-					'select2',
-					'jquery-ui-tabs',
-					'jquery-ui-sortable',
-					'jquery-ui-draggable',
-					'jquery-ui-accordion',
-					'wp-color-picker-alpha'
-				),
-				DIALOG_CONTACT_FORM_VERSION, true );
-		}
-
-		/**
-		 * Load plugin front-end scripts
-		 */
-		public function frontend_scripts() {
-			global $is_IE;
-
-			$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
-
-			$enabled_style = \DialogContactForm\Utils::get_option( 'default_style', 'enable' );
-			$hl            = \DialogContactForm\Utils::get_option( 'recaptcha_lang', 'en' );
-			$lang          = \DialogContactForm\Fields\Recaptcha2::lang();
-			$hl            = in_array( $hl, array_keys( $lang ) ) ? $hl : 'en';
-			$captcha_url   = add_query_arg( array( 'hl' => $hl ), 'https://www.google.com/recaptcha/api.js' );
-
-			if ( 'disable' != $enabled_style ) {
-				wp_enqueue_style( $this->plugin_name,
-					DIALOG_CONTACT_FORM_ASSETS . '/css/style.css',
-					array(), DIALOG_CONTACT_FORM_VERSION, 'all' );
-			}
-
-			// Polyfill for IE
-			if ( $is_IE ) {
-				wp_enqueue_script( $this->plugin_name . '-polyfill',
-					DIALOG_CONTACT_FORM_ASSETS . '/js/polyfill' . $suffix . '.js',
-					array(), null, false );
-			}
-
-			wp_enqueue_script( $this->plugin_name,
-				DIALOG_CONTACT_FORM_ASSETS . '/js/form' . $suffix . '.js',
-				array(), DIALOG_CONTACT_FORM_VERSION, true );
-
-			wp_register_script( 'dialog-contact-form-recaptcha', $captcha_url, '', null, true );
-
-			wp_localize_script( $this->plugin_name, 'DialogContactForm', $this->localize_script() );
 		}
 
 		/**
@@ -447,26 +329,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		}
 
 		/**
-		 * Get validation messages
-		 *
-		 * @return array
-		 */
-		public function get_validation_messages() {
-			if ( empty( $this->validation_messages ) ) {
-				$messages  = \DialogContactForm\Utils::validation_messages();
-				$options   = \DialogContactForm\Utils::get_option();
-				$_messages = array();
-				foreach ( $messages as $key => $message ) {
-					$_messages[ $key ] = ! empty( $options[ $key ] ) ? $options[ $key ] : $message;
-				}
-
-				$this->validation_messages = $_messages;
-			}
-
-			return $this->validation_messages;
-		}
-
-		/**
 		 * What type of request is this?
 		 *
 		 * @param  string $type admin, ajax, cron or frontend.
@@ -486,24 +348,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			}
 
 			return false;
-		}
-
-		/**
-		 * Get dynamic variables that will pass to javaScript variables
-		 *
-		 * @return array
-		 */
-		private function localize_script() {
-			$variables = array(
-				'ajaxurl'      => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( 'dialog_contact_form_nonce' ),
-				'selector'     => 'dcf-form',
-				'fieldClass'   => 'dcf-has-error',
-				'errorClass'   => 'dcf-error-message',
-				'loadingClass' => 'is-loading',
-			);
-
-			return array_merge( $variables, $this->get_validation_messages() );
 		}
 
 		/**
