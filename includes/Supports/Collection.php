@@ -47,7 +47,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 * @return bool
 	 */
 	public function has( $key ) {
-		return isset( $this->container[ $key ] );
+		return isset( $this->collections[ $key ] );
 	}
 
 	/**
@@ -58,11 +58,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 * @return mixed Can return all value types.
 	 */
 	public function get( $key ) {
-		if ( $this->has( $key ) ) {
-			return $this->collections[ $key ];
+		if ( ! $this->has( $key ) ) {
+			return null;
 		}
 
-		return null;
+		return $this->collections[ $key ];
 	}
 
 	/**
@@ -175,6 +175,6 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 * @since 5.4.0
 	 */
 	public function jsonSerialize() {
-		return $this->collections;
+		return $this->getCollections();
 	}
 }

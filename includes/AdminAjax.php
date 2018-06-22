@@ -408,7 +408,7 @@ class AdminAjax {
 		}
 
 		$templates = TemplateManager::init();
-		$template  = $templates[ $_REQUEST['template'] ];
+		$template  = $templates->get( $_REQUEST['template'] );
 		if ( ! $template instanceof Template ) {
 			wp_die( __( 'Form template is not available.', 'dialog-contact-form' ) );
 		}

@@ -13,14 +13,14 @@ use DialogContactForm\Actions\Redirect;
 use DialogContactForm\Actions\StoreSubmission;
 use DialogContactForm\Actions\SuccessMessage;
 use DialogContactForm\Actions\Webhook;
-use Traversable;
+use DialogContactForm\Supports\Collection;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class ActionManager implements \IteratorAggregate, \JsonSerializable, \Countable {
+class ActionManager extends Collection {
 
 	/**
 	 * @var object
@@ -30,7 +30,7 @@ class ActionManager implements \IteratorAggregate, \JsonSerializable, \Countable
 	/**
 	 * @var array
 	 */
-	protected $actions = array();
+	protected $collections = array();
 
 	/**
 	 * @return ActionManager
@@ -62,19 +62,10 @@ class ActionManager implements \IteratorAggregate, \JsonSerializable, \Countable
 	}
 
 	/**
-	 * Get the string representation of the current element.
-	 *
-	 * @return string
-	 */
-	public function __toString() {
-		return json_encode( $this->jsonSerialize() );
-	}
-
-	/**
 	 * @return array
 	 */
-	public function getActions() {
-		$actions = $this->actions;
+	public function getCollections() {
+		$actions = $this->collections;
 
 		// Sort by priority
 		usort( $actions, array( $this, 'sortByPriority' ) );
@@ -88,28 +79,19 @@ class ActionManager implements \IteratorAggregate, \JsonSerializable, \Countable
 	 */
 	public function add_action( $action_name, $action ) {
 		if ( $action instanceof Action ) {
-			$this->actions[ $action_name ] = $action;
+			$this->collections[ $action_name ] = $action;
 		}
 	}
 
 	/**
-	 * Retrieve an external iterator
-	 * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
-	 * @return Traversable An instance of an object implementing Iterator or Traversable
-	 * @since 5.0.0
+	 * Offset to set
+	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
+	 *
+	 * @param mixed $offset The offset to assign the value to.
+	 * @param mixed $value The value to set.
 	 */
-	public function getIterator() {
-		return new \ArrayIterator( $this->getActions() );
-	}
-
-	/**
-	 * Count elements of an object
-	 * @link http://php.net/manual/en/countable.count.php
-	 * @return int The custom count as an integer.
-	 * @since 5.1.0
-	 */
-	public function count() {
-		return count( $this->getActions() );
+	public function add( $offset, $value ) {
+		$this->add_action( $offset, $value );
 	}
 
 	/**
@@ -126,7 +108,7 @@ class ActionManager implements \IteratorAggregate, \JsonSerializable, \Countable
 			}
 
 			return $action;
-		}, $this->getActions() );
+		}, $this->getCollections() );
 	}
 
 	/**

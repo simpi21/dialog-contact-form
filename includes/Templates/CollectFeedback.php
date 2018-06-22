@@ -81,6 +81,7 @@ class CollectFeedback extends Template {
 				'field_name'     => 'additional_feedback',
 				'required_field' => 'off',
 				'field_width'    => 'is-12',
+				'rows'           => 5,
 			),
 		);
 	}

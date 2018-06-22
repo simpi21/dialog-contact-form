@@ -61,6 +61,7 @@ class ContactUs extends Template {
 				'field_name'     => 'message',
 				'required_field' => 'on',
 				'field_width'    => 'is-12',
+				'rows'           => 5,
 			),
 		);
 	}

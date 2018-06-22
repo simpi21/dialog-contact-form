@@ -3,6 +3,7 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Template;
+use DialogContactForm\Supports\Collection;
 use DialogContactForm\Templates\Blank;
 use DialogContactForm\Templates\CollectFeedback;
 use DialogContactForm\Templates\ContactUs;
@@ -11,9 +12,9 @@ use DialogContactForm\Templates\DataExportRequest;
 use DialogContactForm\Templates\EventRegistration;
 use DialogContactForm\Templates\GeneralEnquiry;
 use DialogContactForm\Templates\JobApplication;
-use Traversable;
+use DialogContactForm\Templates\QuoteRequest;
 
-class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countable, \ArrayAccess {
+class TemplateManager extends Collection {
 
 	/**
 	 * @var object
@@ -45,20 +46,12 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 		$this->add_template( 'data_erasure_request', new DataErasureRequest() );
 		$this->add_template( 'data_export_request', new DataExportRequest() );
 		$this->add_template( 'job_application', new JobApplication() );
+		$this->add_template( 'quote_request', new QuoteRequest() );
 
 		/**
 		 * Give other plugin option to add their own template(s)
 		 */
 		do_action( 'dialog_contact_form/templates', $this );
-	}
-
-	/**
-	 * Get the string representation of the current element.
-	 *
-	 * @return string
-	 */
-	public function __toString() {
-		return json_encode( $this->jsonSerialize() );
 	}
 
 	/**
@@ -84,13 +77,14 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 	}
 
 	/**
-	 * Retrieve an external iterator
-	 * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
-	 * @return Traversable An instance of an object implementing Iterator or Traversable
-	 * @since 5.0.0
+	 * Offset to set
+	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
+	 *
+	 * @param mixed $offset The offset to assign the value to.
+	 * @param mixed $value The value to set.
 	 */
-	public function getIterator() {
-		return new \ArrayIterator( $this->getCollections() );
+	public function add( $offset, $value ) {
+		$this->add_template( $offset, $value );
 	}
 
 	/**
@@ -108,75 +102,6 @@ class TemplateManager implements \IteratorAggregate, \JsonSerializable, \Countab
 
 			return $template;
 		}, $this->getCollections() );
-	}
-
-	/**
-	 * Count elements of an object
-	 * @link http://php.net/manual/en/countable.count.php
-	 * @return int The custom count as an integer.
-	 * @since 5.1.0
-	 */
-	public function count() {
-		return count( $this->getCollections() );
-	}
-
-	/**
-	 * Whether a offset exists
-	 * @link http://php.net/manual/en/arrayaccess.offsetexists.php
-	 *
-	 * @param mixed $offset An offset to check for.
-	 *
-	 * @return boolean true on success or false on failure.
-	 * @since 5.0.0
-	 */
-	public function offsetExists( $offset ) {
-		return isset( $this->collections[ $offset ] );
-	}
-
-	/**
-	 * Offset to retrieve
-	 * @link http://php.net/manual/en/arrayaccess.offsetget.php
-	 *
-	 * @param mixed $offset The offset to retrieve.
-	 *
-	 * @return mixed Can return all value types.
-	 * @since 5.0.0
-	 */
-	public function offsetGet( $offset ) {
-		if ( $this->offsetExists( $offset ) ) {
-			return $this->collections[ $offset ];
-		}
-
-		return null;
-	}
-
-	/**
-	 * Offset to set
-	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
-	 *
-	 * @param mixed $offset The offset to assign the value to.
-	 * @param mixed $value The value to set.
-	 *
-	 * @return void
-	 * @since 5.0.0
-	 */
-	public function offsetSet( $offset, $value ) {
-		$this->add_template( $offset, $value );
-	}
-
-	/**
-	 * Offset to unset
-	 * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-	 *
-	 * @param mixed $offset The offset to unset.
-	 *
-	 * @return void
-	 * @since 5.0.0
-	 */
-	public function offsetUnset( $offset ) {
-		if ( $this->offsetExists( $offset ) ) {
-			unset( $this->collections[ $offset ] );
-		}
 	}
 
 	/**
