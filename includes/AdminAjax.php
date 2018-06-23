@@ -42,8 +42,9 @@ class AdminAjax {
 		$field_type = isset( $_POST['type'] ) && in_array( $_POST['type'], array_keys( $_types ) ) ? $_POST['type'] : null;
 		$settings   = self::field_settings( $field_type );
 
-		$supported  = array();
-		$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field_type );
+		$supported    = array();
+		$fieldManager = FieldManager::init();
+		$class_name   = $fieldManager->get( $field_type );
 		if ( class_exists( $class_name ) ) {
 			/** @var \DialogContactForm\Abstracts\Field $class */
 			$class     = new $class_name;

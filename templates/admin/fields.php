@@ -1,5 +1,6 @@
 <?php
 
+use DialogContactForm\FieldManager;
 use DialogContactForm\Supports\Metabox;
 use DialogContactForm\Utils;
 
@@ -16,6 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	$field_types = Utils::field_types();
 
 	if ( count( $_fields ) > 0 ) {
+		$fieldManager = FieldManager::init();
+
 		foreach ( $_fields as $_field_number => $_field ) {
 			$is_required_field = 'off';
 			$validation        = isset( $_field['validation'] ) ? (array) $_field['validation'] : array();
@@ -27,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			}
 
 			$supported  = array();
-			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $_field['field_type'] );
+			$class_name = $fieldManager->get( $_field['field_type'] );
 			if ( class_exists( $class_name ) ) {
 				/** @var \DialogContactForm\Abstracts\Field $class */
 				$class     = new $class_name;

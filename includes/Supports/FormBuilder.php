@@ -116,7 +116,11 @@ class FormBuilder {
 	 * @return string
 	 */
 	public function label( $setting, $echo = true ) {
-		$no_label_fields = array( 'hidden', 'acceptance', 'html' );
+		$no_label_fields = apply_filters( 'dialog_contact_form/exclude_label', array(
+			'hidden',
+			'acceptance',
+			'html'
+		) );
 
 		if ( in_array( $setting['field_type'], $no_label_fields ) ) {
 			return '';
@@ -233,7 +237,9 @@ class FormBuilder {
 				$style .= 'style="display: none"';
 			}
 
-			echo sprintf( '<div class="dcf-column %s" %s>', $field['field_width'], $style );
+			$field_width = ! empty( $field['field_width'] ) ? esc_attr( $field['field_width'] ) : 'is-12';
+
+			echo sprintf( '<div class="dcf-column %s" %s>', $field_width, $style );
 			echo '<div class="dcf-field">';
 
 			$this->label( $field );
