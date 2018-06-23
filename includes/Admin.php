@@ -165,8 +165,25 @@ class Admin {
 	 * @return mixed
 	 */
 	public function post_row_actions( $actions, $post ) {
-		if ( $post->post_type == $this->post_type ) {
-			unset( $actions['inline hide-if-no-js'] );
+		if ( $post->post_type === $this->post_type ) {
+			if ( 'trash' !== $post->post_status ) {
+				$new_actions = array();
+				if ( current_user_can( 'edit_post', $post->ID ) ) {
+					$preview_url = esc_url( add_query_arg( array(
+						'dcf_forms_preview' => 1,
+						'dcf_forms_iframe'  => 1,
+						'form_id'           => $post->ID,
+					), site_url() ) );
+
+					$new_actions['edit'] = $actions['edit'];
+					$new_actions['view'] = '<a href="' . $preview_url . '" target="_blank">' . __( 'Preview', 'dialog-contact-form' ) . '</a>';
+				}
+				if ( current_user_can( 'delete_post', $post->ID ) ) {
+					$new_actions['trash'] = $actions['trash'];
+				}
+
+				$actions = $new_actions;
+			}
 		}
 
 		return $actions;

@@ -28,11 +28,6 @@ class ActionManager extends Collection {
 	protected static $instance;
 
 	/**
-	 * @var array
-	 */
-	protected $collections = array();
-
-	/**
 	 * @return ActionManager
 	 */
 	public static function init() {

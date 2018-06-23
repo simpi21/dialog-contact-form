@@ -3,6 +3,7 @@
 namespace DialogContactForm\Supports;
 
 // Exit if accessed directly
+use DialogContactForm\FieldManager;
 use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Utils;
 
@@ -207,6 +208,7 @@ class FormBuilder {
 		if ( ! ( is_array( $this->fields ) && count( $this->fields ) > 0 ) ) {
 			return null;
 		}
+		$fieldManager = FieldManager::init();
 		ob_start();
 		?>
         <div class="dcf-response">
@@ -239,7 +241,7 @@ class FormBuilder {
 			echo '<div class="dcf-control">';
 
 			// Load Field Class if exists
-			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field_type );
+			$class_name = $fieldManager->get( $field_type );
 			if ( method_exists( $class_name, 'render' ) ) {
 				/** @var \DialogContactForm\Abstracts\Field $field_class */
 				$field_class = new $class_name;
