@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 abstract class Field {
 
 	/**
-	 * Field type
+	 * Input type attribute
 	 *
 	 * @var string
 	 */
@@ -21,7 +21,56 @@ abstract class Field {
 	 *
 	 * @var string
 	 */
-	protected $icon;
+	protected $admin_icon = 'fas fa-text-width';
+
+	/**
+	 * Field Label for admin usage
+	 *
+	 * @var string
+	 */
+	protected $admin_label = 'Untitled';
+
+	/**
+	 * Field unique id for admin usage
+	 *
+	 * @var string
+	 */
+	protected $admin_id = 'untitled';
+
+	/**
+	 * Field priority in admin
+	 *
+	 * @var int
+	 */
+	protected $priority = 300;
+
+	/**
+	 * Should this field show in admin entry
+	 *
+	 * @var bool
+	 */
+	protected $show_in_entry = true;
+
+	/**
+	 * Should this field's label show in form
+	 *
+	 * @var bool
+	 */
+	protected $show_label_in_form = true;
+
+	/**
+	 * Should this field hide in form
+	 *
+	 * @var bool
+	 */
+	protected $is_hidden_field = false;
+
+	/**
+	 * Should this field value available only for administration purpose
+	 *
+	 * @var bool
+	 */
+	protected $admin_only = false;
 
 	/**
 	 * Current form ID
@@ -61,7 +110,7 @@ abstract class Field {
 	 *
 	 * @var string
 	 */
-	protected $input_class;
+	protected $input_class = 'dcf-input';
 
 	/**
 	 * Render field html for frontend display
@@ -143,6 +192,49 @@ abstract class Field {
 	}
 
 	/**
+	 * Get admin label
+	 *
+	 * @return string
+	 */
+	public function get_admin_label() {
+		return $this->admin_label;
+	}
+
+	/**
+	 * Get Font Awesome Icon
+	 *
+	 * @return string
+	 */
+	public function get_admin_icon() {
+		return '<i class="' . $this->admin_icon . '"></i>';
+	}
+
+	/**
+	 * Get field unique id for admin usage
+	 *
+	 * @return string
+	 */
+	public function get_admin_id() {
+		return $this->admin_id;
+	}
+
+	/**
+	 * If it is a hidden field
+	 *
+	 * @return bool
+	 */
+	public function is_hidden_field() {
+		return $this->is_hidden_field;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function show_label() {
+		return $this->show_label_in_form;
+	}
+
+	/**
 	 * Generate input attribute
 	 *
 	 * @param bool $string
@@ -217,6 +309,17 @@ abstract class Field {
 	 */
 	public function get_type() {
 		return $this->type;
+	}
+
+	/**
+	 * Get Priority
+	 *
+	 * Returns the priority for an action.
+	 *
+	 * @return int
+	 */
+	public function get_priority() {
+		return $this->priority;
 	}
 
 	/**

@@ -12,20 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Radio extends Field {
 
 	/**
-	 * Field type
-	 *
-	 * @var string
-	 */
-	protected $type = 'radio';
-
-	/**
-	 * Input CSS class
-	 *
-	 * @var string
-	 */
-	protected $input_class = 'dcf-radio';
-
-	/**
 	 * Metabox fields
 	 *
 	 * @var array
@@ -39,6 +25,18 @@ class Radio extends Field {
 		'field_id',
 		'field_class',
 	);
+
+	/**
+	 * Radio constructor.
+	 */
+	public function __construct() {
+		$this->admin_id    = 'radio';
+		$this->admin_label = __( 'Radio', 'dialog-contact-form' );
+		$this->admin_icon  = 'far fa-dot-circle';
+		$this->priority    = 120;
+		$this->input_class = 'dcf-radio';
+		$this->type        = 'radio';
+	}
 
 	/**
 	 * Render field html for frontend display

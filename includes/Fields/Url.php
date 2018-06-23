@@ -27,11 +27,16 @@ class Url extends Text {
 	);
 
 	/**
-	 * Field type
-	 *
-	 * @var string
+	 * Text constructor.
 	 */
-	protected $type = 'url';
+	public function __construct() {
+		$this->admin_id    = 'url';
+		$this->admin_label = __( 'URL', 'dialog-contact-form' );
+		$this->admin_icon  = 'fas fa-link';
+		$this->priority    = 110;
+		$this->input_class = 'dcf-input dcf-input-url';
+		$this->type        = 'url';
+	}
 
 	/**
 	 * Validate field value

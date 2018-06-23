@@ -304,18 +304,18 @@ class Admin {
 	 * @param \WP_Post $post
 	 */
 	public function form_fields( $post ) {
-		$field_types = Utils::field_types();
-		echo '<div class="dcf-fields-list-wrapper">';
 
-		$index         = 0;
 		$default_class = 'dcf-fields-list is-half';
+		$fieldManager  = FieldManager::init();
+		$types         = $fieldManager->getFieldsByPriority();
 
-		foreach ( $field_types as $type => $info ) {
-			$class = ( $index % 2 === 0 ) ? $default_class . ' is-first' : $default_class . ' is-last';
-			echo '<div class="' . $class . '" data-type="' . $type . '">';
-			echo '<i class="' . esc_attr( $info['icon'] ) . '"></i> <span>' . $info['label'] . '</span>';
+		echo '<div class="dcf-fields-list-wrapper">';
+		/** @var \DialogContactForm\Abstracts\Field $class */
+		foreach ( $types as $index => $class ) {
+			$input_class = ( $index % 2 === 0 ) ? $default_class . ' is-first' : $default_class . ' is-last';
+			echo '<div class="' . $input_class . '" data-type="' . $class->get_admin_id() . '">';
+			echo $class->get_admin_icon() . ' <span>' . $class->get_admin_label() . '</span>';
 			echo '</div>';
-			$index ++;
 		}
 		echo '</div>';
 	}

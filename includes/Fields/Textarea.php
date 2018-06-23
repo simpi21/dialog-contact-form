@@ -29,18 +29,16 @@ class Textarea extends Field {
 	);
 
 	/**
-	 * Field type
-	 *
-	 * @var string
+	 * Text constructor.
 	 */
-	protected $type = 'textarea';
-
-	/**
-	 * Input CSS class
-	 *
-	 * @var string
-	 */
-	protected $input_class = 'textarea';
+	public function __construct() {
+		$this->admin_id    = 'textarea';
+		$this->admin_label = __( 'Textarea', 'dialog-contact-form' );
+		$this->admin_icon  = 'fas fa-paragraph';
+		$this->priority    = 20;
+		$this->input_class = 'dcf-textarea';
+		$this->type        = 'textarea';
+	}
 
 	/**
 	 * Render field html for frontend display

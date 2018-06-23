@@ -29,11 +29,16 @@ class Date extends Text {
 	);
 
 	/**
-	 * Field type
-	 *
-	 * @var string
+	 * Checkbox constructor.
 	 */
-	protected $type = 'date';
+	public function __construct() {
+		$this->admin_id    = 'date';
+		$this->admin_label = __( 'Date', 'dialog-contact-form' );
+		$this->admin_icon  = 'far fa-calendar-alt';
+		$this->priority    = 90;
+		$this->input_class = 'dcf-input dcf-input-date';
+		$this->type        = 'date';
+	}
 
 	/**
 	 * Render field html for frontend display

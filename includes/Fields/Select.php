@@ -12,20 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Select extends Field {
 
 	/**
-	 * Field type
-	 *
-	 * @var string
-	 */
-	protected $type = 'select';
-
-	/**
-	 * Input CSS class
-	 *
-	 * @var string
-	 */
-	protected $input_class = 'dcf-select';
-
-	/**
 	 * Metabox fields
 	 *
 	 * @var array
@@ -42,6 +28,18 @@ class Select extends Field {
 		'autocomplete',
 		'placeholder',
 	);
+
+	/**
+	 * Select constructor.
+	 */
+	public function __construct() {
+		$this->admin_id    = 'select';
+		$this->admin_label = __( 'Select', 'dialog-contact-form' );
+		$this->admin_icon  = 'fas fa-angle-down';
+		$this->priority    = 130;
+		$this->input_class = 'dcf-select';
+		$this->type        = 'select';
+	}
 
 	/**
 	 * Render field html for frontend display

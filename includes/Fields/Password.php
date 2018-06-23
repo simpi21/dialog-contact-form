@@ -26,9 +26,14 @@ class Password extends Text {
 	);
 
 	/**
-	 * Field type
-	 *
-	 * @var string
+	 * Password constructor.
 	 */
-	protected $type = 'password';
+	public function __construct() {
+		$this->admin_id    = 'password';
+		$this->admin_label = __( 'Password', 'dialog-contact-form' );
+		$this->admin_icon  = 'fas fa-key';
+		$this->priority    = 60;
+		$this->input_class = 'dcf-input dcf-input-password';
+		$this->type        = 'password';
+	}
 }

@@ -29,11 +29,16 @@ class File extends Field {
 	);
 
 	/**
-	 * Field type
-	 *
-	 * @var string
+	 * File constructor.
 	 */
-	protected $type = 'file';
+	public function __construct() {
+		$this->admin_id    = 'file';
+		$this->admin_label = __( 'File', 'dialog-contact-form' );
+		$this->admin_icon  = 'fas fa-upload';
+		$this->priority    = 150;
+		$this->input_class = 'dcf-input-file';
+		$this->type        = 'file';
+	}
 
 	/**
 	 * Render field html for frontend display

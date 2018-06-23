@@ -12,20 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Checkbox extends Field {
 
 	/**
-	 * Field type
-	 *
-	 * @var string
-	 */
-	protected $type = 'checkbox';
-
-	/**
-	 * Input CSS class
-	 *
-	 * @var string
-	 */
-	protected $input_class = 'dcf-checkbox';
-
-	/**
 	 * Metabox fields
 	 *
 	 * @var array
@@ -38,6 +24,18 @@ class Checkbox extends Field {
 		'field_width',
 		'field_class',
 	);
+
+	/**
+	 * Checkbox constructor.
+	 */
+	public function __construct() {
+		$this->admin_id    = 'checkbox';
+		$this->admin_label = __( 'Checkbox', 'dialog-contact-form' );
+		$this->admin_icon  = 'fas fa-list';
+		$this->priority    = 40;
+		$this->input_class = 'dcf-checkbox';
+		$this->type        = 'checkbox';
+	}
 
 	/**
 	 * Render field html for frontend display

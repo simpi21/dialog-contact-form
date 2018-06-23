@@ -27,11 +27,16 @@ class Email extends Text {
 	);
 
 	/**
-	 * Field type
-	 *
-	 * @var string
+	 * Email constructor.
 	 */
-	protected $type = 'email';
+	public function __construct() {
+		$this->admin_id    = 'email';
+		$this->admin_label = __( 'Email', 'dialog-contact-form' );
+		$this->admin_icon  = 'far fa-envelope';
+		$this->priority    = 50;
+		$this->input_class = 'dcf-input dcf-input-email';
+		$this->type        = 'email';
+	}
 
 	/**
 	 * Validate field value

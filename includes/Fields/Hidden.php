@@ -22,11 +22,19 @@ class Hidden extends Text {
 	);
 
 	/**
-	 * Field type
-	 *
-	 * @var string
+	 * Hidden constructor.
 	 */
-	protected $type = 'hidden';
+	public function __construct() {
+		$this->admin_id        = 'hidden';
+		$this->admin_label     = __( 'Hidden', 'dialog-contact-form' );
+		$this->admin_icon      = 'far fa-eye-slash';
+		$this->priority        = 80;
+		$this->input_class     = 'dcf-input-hidden';
+		$this->type            = 'hidden';
+		$this->show_in_entry   = false;
+		$this->is_hidden_field = true;
+		$this->admin_only      = true;
+	}
 
 	/**
 	 * Get field value

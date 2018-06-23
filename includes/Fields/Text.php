@@ -28,11 +28,15 @@ class Text extends Field {
 	);
 
 	/**
-	 * Input CSS class
-	 *
-	 * @var string
+	 * Text constructor.
 	 */
-	protected $input_class = 'input';
+	public function __construct() {
+		$this->admin_id    = 'text';
+		$this->admin_label = __( 'Text', 'dialog-contact-form' );
+		$this->admin_icon  = 'fas fa-text-width';
+		$this->priority    = 10;
+		$this->input_class = 'dcf-input dcf-input-text';
+	}
 
 	/**
 	 * Render field html for frontend display

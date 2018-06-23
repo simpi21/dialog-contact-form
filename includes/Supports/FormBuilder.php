@@ -116,16 +116,6 @@ class FormBuilder {
 	 * @return string
 	 */
 	public function label( $setting, $echo = true ) {
-		$no_label_fields = apply_filters( 'dialog_contact_form/exclude_label', array(
-			'hidden',
-			'acceptance',
-			'html'
-		) );
-
-		if ( in_array( $setting['field_type'], $no_label_fields ) ) {
-			return '';
-		}
-
 		if ( 'placeholder' == $this->configuration['labelPosition'] ) {
 			return '';
 		}
@@ -137,7 +127,7 @@ class FormBuilder {
 				esc_html__( 'Required', 'dialog-contact-form' )
 			);
 		} // Backward compatibility
-        elseif ( in_array( 'required', $validation ) ) {
+		elseif ( in_array( 'required', $validation ) ) {
 			$required_abbr = sprintf( '&nbsp;<abbr class="dcf-required" title="%s">*</abbr>',
 				esc_html__( 'Required', 'dialog-contact-form' )
 			);
@@ -213,75 +203,71 @@ class FormBuilder {
 			return null;
 		}
 		$fieldManager = FieldManager::init();
-		ob_start();
-		?>
-        <div class="dcf-response">
-            <div class="dcf-success">
-				<?php echo $this->get_success_message(); ?>
-            </div>
-            <div class="dcf-error">
-				<?php $this->get_error_message(); ?>
-            </div>
-        </div>
-        <input type="hidden" id="_dcf_nonce" name="_dcf_nonce"
-               value="<?php echo wp_create_nonce( 'dialog_contact_form_nonce' ); ?>"/>
-        <input type="hidden" name="_dcf_referer"
-               value="<?php echo esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ?>"/>
-        <input type="hidden" name="_dcf_id" value="<?php echo $this->form_id; ?>"/>
+		$nonce        = wp_create_nonce( 'dialog_contact_form_nonce' );
+		$referer      = esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		$html         = '';
 
-		<?php
+		$html .= '<div class="dcf-response">';
+		$html .= '<div class="dcf-success">' . $this->get_success_message() . '</div>';
+		$html .= '<div class="dcf-error">' . $this->get_error_message() . '</div>';
+		$html .= '</div>';
+
+		// System field
+		$html .= '<input type="hidden" id="_dcf_nonce" name="_dcf_nonce" value="' . $nonce . '"/>';
+		$html .= '<input type="hidden" name="_dcf_referer" value="' . $referer . '"/>';
+		$html .= '<input type="hidden" name="_dcf_id" value="' . $this->form_id . '"/>';
+
 		foreach ( $this->fields as $field ) {
 			$field_type = isset( $field['field_type'] ) ? esc_attr( $field['field_type'] ) : 'text';
-			$style      = '';
-			if ( 'hidden' == $field_type ) {
+			$class_name = $fieldManager->get( $field_type );
+			if ( ! method_exists( $class_name, 'render' ) ) {
+				continue;
+			}
+
+			/** @var \DialogContactForm\Abstracts\Field $field_class */
+			$field_class = new $class_name;
+			$field_class->setFormId( $this->form_id );
+			$field_class->setField( $field );
+
+			$style = '';
+			if ( $field_class->is_hidden_field() ) {
 				$style .= 'style="display: none"';
 			}
 
 			$field_width = ! empty( $field['field_width'] ) ? esc_attr( $field['field_width'] ) : 'is-12';
 
-			echo sprintf( '<div class="dcf-column %s" %s>', $field_width, $style );
-			echo '<div class="dcf-field">';
+			$html .= sprintf( '<div class="dcf-column %s" %s>', $field_width, $style );
+			$html .= '<div class="dcf-field">';
 
-			$this->label( $field );
-
-			echo '<div class="dcf-control">';
-
-			// Load Field Class if exists
-			$class_name = $fieldManager->get( $field_type );
-			if ( method_exists( $class_name, 'render' ) ) {
-				/** @var \DialogContactForm\Abstracts\Field $field_class */
-				$field_class = new $class_name;
-				$field_class->setFormId( $this->form_id );
-				$field_class->setField( $field );
-				echo $field_class->render();
+			if ( $field_class->show_label() ) {
+				$html .= $this->label( $field, false );
 			}
 
-			do_action( 'dialog_contact_form/render_field', $this->form_id, $field, $field_type );
+			$html .= '<div class="dcf-control">';
+
+			$html .= $field_class->render();
 
 			// Show error message if any
 			if ( isset( $field['field_name'], $this->errors[ $field['field_name'] ][0] ) ) {
-				echo '<div class="dcf-error-message">' . esc_attr( $this->errors[ $field['field_name'] ][0] ) . '</div>';
+				$html .= '<div class="dcf-error-message">' . esc_attr( $this->errors[ $field['field_name'] ][0] ) . '</div>';
 			}
 
-			echo '</div>';
-			echo '</div>';
-			echo '</div>' . PHP_EOL;
+			$html .= '</div>';
+			$html .= '</div>';
+			$html .= '</div>';
 		}
 
 		// If Google reCAPTCHA, add here
 		$recaptcha = new Recaptcha2();
 		$recaptcha->setFormId( $this->form_id );
-		echo $recaptcha->render();
+		$html .= $recaptcha->render();
 
 		// Submit button
 		if ( $submit_button ) {
-			echo '<div class="dcf-column is-12"><div class="dcf-field"><div class="dcf-control">';
-			echo $this->submit_button();
-			echo '</div></div></div>' . PHP_EOL;
+			$html .= '<div class="dcf-column is-12"><div class="dcf-field"><div class="dcf-control">';
+			$html .= $this->submit_button();
+			$html .= '</div></div></div>' . PHP_EOL;
 		}
-
-		$html = ob_get_contents();
-		ob_end_clean();
 
 		return $html;
 	}

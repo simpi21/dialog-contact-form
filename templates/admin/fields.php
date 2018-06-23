@@ -12,14 +12,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div id="shaplaFieldList">
 	<?php
 	global $post;
-	$_fields     = get_post_meta( $post->ID, '_contact_form_fields', true );
-	$_fields     = is_array( $_fields ) ? $_fields : array();
-	$field_types = Utils::field_types();
+	$_fields = (array) get_post_meta( $post->ID, '_contact_form_fields', true );
 
 	if ( count( $_fields ) > 0 ) {
 		$fieldManager = FieldManager::init();
 
 		foreach ( $_fields as $_field_number => $_field ) {
+
+			$class_name = $fieldManager->get( $_field['field_type'] );
+			if ( ! class_exists( $class_name ) ) {
+				continue;
+			}
+
+			/** @var \DialogContactForm\Abstracts\Field $class */
+			$class     = new $class_name;
+			$supported = $class->getMetaboxFields();
+
 			$is_required_field = 'off';
 			$validation        = isset( $_field['validation'] ) ? (array) $_field['validation'] : array();
 			if ( in_array( 'required', $validation ) ) {
@@ -28,23 +36,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			if ( isset( $_field['required_field'] ) && in_array( $_field['required_field'], array( 'on', 'off' ) ) ) {
 				$is_required_field = $_field['required_field'];
 			}
-
-			$supported  = array();
-			$class_name = $fieldManager->get( $_field['field_type'] );
-			if ( class_exists( $class_name ) ) {
-				/** @var \DialogContactForm\Abstracts\Field $class */
-				$class     = new $class_name;
-				$supported = $class->getMetaboxFields();
-			}
-
-			$_type = isset( $field_types[ $_field['field_type'] ] ) ? $field_types[ $_field['field_type'] ] : null;
 			?>
             <div data-id="closed" class="dcf-toggle dcf-toggle--normal">
             <span class="dcf-toggle-title">
                 <?php
-                if ( ! empty( $_type['icon'] ) ) {
-	                echo '<span class="dcf-toggle-title--icon"><i class="' . $_type['icon'] . '"></i></span>';
-                }
+                echo '<span class="dcf-toggle-title--icon">' . $class->get_admin_icon() . '</span>';
                 echo '<span class="dcf-toggle-title--label">' . esc_html( $_field['field_title'] ) . '</span>';
                 ?>
             </span>

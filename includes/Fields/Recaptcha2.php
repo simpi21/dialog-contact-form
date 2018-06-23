@@ -31,6 +31,15 @@ class Recaptcha2 extends Field {
 	);
 
 	/**
+	 * Recaptcha2 constructor.
+	 */
+	public function __construct() {
+		$this->admin_id    = 'recaptcha';
+		$this->admin_label = __( 'reCAPTCHA', 'dialog-contact-form' );
+		$this->admin_icon  = 'fas fa-sync-alt';
+	}
+
+	/**
 	 * Render field html for frontend display
 	 *
 	 * @param array $field

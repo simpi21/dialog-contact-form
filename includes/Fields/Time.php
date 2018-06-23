@@ -27,11 +27,16 @@ class Time extends Text {
 	);
 
 	/**
-	 * Field type
-	 *
-	 * @var string
+	 * Text constructor.
 	 */
-	protected $type = 'time';
+	public function __construct() {
+		$this->admin_id    = 'time';
+		$this->admin_label = __( 'Time', 'dialog-contact-form' );
+		$this->admin_icon  = 'far fa-clock';
+		$this->priority    = 100;
+		$this->input_class = 'dcf-input dcf-input-time';
+		$this->type        = 'time';
+	}
 
 	/**
 	 * Validate field value

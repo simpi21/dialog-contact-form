@@ -25,6 +25,18 @@ class Ip extends Text {
 	);
 
 	/**
+	 * Ip constructor.
+	 */
+	public function __construct() {
+		$this->admin_id    = 'ip';
+		$this->admin_label = __( 'IP Address', 'dialog-contact-form' );
+		$this->admin_icon  = 'fas fa-mouse-pointer';
+		$this->priority    = 120;
+		$this->input_class = 'dcf-input dcf-input-ip';
+		$this->type        = 'text';
+	}
+
+	/**
 	 * Validate field value
 	 *
 	 * @param mixed $value

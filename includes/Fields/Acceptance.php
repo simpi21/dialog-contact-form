@@ -10,20 +10,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Acceptance extends Text {
 
 	/**
-	 * Field type
-	 *
-	 * @var string
-	 */
-	protected $type = 'checkbox';
-
-	/**
-	 * Input CSS class
-	 *
-	 * @var string
-	 */
-	protected $input_class = 'dcf-checkbox';
-
-	/**
 	 * Metabox fields
 	 *
 	 * @var array
@@ -37,6 +23,19 @@ class Acceptance extends Text {
 		'acceptance_text',
 		'checked_by_default',
 	);
+
+	/**
+	 * Acceptance constructor.
+	 */
+	public function __construct() {
+		$this->admin_id           = 'acceptance';
+		$this->admin_label        = __( 'Acceptance', 'dialog-contact-form' );
+		$this->admin_icon         = 'far fa-check-square';
+		$this->priority           = 30;
+		$this->input_class        = 'dcf-checkbox';
+		$this->type               = 'checkbox';
+		$this->show_label_in_form = false;
+	}
 
 	/**
 	 * Render field html for frontend display

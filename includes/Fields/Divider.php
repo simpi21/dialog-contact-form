@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Html extends Field {
+class Divider extends Field {
 
 	/**
 	 * Metabox fields
@@ -19,22 +19,20 @@ class Html extends Field {
 	protected $metabox_fields = array(
 		'field_type',
 		'field_title',
-		'field_width',
-		'html',
+		'field_class',
 	);
 
 	/**
-	 * Html constructor.
+	 * Text constructor.
 	 */
 	public function __construct() {
-		$this->admin_id           = 'html';
-		$this->admin_label        = __( 'HTML', 'dialog-contact-form' );
-		$this->admin_icon         = 'fas fa-code';
-		$this->priority           = 160;
-		$this->type               = 'html';
-		$this->show_in_entry      = false;
-		$this->admin_only         = true;
+		$this->admin_id           = 'divider';
+		$this->admin_label        = __( 'Divider', 'dialog-contact-form' );
+		$this->admin_icon         = 'fas fa-arrows-alt-h';
+		$this->priority           = 170;
+		$this->input_class        = 'dcf-divider';
 		$this->show_label_in_form = false;
+		$this->show_in_entry      = false;
 	}
 
 	/**
@@ -45,11 +43,11 @@ class Html extends Field {
 	 * @return string
 	 */
 	public function render( $field = array() ) {
-		if ( empty( $this->field['html'] ) ) {
-			return '';
+		if ( ! empty( $field ) ) {
+			$this->setField( $field );
 		}
 
-		return wp_filter_post_kses( $this->field['html'] );
+		return '<hr class="' . $this->get_class() . '">';
 	}
 
 	/**

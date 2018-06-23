@@ -31,18 +31,16 @@ class Number extends Field {
 	);
 
 	/**
-	 * Field type
-	 *
-	 * @var string
+	 * Number constructor.
 	 */
-	protected $type = 'number';
-
-	/**
-	 * Input CSS class
-	 *
-	 * @var string
-	 */
-	protected $input_class = 'input';
+	public function __construct() {
+		$this->admin_id    = 'number';
+		$this->admin_label = __( 'Number', 'dialog-contact-form' );
+		$this->admin_icon  = 'fas fa-sort-numeric-up';
+		$this->priority    = 70;
+		$this->input_class = 'dcf-input dcf-input-number';
+		$this->type        = 'number';
+	}
 
 	/**
 	 * Render field html for frontend display
