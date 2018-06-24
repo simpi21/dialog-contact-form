@@ -142,16 +142,11 @@ class EmailNotification extends Action {
 		$subject = $mail['subject'];
 		$subject = str_replace( $_keys, $_values, $subject );
 
-		$body = $mail['body'];
-		if ( false !== strpos( $body, '[all_fields_table]' ) ) {
-			ob_start();
-			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/emails/email-notification.php';
-			$message = ob_get_clean();
-		} else {
-			$body    = str_replace( $_keys, $_values, $body );
-			$body    = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $body );
-			$message = stripslashes( wp_kses_post( $body ) );
-		}
+		$body    = $mail['body'];
+		$body    = str_replace( $_keys, $_values, $body );
+		$body    = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $body );
+		$body    = str_replace( '[all_fields_table]', self::all_fields_table( $form_fields ), $body );
+		$message = stripslashes( wp_kses_post( $body ) );
 
 		$receiver = $mail['receiver'];
 		$receiver = str_replace( $_keys, $_values, $receiver );
@@ -235,6 +230,31 @@ class EmailNotification extends Action {
 				'default'     => '[all_fields_table]',
 			),
 		);
+	}
+
+	private static function all_fields_table( $form_fields ) {
+		ob_start();
+		?>
+        <table style="width: auto; min-width: 300px; max-width: 600px; margin: 0 auto; padding: 0;" align="center"
+               width="600"
+               cellpadding="0" cellspacing="0">
+			<?php foreach ( $form_fields as $all_field ) {
+				$value = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $all_field['value'] );
+				?>
+                <tr>
+                    <td style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;background: #F2F4F6; font-weight: bold; padding: 8px 10px;">
+						<?php echo $all_field['label']; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;padding: 8px 10px 35px;">
+						<?php echo $value; ?>
+                    </td>
+                </tr>
+			<?php } ?>
+        </table>
+		<?php
+		return ob_get_clean();
 	}
 
 	/**
