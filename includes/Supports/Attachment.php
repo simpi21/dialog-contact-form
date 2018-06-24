@@ -35,16 +35,7 @@ class Attachment {
 	 * @return string
 	 */
 	private static function get_file_error( $file, $field ) {
-		$is_required = false;
-		if ( isset( $field['required_field'] ) && 'on' == $field['required_field'] ) {
-			$is_required = true;
-		}
-
-		// Backward compatibility
-		$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
-		if ( in_array( 'required', $validate_rules ) ) {
-			$is_required = true;
-		}
+		$is_required = self::is_required( $field );
 
 		$messages = self::get_validation_messages();
 
@@ -89,8 +80,17 @@ class Attachment {
 	 */
 	public static function validate( $field ) {
 
-		$files = UploadedFile::getUploadedFiles();
-		$file  = isset( $files[ $field['field_name'] ] ) ? $files[ $field['field_name'] ] : false;
+		$files    = UploadedFile::getUploadedFiles();
+		$file     = isset( $files[ $field['field_name'] ] ) ? $files[ $field['field_name'] ] : false;
+		$messages = self::get_validation_messages();
+
+		if ( is_array( $file ) && ! self::is_multiple( $field ) ) {
+			return array( $messages['unsupported_file_multi'] );
+		}
+
+		if ( self::is_required( $field ) && false === $file ) {
+			return array( $messages['required_file'] );
+		}
 
 		$message = array();
 		if ( $file instanceof UploadedFile ) {
@@ -118,7 +118,39 @@ class Attachment {
 	 */
 	public static function upload( $fields ) {
 		$attachments = array();
+		$files       = UploadedFile::getUploadedFiles();
 
+		foreach ( $fields as $field ) {
+			if ( 'file' !== $field['field_type'] ) {
+				continue;
+			}
+
+			$file = isset( $files[ $field['field_name'] ] ) ? $files[ $field['field_name'] ] : false;
+
+			if ( $file instanceof UploadedFile ) {
+				$attachments[ $field['field_name'] ][] = self::upload_individual_file( $file );
+			}
+			if ( is_array( $file ) ) {
+				foreach ( $file as $_file ) {
+					if ( ! $_file instanceof UploadedFile ) {
+						continue;
+					}
+					$attachments[ $field['field_name'] ][] = self::upload_individual_file( $_file );
+				}
+			}
+		}
+
+		return array_filter( $attachments );
+	}
+
+	/**
+	 * Upload attachment
+	 *
+	 * @param UploadedFile $file
+	 *
+	 * @return array
+	 */
+	private static function upload_individual_file( $file ) {
 		$upload_dir = wp_upload_dir();
 
 		$attachment_dir = join( DIRECTORY_SEPARATOR, array( $upload_dir['basedir'], DIALOG_CONTACT_FORM_UPLOAD_DIR ) );
@@ -129,98 +161,82 @@ class Attachment {
 			wp_mkdir_p( $attachment_dir );
 		}
 
-		$files = UploadedFile::getUploadedFiles();
-
-		$files_list = array();
-		foreach ( $fields as $field ) {
-			if ( 'file' != $field['field_type'] ) {
-				continue;
-			}
-
-			$file = isset( $files[ $field['field_name'] ] ) ? $files[ $field['field_name'] ] : false;
-			if ( $file instanceof UploadedFile ) {
-				$files_list[] = $file;
-			}
-			if ( is_array( $file ) ) {
-				foreach ( $file as $_file ) {
-					if ( $_file instanceof UploadedFile ) {
-						$files_list[] = $_file;
-					}
-				}
-			}
+		// Check if attachment directory is writable
+		if ( ! wp_is_writable( $attachment_dir ) ) {
+			return array();
 		}
 
-		/** @var \DialogContactForm\Supports\UploadedFile $file */
-		foreach ( $files_list as $file ) {
-
-			if ( $file->getError() !== UPLOAD_ERR_OK ) {
-				continue;
-			}
-
-			// Validate once again
-			if ( self::get_file_error( $file, true ) ) {
-				continue;
-			}
-
-			// Upload file
-			try {
-				$filename = wp_unique_filename( $attachment_dir, $file->getClientFilename() );
-				$new_file = $file->moveUploadedFile( $attachment_dir, $filename );
-				// Set correct file permissions.
-				$stat  = stat( dirname( $new_file ) );
-				$perms = $stat['mode'] & 0000666;
-				@ chmod( $new_file, $perms );
-
-				// Insert the attachment.
-				$attachment    = array(
-					'guid'           => join( DIRECTORY_SEPARATOR, array( $attachment_url, $filename ) ),
-					'post_title'     => preg_replace( '/\.[^.]+$/', '', $file->getClientFilename() ),
-					'post_status'    => 'inherit',
-					'post_mime_type' => $file->getClientMediaType(),
-				);
-				$attachment_id = wp_insert_attachment( $attachment, $new_file );
-
-				// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
-				require_once( ABSPATH . 'wp-admin/includes/image.php' );
-
-				// Generate the metadata for the attachment, and update the database record.
-				$attach_data = wp_generate_attachment_metadata( $attachment_id, $new_file );
-				wp_update_attachment_metadata( $attachment_id, $attach_data );
-
-				if ( ! is_wp_error( $attachment_id ) ) {
-					$attachment['attachment_path'] = $new_file;
-					$attachment['attachment_id']   = $attachment_id;
-
-					// Save uploaded file path for later use
-					$attachments[] = $attachment;
-				}
-
-			} catch ( \Exception $exception ) {
-
-			}
+		// Check file has no error
+		if ( $file->getError() !== UPLOAD_ERR_OK ) {
+			return array();
 		}
 
-		return $attachments;
+		// Upload file
+		try {
+			$filename = wp_unique_filename( $attachment_dir, $file->getClientFilename() );
+			$new_file = $file->moveUploadedFile( $attachment_dir, $filename );
+			// Set correct file permissions.
+			$stat  = stat( dirname( $new_file ) );
+			$perms = $stat['mode'] & 0000666;
+			@ chmod( $new_file, $perms );
+
+			// Insert the attachment.
+			$attachment    = array(
+				'guid'           => join( DIRECTORY_SEPARATOR, array( $attachment_url, $filename ) ),
+				'post_title'     => preg_replace( '/\.[^.]+$/', '', $file->getClientFilename() ),
+				'post_status'    => 'inherit',
+				'post_mime_type' => $file->getClientMediaType(),
+			);
+			$attachment_id = wp_insert_attachment( $attachment, $new_file );
+
+			// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+			require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+			// Generate the metadata for the attachment, and update the database record.
+			$attach_data = wp_generate_attachment_metadata( $attachment_id, $new_file );
+			wp_update_attachment_metadata( $attachment_id, $attach_data );
+
+			if ( ! is_wp_error( $attachment_id ) ) {
+				$attachment['attachment_path'] = $new_file;
+				$attachment['attachment_id']   = $attachment_id;
+			}
+
+			return $attachment;
+
+		} catch ( \Exception $exception ) {
+			return array();
+		}
 	}
 
 	/**
-	 * Remove attachment
+	 * Check if current field is required
 	 *
-	 * @param array|string $attachments
+	 * @param $field
 	 *
 	 * @return bool
 	 */
-	public static function remove( $attachments ) {
-		if ( is_string( $attachments ) && file_exists( $attachments ) ) {
-			return unlink( $attachments );
+	private static function is_required( $field ) {
+		if ( isset( $field['required_field'] ) && 'on' == $field['required_field'] ) {
+			return true;
 		}
 
-		foreach ( $attachments as $attachment ) {
-			if ( file_exists( $attachment ) ) {
-				unlink( $attachment );
-			}
+		// Backward compatibility
+		if ( isset( $field['validation'] ) && is_array( $field['validation'] )
+		     && in_array( 'required', $field['validation'] ) ) {
+			return true;
 		}
 
-		return true;
+		return false;
+	}
+
+	/**
+	 * Check if field support multiple file upload
+	 *
+	 * @param array $field
+	 *
+	 * @return bool
+	 */
+	private static function is_multiple( $field ) {
+		return ( isset( $field['multiple'] ) && 'on' === $field['multiple'] );
 	}
 }

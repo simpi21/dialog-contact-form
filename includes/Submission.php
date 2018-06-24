@@ -92,14 +92,15 @@ class Submission {
 		}
 
 		// Sanitize form data
-		$data = array();
+		$data         = array();
+		$fieldManager = FieldManager::init();
 		foreach ( $config->getFormFields() as $field ) {
 			if ( 'file' == $field['field_type'] ) {
 				continue;
 			}
 			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
 
-			$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field['field_type'] );
+			$class_name = $fieldManager->get( $field['field_type'] );
 			if ( class_exists( $class_name ) ) {
 				/** @var \DialogContactForm\Abstracts\Field $class */
 				$class = new $class_name;
@@ -113,9 +114,8 @@ class Submission {
 
 		// If form upload a file, handle here
 		if ( $config->hasFile() ) {
-			$data['dcf_attachments'] = Attachment::upload( $config->getFormFields() );
-		} else {
-			$data['dcf_attachments'] = array();
+			$attachments = Attachment::upload( $config->getFormFields() );
+			$data        = $data + $attachments;
 		}
 
 		$response = array();
@@ -238,31 +238,34 @@ class Submission {
 			}
 		}
 
-		$class_name = '\\DialogContactForm\\Fields\\' . ucfirst( $field_type );
-		if ( class_exists( $class_name ) ) {
-			/** @var \DialogContactForm\Abstracts\Field $class */
-			$class = new $class_name;
-			$class->setField( $field );
+		$fieldManager = FieldManager::init();
+		$class_name   = $fieldManager->get( $field_type );
+		if ( ! class_exists( $class_name ) ) {
+			return $message;
+		}
 
-			// If field is required, then check it is not empty
-			if ( 'on' == $field['required_field'] && $class->is_empty( $value ) ) {
-				$message[] = $messages['invalid_required'];
-			}
+		/** @var \DialogContactForm\Abstracts\Field $class */
+		$class = new $class_name;
+		$class->setField( $field );
 
-			// Check if value is acceptable for field type
-			if ( ! $class->validate( $value ) ) {
-				$message[] = $error_message;
-			}
+		// If field is required, then check it is not empty
+		if ( 'on' == $field['required_field'] && $class->is_empty( $value ) ) {
+			$message[] = $messages['invalid_required'];
+		}
 
-			// If field is not required, hide message if field is empty
-			if ( 'off' == $field['required_field'] && $class->is_empty( $value ) ) {
-				$message = array();
-			}
+		// Check if value is acceptable for field type
+		if ( ! $class->validate( $value ) ) {
+			$message[] = $error_message;
+		}
 
-			// If user custom message exists, use it
-			if ( count( $message ) > 0 && mb_strlen( $field['error_message'], 'UTF-8' ) > 10 ) {
-				$message = array( $field['error_message'] );
-			}
+		// If field is not required, hide message if field is empty
+		if ( 'off' == $field['required_field'] && $class->is_empty( $value ) ) {
+			$message = array();
+		}
+
+		// If user custom message exists, use it
+		if ( count( $message ) > 0 && mb_strlen( $field['error_message'], 'UTF-8' ) > 10 ) {
+			$message = array( $field['error_message'] );
 		}
 
 		// Return field validation messages

@@ -1,6 +1,8 @@
 <?php
 
+use DialogContactForm\Abstracts\Field;
 use DialogContactForm\Entries\Entry;
+use DialogContactForm\FieldManager;
 use DialogContactForm\Supports\Browser;
 
 // Exit if accessed directly
@@ -23,12 +25,7 @@ if ( isset( $data['meta_data'] ) && is_array( $data['meta_data'] ) ) {
 }
 
 $browser    = new Browser( $meta_data['user_agent'] );
-$user_agent = sprintf(
-	'%s / %s %s',
-	$browser->getPlatform(),
-	$browser->getBrowser(),
-	$browser->getVersion()
-);
+$user_agent = sprintf( '%s / %s %s', $browser->getPlatform(), $browser->getBrowser(), $browser->getVersion() );
 
 $form_id    = isset( $meta_data['form_id'] ) ? $meta_data['form_id'] : 0;
 $created_at = isset( $meta_data['created_at'] ) ? $meta_data['created_at'] : 0;
@@ -36,8 +33,9 @@ $created_at = new \DateTime( $created_at );
 $form_title = get_the_title( $form_id );
 $form_title = sprintf( '%s : Entry # %s', $form_title, $meta_data['id'] );
 
-$_fields = array();
-$fields  = get_post_meta( $form_id, '_contact_form_fields', true );
+$_fields      = array();
+$fields       = get_post_meta( $form_id, '_contact_form_fields', true );
+$fieldManager = FieldManager::init();
 foreach ( $fields as $field ) {
 	$_fields[ $field['field_name'] ] = $field;
 }
@@ -100,6 +98,20 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
                         <table class="form-table dcf-data-table">
 							<?php foreach ( $data as $_key => $value ) {
 								$field = isset( $_fields[ $_key ] ) ? $_fields[ $_key ] : array();
+
+								$className = $fieldManager->get( $field['field_type'] );
+								if ( ! class_exists( $className ) ) {
+									continue;
+								}
+
+								$class = new $className;
+								if ( ! $class instanceof Field ) {
+									continue;
+								}
+
+								if ( ! $class->show_in_entry() ) {
+									continue;
+								}
 								?>
                                 <tr>
                                     <th scope="row">
@@ -107,11 +119,7 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
 										if ( isset( $field['field_title'] ) ) {
 											echo esc_html( $field['field_title'] );
 										} else {
-											if ( 'dcf_attachments' === $_key ) {
-												esc_html_e( 'Attachment', 'dialog-contact-form' );
-											} else {
-												esc_html_e( $_key );
-											}
+											esc_html_e( $_key );
 										}
 										?>
                                     </th>

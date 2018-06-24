@@ -235,6 +235,13 @@ abstract class Field {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function show_in_entry() {
+		return $this->show_in_entry;
+	}
+
+	/**
 	 * Generate input attribute
 	 *
 	 * @param bool $string

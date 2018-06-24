@@ -37,6 +37,17 @@ class Hidden extends Text {
 	}
 
 	/**
+	 * Validate field value
+	 *
+	 * @param mixed $value
+	 *
+	 * @return bool
+	 */
+	public function validate( $value ) {
+		return ( $value == $this->field['field_value'] );
+	}
+
+	/**
 	 * Get field value
 	 *
 	 * @return string

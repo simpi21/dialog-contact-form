@@ -60,7 +60,7 @@ class Html extends Field {
 	 * @return bool
 	 */
 	public function validate( $value ) {
-		return false;
+		return true;
 	}
 
 	/**

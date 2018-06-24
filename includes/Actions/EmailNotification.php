@@ -113,16 +113,27 @@ class EmailNotification extends Action {
 	 * @return bool
 	 */
 	public static function process( $config, $data ) {
-		$attachments = $data['dcf_attachments'];
-		$attachments = Utils::array_column( $attachments, 'attachment_path' );
-		$mail        = get_post_meta( $config->getFormId(), '_contact_form_mail', true );
+		$attachments     = array();
+		$mail            = get_post_meta( $config->getFormId(), '_contact_form_mail', true );
+		$hide_from_email = apply_filters( 'dialog_contact_form/email/hidden_fields',
+			array( 'hidden', 'html', 'divider' ) );
 
 		$form_fields = array();
 		foreach ( $config->getFormFields() as $field ) {
-			if ( 'file' == $field['field_type'] ) {
+			if ( in_array( $field['field_type'], $hide_from_email ) ) {
 				continue;
 			}
+
 			$value = isset( $data[ $field['field_name'] ] ) ? $data[ $field['field_name'] ] : '';
+
+			if ( 'file' === $field['field_type'] && is_array( $value ) ) {
+				foreach ( $value as $attachment ) {
+					if ( ! empty( $attachment['attachment_path'] ) ) {
+						$attachments[] = $attachment['attachment_path'];
+					}
+				}
+				continue;
+			}
 
 			// Join array elements with a new line string
 			if ( is_array( $value ) ) {
@@ -136,8 +147,10 @@ class EmailNotification extends Action {
 			);
 		}
 
-		$_keys   = array_merge( array_keys( self::$system_fields ), Utils::array_column( $form_fields, 'placeholder' ) );
-		$_values = array_merge( array_values( self::$system_fields ), Utils::array_column( $form_fields, 'value' ) );
+		$_keys   = array_merge( array_keys( self::$system_fields ),
+			Utils::array_column( $form_fields, 'placeholder' ) );
+		$_values = array_merge( array_values( self::$system_fields ),
+			Utils::array_column( $form_fields, 'value' ) );
 
 		$subject = $mail['subject'];
 		$subject = str_replace( $_keys, $_values, $subject );
@@ -146,7 +159,9 @@ class EmailNotification extends Action {
 		$body    = str_replace( $_keys, $_values, $body );
 		$body    = str_replace( array( "\r\n", "\r", "\n" ), "<br>", $body );
 		$body    = str_replace( '[all_fields_table]', self::all_fields_table( $form_fields ), $body );
-		$message = stripslashes( wp_kses_post( $body ) );
+		$message = self::get_email_head();
+		$message .= stripslashes( wp_kses_post( $body ) );
+		$message .= self::get_email_footer();
 
 		$receiver = $mail['receiver'];
 		$receiver = str_replace( $_keys, $_values, $receiver );
@@ -232,6 +247,13 @@ class EmailNotification extends Action {
 		);
 	}
 
+	/**
+	 * Generate table using user submitted data
+	 *
+	 * @param array $form_fields
+	 *
+	 * @return string
+	 */
 	private static function all_fields_table( $form_fields ) {
 		ob_start();
 		?>
@@ -300,5 +322,19 @@ class EmailNotification extends Action {
 		$html .= '<hr>';
 
 		return $html;
+	}
+
+	private static function get_email_head() {
+		ob_start();
+		include_once DIALOG_CONTACT_FORM_TEMPLATES . '/emails/email-head.php';
+
+		return ob_get_clean();
+	}
+
+	private static function get_email_footer() {
+		ob_start();
+		include_once DIALOG_CONTACT_FORM_TEMPLATES . '/emails/email-footer.php';
+
+		return ob_get_clean();
 	}
 }
