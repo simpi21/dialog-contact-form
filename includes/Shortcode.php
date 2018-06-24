@@ -68,6 +68,11 @@ class Shortcode {
 			return;
 		}
 
+		// Check if form is valid
+		if ( ! $form->is_valid_form() ) {
+			return;
+		}
+
 		printf(
 			'<button class="button dcf-footer-btn" style="background-color: %2$s;color: %3$s" data-toggle="modal" data-target="#modal-%4$s">%1$s</button>',
 			$options['dialog_button_text'],
@@ -78,13 +83,13 @@ class Shortcode {
 
 		ob_start();
 		?>
-        <div id="modal-<?php echo absint( $options['dialog_form_id'] ); ?>" class="modal">
+        <div id="modal-<?php echo $form_id; ?>" class="modal">
             <div class="modal-background"></div>
 			<?php echo $form->form_open( array( 'class' => 'dcf-form' ) ); ?>
             <div class="modal-card">
                 <div class="modal-card-head">
                     <p class="modal-card-title">
-						<?php echo esc_html( get_the_title( $options['dialog_form_id'] ) ); ?>
+						<?php echo esc_html( get_the_title( $form_id ) ); ?>
                     </p>
                     <button class="modal-close" data-dismiss="modal"></button>
                 </div>

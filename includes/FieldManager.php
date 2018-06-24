@@ -55,6 +55,26 @@ class FieldManager extends Collection {
 		do_action( 'dialog_contact_form/fields', $this );
 	}
 
+	/**
+	 * Offset to retrieve
+	 *
+	 * @param mixed $key The offset to retrieve.
+	 *
+	 * @return mixed Can return all value types.
+	 */
+	public function get( $key ) {
+		if ( ! $this->has( $key ) ) {
+			return null;
+		}
+
+		return '\\' . ltrim( $this->collections[ $key ], '\\' );
+	}
+
+	/**
+	 * Get fields by priority
+	 *
+	 * @return array
+	 */
 	public function getFieldsByPriority() {
 		$tempCollections = $this->getCollections();
 		$fields          = array();

@@ -50,6 +50,13 @@ class FormBuilder {
 	private $fields = array();
 
 	/**
+	 * Check if form is valid
+	 *
+	 * @var bool
+	 */
+	private $is_valid_form = false;
+
+	/**
 	 * Plugin global options for all forms
 	 * @var array
 	 */
@@ -85,9 +92,15 @@ class FormBuilder {
 		$this->error_message   = isset( $GLOBALS['_dcf_validation_error'] ) ? $GLOBALS['_dcf_validation_error'] : null;
 
 		if ( $form_id ) {
-			$this->form_id       = $form_id;
-			$this->configuration = get_post_meta( $form_id, '_contact_form_config', true );
-			$this->fields        = get_post_meta( $form_id, '_contact_form_fields', true );
+			$this->form_id = $form_id;
+			$fields        = get_post_meta( $form_id, '_contact_form_fields', true );
+			$configuration = get_post_meta( $form_id, '_contact_form_config', true );
+
+			if ( is_array( $fields ) && count( $fields ) ) {
+				$this->fields        = $fields;
+				$this->is_valid_form = true;
+				$this->configuration = is_array( $configuration ) && count( $configuration ) ? $configuration : array();
+			}
 		}
 	}
 
@@ -297,5 +310,12 @@ class FormBuilder {
 		);
 
 		return $html;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_valid_form() {
+		return $this->is_valid_form;
 	}
 }
