@@ -3,16 +3,6 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Action;
-use DialogContactForm\Actions\DataErasureRequest;
-use DialogContactForm\Actions\DataExportRequest;
-use DialogContactForm\Actions\EmailNotification;
-use DialogContactForm\Actions\MailChimp;
-use DialogContactForm\Actions\Mailpoet;
-use DialogContactForm\Actions\Mailpoet3;
-use DialogContactForm\Actions\Redirect;
-use DialogContactForm\Actions\StoreSubmission;
-use DialogContactForm\Actions\SuccessMessage;
-use DialogContactForm\Actions\Webhook;
 use DialogContactForm\Supports\Collection;
 
 // Exit if accessed directly
@@ -39,16 +29,16 @@ class ActionManager extends Collection {
 	}
 
 	public function __construct() {
-		$this->add( 'store_submission', new StoreSubmission() );
-		$this->add( 'email_notification', new EmailNotification() );
-		$this->add( 'mailchimp', new MailChimp() );
-		$this->add( 'mailpoet', new Mailpoet() );
-		$this->add( 'mailpoet3', new Mailpoet3() );
-		$this->add( 'webhook', new Webhook() );
-		$this->add( 'data_export_request', new DataExportRequest() );
-		$this->add( 'data_erasure_request', new DataErasureRequest() );
-		$this->add( 'success_message', new SuccessMessage() );
-		$this->add( 'redirect', new Redirect() );
+		$this->add( 'store_submission', 'DialogContactForm\Actions\StoreSubmission' );
+		$this->add( 'email_notification', 'DialogContactForm\Actions\EmailNotification' );
+		$this->add( 'mailchimp', 'DialogContactForm\Actions\MailChimp' );
+		$this->add( 'mailpoet', 'DialogContactForm\Actions\Mailpoet' );
+		$this->add( 'mailpoet3', 'DialogContactForm\Actions\Mailpoet3' );
+		$this->add( 'webhook', 'DialogContactForm\Actions\Webhook' );
+		$this->add( 'data_export_request', 'DialogContactForm\Actions\DataExportRequest' );
+		$this->add( 'data_erasure_request', 'DialogContactForm\Actions\DataErasureRequest' );
+		$this->add( 'success_message', 'DialogContactForm\Actions\SuccessMessage' );
+		$this->add( 'redirect', 'DialogContactForm\Actions\Redirect' );
 
 		/**
 		 * Give other plugin option to add their own action(s)
@@ -57,42 +47,36 @@ class ActionManager extends Collection {
 	}
 
 	/**
+	 * Offset to retrieve
+	 *
+	 * @param mixed $key The offset to retrieve.
+	 *
+	 * @return mixed Can return all value types.
+	 */
+	public function get( $key ) {
+		if ( ! $this->has( $key ) ) {
+			return null;
+		}
+
+		return '\\' . ltrim( $this->collections[ $key ], '\\' );
+	}
+
+	/**
+	 * Get actions by priority
+	 *
 	 * @return array
 	 */
-	public function getCollections() {
-		$actions = $this->collections;
+	public function getActionsByPriority() {
+		$tempCollections = $this->getCollections();
+		$actions         = array();
+		foreach ( $tempCollections as $id => $className ) {
+			$actions[ $id ] = new $className();
+		}
 
 		// Sort by priority
 		usort( $actions, array( $this, 'sortByPriority' ) );
 
 		return $actions;
-	}
-
-	/**
-	 * Action to set
-	 *
-	 * @param string $action_name The action name to assign the value to.
-	 * @param Action $action The action to set.
-	 */
-	public function add( $action_name, $action ) {
-		if ( $action instanceof Action ) {
-			$this->collections[ $action_name ] = $action;
-		}
-	}
-
-	/**
-	 * Get the array representation of the current element.
-	 *
-	 * @return array
-	 */
-	public function toArray() {
-		return array_map( function ( $action ) {
-			if ( $action instanceof Action ) {
-				return $action->toArray();
-			}
-
-			return $action;
-		}, $this->getCollections() );
 	}
 
 	/**

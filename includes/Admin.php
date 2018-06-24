@@ -2,6 +2,7 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Supports\Metabox;
 
 // Exit if accessed directly
@@ -198,7 +199,8 @@ class Admin {
 		if ( DIALOG_CONTACT_FORM_POST_TYPE !== $post->post_type ) {
 			return;
 		}
-		$actions = ActionManager::init();
+		$actionManager = ActionManager::init();
+		$actions       = $actionManager->getActionsByPriority();
 		?>
         <div class="dcf-tabs-wrapper">
             <div id="dcf-metabox-tabs" class="dcf-tabs">
@@ -433,9 +435,18 @@ class Admin {
 			delete_post_meta( $post_id, '_contact_form_fields' );
 		}
 
-		$actions = ActionManager::init();
-		/** @var \DialogContactForm\Abstracts\Action $action */
-		foreach ( $actions as $action ) {
+		$supported_actions = isset( $_POST['actions']['after_submit_actions'] ) ? $_POST['actions']['after_submit_actions'] : array();
+		$actions           = ActionManager::init();
+		foreach ( $actions as $action_id => $className ) {
+			if ( ! in_array( $action_id, $supported_actions ) ) {
+				continue;
+			}
+
+			$action = new $className;
+			if ( ! $action instanceof Action ) {
+				continue;
+			}
+
 			$action->save( $post_id, $post );
 		}
 

@@ -2,9 +2,9 @@
 
 namespace DialogContactForm\Abstracts;
 
-// Exit if accessed directly
 use DialogContactForm\ActionManager;
 
+// Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -84,11 +84,15 @@ abstract class Template {
 		) );
 
 		$actions = ActionManager::init();
-		/** @var \DialogContactForm\Abstracts\Action $action */
-		foreach ( $actions as $action ) {
-			if ( ! in_array( $action->get_id(), $form_actions_list ) ) {
+		foreach ( $actions as $action_id => $className ) {
+			if ( ! in_array( $action_id, $form_actions_list ) ) {
 				continue;
 			}
+			$action = new $className;
+			if ( ! $action instanceof Action ) {
+				continue;
+			}
+
 			$action_value = $form_actions[ $action->get_id() ];
 			if ( ! empty( $action_value ) ) {
 				update_post_meta( $post_id, $action->get_meta_key(), $action_value );

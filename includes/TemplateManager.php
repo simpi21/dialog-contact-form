@@ -4,15 +4,6 @@ namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Template;
 use DialogContactForm\Supports\Collection;
-use DialogContactForm\Templates\Blank;
-use DialogContactForm\Templates\CollectFeedback;
-use DialogContactForm\Templates\ContactUs;
-use DialogContactForm\Templates\DataErasureRequest;
-use DialogContactForm\Templates\DataExportRequest;
-use DialogContactForm\Templates\EventRegistration;
-use DialogContactForm\Templates\GeneralEnquiry;
-use DialogContactForm\Templates\JobApplication;
-use DialogContactForm\Templates\QuoteRequest;
 
 class TemplateManager extends Collection {
 
@@ -20,11 +11,6 @@ class TemplateManager extends Collection {
 	 * @var object
 	 */
 	protected static $instance;
-
-	/**
-	 * @var array
-	 */
-	protected $collections = array();
 
 	/**
 	 * @return TemplateManager
@@ -38,15 +24,15 @@ class TemplateManager extends Collection {
 	}
 
 	public function __construct() {
-		$this->add( 'blank', new Blank() );
-		$this->add( 'contact_us', new ContactUs() );
-		$this->add( 'event_registration', new EventRegistration() );
-		$this->add( 'collect_feedback', new CollectFeedback() );
-		$this->add( 'general_enquiry', new GeneralEnquiry() );
-		$this->add( 'data_erasure_request', new DataErasureRequest() );
-		$this->add( 'data_export_request', new DataExportRequest() );
-		$this->add( 'job_application', new JobApplication() );
-		$this->add( 'quote_request', new QuoteRequest() );
+		$this->add( 'blank', 'DialogContactForm\Templates\Blank' );
+		$this->add( 'contact_us', 'DialogContactForm\Templates\ContactUs' );
+		$this->add( 'event_registration', 'DialogContactForm\Templates\EventRegistration' );
+		$this->add( 'collect_feedback', 'DialogContactForm\Templates\CollectFeedback' );
+		$this->add( 'general_enquiry', 'DialogContactForm\Templates\GeneralEnquiry' );
+		$this->add( 'data_erasure_request', 'DialogContactForm\Templates\DataErasureRequest' );
+		$this->add( 'data_export_request', 'DialogContactForm\Templates\DataExportRequest' );
+		$this->add( 'job_application', 'DialogContactForm\Templates\JobApplication' );
+		$this->add( 'quote_request', 'DialogContactForm\Templates\QuoteRequest' );
 
 		/**
 		 * Give other plugin option to add their own template(s)
@@ -55,42 +41,36 @@ class TemplateManager extends Collection {
 	}
 
 	/**
+	 * Offset to retrieve
+	 *
+	 * @param mixed $key The offset to retrieve.
+	 *
+	 * @return mixed Can return all value types.
+	 */
+	public function get( $key ) {
+		if ( ! $this->has( $key ) ) {
+			return null;
+		}
+
+		return '\\' . ltrim( $this->collections[ $key ], '\\' );
+	}
+
+	/**
+	 * Get templates by priority
+	 *
 	 * @return array
 	 */
-	public function getCollections() {
-		$actions = $this->collections;
+	public function getTemplatesByPriority() {
+		$tempCollections = $this->getCollections();
+		$templates       = array();
+		foreach ( $tempCollections as $id => $className ) {
+			$templates[ $id ] = new $className();
+		}
 
 		// Sort by priority
-		usort( $actions, array( $this, 'sortByPriority' ) );
+		usort( $templates, array( $this, 'sortByPriority' ) );
 
-		return $actions;
-	}
-
-	/**
-	 * Template to set
-	 *
-	 * @param string $template_name The offset to assign the value to.
-	 * @param Template $template The value to set.
-	 */
-	public function add( $template_name, $template ) {
-		if ( $template instanceof Template ) {
-			$this->collections[ $template_name ] = $template;
-		}
-	}
-
-	/**
-	 * Get the array representation of the current element.
-	 *
-	 * @return array
-	 */
-	public function toArray() {
-		return array_map( function ( $template ) {
-			if ( $template instanceof Template ) {
-				return $template->toArray();
-			}
-
-			return $template;
-		}, $this->getCollections() );
+		return $templates;
 	}
 
 	/**

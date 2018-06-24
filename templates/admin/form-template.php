@@ -7,7 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$templates = TemplateManager::init();
+$templateManager = TemplateManager::init();
+$templates       = $templateManager->getTemplatesByPriority();
 ?>
 <div id="modal-form-template" class="modal">
     <div class="modal-background"></div>

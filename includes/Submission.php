@@ -2,6 +2,7 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Supports\Attachment;
 
@@ -120,11 +121,17 @@ class Submission {
 		$response = array();
 		$actions  = ActionManager::init();
 
-		/** @var \DialogContactForm\Abstracts\Action $action */
-		foreach ( $actions as $action ) {
-			if ( ! in_array( $action->get_id(), $config->getFormActions() ) ) {
+		foreach ( $actions as $action_id => $className ) {
+
+			if ( ! in_array( $action_id, $config->getFormActions() ) ) {
 				continue;
 			}
+
+			$action = new $className;
+			if ( ! $action instanceof Action ) {
+				continue;
+			}
+
 			$response[ $action->get_id() ] = $action::process( $config, $data );
 		}
 
