@@ -1,6 +1,6 @@
 <?php
 
-use DialogContactForm\Entries\Entry_List_Table;
+use DialogContactForm\Entries\EntryListTable;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 //Create an instance of our package class...
-$table = new Entry_List_Table();
+$table = new EntryListTable();
 
 ?>
 <style type="text/css">

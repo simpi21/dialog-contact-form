@@ -58,7 +58,8 @@ class DataErasureRequest extends Action {
 	 */
 	public function get_description() {
 		$html = '<p class="description">';
-		$html .= esc_html__( 'This action adds users to WordPress\' personal data delete tool, allowing admins to comply with the GDPR and other privacy regulations from the site\'s front end.', 'dialog-contact-form' );
+		$html .= esc_html__( 'This action adds users to WordPress\' personal data delete tool, allowing admins to comply with the GDPR and other privacy regulations from the site\'s front end.',
+			'dialog-contact-form' );
 		$html .= '</p>';
 
 		return $html;
@@ -74,7 +75,7 @@ class DataErasureRequest extends Action {
 		$email_fields = array();
 
 		foreach ( $config->getFormFields() as $field ) {
-			if ( 'email' === $field['field_type'] ) {
+			if ( isset( $field['field_type'] ) && 'email' === $field['field_type'] ) {
 				$email_fields[ $field['field_id'] ] = $field['field_title'];
 			}
 		}

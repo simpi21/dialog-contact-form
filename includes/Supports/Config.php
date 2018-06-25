@@ -183,7 +183,7 @@ class Config {
 			}
 
 			// Check if reCAPTCHA is enabled
-			if ( 'yes' === $this->form_settings['recaptcha'] ) {
+			if ( isset( $this->form_settings['recaptcha'] ) && 'yes' === $this->form_settings['recaptcha'] ) {
 				$this->has_recaptcha = true;
 			}
 

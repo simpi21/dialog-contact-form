@@ -17,7 +17,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
 
-class Entry_List_Table extends \WP_List_Table {
+class EntryListTable extends \WP_List_Table {
 
 	/**
 	 * @var string
@@ -63,6 +63,9 @@ class Entry_List_Table extends \WP_List_Table {
 	 */
 	private $is_trash = false;
 
+	/**
+	 * @var array
+	 */
 	private $sort_order = array( 'ASC', 'DESC' );
 
 	/**
@@ -194,14 +197,18 @@ class Entry_List_Table extends \WP_List_Table {
 
 		} else {
 			if ( current_user_can( 'edit_pages' ) ) {
-				$restore_url        = add_query_arg( $url_args + array( 'action' => 'untrash' ), admin_url( 'edit.php' ) );
+				$restore_url        = add_query_arg( $url_args + array( 'action' => 'untrash' ),
+					admin_url( 'edit.php' ) );
 				$restore_url        = wp_nonce_url( $restore_url, 'dcf_entries_list', '_dcf_nonce' );
-				$actions['untrash'] = '<a href="' . $restore_url . '">' . __( 'Restore', 'dialog-contact-from' ) . '</a>';
+				$actions['untrash'] = '<a href="' . $restore_url . '">' . __( 'Restore',
+						'dialog-contact-from' ) . '</a>';
 			}
 			if ( current_user_can( 'delete_pages' ) ) {
-				$delete_url        = add_query_arg( $url_args + array( 'action' => 'delete' ), admin_url( 'edit.php' ) );
+				$delete_url        = add_query_arg( $url_args + array( 'action' => 'delete' ),
+					admin_url( 'edit.php' ) );
 				$delete_url        = wp_nonce_url( $delete_url, 'dcf_entries_list', '_dcf_nonce' );
-				$actions['delete'] = '<a href="' . $delete_url . '">' . __( 'Delete Permanently', 'dialog-contact-from' ) . '</a>';
+				$actions['delete'] = '<a href="' . $delete_url . '">' . __( 'Delete Permanently',
+						'dialog-contact-from' ) . '</a>';
 			}
 		}
 
@@ -303,8 +310,10 @@ class Entry_List_Table extends \WP_List_Table {
 		$current_page = $this->get_pagenum();
 
 		$args = array(
-			'orderby'  => isset( $_REQUEST['orderby'] ) && in_array( $_REQUEST['orderby'], $this->columns ) ? $_REQUEST['orderby'] : 'id',
-			'order'    => isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], $this->sort_order ) ? $_REQUEST['order'] : 'DESC',
+			'orderby'  => isset( $_REQUEST['orderby'] ) && in_array( $_REQUEST['orderby'],
+				$this->columns ) ? $_REQUEST['orderby'] : 'id',
+			'order'    => isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'],
+				$this->sort_order ) ? $_REQUEST['order'] : 'DESC',
 			'offset'   => ( $current_page - 1 ) * $per_page,
 			'per_page' => $per_page,
 		);
@@ -315,10 +324,10 @@ class Entry_List_Table extends \WP_List_Table {
 		if ( $this->is_unread ) {
 			$this->items = $this->get_unread_items( $args );
 			$total_items = $total_items['unread'];
-		} else if ( $this->is_read ) {
+		} elseif ( $this->is_read ) {
 			$this->items = $this->get_read_items( $args );
 			$total_items = $total_items['read'];
-		} else if ( $this->is_trash ) {
+		} elseif ( $this->is_trash ) {
 			$this->items = $this->get_trash_items( $args );
 			$total_items = $total_items['trash'];
 		} else {

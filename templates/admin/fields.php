@@ -19,7 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		foreach ( $_fields as $_field_number => $_field ) {
 
-			$class_name = $fieldManager->get( $_field['field_type'] );
+			$field_type = isset( $_field['field_type'] ) ? $_field['field_type'] : null;
+			$class_name = $fieldManager->get( $field_type );
 			if ( ! class_exists( $class_name ) ) {
 				continue;
 			}
@@ -120,7 +121,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 								'meta_key'    => '_contact_form_fields',
 								'step'        => '0.01',
 								'label'       => __( 'Minimum Value', 'dialog-contact-form' ),
-								'description' => __( 'Specifies the minimum value allowed. (optional)', 'dialog-contact-form' ),
+								'description' => __( 'Specifies the minimum value allowed. (optional)',
+									'dialog-contact-form' ),
 							),
 							'number_max'         => array(
 								'type'        => 'number',
@@ -131,7 +133,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 								'meta_key'    => '_contact_form_fields',
 								'step'        => '0.01',
 								'label'       => __( 'Maximum Value', 'dialog-contact-form' ),
-								'description' => __( 'Specifies the maximum value allowed. (optional)', 'dialog-contact-form' ),
+								'description' => __( 'Specifies the maximum value allowed. (optional)',
+									'dialog-contact-form' ),
 							),
 							'number_step'        => array(
 								'type'        => 'number',
