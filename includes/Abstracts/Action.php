@@ -228,7 +228,7 @@ abstract class Action {
 				continue;
 			}
 
-			if ( 'select' == $setting['type'] ) {
+			if ( isset( $setting['type'] ) && 'select' == $setting['type'] ) {
 				$valid_options = array_keys( $setting['options'] );
 				$value         = in_array( $value, $valid_options ) ? $value : $setting['default'];
 

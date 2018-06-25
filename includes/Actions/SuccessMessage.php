@@ -52,7 +52,7 @@ class SuccessMessage extends Action {
 				'meta_key'    => $this->meta_key,
 				'label'       => __( 'Message', 'dialog-contact-form' ),
 				'description' => __( 'Enter success message. You can also use HTML markup.', 'dialog-contact-form' ),
-				'sanitize'    => array( 'DialogContactForm\\Supports\\Sanitize', 'html' ),
+				'sanitize'    => 'wp_kses_post',
 				'rows'        => 5,
 				'default'     => $default,
 			),

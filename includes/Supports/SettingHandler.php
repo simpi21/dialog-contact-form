@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author  Sayful Islam <sayful.islam001@gmail.com>
  * @link    https://sayfulislam.com
  */
-class Settings_API {
+class SettingHandler {
 	/**
 	 * Settings options array
 	 */
@@ -46,7 +46,7 @@ class Settings_API {
 	private static $instance;
 
 	/**
-	 * @return Settings_API
+	 * @return SettingHandler
 	 */
 	public static function init() {
 		if ( is_null( self::$instance ) ) {
@@ -73,7 +73,7 @@ class Settings_API {
 	 *
 	 * @param array $menu_fields
 	 *
-	 * @return \WP_Error|Settings_API
+	 * @return \WP_Error|SettingHandler
 	 */
 	public function add_menu( array $menu_fields ) {
 		if ( ! isset( $menu_fields['page_title'], $menu_fields['menu_title'], $menu_fields['menu_slug'] ) ) {

@@ -315,6 +315,7 @@ class Metabox {
 	 */
 	private static function field_common( $args ) {
 		global $post;
+		$post_id = $post instanceof \WP_Post ? $post->ID : 0;
 		// Meta Name
 		$group    = isset( $args['group'] ) ? $args['group'] : 'dialog_contact_form';
 		$multiple = isset( $args['multiple'] ) ? '[]' : '';
@@ -322,14 +323,14 @@ class Metabox {
 
 		// Meta Value
 		$default = isset( $args['default'] ) ? $args['default'] : '';
-		$meta    = get_post_meta( $post->ID, $args['id'], true );
+		$meta    = get_post_meta( $post_id, $args['id'], true );
 		$value   = ! empty( $meta ) ? $meta : $default;
 
 		// ID
 		$id = sprintf( '%s_%s', $group, $args['id'] );
 
 		if ( isset( $args['meta_key'] ) ) {
-			$meta  = get_post_meta( $post->ID, $args['meta_key'], true );
+			$meta  = get_post_meta( $post_id, $args['meta_key'], true );
 			$value = ! empty( $meta[ $args['id'] ] ) ? $meta[ $args['id'] ] : $default;
 
 			if ( isset( $args['position'] ) ) {

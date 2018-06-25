@@ -241,7 +241,7 @@ class EmailNotification extends Action {
 				),
 				'rows'        => 10,
 				'input_class' => 'widefat',
-				'sanitize'    => array( 'DialogContactForm\\Supports\\Sanitize', 'html' ),
+				'sanitize'    => 'wp_kses_post',
 				'default'     => '[all_fields_table]',
 			),
 		);
@@ -324,6 +324,11 @@ class EmailNotification extends Action {
 		return $html;
 	}
 
+	/**
+	 * Get email template header
+	 *
+	 * @return string
+	 */
 	private static function get_email_head() {
 		ob_start();
 		include_once DIALOG_CONTACT_FORM_TEMPLATES . '/emails/email-head.php';
@@ -331,6 +336,11 @@ class EmailNotification extends Action {
 		return ob_get_clean();
 	}
 
+	/**
+	 * Get email template footer
+	 *
+	 * @return string
+	 */
 	private static function get_email_footer() {
 		ob_start();
 		include_once DIALOG_CONTACT_FORM_TEMPLATES . '/emails/email-footer.php';

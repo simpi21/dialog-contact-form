@@ -10,8 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * A simple wrapper class of static methods sanitizing value.
  *
- * @class        Dialog_Contact_Form_Sanitize
- * @version        2.2.0
+ * @class Sanitize
+ * @version 3.0.0
  */
 class Sanitize {
 	/**

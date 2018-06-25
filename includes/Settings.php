@@ -3,7 +3,8 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Fields\Recaptcha2;
-use DialogContactForm\Supports\Settings_API;use DialogContactForm\Supports\Utils;
+use DialogContactForm\Supports\SettingHandler;
+use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -35,7 +36,7 @@ class Settings {
 	 */
 	public static function settings() {
 		$default_options = Utils::default_options();
-		$option_page     = Settings_API::init();
+		$option_page     = SettingHandler::init();
 
 		// Add settings page
 		$option_page->add_menu( array(
@@ -82,7 +83,7 @@ class Settings {
 	/**
 	 * SMTP Server settings
 	 *
-	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 * @param SettingHandler $option_page
 	 */
 	private static function smtp_server_settings( $option_page ) {
 		$option_page->add_section( array(
@@ -158,7 +159,7 @@ class Settings {
 	/**
 	 * Validation messages
 	 *
-	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 * @param SettingHandler $option_page
 	 * @param array $default_options
 	 */
 	private static function validation_messages( $option_page, $default_options ) {
@@ -387,7 +388,7 @@ class Settings {
 	/**
 	 * Dialog/Model settings
 	 *
-	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 * @param SettingHandler $option_page
 	 * @param array $default_options
 	 */
 	private static function dialog_settings( $option_page, $default_options ) {
@@ -434,7 +435,7 @@ class Settings {
 	/**
 	 * Dialog/Model settings
 	 *
-	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 * @param SettingHandler $option_page
 	 */
 	private static function recaptcha_settings( $option_page ) {
 		$option_page->add_section( array(
@@ -491,7 +492,7 @@ class Settings {
 	/**
 	 * Dialog/Model settings
 	 *
-	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 * @param SettingHandler $option_page
 	 */
 	private static function mailchimp_settings( $option_page ) {
 		$option_page->add_section( array(
@@ -520,7 +521,7 @@ class Settings {
 	/**
 	 * Dialog/Model settings
 	 *
-	 * @param \DialogContactForm\Supports\Settings_API $option_page
+	 * @param SettingHandler $option_page
 	 */
 	private static function general_settings( $option_page ) {
 		// Add Sections
@@ -550,7 +551,8 @@ class Settings {
 			'id'       => 'delete_data_on_uninstallation',
 			'type'     => 'radio',
 			'name'     => __( 'Delete plugin data', 'dialog-contact-form' ),
-			'desc'     => __( 'Choose Yes to delete all "Dialog Contact Form" data when uninstall this plugin.', 'dialog-contact-form' ),
+			'desc'     => __( 'Choose Yes to delete all "Dialog Contact Form" data when uninstall this plugin.',
+				'dialog-contact-form' ),
 			'std'      => 'no',
 			'section'  => 'dcf_style_section',
 			'priority' => 20,
