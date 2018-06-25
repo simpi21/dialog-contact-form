@@ -316,6 +316,9 @@
         for (field_name in vMessages) {
             if (vMessages.hasOwnProperty(field_name)) {
                 fields = form.querySelector('[name="' + field_name + '"]');
+                if (!fields) {
+                    fields = form.querySelector('[name="' + field_name + '[]"]');
+                }
                 control = fields.closest('.dcf-control');
                 messages = vMessages[field_name];
                 if (messages[0]) {
