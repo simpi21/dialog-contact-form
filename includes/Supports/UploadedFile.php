@@ -2,12 +2,14 @@
 
 namespace DialogContactForm\Supports;
 
+use DialogContactForm\Interfaces\UploadedFileInterface;
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class UploadedFile {
+class UploadedFile implements UploadedFileInterface {
 
 	/**
 	 * The client-provided full path to the file
