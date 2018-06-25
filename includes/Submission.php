@@ -5,6 +5,7 @@ namespace DialogContactForm;
 use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Supports\Attachment;
+use DialogContactForm\Supports\Config;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -62,14 +63,14 @@ class Submission {
 		}
 
 		/**
-		 * @var \DialogContactForm\Config $config
+		 * @var \DialogContactForm\Supports\Config $config
 		 */
 		do_action( 'dialog_contact_form_before_validation', $config );
 
 		$error_data = $this->validate_form_data( $config );
 
 		/**
-		 * @var \DialogContactForm\Config $config
+		 * @var \DialogContactForm\Supports\Config $config
 		 * @var array $error_data
 		 */
 		do_action( 'dialog_contact_form_after_validation', $config, $error_data );
@@ -183,7 +184,7 @@ class Submission {
 	/**
 	 * Validate user submitted form data
 	 *
-	 * @param \DialogContactForm\Config $config
+	 * @param \DialogContactForm\Supports\Config $config
 	 *
 	 * @return mixed
 	 */
@@ -217,7 +218,7 @@ class Submission {
 	 *
 	 * @param mixed $value
 	 * @param array $field
-	 * @param \DialogContactForm\Config $config
+	 * @param \DialogContactForm\Supports\Config $config
 	 *
 	 * @return array
 	 */

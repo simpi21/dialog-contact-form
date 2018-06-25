@@ -32,22 +32,22 @@ class FieldManager extends Collection {
 	 * FieldManager constructor.
 	 */
 	public function __construct() {
-		$this->add( 'acceptance', '\DialogContactForm\Fields\Acceptance' );
-		$this->add( 'checkbox', '\DialogContactForm\Fields\Checkbox' );
-		$this->add( 'date', '\DialogContactForm\Fields\Date' );
-		$this->add( 'email', '\DialogContactForm\Fields\Email' );
-		$this->add( 'file', '\DialogContactForm\Fields\File' );
-		$this->add( 'hidden', '\DialogContactForm\Fields\Hidden' );
-		$this->add( 'number', '\DialogContactForm\Fields\Number' );
-		$this->add( 'password', '\DialogContactForm\Fields\Password' );
-		$this->add( 'radio', '\DialogContactForm\Fields\Radio' );
-		$this->add( 'select', '\DialogContactForm\Fields\Select' );
-		$this->add( 'text', '\DialogContactForm\Fields\Text' );
-		$this->add( 'textarea', '\DialogContactForm\Fields\Textarea' );
-		$this->add( 'time', '\DialogContactForm\Fields\Time' );
-		$this->add( 'url', '\DialogContactForm\Fields\Url' );
-		$this->add( 'html', '\DialogContactForm\Fields\Html' );
-		$this->add( 'divider', '\DialogContactForm\Fields\Divider' );
+		$this->set( 'acceptance', 'DialogContactForm\Fields\Acceptance' );
+		$this->set( 'checkbox', 'DialogContactForm\Fields\Checkbox' );
+		$this->set( 'date', 'DialogContactForm\Fields\Date' );
+		$this->set( 'email', 'DialogContactForm\Fields\Email' );
+		$this->set( 'file', 'DialogContactForm\Fields\File' );
+		$this->set( 'hidden', 'DialogContactForm\Fields\Hidden' );
+		$this->set( 'number', 'DialogContactForm\Fields\Number' );
+		$this->set( 'password', 'DialogContactForm\Fields\Password' );
+		$this->set( 'radio', 'DialogContactForm\Fields\Radio' );
+		$this->set( 'select', 'DialogContactForm\Fields\Select' );
+		$this->set( 'text', 'DialogContactForm\Fields\Text' );
+		$this->set( 'textarea', 'DialogContactForm\Fields\Textarea' );
+		$this->set( 'time', 'DialogContactForm\Fields\Time' );
+		$this->set( 'url', 'DialogContactForm\Fields\Url' );
+		$this->set( 'html', 'DialogContactForm\Fields\Html' );
+		$this->set( 'divider', 'DialogContactForm\Fields\Divider' );
 
 		/**
 		 * Give other plugin option to add their own field(s)
@@ -56,15 +56,16 @@ class FieldManager extends Collection {
 	}
 
 	/**
-	 * Offset to retrieve
+	 * Get collection item for key
 	 *
-	 * @param mixed $key The offset to retrieve.
+	 * @param string $key The data key
+	 * @param mixed $default The default value to return if data key does not exist
 	 *
-	 * @return mixed Can return all value types.
+	 * @return mixed The key's value, or the default value
 	 */
-	public function get( $key ) {
+	public function get( $key, $default = null ) {
 		if ( ! $this->has( $key ) ) {
-			return null;
+			return $default;
 		}
 
 		return '\\' . ltrim( $this->collections[ $key ], '\\' );
@@ -76,7 +77,7 @@ class FieldManager extends Collection {
 	 * @return array
 	 */
 	public function getFieldsByPriority() {
-		$tempCollections = $this->getCollections();
+		$tempCollections = $this->all();
 		$fields          = array();
 		foreach ( $tempCollections as $id => $className ) {
 			$fields[ $id ] = new $className();

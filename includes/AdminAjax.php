@@ -3,7 +3,7 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Template;
-use DialogContactForm\Supports\Metabox;
+use DialogContactForm\Supports\Metabox;use DialogContactForm\Supports\Utils;
 
 class AdminAjax {
 

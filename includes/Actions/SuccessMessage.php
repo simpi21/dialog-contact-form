@@ -3,7 +3,7 @@
 namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Action;
-use DialogContactForm\Utils;
+use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,7 +27,7 @@ class SuccessMessage extends Action {
 	/**
 	 * Process current action
 	 *
-	 * @param \DialogContactForm\Config $config Contact form configurations
+	 * @param \DialogContactForm\Supports\Config $config Contact form configurations
 	 * @param array $data User submitted sanitized data
 	 *
 	 * @return mixed

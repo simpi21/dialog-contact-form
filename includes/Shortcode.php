@@ -2,7 +2,7 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\Supports\FormBuilder;
+use DialogContactForm\Supports\FormBuilder;use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {

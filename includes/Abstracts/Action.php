@@ -89,7 +89,7 @@ abstract class Action {
 	/**
 	 * Process current action
 	 *
-	 * @param \DialogContactForm\Config $config Contact form configurations
+	 * @param \DialogContactForm\Supports\Config $config Contact form configurations
 	 * @param array $data User submitted sanitized data
 	 *
 	 * @return mixed

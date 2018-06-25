@@ -2,6 +2,7 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\Supports\Utils;
 use DialogContactForm\Templates\ContactUs;
 
 // Exit if accessed directly

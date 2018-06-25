@@ -3,7 +3,7 @@
 namespace DialogContactForm\Supports;
 
 use DialogContactForm\Fields\File;
-use DialogContactForm\Utils;
+use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {

@@ -29,16 +29,16 @@ class ActionManager extends Collection {
 	}
 
 	public function __construct() {
-		$this->add( 'store_submission', 'DialogContactForm\Actions\StoreSubmission' );
-		$this->add( 'email_notification', 'DialogContactForm\Actions\EmailNotification' );
-		$this->add( 'mailchimp', 'DialogContactForm\Actions\MailChimp' );
-		$this->add( 'mailpoet', 'DialogContactForm\Actions\Mailpoet' );
-		$this->add( 'mailpoet3', 'DialogContactForm\Actions\Mailpoet3' );
-		$this->add( 'webhook', 'DialogContactForm\Actions\Webhook' );
-		$this->add( 'data_export_request', 'DialogContactForm\Actions\DataExportRequest' );
-		$this->add( 'data_erasure_request', 'DialogContactForm\Actions\DataErasureRequest' );
-		$this->add( 'success_message', 'DialogContactForm\Actions\SuccessMessage' );
-		$this->add( 'redirect', 'DialogContactForm\Actions\Redirect' );
+		$this->set( 'store_submission', 'DialogContactForm\Actions\StoreSubmission' );
+		$this->set( 'email_notification', 'DialogContactForm\Actions\EmailNotification' );
+		$this->set( 'mailchimp', 'DialogContactForm\Actions\MailChimp' );
+		$this->set( 'mailpoet', 'DialogContactForm\Actions\Mailpoet' );
+		$this->set( 'mailpoet3', 'DialogContactForm\Actions\Mailpoet3' );
+		$this->set( 'webhook', 'DialogContactForm\Actions\Webhook' );
+		$this->set( 'data_export_request', 'DialogContactForm\Actions\DataExportRequest' );
+		$this->set( 'data_erasure_request', 'DialogContactForm\Actions\DataErasureRequest' );
+		$this->set( 'success_message', 'DialogContactForm\Actions\SuccessMessage' );
+		$this->set( 'redirect', 'DialogContactForm\Actions\Redirect' );
 
 		/**
 		 * Give other plugin option to add their own action(s)
@@ -47,15 +47,16 @@ class ActionManager extends Collection {
 	}
 
 	/**
-	 * Offset to retrieve
+	 * Get collection item for key
 	 *
-	 * @param mixed $key The offset to retrieve.
+	 * @param string $key The data key
+	 * @param mixed $default The default value to return if data key does not exist
 	 *
-	 * @return mixed Can return all value types.
+	 * @return mixed The key's value, or the default value
 	 */
-	public function get( $key ) {
+	public function get( $key, $default = null ) {
 		if ( ! $this->has( $key ) ) {
-			return null;
+			return $default;
 		}
 
 		return '\\' . ltrim( $this->collections[ $key ], '\\' );
@@ -67,7 +68,7 @@ class ActionManager extends Collection {
 	 * @return array
 	 */
 	public function getActionsByPriority() {
-		$tempCollections = $this->getCollections();
+		$tempCollections = $this->all();
 		$actions         = array();
 		foreach ( $tempCollections as $id => $className ) {
 			$actions[ $id ] = new $className();

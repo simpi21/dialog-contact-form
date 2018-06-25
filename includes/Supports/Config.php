@@ -1,8 +1,10 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Supports;
 
 // Exit if accessed directly
+use DialogContactForm\Supports\Utils;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

@@ -4,7 +4,7 @@ namespace DialogContactForm\Templates;
 
 
 use DialogContactForm\Abstracts\Template;
-use DialogContactForm\Utils;
+use DialogContactForm\Supports\Utils;
 
 class GeneralEnquiry extends Template {
 

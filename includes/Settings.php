@@ -3,7 +3,7 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Fields\Recaptcha2;
-use DialogContactForm\Supports\Settings_API;
+use DialogContactForm\Supports\Settings_API;use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {

@@ -5,7 +5,7 @@ namespace DialogContactForm\Supports;
 // Exit if accessed directly
 use DialogContactForm\FieldManager;
 use DialogContactForm\Fields\Recaptcha2;
-use DialogContactForm\Utils;
+use DialogContactForm\Supports\Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

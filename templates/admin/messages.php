@@ -1,7 +1,7 @@
 <?php
 
 use DialogContactForm\Supports\Metabox;
-use DialogContactForm\Utils;
+use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {

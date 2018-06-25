@@ -3,7 +3,7 @@
 namespace DialogContactForm\Templates;
 
 use DialogContactForm\Abstracts\Template;
-use DialogContactForm\Utils;
+use DialogContactForm\Supports\Utils;
 
 class JobApplication extends Template {
 

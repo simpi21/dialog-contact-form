@@ -4,7 +4,7 @@ namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Supports\Mailer;
-use DialogContactForm\Utils;
+use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -107,7 +107,7 @@ class EmailNotification extends Action {
 	/**
 	 * Process action
 	 *
-	 * @param \DialogContactForm\Config $config
+	 * @param \DialogContactForm\Supports\Config $config
 	 * @param array $data
 	 *
 	 * @return bool

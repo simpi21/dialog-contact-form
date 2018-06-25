@@ -24,15 +24,15 @@ class TemplateManager extends Collection {
 	}
 
 	public function __construct() {
-		$this->add( 'blank', 'DialogContactForm\Templates\Blank' );
-		$this->add( 'contact_us', 'DialogContactForm\Templates\ContactUs' );
-		$this->add( 'event_registration', 'DialogContactForm\Templates\EventRegistration' );
-		$this->add( 'collect_feedback', 'DialogContactForm\Templates\CollectFeedback' );
-		$this->add( 'general_enquiry', 'DialogContactForm\Templates\GeneralEnquiry' );
-		$this->add( 'data_erasure_request', 'DialogContactForm\Templates\DataErasureRequest' );
-		$this->add( 'data_export_request', 'DialogContactForm\Templates\DataExportRequest' );
-		$this->add( 'job_application', 'DialogContactForm\Templates\JobApplication' );
-		$this->add( 'quote_request', 'DialogContactForm\Templates\QuoteRequest' );
+		$this->set( 'blank', 'DialogContactForm\Templates\Blank' );
+		$this->set( 'contact_us', 'DialogContactForm\Templates\ContactUs' );
+		$this->set( 'event_registration', 'DialogContactForm\Templates\EventRegistration' );
+		$this->set( 'collect_feedback', 'DialogContactForm\Templates\CollectFeedback' );
+		$this->set( 'general_enquiry', 'DialogContactForm\Templates\GeneralEnquiry' );
+		$this->set( 'data_erasure_request', 'DialogContactForm\Templates\DataErasureRequest' );
+		$this->set( 'data_export_request', 'DialogContactForm\Templates\DataExportRequest' );
+		$this->set( 'job_application', 'DialogContactForm\Templates\JobApplication' );
+		$this->set( 'quote_request', 'DialogContactForm\Templates\QuoteRequest' );
 
 		/**
 		 * Give other plugin option to add their own template(s)
@@ -41,15 +41,16 @@ class TemplateManager extends Collection {
 	}
 
 	/**
-	 * Offset to retrieve
+	 * Get collection item for key
 	 *
-	 * @param mixed $key The offset to retrieve.
+	 * @param string $key The data key
+	 * @param mixed $default The default value to return if data key does not exist
 	 *
-	 * @return mixed Can return all value types.
+	 * @return mixed The key's value, or the default value
 	 */
-	public function get( $key ) {
+	public function get( $key, $default = null ) {
 		if ( ! $this->has( $key ) ) {
-			return null;
+			return $default;
 		}
 
 		return '\\' . ltrim( $this->collections[ $key ], '\\' );
@@ -61,7 +62,7 @@ class TemplateManager extends Collection {
 	 * @return array
 	 */
 	public function getTemplatesByPriority() {
-		$tempCollections = $this->getCollections();
+		$tempCollections = $this->all();
 		$templates       = array();
 		foreach ( $tempCollections as $id => $className ) {
 			$templates[ $id ] = new $className();

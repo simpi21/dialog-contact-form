@@ -3,7 +3,7 @@
 namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Action;
-use DialogContactForm\Config;
+use DialogContactForm\Supports\Config;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,7 +27,7 @@ class Mailpoet3 extends Action {
 	/**
 	 * Process current action
 	 *
-	 * @param \DialogContactForm\Config $config Contact form configurations
+	 * @param \DialogContactForm\Supports\Config $config Contact form configurations
 	 * @param array $data User submitted sanitized data
 	 *
 	 * @return boolean
