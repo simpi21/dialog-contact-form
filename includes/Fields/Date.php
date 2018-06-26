@@ -34,7 +34,7 @@ class Date extends Text {
 	public function __construct() {
 		$this->admin_id    = 'date';
 		$this->admin_label = __( 'Date', 'dialog-contact-form' );
-		$this->admin_icon  = 'far fa-calendar-alt';
+		$this->admin_icon  = '<i class="far fa-calendar-alt"></i>';
 		$this->priority    = 90;
 		$this->input_class = 'dcf-input dcf-input-date';
 		$this->type        = 'date';
@@ -52,11 +52,11 @@ class Date extends Text {
 			$this->setField( $field );
 		}
 
-		if ( ! $this->is_html_date() ) {
+		if ( ! $this->isHtmlDate() ) {
 			$this->type = 'text';
 		}
 
-		return '<input ' . $this->build_attributes() . '>';
+		return '<input ' . $this->buildAttributes() . '>';
 	}
 
 	/**
@@ -85,7 +85,7 @@ class Date extends Text {
 	 *
 	 * @return string
 	 */
-	protected function get_min_date() {
+	protected function getMinDate() {
 		if ( empty( $this->field['min_date'] ) ) {
 			return '';
 		}
@@ -102,7 +102,7 @@ class Date extends Text {
 	 *
 	 * @return string
 	 */
-	protected function get_max_date() {
+	protected function getMaxDate() {
 		if ( empty( $this->field['max_date'] ) ) {
 			return '';
 		}
@@ -119,7 +119,7 @@ class Date extends Text {
 	 *
 	 * @return bool
 	 */
-	protected function is_html_date() {
+	protected function isHtmlDate() {
 		if ( empty( $this->field['native_html5'] ) ) {
 			return false;
 		}

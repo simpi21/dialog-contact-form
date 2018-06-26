@@ -155,7 +155,7 @@ class Mailpoet3 extends Action {
 	 *
 	 * @return string
 	 */
-	public function get_description() {
+	public function getDescription() {
 		// If MailPoet is not available, then exit
 		if ( class_exists( '\\MailPoet\\API\\API' ) ) {
 			return '';

@@ -29,6 +29,8 @@ class MailChimp extends Action {
 	}
 
 	/**
+	 * Action settings
+	 *
 	 * @return array
 	 */
 	private function settings() {
@@ -42,14 +44,14 @@ class MailChimp extends Action {
 
 		try {
 			$handler = new MailchimpHandler( $this->api_key );
-			$lists   = $handler->get_lists();
+			$lists   = $handler->getLists();
 			$list    = $lists['lists'];
 			if ( ! empty( $list ) ) {
 				$mailchimp_list = $list;
 			}
 
 			if ( ! empty( $meta['mailchimp_list'] ) ) {
-				$_groups          = $handler->get_groups( $meta['mailchimp_list'] );
+				$_groups          = $handler->getGroups( $meta['mailchimp_list'] );
 				$groups           = $_groups['groups'];
 				$mailchimp_groups = empty( $groups ) ? array() : $groups;
 			}
@@ -174,7 +176,7 @@ class MailChimp extends Action {
 		$action_settings = get_post_meta( $config->getFormId(), '_action_mailchimp', true );
 
 		if ( empty( $action_settings['mailchimp_map_email'] ) ) {
-			return;
+			return false;
 		}
 
 		$subscriber['email_address'] = $data[ $action_settings['mailchimp_map_email'] ];

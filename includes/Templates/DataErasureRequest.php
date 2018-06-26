@@ -16,7 +16,8 @@ class DataErasureRequest extends Template {
 		$this->priority    = 40;
 		$this->id          = 'data_erasure_request';
 		$this->title       = __( 'Data Erasure Request', 'dialog-contact-form' );
-		$this->description = __( 'Includes action to add users to WordPress\' personal data delete tool, allowing admins to comply with the GDPR and other privacy regulations from the site\'s front end.', 'dialog-contact-form' );
+		$this->description = __( 'Includes action to add users to WordPress\' personal data delete tool, allowing admins to comply with the GDPR and other privacy regulations from the site\'s front end.',
+			'dialog-contact-form' );
 	}
 
 	/**
@@ -24,13 +25,14 @@ class DataErasureRequest extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_fields() {
+	protected function formFields() {
 		return array(
 			array(
 				'field_type'  => 'html',
 				'field_width' => 'is-12',
 				'field_title' => __( 'HTML', 'dialog-contact-form' ),
-				'html'        => __( 'Submit this form to request personal data deletion from the site administrator.', 'dialog-contact-form' ),
+				'html'        => __( 'Submit this form to request personal data deletion from the site administrator.',
+					'dialog-contact-form' ),
 			),
 			array(
 				'field_type'     => 'email',
@@ -50,7 +52,7 @@ class DataErasureRequest extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_settings() {
+	protected function formSettings() {
 		return array(
 			'labelPosition' => 'both',
 			'btnLabel'      => esc_html__( 'Submit', 'dialog-contact-form' ),
@@ -65,7 +67,7 @@ class DataErasureRequest extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_actions() {
+	protected function formActions() {
 		return array(
 			'store_submission'     => array(),
 			'data_erasure_request' => array(
@@ -92,7 +94,7 @@ class DataErasureRequest extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_validation_messages() {
+	protected function formValidationMessages() {
 		return array(
 			'mail_sent_ng'     => Utils::get_option( 'mail_sent_ng' ),
 			'validation_error' => Utils::get_option( 'validation_error' ),

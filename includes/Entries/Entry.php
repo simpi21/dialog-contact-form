@@ -3,11 +3,13 @@
 namespace DialogContactForm\Entries;
 
 // Exit if accessed directly
+use DialogContactForm\Supports\Utils;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Entry implements \JsonSerializable {
+class Entry {
 
 	/**
 	 * WordPress database
@@ -30,6 +32,9 @@ class Entry implements \JsonSerializable {
 	 */
 	private $meta_table_name = 'dcf_entry_meta';
 
+	/**
+	 * @var array
+	 */
 	private $entries = array();
 
 	/**
@@ -53,22 +58,13 @@ class Entry implements \JsonSerializable {
 	}
 
 	/**
-	 * Get the string representation of the current element.
-	 *
-	 * @return string
-	 */
-	public function __toString() {
-		return json_encode( $this->entries );
-	}
-
-	/**
 	 * Get entries
 	 *
 	 * @param $args
 	 *
 	 * @return null|object
 	 */
-	public function get_entries( $args ) {
+	public function getEntries( $args ) {
 		$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : 'id';
 		$order    = isset( $args['order'] ) ? $args['order'] : 'desc';
 		$offset   = isset( $args['offset'] ) ? intval( $args['offset'] ) : 0;
@@ -113,6 +109,22 @@ class Entry implements \JsonSerializable {
 	}
 
 	/**
+	 * Unserialize value only if it was serialized.
+	 *
+	 * @param string $original Maybe unserialized original, if is needed.
+	 *
+	 * @return mixed Unserialized data can be any type.
+	 */
+	private function unserialize( $original ) {
+		// don't attempt to unserialize data that wasn't serialized going in
+		if ( is_serialized( $original ) ) {
+			return @unserialize( $original );
+		}
+
+		return $original;
+	}
+
+	/**
 	 * Insert a row into a entries table with meta values.
 	 *
 	 * @param array $data Form data in $key => 'value' format
@@ -122,7 +134,7 @@ class Entry implements \JsonSerializable {
 	 */
 	public function insert( $data ) {
 		$current_time = current_time( 'mysql' );
-		$this->db->insert( $this->table_name, $this->get_meta_info( $current_time ) );
+		$this->db->insert( $this->table_name, $this->getMetaInfo( $current_time ) );
 
 		$insert_id = $this->db->insert_id;
 		if ( $insert_id ) {
@@ -136,18 +148,10 @@ class Entry implements \JsonSerializable {
 				);
 			}
 
-			$this->_insert_rows( $this->meta_table_name, $_data );
+			$this->insertMultipleRows( $this->meta_table_name, $_data );
 		}
 
 		return $insert_id;
-	}
-
-	public function update( $data, $where, $format = null, $where_format = null ) {
-		$this->db->update( $this->table_name, $data, $where, $format, $where_format );
-	}
-
-	public function delete( $where, $where_format = null ) {
-		$this->db->delete( $this->table_name, $where, $where_format );
 	}
 
 	/**
@@ -157,59 +161,20 @@ class Entry implements \JsonSerializable {
 	 *
 	 * @return array
 	 */
-	private function get_meta_info( $current_time = null ) {
+	private function getMetaInfo( $current_time = null ) {
 		if ( ! $current_time ) {
 			$current_time = current_time( 'mysql' );
 		}
 
 		return array(
-			'form_id'    => $this->get_form_id(),
+			'form_id'    => $this->getFormId(),
 			'user_id'    => get_current_user_id(),
-			'user_ip'    => $this->get_remote_ip(),
-			'user_agent' => $this->get_user_agent(),
-			'referer'    => $this->get_referer(),
+			'user_ip'    => $this->getRemoteIp(),
+			'user_agent' => $this->getUserAgent(),
+			'referer'    => $this->getReferer(),
 			'status'     => 'unread',
 			'created_at' => $current_time,
 		);
-	}
-
-	/**
-	 * Get user IP address
-	 *
-	 * @return string
-	 */
-	private function get_remote_ip() {
-		$server_ip_keys = array(
-			'HTTP_CLIENT_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_X_FORWARDED',
-			'HTTP_X_CLUSTER_CLIENT_IP',
-			'HTTP_FORWARDED_FOR',
-			'HTTP_FORWARDED',
-			'REMOTE_ADDR',
-		);
-
-		foreach ( $server_ip_keys as $key ) {
-			if ( isset( $_SERVER[ $key ] ) && filter_var( $_SERVER[ $key ], FILTER_VALIDATE_IP ) ) {
-				return $_SERVER[ $key ];
-			}
-		}
-
-		// Fallback local ip.
-		return '127.0.0.1';
-	}
-
-	/**
-	 * Get user browser name
-	 *
-	 * @return string
-	 */
-	private function get_user_agent() {
-		if ( isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
-			return substr( $_SERVER['HTTP_USER_AGENT'], 0, 254 );
-		}
-
-		return '';
 	}
 
 	/**
@@ -217,7 +182,7 @@ class Entry implements \JsonSerializable {
 	 *
 	 * @return int
 	 */
-	private function get_form_id() {
+	private function getFormId() {
 		if ( isset( $_POST['_dcf_id'] ) && is_numeric( $_POST['_dcf_id'] ) ) {
 			return intval( $_POST['_dcf_id'] );
 		}
@@ -226,16 +191,49 @@ class Entry implements \JsonSerializable {
 	}
 
 	/**
+	 * Get user IP address
+	 *
+	 * @return string
+	 */
+	private function getRemoteIp() {
+		return Utils::get_remote_ip();
+	}
+
+	/**
+	 * Get user browser name
+	 *
+	 * @return string
+	 */
+	private function getUserAgent() {
+		return Utils::get_user_agent();
+	}
+
+	/**
 	 * Get form referer
 	 *
 	 * @return string
 	 */
-	private function get_referer() {
+	private function getReferer() {
 		if ( isset( $_POST['_dcf_referer'] ) && is_string( $_POST['_dcf_referer'] ) ) {
 			return sanitize_text_field( $_POST['_dcf_referer'] );
 		}
 
 		return '';
+	}
+
+	/**
+	 * Serialize data, if needed.
+	 *
+	 * @param string|array|object $data Data that might be serialized.
+	 *
+	 * @return mixed
+	 */
+	private function serialize( $data ) {
+		if ( is_array( $data ) || is_object( $data ) ) {
+			return serialize( $data );
+		}
+
+		return $data;
 	}
 
 	/**
@@ -271,7 +269,7 @@ class Entry implements \JsonSerializable {
 	 *
 	 * @return false|int
 	 */
-	private function _insert_rows( $table_name, $data = array(), $update = false, $primary_key = null ) {
+	private function insertMultipleRows( $table_name, $data = array(), $update = false, $primary_key = null ) {
 		global $wpdb;
 		$table_name = esc_sql( $table_name );
 		// Setup arrays for Actual Values, and Placeholders
@@ -337,45 +335,11 @@ class Entry implements \JsonSerializable {
 		}
 	}
 
-	/**
-	 * Serialize data, if needed.
-	 *
-	 * @param string|array|object $data Data that might be serialized.
-	 *
-	 * @return mixed
-	 */
-	private function serialize( $data ) {
-		if ( is_array( $data ) || is_object( $data ) ) {
-			return serialize( $data );
-		}
-
-		return $data;
+	public function update( $data, $where, $format = null, $where_format = null ) {
+		$this->db->update( $this->table_name, $data, $where, $format, $where_format );
 	}
 
-	/**
-	 * Unserialize value only if it was serialized.
-	 *
-	 * @param string $original Maybe unserialized original, if is needed.
-	 *
-	 * @return mixed Unserialized data can be any type.
-	 */
-	private function unserialize( $original ) {
-		// don't attempt to unserialize data that wasn't serialized going in
-		if ( is_serialized( $original ) ) {
-			return @unserialize( $original );
-		}
-
-		return $original;
-	}
-
-	/**
-	 * Specify data which should be serialized to JSON
-	 * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-	 * @return mixed data which can be serialized by <b>json_encode</b>,
-	 * which is a value of any type other than a resource.
-	 * @since 5.4.0
-	 */
-	public function jsonSerialize() {
-		return $this->entries;
+	public function delete( $where, $where_format = null ) {
+		$this->db->delete( $this->table_name, $where, $where_format );
 	}
 }

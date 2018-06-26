@@ -133,7 +133,7 @@ class Submission {
 				continue;
 			}
 
-			$response[ $action->get_id() ] = $action::process( $config, $data );
+			$response[ $action->getId() ] = $action::process( $config, $data );
 		}
 
 		// If any action fails, display error message
@@ -250,7 +250,7 @@ class Submission {
 		$class->setField( $field );
 
 		// If field is required, then check it is not empty
-		if ( 'on' == $field['required_field'] && $class->is_empty( $value ) ) {
+		if ( 'on' == $field['required_field'] && $class->isEmpty( $value ) ) {
 			$message[] = $messages['invalid_required'];
 		}
 
@@ -260,7 +260,7 @@ class Submission {
 		}
 
 		// If field is not required, hide message if field is empty
-		if ( 'off' == $field['required_field'] && $class->is_empty( $value ) ) {
+		if ( 'off' == $field['required_field'] && $class->isEmpty( $value ) ) {
 			$message = array();
 		}
 

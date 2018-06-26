@@ -47,7 +47,7 @@ $form = FormBuilder::init( $form_id );
 <body>
 <div class="dcf-form">
     <div class="columns is-multiline">
-		<?php echo $form->form_content(); ?>
+		<?php echo $form->formContent(); ?>
     </div>
 </div>
 

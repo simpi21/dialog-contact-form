@@ -2,11 +2,10 @@
 
 namespace DialogContactForm\Supports;
 
-// Exit if accessed directly
 use DialogContactForm\FieldManager;
 use DialogContactForm\Fields\Recaptcha2;
-use DialogContactForm\Supports\Utils;
 
+// Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -112,7 +111,7 @@ class FormBuilder {
 	 *
 	 * @return string|void
 	 */
-	private static function print_html( $html, $echo = true ) {
+	private static function printHtml( $html, $echo = true ) {
 		if ( ! $echo ) {
 			return $html;
 		}
@@ -151,7 +150,7 @@ class FormBuilder {
 			$id, esc_attr( $setting['field_title'] ), $required_abbr
 		);
 
-		return self::print_html( $html, $echo );
+		return self::printHtml( $html, $echo );
 	}
 
 	/**
@@ -159,7 +158,7 @@ class FormBuilder {
 	 *
 	 * @return null|string
 	 */
-	public function get_success_message() {
+	public function getSuccessMessage() {
 		if ( empty( $this->success_message ) ) {
 			return null;
 		}
@@ -172,7 +171,7 @@ class FormBuilder {
 	 *
 	 * @return null|string
 	 */
-	public function get_error_message() {
+	public function getErrorMessage() {
 		if ( empty( $this->error_message ) ) {
 			return null;
 		}
@@ -187,7 +186,7 @@ class FormBuilder {
 	 *
 	 * @return string
 	 */
-	public function form_open( $options = array() ) {
+	public function formOpen( $options = array() ) {
 		$action = isset( $options['action'] ) ? $options['action'] : $_SERVER['REQUEST_URI'];
 		$class  = isset( $options['class'] ) ? $options['class'] : 'dcf-form dcf-columns';
 
@@ -199,7 +198,7 @@ class FormBuilder {
 	 *
 	 * @return string
 	 */
-	public function form_close() {
+	public function formClose() {
 		return '</form>';
 	}
 
@@ -210,7 +209,7 @@ class FormBuilder {
 	 *
 	 * @return string|null
 	 */
-	public function form_content( $submit_button = true ) {
+	public function formContent( $submit_button = true ) {
 		// If there is no field, exist
 		if ( ! ( is_array( $this->fields ) && count( $this->fields ) > 0 ) ) {
 			return null;
@@ -221,8 +220,8 @@ class FormBuilder {
 		$html         = '';
 
 		$html .= '<div class="dcf-response">';
-		$html .= '<div class="dcf-success">' . $this->get_success_message() . '</div>';
-		$html .= '<div class="dcf-error">' . $this->get_error_message() . '</div>';
+		$html .= '<div class="dcf-success">' . $this->getSuccessMessage() . '</div>';
+		$html .= '<div class="dcf-error">' . $this->getErrorMessage() . '</div>';
 		$html .= '</div>';
 
 		// System field
@@ -243,7 +242,7 @@ class FormBuilder {
 			$field_class->setField( $field );
 
 			$style = '';
-			if ( $field_class->is_hidden_field() ) {
+			if ( $field_class->isHiddenField() ) {
 				$style .= 'style="display: none"';
 			}
 
@@ -252,7 +251,7 @@ class FormBuilder {
 			$html .= sprintf( '<div class="dcf-column %s" %s>', $field_width, $style );
 			$html .= '<div class="dcf-field">';
 
-			if ( $field_class->show_label() ) {
+			if ( $field_class->showLabel() ) {
 				$html .= $this->label( $field, false );
 			}
 
@@ -278,7 +277,7 @@ class FormBuilder {
 		// Submit button
 		if ( $submit_button ) {
 			$html .= '<div class="dcf-column is-12"><div class="dcf-field"><div class="dcf-control">';
-			$html .= $this->submit_button();
+			$html .= $this->submitButton();
 			$html .= '</div></div></div>' . PHP_EOL;
 		}
 
@@ -291,9 +290,9 @@ class FormBuilder {
 	 * @return string
 	 */
 	public function form() {
-		$html = $this->form_open();
-		$html .= $this->form_content();
-		$html .= $this->form_close();
+		$html = $this->formOpen();
+		$html .= $this->formContent();
+		$html .= $this->formClose();
 
 		return $html;
 	}
@@ -303,7 +302,7 @@ class FormBuilder {
 	 *
 	 * @return string
 	 */
-	public function submit_button() {
+	public function submitButton() {
 		$html = sprintf( '<div class="%s"><button type="submit" class="button dcf-submit">%s</button></div>',
 			( isset( $this->configuration['btnAlign'] ) && $this->configuration['btnAlign'] == 'right' ) ? 'dcf-level-right' : 'dcf-level-left',
 			esc_attr( $this->configuration['btnLabel'] )
@@ -315,7 +314,7 @@ class FormBuilder {
 	/**
 	 * @return bool
 	 */
-	public function is_valid_form() {
+	public function isValidForm() {
 		return $this->is_valid_form;
 	}
 }

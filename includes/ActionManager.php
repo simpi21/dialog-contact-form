@@ -89,6 +89,6 @@ class ActionManager extends Collection {
 	 * @return mixed
 	 */
 	private function sortByPriority( $actionA, $actionB ) {
-		return $actionA->get_priority() - $actionB->get_priority();
+		return $actionA->getPriority() - $actionB->getPriority();
 	}
 }

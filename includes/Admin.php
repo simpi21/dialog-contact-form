@@ -251,14 +251,14 @@ class Admin {
 					$supported_actions = isset( $_actions['after_submit_actions'] ) ? $_actions['after_submit_actions'] : $default_actions;
 					/** @var \DialogContactForm\Abstracts\Action $action */
 					foreach ( $actions as $action ) {
-						$display = in_array( $action->get_id(), $supported_actions ) ? 'block' : 'none';
-						echo '<div id="action-' . $action->get_id() . '" data-id="closed" class="dcf-toggle dcf-toggle-action dcf-toggle--normal" style="display:' . $display . ';">';
-						echo '<span class="dcf-toggle-title">' . $action->get_title() . '</span>';
+						$display = in_array( $action->getId(), $supported_actions ) ? 'block' : 'none';
+						echo '<div id="action-' . $action->getId() . '" data-id="closed" class="dcf-toggle dcf-toggle-action dcf-toggle--normal" style="display:' . $display . ';">';
+						echo '<span class="dcf-toggle-title">' . $action->getTitle() . '</span>';
 						echo '<div class="dcf-toggle-inner"><div class="dcf-toggle-content">';
-						if ( $action->get_description() ) {
-							echo $action->get_description();
+						if ( $action->getDescription() ) {
+							echo $action->getDescription();
 						}
-						$action->build_fields();
+						$action->buildFields();
 						echo '</div></div>';
 						echo '</div>';
 					}
@@ -315,8 +315,8 @@ class Admin {
 		/** @var \DialogContactForm\Abstracts\Field $class */
 		foreach ( $types as $index => $class ) {
 			$input_class = ( $index % 2 === 0 ) ? $default_class . ' is-first' : $default_class . ' is-last';
-			echo '<div class="' . $input_class . '" data-type="' . $class->get_admin_id() . '">';
-			echo $class->get_admin_icon() . ' <span>' . $class->get_admin_label() . '</span>';
+			echo '<div class="' . $input_class . '" data-type="' . $class->getAdminId() . '">';
+			echo $class->getAdminIcon() . ' <span>' . $class->getAdminLabel() . '</span>';
 			echo '</div>';
 		}
 		echo '</div>';
@@ -538,7 +538,7 @@ class Admin {
 		$list = array();
 		/** @var \DialogContactForm\Abstracts\Action $action */
 		foreach ( $actions as $action ) {
-			$list[ $action->get_id() ] = $action->get_title();
+			$list[ $action->getId() ] = $action->getTitle();
 		}
 
 		return $list;

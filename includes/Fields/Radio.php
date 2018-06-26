@@ -32,7 +32,7 @@ class Radio extends Field {
 	public function __construct() {
 		$this->admin_id    = 'radio';
 		$this->admin_label = __( 'Radio', 'dialog-contact-form' );
-		$this->admin_icon  = 'far fa-dot-circle';
+		$this->admin_icon  = '<i class="far fa-dot-circle"></i>';
 		$this->priority    = 120;
 		$this->input_class = 'dcf-radio';
 		$this->type        = 'radio';
@@ -50,13 +50,13 @@ class Radio extends Field {
 			$this->setField( $field );
 		}
 
-		$id    = $this->get_id();
-		$value = $this->get_value();
-		$class = $this->get_class();
-		$name  = $this->get_name();
+		$id    = $this->getId();
+		$value = $this->getValue();
+		$class = $this->getClass();
+		$name  = $this->getName();
 
 		$html = '';
-		foreach ( $this->get_options() as $option ) {
+		foreach ( $this->getOptions() as $option ) {
 			$option = trim( $option );
 			if ( empty( $option ) ) {
 				continue;
@@ -69,12 +69,12 @@ class Radio extends Field {
 				'class'    => $class,
 				'name'     => $name,
 				'value'    => esc_attr( $option ),
-				'required' => $this->is_required(),
+				'required' => $this->isRequired(),
 				'checked'  => ( $option === $value ),
 			);
 
 			$html .= '<label for="' . $radio_id . '" class="dcf-radio-container">';
-			$html .= '<input ' . $this->array_to_attributes( $attributes ) . '> ' . esc_attr( $option );
+			$html .= '<input ' . $this->arrayToAttributes( $attributes ) . '> ' . esc_attr( $option );
 			$html .= '</label>';
 		}
 
@@ -89,7 +89,7 @@ class Radio extends Field {
 	 * @return bool
 	 */
 	public function validate( $value ) {
-		return in_array( $value, $this->get_options() );
+		return in_array( $value, $this->getOptions() );
 	}
 
 	/**
@@ -100,7 +100,7 @@ class Radio extends Field {
 	 * @return mixed
 	 */
 	public function sanitize( $value ) {
-		if ( in_array( $value, $this->get_options() ) ) {
+		if ( in_array( $value, $this->getOptions() ) ) {
 			return $value;
 		}
 

@@ -34,7 +34,7 @@ class Textarea extends Field {
 	public function __construct() {
 		$this->admin_id    = 'textarea';
 		$this->admin_label = __( 'Textarea', 'dialog-contact-form' );
-		$this->admin_icon  = 'fas fa-paragraph';
+		$this->admin_icon  = '<i class="fas fa-paragraph"></i>';
 		$this->priority    = 20;
 		$this->input_class = 'dcf-textarea';
 		$this->type        = 'textarea';
@@ -52,7 +52,7 @@ class Textarea extends Field {
 			$this->setField( $field );
 		}
 
-		return '<textarea ' . $this->build_attributes() . '>' . $this->get_value() . '</textarea>';
+		return '<textarea ' . $this->buildAttributes() . '>' . $this->getValue() . '</textarea>';
 	}
 
 	/**
@@ -86,7 +86,7 @@ class Textarea extends Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_value() {
+	protected function getValue() {
 		if ( isset( $_POST[ $this->field['field_name'] ] ) ) {
 			return esc_textarea( $_POST[ $this->field['field_name'] ] );
 		}

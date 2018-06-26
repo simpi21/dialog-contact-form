@@ -51,6 +51,11 @@ class Redirect extends Action {
 		return '';
 	}
 
+	/**
+	 * Action settings
+	 *
+	 * @return array
+	 */
 	private function settings() {
 		return array(
 			'redirect_to' => array(

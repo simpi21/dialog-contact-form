@@ -40,7 +40,7 @@ class StoreSubmission extends Action {
 	 *
 	 * @return string
 	 */
-	public function get_description() {
+	public function getDescription() {
 		$html = '<p class="description">';
 		$html .= esc_html__( 'No settings are available for this action.', 'dialog-contact-form' );
 		$html .= '</p>';

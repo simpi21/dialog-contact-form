@@ -32,7 +32,7 @@ class Time extends Text {
 	public function __construct() {
 		$this->admin_id    = 'time';
 		$this->admin_label = __( 'Time', 'dialog-contact-form' );
-		$this->admin_icon  = 'far fa-clock';
+		$this->admin_icon  = '<i class="far fa-clock"></i>';
 		$this->priority    = 100;
 		$this->input_class = 'dcf-input dcf-input-time';
 		$this->type        = 'time';
@@ -59,7 +59,7 @@ class Time extends Text {
 	 *
 	 * @return bool
 	 */
-	protected function is_html_time() {
+	protected function isHtmlTime() {
 		if ( empty( $this->field['native_html5'] ) ) {
 			return false;
 		}

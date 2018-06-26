@@ -109,7 +109,7 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
 									continue;
 								}
 
-								if ( ! $class->show_in_entry() ) {
+								if ( ! $class->showInEntry() ) {
 									continue;
 								}
 								?>

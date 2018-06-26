@@ -61,7 +61,7 @@ class DataExportRequest extends Action {
 	 *
 	 * @return string
 	 */
-	public function get_description() {
+	public function getDescription() {
 		$html = '<p class="description">';
 		$html .= esc_html__( 'This action adds users to WordPress\' personal data export tool, allowing admins to comply with the GDPR and other privacy regulations from the site\'s front end.',
 			'dialog-contact-form' );

@@ -28,7 +28,7 @@ class Divider extends Field {
 	public function __construct() {
 		$this->admin_id           = 'divider';
 		$this->admin_label        = __( 'Divider', 'dialog-contact-form' );
-		$this->admin_icon         = 'fas fa-arrows-alt-h';
+		$this->admin_icon         = '<i class="fas fa-arrows-alt-h"></i>';
 		$this->priority           = 170;
 		$this->input_class        = 'dcf-divider';
 		$this->show_label_in_form = false;
@@ -47,7 +47,7 @@ class Divider extends Field {
 			$this->setField( $field );
 		}
 
-		return '<hr class="' . $this->get_class() . '">';
+		return '<hr class="' . $this->getClass() . '">';
 	}
 
 	/**
@@ -77,7 +77,7 @@ class Divider extends Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_value() {
+	protected function getValue() {
 		return null;
 	}
 }

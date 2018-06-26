@@ -16,7 +16,8 @@ class CollectFeedback extends Template {
 		$this->priority    = 10;
 		$this->id          = 'collect_feedback';
 		$this->title       = __( 'Collect Feedback', 'dialog-contact-form' );
-		$this->description = __( 'Collect feedback for an event, blog post, or anything else. You can add and remove fields as needed.', 'dialog-contact-form' );
+		$this->description = __( 'Collect feedback for an event, blog post, or anything else. You can add and remove fields as needed.',
+			'dialog-contact-form' );
 	}
 
 	/**
@@ -24,7 +25,7 @@ class CollectFeedback extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_fields() {
+	protected function formFields() {
 		return array(
 			array(
 				'field_type'     => 'text',
@@ -91,7 +92,7 @@ class CollectFeedback extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_settings() {
+	protected function formSettings() {
 		return array(
 			'labelPosition' => 'both',
 			'btnLabel'      => esc_html__( 'Submit', 'dialog-contact-form' ),
@@ -106,7 +107,7 @@ class CollectFeedback extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_actions() {
+	protected function formActions() {
 		return array(
 			'store_submission'   => array(),
 			'email_notification' => array(
@@ -130,7 +131,7 @@ class CollectFeedback extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_validation_messages() {
+	protected function formValidationMessages() {
 		return array(
 			'mail_sent_ng'     => Utils::get_option( 'mail_sent_ng' ),
 			'validation_error' => Utils::get_option( 'validation_error' ),

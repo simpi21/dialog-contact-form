@@ -26,12 +26,12 @@ $templates       = $templateManager->getTemplatesByPriority();
 				foreach ( $templates as $template ) {
 					$url = add_query_arg( array(
 						'action'   => 'dcf_new_form',
-						'template' => $template->get_id(),
+						'template' => $template->getId(),
 					), admin_url( 'admin-ajax.php' ) );
 					echo '<div class="dcf-column is-6">';
 					echo '<a class="dcf-template" href="' . esc_url( $url ) . '">';
-					echo '<h3 class="dcf-template-title">' . $template->get_title() . '</h3>';
-					echo '<p class="dcf-template-description">' . $template->get_description() . '</p>';
+					echo '<h3 class="dcf-template-title">' . $template->getTitle() . '</h3>';
+					echo '<p class="dcf-template-description">' . $template->getDescription() . '</p>';
 					echo '</a>';
 					echo '</div>';
 				}

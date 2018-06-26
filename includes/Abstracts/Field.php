@@ -21,7 +21,7 @@ abstract class Field {
 	 *
 	 * @var string
 	 */
-	protected $admin_icon = 'fas fa-text-width';
+	protected $admin_icon = '<i class="fas fa-text-width"></i>';
 
 	/**
 	 * Field Label for admin usage
@@ -156,6 +156,8 @@ abstract class Field {
 	}
 
 	/**
+	 * Get field configuration
+	 *
 	 * @return array
 	 */
 	public function getField() {
@@ -163,6 +165,8 @@ abstract class Field {
 	}
 
 	/**
+	 * Set field configuration
+	 *
 	 * @param array $field
 	 */
 	public function setField( $field ) {
@@ -185,7 +189,7 @@ abstract class Field {
 	 *
 	 * @return boolean
 	 */
-	public function is_empty( $value ) {
+	public function isEmpty( $value ) {
 		$value = preg_replace( '/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $value );
 
 		return empty( $value );
@@ -196,17 +200,17 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	public function get_admin_label() {
+	public function getAdminLabel() {
 		return $this->admin_label;
 	}
 
 	/**
-	 * Get Font Awesome Icon
+	 * Get field icon
 	 *
 	 * @return string
 	 */
-	public function get_admin_icon() {
-		return '<i class="' . $this->admin_icon . '"></i>';
+	public function getAdminIcon() {
+		return $this->admin_icon;
 	}
 
 	/**
@@ -214,7 +218,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	public function get_admin_id() {
+	public function getAdminId() {
 		return $this->admin_id;
 	}
 
@@ -223,22 +227,38 @@ abstract class Field {
 	 *
 	 * @return bool
 	 */
-	public function is_hidden_field() {
+	public function isHiddenField() {
 		return $this->is_hidden_field;
 	}
 
 	/**
+	 * Check field label should show
+	 * Some fields like Html, Divider should not show label
+	 *
 	 * @return bool
 	 */
-	public function show_label() {
+	public function showLabel() {
 		return $this->show_label_in_form;
 	}
 
 	/**
+	 * Should this field value show in admin entry page?
+	 *
 	 * @return bool
 	 */
-	public function show_in_entry() {
+	public function showInEntry() {
 		return $this->show_in_entry;
+	}
+
+	/**
+	 * Get Priority
+	 *
+	 * Returns the priority for an action.
+	 *
+	 * @return int
+	 */
+	public function getPriority() {
+		return $this->priority;
 	}
 
 	/**
@@ -248,13 +268,13 @@ abstract class Field {
 	 *
 	 * @return array|string
 	 */
-	protected function build_attributes( $string = true ) {
-		$input_type = $this->get_type();
+	protected function buildAttributes( $string = true ) {
+		$input_type = $this->getType();
 		$attributes = array(
-			'id'          => $this->get_id(),
-			'class'       => $this->get_class(),
-			'name'        => $this->get_name(),
-			'placeholder' => $this->get_placeholder(),
+			'id'          => $this->getId(),
+			'class'       => $this->getClass(),
+			'name'        => $this->getName(),
+			'placeholder' => $this->getPlaceholder(),
 		);
 
 		if ( ! in_array( $input_type, array( 'textarea', 'select' ) ) ) {
@@ -262,30 +282,30 @@ abstract class Field {
 		}
 
 		if ( 'textarea' === $input_type ) {
-			$attributes['rows'] = $this->get_rows();
+			$attributes['rows'] = $this->getRows();
 		}
 
 		if ( ! in_array( $input_type, array( 'textarea', 'file' ) ) ) {
-			$attributes['autocomplete'] = $this->get_autocomplete();
+			$attributes['autocomplete'] = $this->getAutocomplete();
 		}
 
 		if ( ! in_array( $input_type, array( 'textarea', 'file', 'password', 'select' ) ) ) {
-			$attributes['value'] = $this->get_value();
+			$attributes['value'] = $this->getValue();
 		}
 
 		if ( 'file' === $input_type ) {
-			$attributes['accept'] = $this->get_accept();
+			$attributes['accept'] = $this->getAccept();
 		}
 
 		if ( 'number' === $input_type ) {
-			$attributes['max']  = $this->get_max();
-			$attributes['min']  = $this->get_min();
-			$attributes['step'] = $this->get_step();
+			$attributes['max']  = $this->getMax();
+			$attributes['min']  = $this->getMin();
+			$attributes['step'] = $this->getStep();
 		}
 
 		if ( 'date' === $input_type ) {
-			$attributes['max'] = $this->get_max_date();
-			$attributes['min'] = $this->get_min_date();
+			$attributes['max'] = $this->getMaxDate();
+			$attributes['min'] = $this->getMinDate();
 		}
 
 		if ( 'hidden' === $input_type ) {
@@ -295,15 +315,15 @@ abstract class Field {
 		}
 
 		if ( 'email' === $input_type || 'file' === $input_type ) {
-			$attributes['multiple'] = $this->is_multiple();
+			$attributes['multiple'] = $this->isMultiple();
 		}
 
 		if ( ! in_array( $input_type, array( 'hidden', 'image', 'submit', 'reset', 'button' ) ) ) {
-			$attributes['required'] = $this->is_required();
+			$attributes['required'] = $this->isRequired();
 		}
 
 		if ( $string ) {
-			return $this->array_to_attributes( $attributes );
+			return $this->arrayToAttributes( $attributes );
 		}
 
 		return array_filter( $attributes );
@@ -314,19 +334,8 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	public function get_type() {
+	public function getType() {
 		return $this->type;
-	}
-
-	/**
-	 * Get Priority
-	 *
-	 * Returns the priority for an action.
-	 *
-	 * @return int
-	 */
-	public function get_priority() {
-		return $this->priority;
 	}
 
 	/**
@@ -334,7 +343,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function get_id() {
+	protected function getId() {
 		return sanitize_title_with_dashes( $this->field['field_id'] . '-' . $this->form_id );
 	}
 
@@ -345,7 +354,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function get_class( $default = '' ) {
+	protected function getClass( $default = '' ) {
 		if ( ! empty( $default ) ) {
 			$this->input_class = $default;
 		}
@@ -354,7 +363,7 @@ abstract class Field {
 			$class = $this->field['field_class'];
 		}
 
-		if ( $this->has_error() ) {
+		if ( $this->hasError() ) {
 			$class .= ' dcf-has-error';
 		}
 
@@ -366,8 +375,8 @@ abstract class Field {
 	 *
 	 * @return bool
 	 */
-	protected function has_error() {
-		if ( ! empty( $GLOBALS['_dcf_errors'][ $this->get_name() ] ) ) {
+	protected function hasError() {
+		if ( ! empty( $GLOBALS['_dcf_errors'][ $this->getName() ] ) ) {
 			return true;
 		}
 
@@ -379,7 +388,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function get_name() {
+	protected function getName() {
 		return sanitize_title_with_dashes( $this->field['field_name'] );
 	}
 
@@ -388,7 +397,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function get_placeholder() {
+	protected function getPlaceholder() {
 		if ( empty( $this->field['placeholder'] ) ) {
 			return '';
 		}
@@ -397,11 +406,24 @@ abstract class Field {
 	}
 
 	/**
+	 * Get rows attribute
+	 *
+	 * @return string
+	 */
+	protected function getRows() {
+		if ( isset( $this->field['rows'] ) && is_numeric( $this->field['rows'] ) ) {
+			return intval( $this->field['rows'] );
+		}
+
+		return '';
+	}
+
+	/**
 	 * Generate autocomplete for current field
 	 *
 	 * @return string
 	 */
-	public function get_autocomplete() {
+	protected function getAutocomplete() {
 		if ( empty( $this->field['autocomplete'] ) ) {
 			return '';
 		}
@@ -414,7 +436,7 @@ abstract class Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_value() {
+	protected function getValue() {
 		if ( isset( $_POST[ $this->field['field_name'] ] ) ) {
 			return esc_attr( $_POST[ $this->field['field_name'] ] );
 		}
@@ -431,8 +453,8 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	private function get_accept() {
-		if ( 'file' !== $this->get_type() ) {
+	protected function getAccept() {
+		if ( 'file' !== $this->getType() ) {
 			return '';
 		}
 
@@ -458,7 +480,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function get_max() {
+	protected function getMax() {
 		if ( empty( $this->field['number_max'] ) ) {
 			return '';
 		}
@@ -471,7 +493,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function get_min() {
+	protected function getMin() {
 		if ( empty( $this->field['number_min'] ) ) {
 			return '';
 		}
@@ -484,7 +506,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function get_step() {
+	protected function getStep() {
 		if ( empty( $this->field['number_step'] ) ) {
 			return '';
 		}
@@ -497,7 +519,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function get_max_date() {
+	protected function getMaxDate() {
 		return '';
 	}
 
@@ -506,7 +528,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function get_min_date() {
+	protected function getMinDate() {
 		return '';
 	}
 
@@ -515,7 +537,7 @@ abstract class Field {
 	 *
 	 * @return bool
 	 */
-	protected function is_multiple() {
+	protected function isMultiple() {
 		return ( isset( $this->field['multiple'] ) && 'on' === $this->field['multiple'] );
 	}
 
@@ -524,7 +546,7 @@ abstract class Field {
 	 *
 	 * @return bool
 	 */
-	public function is_required() {
+	public function isRequired() {
 		if ( empty( $this->field['required_field'] ) ) {
 			return false;
 		}
@@ -548,7 +570,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function array_to_attributes( $attributes ) {
+	protected function arrayToAttributes( $attributes ) {
 		$string = array_map( function ( $key, $value ) {
 			if ( empty( $value ) && 'value' !== $key ) {
 				return null;
@@ -580,7 +602,7 @@ abstract class Field {
 	 *
 	 * @return array
 	 */
-	protected function get_options() {
+	protected function getOptions() {
 		if ( is_array( $this->field['options'] ) ) {
 			return $this->field['options'];
 		}
@@ -596,18 +618,5 @@ abstract class Field {
 		}
 
 		return array();
-	}
-
-	/**
-	 * Get rows attribute
-	 *
-	 * @return string
-	 */
-	protected function get_rows() {
-		if ( isset( $this->field['rows'] ) && is_numeric( $this->field['rows'] ) ) {
-			return intval( $this->field['rows'] );
-		}
-
-		return '';
 	}
 }

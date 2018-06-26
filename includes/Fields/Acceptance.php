@@ -30,7 +30,7 @@ class Acceptance extends Text {
 	public function __construct() {
 		$this->admin_id           = 'acceptance';
 		$this->admin_label        = __( 'Acceptance', 'dialog-contact-form' );
-		$this->admin_icon         = 'far fa-check-square';
+		$this->admin_icon         = '<i class="far fa-check-square"></i>';
 		$this->priority           = 30;
 		$this->input_class        = 'dcf-checkbox';
 		$this->type               = 'checkbox';
@@ -49,20 +49,20 @@ class Acceptance extends Text {
 			$this->setField( $field );
 		}
 
-		$value = $this->get_value();
-		if ( empty( $value ) && $this->is_checked_by_default() ) {
+		$value = $this->getValue();
+		if ( empty( $value ) && $this->isCheckedByDefault() ) {
 			$value = 'on';
 		}
 
-		$attributes          = $this->build_attributes( false );
+		$attributes          = $this->buildAttributes( false );
 		$attributes['value'] = 'on';
 		if ( 'on' == $value ) {
 			$attributes['checked'] = true;
 		}
 
-		$html = '<input type="hidden" name="' . $this->get_name() . '" value="off">';
+		$html = '<input type="hidden" name="' . $this->getName() . '" value="off">';
 		$html .= '<label class="dcf-checkbox-container">';
-		$html .= '<input ' . $this->array_to_attributes( $attributes ) . '> ' . $this->get_acceptance_text();
+		$html .= '<input ' . $this->arrayToAttributes( $attributes ) . '> ' . $this->getAcceptanceText();
 		$html .= '</label>';
 
 		return $html;
@@ -95,7 +95,7 @@ class Acceptance extends Text {
 	 *
 	 * @return string
 	 */
-	protected function get_acceptance_text() {
+	protected function getAcceptanceText() {
 		return ! empty( $this->field['acceptance_text'] ) ? $this->field['acceptance_text'] : '';
 	}
 
@@ -104,7 +104,7 @@ class Acceptance extends Text {
 	 *
 	 * @return boolean
 	 */
-	protected function is_checked_by_default() {
+	protected function isCheckedByDefault() {
 		if ( empty( $this->field['checked_by_default'] ) ) {
 			return false;
 		}

@@ -41,6 +41,11 @@ class SuccessMessage extends Action {
 		return esc_attr( $message['message'] );
 	}
 
+	/**
+	 * Action settings
+	 *
+	 * @return array
+	 */
 	private function settings() {
 		$default = Utils::get_option( 'mail_sent_ok' );
 

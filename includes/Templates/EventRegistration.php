@@ -16,7 +16,8 @@ class EventRegistration extends Template {
 		$this->priority    = 30;
 		$this->id          = 'event_registration';
 		$this->title       = __( 'Event Registration', 'dialog-contact-form' );
-		$this->description = __( 'Allow user to register for your next event this easy to complete form. You can add and remove fields as needed.', 'dialog-contact-form' );
+		$this->description = __( 'Allow user to register for your next event this easy to complete form. You can add and remove fields as needed.',
+			'dialog-contact-form' );
 	}
 
 	/**
@@ -24,13 +25,14 @@ class EventRegistration extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_fields() {
+	protected function formFields() {
 		return array(
 			array(
 				'field_type'  => 'html',
 				'field_width' => 'is-12',
 				'field_title' => __( 'Event Intro Description', 'dialog-contact-form' ),
-				'html'        => __( 'If you would like to take part in our event, please fill in your details in this Event Registration Form below and you will be automatically registered. Event registration must be completed at least seven (7) days prior to the event.', 'dialog-contact-form' ),
+				'html'        => __( 'If you would like to take part in our event, please fill in your details in this Event Registration Form below and you will be automatically registered. Event registration must be completed at least seven (7) days prior to the event.',
+					'dialog-contact-form' ),
 			),
 			array(
 				'field_type'     => 'text',
@@ -124,7 +126,7 @@ class EventRegistration extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_settings() {
+	protected function formSettings() {
 		return array(
 			'labelPosition' => 'both',
 			'btnLabel'      => esc_html__( 'Register', 'dialog-contact-form' ),
@@ -139,7 +141,7 @@ class EventRegistration extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_actions() {
+	protected function formActions() {
 		return array(
 			'store_submission'   => array(),
 			'email_notification' => array(
@@ -163,7 +165,7 @@ class EventRegistration extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_validation_messages() {
+	protected function formValidationMessages() {
 		return array(
 			'mail_sent_ng'     => Utils::get_option( 'mail_sent_ng' ),
 			'validation_error' => Utils::get_option( 'validation_error' ),

@@ -27,7 +27,7 @@ class Hidden extends Text {
 	public function __construct() {
 		$this->admin_id        = 'hidden';
 		$this->admin_label     = __( 'Hidden', 'dialog-contact-form' );
-		$this->admin_icon      = 'far fa-eye-slash';
+		$this->admin_icon      = '<i class="far fa-eye-slash"></i>';
 		$this->priority        = 80;
 		$this->input_class     = 'dcf-input-hidden';
 		$this->type            = 'hidden';
@@ -52,7 +52,7 @@ class Hidden extends Text {
 	 *
 	 * @return string
 	 */
-	protected function get_value() {
+	protected function getValue() {
 		if ( ! empty( $this->field['field_value'] ) ) {
 			return esc_attr( $this->field['field_value'] );
 		}

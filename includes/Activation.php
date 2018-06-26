@@ -65,7 +65,7 @@ class Activation {
 		$contact_form = new ContactUs();
 
 		$post_id = wp_insert_post( array(
-			'post_title'     => $contact_form->get_title(),
+			'post_title'     => $contact_form->getTitle(),
 			'post_status'    => 'publish',
 			'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
 			'comment_status' => 'closed',

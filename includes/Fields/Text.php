@@ -33,7 +33,7 @@ class Text extends Field {
 	public function __construct() {
 		$this->admin_id    = 'text';
 		$this->admin_label = __( 'Text', 'dialog-contact-form' );
-		$this->admin_icon  = 'fas fa-text-width';
+		$this->admin_icon  = '<i class="fas fa-text-width"></i>';
 		$this->priority    = 10;
 		$this->input_class = 'dcf-input dcf-input-text';
 	}
@@ -50,7 +50,7 @@ class Text extends Field {
 			$this->setField( $field );
 		}
 
-		return '<input ' . $this->build_attributes() . '>';
+		return '<input ' . $this->buildAttributes() . '>';
 	}
 
 	/**

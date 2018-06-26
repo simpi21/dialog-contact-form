@@ -35,7 +35,7 @@ class Select extends Field {
 	public function __construct() {
 		$this->admin_id    = 'select';
 		$this->admin_label = __( 'Select', 'dialog-contact-form' );
-		$this->admin_icon  = 'fas fa-angle-down';
+		$this->admin_icon  = '<i class="fas fa-angle-down"></i>';
 		$this->priority    = 130;
 		$this->input_class = 'dcf-select';
 		$this->type        = 'select';
@@ -52,17 +52,17 @@ class Select extends Field {
 		if ( ! empty( $field ) ) {
 			$this->setField( $field );
 		}
-		$options    = $this->get_options();
-		$value      = $this->get_value();
-		$attributes = $this->build_attributes( false );
+		$options    = $this->getOptions();
+		$value      = $this->getValue();
+		$attributes = $this->buildAttributes( false );
 
 		if ( ! empty( $this->field['placeholder'] ) ) {
 			unset( $attributes['placeholder'] );
-			$attributes['data-placeholder'] = $this->get_placeholder();
+			$attributes['data-placeholder'] = $this->getPlaceholder();
 		}
 
 		$html = '<div class="dcf-select-container">';
-		$html .= '<select ' . $this->array_to_attributes( $attributes ) . '>';
+		$html .= '<select ' . $this->arrayToAttributes( $attributes ) . '>';
 
 		if ( ! empty( $this->field['placeholder'] ) ) {
 			$html .= sprintf( '<option value="">%s</option>', esc_attr( $this->field['placeholder'] ) );
@@ -86,7 +86,7 @@ class Select extends Field {
 	 * @return bool
 	 */
 	public function validate( $value ) {
-		return in_array( $value, $this->get_options() );
+		return in_array( $value, $this->getOptions() );
 	}
 
 	/**
@@ -97,7 +97,7 @@ class Select extends Field {
 	 * @return mixed
 	 */
 	public function sanitize( $value ) {
-		if ( in_array( $value, $this->get_options() ) ) {
+		if ( in_array( $value, $this->getOptions() ) ) {
 			return $value;
 		}
 

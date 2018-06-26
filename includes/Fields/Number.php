@@ -36,7 +36,7 @@ class Number extends Field {
 	public function __construct() {
 		$this->admin_id    = 'number';
 		$this->admin_label = __( 'Number', 'dialog-contact-form' );
-		$this->admin_icon  = 'fas fa-sort-numeric-up';
+		$this->admin_icon  = '<i class="fas fa-sort-numeric-up"></i>';
 		$this->priority    = 70;
 		$this->input_class = 'dcf-input dcf-input-number';
 		$this->type        = 'number';
@@ -54,7 +54,7 @@ class Number extends Field {
 			$this->setField( $field );
 		}
 
-		return '<input ' . $this->build_attributes() . '>';
+		return '<input ' . $this->buildAttributes() . '>';
 	}
 
 	/**

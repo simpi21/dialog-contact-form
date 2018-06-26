@@ -34,7 +34,7 @@ class File extends Field {
 	public function __construct() {
 		$this->admin_id    = 'file';
 		$this->admin_label = __( 'File', 'dialog-contact-form' );
-		$this->admin_icon  = 'fas fa-upload';
+		$this->admin_icon  = '<i class="fas fa-upload"></i>';
 		$this->priority    = 150;
 		$this->input_class = 'dcf-input-file';
 		$this->type        = 'file';
@@ -52,13 +52,13 @@ class File extends Field {
 			$this->setField( $field );
 		}
 
-		$attributes = $this->build_attributes( false );
+		$attributes = $this->buildAttributes( false );
 
-		if ( $this->is_multiple() ) {
-			$attributes['name'] = $this->get_name() . '[]';
+		if ( $this->isMultiple() ) {
+			$attributes['name'] = $this->getName() . '[]';
 		}
 
-		$attributes = $this->array_to_attributes( $attributes );
+		$attributes = $this->arrayToAttributes( $attributes );
 
 		return '<input ' . $attributes . '>';
 	}
@@ -86,7 +86,7 @@ class File extends Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_value() {
+	protected function getValue() {
 		// TODO: Implement get_value() method.
 	}
 
@@ -95,7 +95,7 @@ class File extends Field {
 	 *
 	 * @return int
 	 */
-	public function get_max_file_size() {
+	public function getMaxFileSize() {
 		$max_upload_size = wp_max_upload_size();
 		if ( isset( $this->field['max_file_size'] ) && is_numeric( $this->field['max_file_size'] ) ) {
 			$max_upload_size = $this->field['max_file_size'] * pow( 1024, 2 );
@@ -109,7 +109,7 @@ class File extends Field {
 	 *
 	 * @return array
 	 */
-	public function get_allowed_mime_types() {
+	public function getAllowedMimeTypes() {
 		$mime_types         = array();
 		$allowed_mime_types = get_allowed_mime_types();
 

@@ -280,9 +280,11 @@ class EmailNotification extends Action {
 	}
 
 	/**
+	 * Get description
+	 *
 	 * @return string
 	 */
-	public function get_description() {
+	public function getDescription() {
 		/** @var \WP_Post $post */
 		global $post;
 		if ( ! $post instanceof \WP_Post ) {

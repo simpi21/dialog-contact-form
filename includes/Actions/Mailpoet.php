@@ -71,6 +71,8 @@ class Mailpoet extends Action {
 	/**
 	 * Action settings
 	 * @throws \Exception
+	 *
+	 * @return array
 	 */
 	private function settings() {
 
@@ -148,7 +150,7 @@ class Mailpoet extends Action {
 	 *
 	 * @return string
 	 */
-	public function get_description() {
+	public function getDescription() {
 		// If MailPoet is not available, then exit
 		if ( class_exists( 'WYSIJA' ) ) {
 			return '';

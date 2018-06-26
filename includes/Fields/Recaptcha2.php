@@ -36,7 +36,7 @@ class Recaptcha2 extends Field {
 	public function __construct() {
 		$this->admin_id    = 'recaptcha';
 		$this->admin_label = __( 'reCAPTCHA', 'dialog-contact-form' );
-		$this->admin_icon  = 'fas fa-sync-alt';
+		$this->admin_icon  = '<i class="fas fa-sync-alt"></i>';
 	}
 
 	/**
@@ -110,7 +110,7 @@ class Recaptcha2 extends Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_value() {
+	protected function getValue() {
 		if ( isset( $_POST['g-recaptcha-response'] ) ) {
 			return esc_attr( $_POST['g-recaptcha-response'] );
 		}
@@ -134,7 +134,7 @@ class Recaptcha2 extends Field {
 			'body' => array(
 				'secret'   => $secret_key,
 				'response' => $captcha_code,
-				'remoteip' => self::get_remote_ip_addr(),
+				'remoteip' => self::getRemoteIpAddress(),
 			)
 		) );
 		$body      = json_decode( wp_remote_retrieve_body( $_response ), true );
@@ -231,7 +231,7 @@ class Recaptcha2 extends Field {
 	 *
 	 * @return string
 	 */
-	private static function get_remote_ip_addr() {
+	private static function getRemoteIpAddress() {
 		$server_ip_keys = array(
 			'HTTP_CLIENT_IP',
 			'HTTP_X_FORWARDED_FOR',

@@ -83,6 +83,6 @@ class TemplateManager extends Collection {
 	 * @return mixed
 	 */
 	private function sortByPriority( $templateA, $templateB ) {
-		return $templateA->get_priority() - $templateB->get_priority();
+		return $templateA->getPriority() - $templateB->getPriority();
 	}
 }

@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class Dialog_Contact_Form_Mailer
+ * Class Mailer
  */
 class Mailer {
 

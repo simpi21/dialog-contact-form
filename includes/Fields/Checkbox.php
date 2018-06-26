@@ -31,7 +31,7 @@ class Checkbox extends Field {
 	public function __construct() {
 		$this->admin_id    = 'checkbox';
 		$this->admin_label = __( 'Checkbox', 'dialog-contact-form' );
-		$this->admin_icon  = 'fas fa-list';
+		$this->admin_icon  = '<i class="fas fa-list"></i>';
 		$this->priority    = 40;
 		$this->input_class = 'dcf-checkbox';
 		$this->type        = 'checkbox';
@@ -49,13 +49,13 @@ class Checkbox extends Field {
 			$this->setField( $field );
 		}
 
-		$id    = $this->get_id();
-		$value = $this->get_value();
-		$class = $this->get_class();
-		$name  = $this->get_name() . '[]';
+		$id    = $this->getId();
+		$value = $this->getValue();
+		$class = $this->getClass();
+		$name  = $this->getName() . '[]';
 
 		$html = '';
-		foreach ( $this->get_options() as $option ) {
+		foreach ( $this->getOptions() as $option ) {
 			$option = trim( $option );
 			if ( empty( $option ) ) {
 				continue;
@@ -70,7 +70,7 @@ class Checkbox extends Field {
 				'checked' => in_array( $option, $value ),
 			);
 			$html       .= '<label class="dcf-checkbox-container">';
-			$html       .= '<input ' . $this->array_to_attributes( $attributes ) . '> ' . esc_attr( $option );
+			$html       .= '<input ' . $this->arrayToAttributes( $attributes ) . '> ' . esc_attr( $option );
 			$html       .= '</label>';
 		}
 
@@ -87,13 +87,13 @@ class Checkbox extends Field {
 	public function validate( $value ) {
 
 		if ( is_string( $value ) ) {
-			return in_array( $value, $this->get_options() );
+			return in_array( $value, $this->getOptions() );
 		}
 
 		if ( is_array( $value ) ) {
 			$is_valid = array();
 			foreach ( $value as $item ) {
-				if ( ! in_array( $item, $this->get_options() ) ) {
+				if ( ! in_array( $item, $this->getOptions() ) ) {
 					$is_valid[] = 'no';
 				}
 			}
@@ -112,7 +112,7 @@ class Checkbox extends Field {
 	 * @return mixed
 	 */
 	public function sanitize( $value ) {
-		$options = $this->get_options();
+		$options = $this->getOptions();
 
 		if ( is_scalar( $value ) && in_array( $value, $options ) ) {
 			return $value;
@@ -130,7 +130,7 @@ class Checkbox extends Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_value() {
+	protected function getValue() {
 		if ( empty( $_POST[ $this->field['field_name'] ] ) ) {
 			return array();
 		}

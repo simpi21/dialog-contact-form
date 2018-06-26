@@ -29,7 +29,7 @@ class Html extends Field {
 	public function __construct() {
 		$this->admin_id           = 'html';
 		$this->admin_label        = __( 'HTML', 'dialog-contact-form' );
-		$this->admin_icon         = 'fas fa-code';
+		$this->admin_icon         = '<i class="fas fa-code"></i>';
 		$this->priority           = 160;
 		$this->type               = 'html';
 		$this->show_in_entry      = false;
@@ -79,7 +79,7 @@ class Html extends Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_value() {
+	protected function getValue() {
 		return null;
 	}
 }

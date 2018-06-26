@@ -41,7 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <div data-id="closed" class="dcf-toggle dcf-toggle--normal">
             <span class="dcf-toggle-title">
                 <?php
-                echo '<span class="dcf-toggle-title--icon">' . $class->get_admin_icon() . '</span>';
+                echo '<span class="dcf-toggle-title--icon">' . $class->getAdminIcon() . '</span>';
                 echo '<span class="dcf-toggle-title--label">' . esc_html( $_field['field_title'] ) . '</span>';
                 ?>
             </span>

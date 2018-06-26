@@ -98,6 +98,6 @@ class FieldManager extends Collection {
 	 * @return mixed
 	 */
 	private function sortByPriority( $fieldA, $fieldB ) {
-		return $fieldA->get_priority() - $fieldB->get_priority();
+		return $fieldA->getPriority() - $fieldB->getPriority();
 	}
 }

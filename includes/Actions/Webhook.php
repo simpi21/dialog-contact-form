@@ -81,6 +81,11 @@ class Webhook extends Action {
 		do_action( 'dialog_contact_form/webhook/response', $response, $form_id );
 	}
 
+	/**
+	 * Action settings
+	 *
+	 * @return array
+	 */
 	private function settings() {
 		return array(
 			'webhook_url'           => array(
@@ -88,7 +93,8 @@ class Webhook extends Action {
 				'group'       => $this->meta_group,
 				'meta_key'    => $this->meta_key,
 				'label'       => __( 'Webhook URL', 'dialog-contact-form' ),
-				'description' => __( 'Enter the integration URL (like Zapier) that will receive the form\'s submitted data.', 'dialog-contact-form' ),
+				'description' => __( 'Enter the integration URL (like Zapier) that will receive the form\'s submitted data.',
+					'dialog-contact-form' ),
 				'placeholder' => __( 'https://your-webhook-url.com', 'dialog-contact-form' ),
 				'sanitize'    => 'esc_url_raw',
 			),

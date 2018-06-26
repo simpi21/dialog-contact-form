@@ -56,7 +56,7 @@ class AdminAjax {
         <div data-id="closed" class="dcf-toggle dcf-toggle--normal">
         <span class="dcf-toggle-title">
                 <?php
-                echo '<span class="dcf-toggle-title--icon">' . $class->get_admin_icon() . '</span>';
+                echo '<span class="dcf-toggle-title--icon">' . $class->getAdminIcon() . '</span>';
                 echo '<span class="dcf-toggle-title--label">' . esc_html__( 'Untitled', 'dialog-contact-form' ) . '</span>';
                 ?>
             </span>
@@ -414,7 +414,7 @@ class AdminAjax {
 		}
 
 		$post_id = wp_insert_post( array(
-			'post_title'     => $template->get_title(),
+			'post_title'     => $template->getTitle(),
 			'post_status'    => 'publish',
 			'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
 			'comment_status' => 'closed',

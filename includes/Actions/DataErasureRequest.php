@@ -5,6 +5,11 @@ namespace DialogContactForm\Actions;
 use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Supports\Config;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class DataErasureRequest extends Action {
 
 	/**
@@ -56,7 +61,7 @@ class DataErasureRequest extends Action {
 	 *
 	 * @return string
 	 */
-	public function get_description() {
+	public function getDescription() {
 		$html = '<p class="description">';
 		$html .= esc_html__( 'This action adds users to WordPress\' personal data delete tool, allowing admins to comply with the GDPR and other privacy regulations from the site\'s front end.',
 			'dialog-contact-form' );
@@ -96,5 +101,4 @@ class DataErasureRequest extends Action {
 			),
 		);
 	}
-
 }

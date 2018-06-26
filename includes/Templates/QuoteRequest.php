@@ -16,7 +16,8 @@ class QuoteRequest extends Template {
 		$this->priority    = 70;
 		$this->id          = 'quote_request';
 		$this->title       = __( 'Quote Request', 'dialog-contact-form' );
-		$this->description = __( 'Manage quote requests from your website easily with this template. You can add and remove fields as needed.', 'dialog-contact-form' );
+		$this->description = __( 'Manage quote requests from your website easily with this template. You can add and remove fields as needed.',
+			'dialog-contact-form' );
 	}
 
 	/**
@@ -24,7 +25,7 @@ class QuoteRequest extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_fields() {
+	protected function formFields() {
 		return array(
 			array(
 				'field_type'  => 'html',
@@ -157,7 +158,7 @@ class QuoteRequest extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_settings() {
+	protected function formSettings() {
 		return array(
 			'labelPosition' => 'both',
 			'btnLabel'      => esc_html__( 'Submit', 'dialog-contact-form' ),
@@ -172,7 +173,7 @@ class QuoteRequest extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_actions() {
+	protected function formActions() {
 		return array(
 			'store_submission'   => array(),
 			'email_notification' => array(
@@ -196,7 +197,7 @@ class QuoteRequest extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_validation_messages() {
+	protected function formValidationMessages() {
 		return array(
 			'mail_sent_ng'     => Utils::get_option( 'mail_sent_ng' ),
 			'validation_error' => Utils::get_option( 'validation_error' ),

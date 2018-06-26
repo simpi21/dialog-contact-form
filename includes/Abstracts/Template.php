@@ -44,28 +44,28 @@ abstract class Template {
 	 *
 	 * @return array
 	 */
-	abstract protected function form_fields();
+	abstract protected function formFields();
 
 	/**
 	 * Form settings
 	 *
 	 * @return array
 	 */
-	abstract protected function form_settings();
+	abstract protected function formSettings();
 
 	/**
 	 * Form actions
 	 *
 	 * @return array
 	 */
-	abstract protected function form_actions();
+	abstract protected function formActions();
 
 	/**
 	 * Form validation messages
 	 *
 	 * @return array
 	 */
-	abstract protected function form_validation_messages();
+	abstract protected function formValidationMessages();
 
 	/**
 	 * Generate form
@@ -73,12 +73,12 @@ abstract class Template {
 	 * @param int $post_id Form ID
 	 */
 	public function run( $post_id ) {
-		$form_actions      = $this->form_actions();
+		$form_actions      = $this->formActions();
 		$form_actions_list = array_keys( $form_actions );
 
-		update_post_meta( $post_id, '_contact_form_fields', $this->form_fields() );
-		update_post_meta( $post_id, '_contact_form_messages', $this->form_validation_messages() );
-		update_post_meta( $post_id, '_contact_form_config', $this->form_settings() );
+		update_post_meta( $post_id, '_contact_form_fields', $this->formFields() );
+		update_post_meta( $post_id, '_contact_form_messages', $this->formValidationMessages() );
+		update_post_meta( $post_id, '_contact_form_config', $this->formSettings() );
 		update_post_meta( $post_id, '_contact_form_actions', array(
 			'after_submit_actions' => $form_actions_list,
 		) );
@@ -93,9 +93,9 @@ abstract class Template {
 				continue;
 			}
 
-			$action_value = $form_actions[ $action->get_id() ];
+			$action_value = $form_actions[ $action->getId() ];
 			if ( ! empty( $action_value ) ) {
-				update_post_meta( $post_id, $action->get_meta_key(), $action_value );
+				update_post_meta( $post_id, $action->getMetaKey(), $action_value );
 			}
 		}
 	}
@@ -107,7 +107,7 @@ abstract class Template {
 	 *
 	 * @return int
 	 */
-	public function get_priority() {
+	public function getPriority() {
 		return intval( $this->priority );
 	}
 
@@ -118,9 +118,9 @@ abstract class Template {
 	 */
 	public function toArray() {
 		return array(
-			'id'          => $this->get_id(),
-			'title'       => $this->get_title(),
-			'description' => $this->get_description(),
+			'id'          => $this->getId(),
+			'title'       => $this->getTitle(),
+			'description' => $this->getDescription(),
 		);
 	}
 
@@ -129,7 +129,7 @@ abstract class Template {
 	 *
 	 * @return string
 	 */
-	public function get_id() {
+	public function getId() {
 		return $this->id;
 	}
 
@@ -138,7 +138,7 @@ abstract class Template {
 	 *
 	 * @return string
 	 */
-	public function get_title() {
+	public function getTitle() {
 		return $this->title;
 	}
 
@@ -147,7 +147,7 @@ abstract class Template {
 	 *
 	 * @return string
 	 */
-	public function get_description() {
+	public function getDescription() {
 		return $this->description;
 	}
 }

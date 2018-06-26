@@ -25,7 +25,7 @@ class Blank extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_fields() {
+	protected function formFields() {
 		return array();
 	}
 
@@ -34,7 +34,7 @@ class Blank extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_settings() {
+	protected function formSettings() {
 		return array(
 			'labelPosition' => 'both',
 			'btnLabel'      => '',
@@ -49,7 +49,7 @@ class Blank extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_actions() {
+	protected function formActions() {
 		return array(
 			'store_submission' => array(),
 			'success_message'  => array(
@@ -66,7 +66,7 @@ class Blank extends Template {
 	 *
 	 * @return array
 	 */
-	protected function form_validation_messages() {
+	protected function formValidationMessages() {
 		return array(
 			'mail_sent_ng'     => Utils::get_option( 'mail_sent_ng' ),
 			'validation_error' => Utils::get_option( 'validation_error' ),

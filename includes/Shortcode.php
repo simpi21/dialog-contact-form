@@ -69,7 +69,7 @@ class Shortcode {
 		}
 
 		// Check if form is valid
-		if ( ! $form->is_valid_form() ) {
+		if ( ! $form->isValidForm() ) {
 			return;
 		}
 
@@ -85,7 +85,7 @@ class Shortcode {
 		?>
         <div id="modal-<?php echo $form_id; ?>" class="modal">
             <div class="modal-background"></div>
-			<?php echo $form->form_open( array( 'class' => 'dcf-form' ) ); ?>
+			<?php echo $form->formOpen( array( 'class' => 'dcf-form' ) ); ?>
             <div class="modal-card">
                 <div class="modal-card-head">
                     <p class="modal-card-title">
@@ -95,14 +95,14 @@ class Shortcode {
                 </div>
                 <div class="modal-card-body">
                     <div class="dcf-columns">
-						<?php echo $form->form_content( false ); ?>
+						<?php echo $form->formContent( false ); ?>
                     </div>
                 </div>
                 <div class="modal-card-foot">
-					<?php echo $form->submit_button(); ?>
+					<?php echo $form->submitButton(); ?>
                 </div>
             </div>
-			<?php echo $form->form_close(); ?>
+			<?php echo $form->formClose(); ?>
         </div>
 		<?php
 		$html = ob_get_contents();

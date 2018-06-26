@@ -3,7 +3,6 @@
 namespace DialogContactForm\Supports;
 
 use DialogContactForm\Fields\File;
-use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,9 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Attachment {
 
 	/**
+	 * Get validation messages
+	 *
 	 * @return array
 	 */
-	private static function get_validation_messages() {
+	private static function getValidationMessages() {
 		$options  = Utils::get_option();
 		$default  = Utils::validation_messages();
 		$messages = array();
@@ -34,10 +35,10 @@ class Attachment {
 	 *
 	 * @return string
 	 */
-	private static function get_file_error( $file, $field ) {
-		$is_required = self::is_required( $field );
+	private static function getFileError( $file, $field ) {
+		$is_required = self::isRequired( $field );
 
-		$messages = self::get_validation_messages();
+		$messages = self::getValidationMessages();
 
 		// If file is required and no file uploaded, return require message
 		if ( $file->getError() === UPLOAD_ERR_NO_FILE ) {
@@ -52,7 +53,7 @@ class Attachment {
 		$file_field->setField( $field );
 
 		// check file size here.
-		if ( $file->getSize() > $file_field->get_max_file_size() ) {
+		if ( $file->getSize() > $file_field->getMaxFileSize() ) {
 			return $messages['file_too_large'];
 		}
 
@@ -61,7 +62,7 @@ class Attachment {
 		$mime_type = $file_info->file( $file->getFile() );
 
 		// Get file extension from allowed mime types
-		$ext = array_search( $mime_type, $file_field->get_allowed_mime_types(), true );
+		$ext = array_search( $mime_type, $file_field->getAllowedMimeTypes(), true );
 
 		// Check if uploaded file mime type is allowed
 		if ( false === strpos( $ext, $file->getClientExtension() ) ) {
@@ -82,25 +83,25 @@ class Attachment {
 
 		$files    = UploadedFile::getUploadedFiles();
 		$file     = isset( $files[ $field['field_name'] ] ) ? $files[ $field['field_name'] ] : false;
-		$messages = self::get_validation_messages();
+		$messages = self::getValidationMessages();
 
-		if ( is_array( $file ) && ! self::is_multiple( $field ) ) {
+		if ( is_array( $file ) && ! self::isMultiple( $field ) ) {
 			return array( $messages['unsupported_file_multi'] );
 		}
 
-		if ( self::is_required( $field ) && false === $file ) {
+		if ( self::isRequired( $field ) && false === $file ) {
 			return array( $messages['required_file'] );
 		}
 
 		$message = array();
 		if ( $file instanceof UploadedFile ) {
-			$message[] = self::get_file_error( $file, $field );
+			$message[] = self::getFileError( $file, $field );
 		}
 
 		if ( is_array( $file ) ) {
 			foreach ( $file as $_file ) {
 				if ( $_file instanceof UploadedFile ) {
-					$message[] = self::get_file_error( $_file, $field );
+					$message[] = self::getFileError( $_file, $field );
 				}
 			}
 		}
@@ -128,14 +129,14 @@ class Attachment {
 			$file = isset( $files[ $field['field_name'] ] ) ? $files[ $field['field_name'] ] : false;
 
 			if ( $file instanceof UploadedFile ) {
-				$attachments[ $field['field_name'] ][] = self::upload_individual_file( $file );
+				$attachments[ $field['field_name'] ][] = self::uploadIndividualFile( $file );
 			}
 			if ( is_array( $file ) ) {
 				foreach ( $file as $_file ) {
 					if ( ! $_file instanceof UploadedFile ) {
 						continue;
 					}
-					$attachments[ $field['field_name'] ][] = self::upload_individual_file( $_file );
+					$attachments[ $field['field_name'] ][] = self::uploadIndividualFile( $_file );
 				}
 			}
 		}
@@ -150,7 +151,7 @@ class Attachment {
 	 *
 	 * @return array
 	 */
-	private static function upload_individual_file( $file ) {
+	private static function uploadIndividualFile( $file ) {
 		$upload_dir = wp_upload_dir();
 
 		$attachment_dir = join( DIRECTORY_SEPARATOR, array( $upload_dir['basedir'], DIALOG_CONTACT_FORM_UPLOAD_DIR ) );
@@ -215,7 +216,7 @@ class Attachment {
 	 *
 	 * @return bool
 	 */
-	private static function is_required( $field ) {
+	private static function isRequired( $field ) {
 		if ( isset( $field['required_field'] ) && 'on' == $field['required_field'] ) {
 			return true;
 		}
@@ -236,7 +237,7 @@ class Attachment {
 	 *
 	 * @return bool
 	 */
-	private static function is_multiple( $field ) {
+	private static function isMultiple( $field ) {
 		return ( isset( $field['multiple'] ) && 'on' === $field['multiple'] );
 	}
 }
