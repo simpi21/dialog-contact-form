@@ -3,7 +3,7 @@
  * Plugin Name: Dialog Contact Form
  * Plugin URI: http://wordpress.org/plugins/dialog-contact-form/
  * Description: Just another WordPress contact form plugin. Simple but flexible.
- * Version: 3.0.0-alpha1
+ * Version: 3.0.0-alpha2
  * Author: Sayful Islam
  * Author URI: https://sayfulislam.com
  * Requires at least: 4.4
@@ -48,7 +48,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 *
 		 * @var string
 		 */
-		private $version = '3.0.0-alpha1';
+		private $version = '3.0.0-alpha2';
 
 		/**
 		 * Holds various class instances
@@ -87,8 +87,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				// Include Classes
 				spl_autoload_register( array( self::$instance, 'include_classes' ) );
 
-				register_activation_hook( __FILE__, array( self::$instance, 'plugin_activation' ) );
-				register_deactivation_hook( __FILE__, array( self::$instance, 'plugin_deactivate' ) );
+				register_activation_hook( __FILE__, array( 'DialogContactForm\\Activation', 'install' ) );
 
 				// initialize the classes
 				add_action( 'plugins_loaded', array( self::$instance, 'init_classes' ) );
@@ -206,26 +205,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			if ( file_exists( $mofile_global ) ) {
 				load_textdomain( $this->plugin_name, $mofile_global );
 			}
-		}
-
-		/**
-		 * Register plugin activation action for later use, and
-		 * Flush rewrite rules on plugin activation
-		 * @return void
-		 */
-		public function plugin_activation() {
-			\DialogContactForm\Activation::init();
-			do_action( 'dialog_contact_form_activation' );
-			flush_rewrite_rules();
-		}
-
-		/**
-		 * Flush rewrite rules on plugin deactivation
-		 * @return void
-		 */
-		public function plugin_deactivate() {
-			do_action( 'dialog_contact_form_deactivate' );
-			flush_rewrite_rules();
 		}
 
 		/**

@@ -13,13 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Activation {
 
 	/**
-	 * Instance of the class
-	 *
-	 * @var object
-	 */
-	private static $instance;
-
-	/**
 	 * Entry database table name
 	 *
 	 * @var string
@@ -34,18 +27,11 @@ class Activation {
 	private static $meta_table_name = 'dcf_entry_meta';
 
 	/**
-	 * @return Activation
+	 * Plugin install functionality
 	 */
-	public static function init() {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
-		}
-
-		add_action( 'dialog_contact_form_activation', array( self::$instance, 'add_default_form' ) );
-		add_action( 'dialog_contact_form_activation', array( self::$instance, 'create_tables' ) );
-		add_action( 'dialog_contact_form_deactivate', array( self::$instance, 'delete_tables' ) );
-
-		return self::$instance;
+	public static function install() {
+		self::add_default_form();
+		self::create_tables();
 	}
 
 	/**
@@ -59,6 +45,8 @@ class Activation {
 		) );
 
 		if ( count( $contact_forms ) > 0 ) {
+			self::upgrade_to_version_3( $contact_forms );
+
 			return;
 		}
 
@@ -102,6 +90,52 @@ class Activation {
 		$option['dialog_form_id']           = $post_id;
 
 		return update_option( 'dialog_contact_form', $option );
+	}
+
+	/**
+	 * @param array $contact_forms array of \WP_Post class
+	 */
+	private static function upgrade_to_version_3( $contact_forms ) {
+		$version = get_option( 'dialog_contact_form_version', '3.0.0' );
+		if ( version_compare( DIALOG_CONTACT_FORM_VERSION, $version, '<' ) ) {
+			return;
+		}
+		// Update field validation for required field
+		foreach ( $contact_forms as $contact_form ) {
+			if ( ! $contact_form instanceof \WP_Post ) {
+				continue;
+			}
+			$fields     = get_post_meta( $contact_form->ID, '_contact_form_fields', true );
+			$new_fields = array();
+			foreach ( $fields as $field ) {
+				$validation = isset( $field['validation'] ) ? $field['validation'] : array();
+				if ( in_array( 'required', $validation ) ) {
+					$field['required_field'] = 'on';
+				} else {
+					$field['required_field'] = 'off';
+				}
+
+				$new_fields[] = $field;
+			}
+
+			update_post_meta( $contact_form->ID, '_contact_form_fields', $new_fields );
+			update_post_meta( $contact_form->ID, '_contact_form_actions', array(
+				'after_submit_actions' => array(
+					'store_submission',
+					'email_notification',
+					'success_message',
+					'redirect'
+				)
+			) );
+			update_post_meta( $contact_form->ID, '_action_success_message', array(
+				'message' => Utils::get_option( 'mail_sent_ok' )
+			) );
+			update_post_meta( $contact_form->ID, '_action_redirect', array(
+				'redirect_to' => 'same',
+			) );
+		}
+
+		update_option( 'dialog_contact_form_version', DIALOG_CONTACT_FORM_VERSION, false );
 	}
 
 	/**
@@ -151,19 +185,5 @@ class Activation {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $entries_table_schema );
 		dbDelta( $meta_table_schema );
-	}
-
-	/**
-	 * Delete tables on deactivation when debug mode
-	 */
-	public function delete_tables() {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			global $wpdb;
-			$table_name      = $wpdb->prefix . self::$table_name;
-			$meta_table_name = $wpdb->prefix . self::$meta_table_name;
-
-			$wpdb->query( "DROP TABLE IF EXISTS `{$table_name}`" );
-			$wpdb->query( "DROP TABLE IF EXISTS `{$meta_table_name}`" );
-		}
 	}
 }

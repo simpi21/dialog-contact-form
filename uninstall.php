@@ -5,11 +5,11 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-if ( ! function_exists( 'dcf_delete_plugin_data' ) ) {
+if ( ! function_exists( 'dialog_contact_form_delete_plugin_data' ) ) {
 	/**
 	 * Delete plugin data
 	 */
-	function dcf_delete_plugin_data() {
+	function dialog_contact_form_delete_plugin_data() {
 
 		// Delete all contact form posts
 		$_posts = get_posts(
@@ -26,6 +26,7 @@ if ( ! function_exists( 'dcf_delete_plugin_data' ) ) {
 
 		// Delete plugin options
 		delete_option( 'dialog_contact_form' );
+		delete_option( 'dialog_contact_form_version' );
 
 		// Delete tables
 		global $wpdb;
@@ -39,5 +40,5 @@ if ( ! function_exists( 'dcf_delete_plugin_data' ) ) {
 
 $option = get_option( 'dialog_contact_form' );
 if ( 'yes' === $option['delete_data_on_uninstallation'] ) {
-	dcf_delete_plugin_data();
+	dialog_contact_form_delete_plugin_data();
 }
