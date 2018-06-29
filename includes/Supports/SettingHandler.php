@@ -43,6 +43,11 @@ class SettingHandler {
 	 */
 	private $sections = array();
 
+	/**
+	 * The instance of the class
+	 *
+	 * @var self
+	 */
 	private static $instance;
 
 	/**
@@ -125,30 +130,13 @@ class SettingHandler {
 	 *
 	 * @return array
 	 */
-	public function getSections( $panel = '' ) {
-		$sections = array();
-
-		foreach ( $this->sections as $section ) {
-			$sections[] = wp_parse_args( $section, array(
-				'id'          => '',
-				'panel'       => '',
-				'title'       => '',
-				'description' => '',
-				'priority'    => 200,
-			) );
-		}
-
-		// Sort by priority
-		usort( $sections, function ( $a, $b ) {
-			return $a['priority'] - $b['priority'];
-		} );
-
+	public function getSectionsByPanel( $panel = '' ) {
 		if ( empty( $panel ) ) {
-			return $sections;
+			return $this->getSections();
 		}
 
 		$current_panel = array();
-		foreach ( $sections as $section ) {
+		foreach ( $this->getSections() as $section ) {
 			if ( $section['panel'] == $panel ) {
 				$current_panel[] = $section;
 			}
@@ -162,27 +150,13 @@ class SettingHandler {
 	 *
 	 * @return mixed
 	 */
-	public function getFields( $section = '' ) {
-		$fields = array();
-
-		foreach ( $this->fields as $field ) {
-			if ( ! isset( $field['priority'] ) ) {
-				$field['priority'] = 200;
-			}
-			$fields[] = $field;
-		}
-
-		// Sort by priority
-		usort( $fields, function ( $a, $b ) {
-			return $a['priority'] - $b['priority'];
-		} );
-
+	public function getFieldsBySection( $section = '' ) {
 		if ( empty( $section ) ) {
-			return $fields;
+			return $this->getFields();
 		}
 
 		$current_field = array();
-		foreach ( $fields as $field ) {
+		foreach ( $this->getFields() as $field ) {
 			if ( $field['section'] == $section ) {
 				$current_field[] = $field;
 			}
@@ -201,14 +175,15 @@ class SettingHandler {
 	public function getFieldsByPanel( $current_tab = null ) {
 
 		if ( ! $current_tab ) {
-			$current_tab = isset ( $_GET['tab'] ) ? $_GET['tab'] : $this->panels[0]['id'];
+			$panels      = $this->getPanels();
+			$current_tab = isset ( $_GET['tab'] ) ? $_GET['tab'] : $panels[0]['id'];
 		}
 
 		$newarray = array();
-		$sections = $this->getSections( $current_tab );
+		$sections = $this->getSectionsByPanel( $current_tab );
 
 		foreach ( $sections as $section ) {
-			$_section = $this->getFields( $section['id'] );
+			$_section = $this->getFieldsBySection( $section['id'] );
 			$newarray = array_merge( $newarray, $_section );
 		}
 
@@ -294,15 +269,17 @@ class SettingHandler {
 	 * @return void
 	 */
 	private function option_page_tabs() {
-		if ( count( $this->panels ) < 1 ) {
+		$panels = $this->getPanels();
+
+		if ( count( $panels ) < 1 ) {
 			return;
 		}
 
-		$current_tab = isset ( $_GET['tab'] ) ? $_GET['tab'] : $this->panels[0]['id'];
+		$current_tab = isset ( $_GET['tab'] ) ? $_GET['tab'] : $panels[0]['id'];
 		$page        = $this->menu_fields['menu_slug'];
 
 		echo '<h2 class="nav-tab-wrapper wp-clearfix">';
-		foreach ( $this->panels as $tab ) {
+		foreach ( $panels as $tab ) {
 			$class = ( $tab['id'] === $current_tab ) ? 'nav-tab nav-tab-active' : 'nav-tab';
 			$args  = array(
 				'page' => $page,
@@ -328,16 +305,17 @@ class SettingHandler {
 	 */
 	public function sanitize_callback( array $input ) {
 		$output_array = array();
-		$fields       = $this->fields;
+		$fields       = $this->getFields();
 		$options      = (array) get_option( $this->menu_fields['option_name'] );
 
 		if ( empty( $options ) ) {
 			$options = (array) $this->get_options();
 		}
 
-		if ( count( $this->panels ) > 0 ) {
+		$panels = $this->getPanels();
+		if ( count( $panels ) > 0 ) {
 			parse_str( $_POST['_wp_http_referer'], $referrer );
-			$tab    = isset( $referrer['tab'] ) ? $referrer['tab'] : $this->panels[0]['id'];
+			$tab    = isset( $referrer['tab'] ) ? $referrer['tab'] : $panels[0]['id'];
 			$fields = $this->getFieldsByPanel( $tab );
 		}
 
@@ -362,7 +340,7 @@ class SettingHandler {
 	public function get_options() {
 		$defaults = array();
 
-		foreach ( $this->fields as $value ) {
+		foreach ( $this->getFields() as $value ) {
 			$std_value                = ( isset( $value['std'] ) ) ? $value['std'] : '';
 			$defaults[ $value['id'] ] = $std_value;
 		}
@@ -447,11 +425,11 @@ class SettingHandler {
 	 * @return void
 	 */
 	private function setting_fields() {
-		$table = "";
-
-		$current_tab = isset ( $_GET['tab'] ) ? $_GET['tab'] : $this->panels[0]['id'];
+		$table       = "";
+		$panels      = $this->getPanels();
+		$current_tab = isset ( $_GET['tab'] ) ? $_GET['tab'] : $panels[0]['id'];
 		$panel       = $current_tab;
-		$sections    = $this->getSections( $panel );
+		$sections    = $this->getSectionsByPanel( $panel );
 
 		foreach ( $sections as $section ) {
 			if ( ! empty( $section['title'] ) ) {
@@ -461,7 +439,7 @@ class SettingHandler {
 				$table .= '<p class="description">' . ( $section['description'] ) . '</p>';
 			}
 
-			$fields = $this->getFields( $section['id'] );
+			$fields = $this->getFieldsBySection( $section['id'] );
 
 			$table .= "<table class='form-table'>";
 
@@ -508,6 +486,78 @@ class SettingHandler {
 		$type        = isset( $field['type'] ) && in_array( $field['type'], $valid_types ) ? esc_attr( $field['type'] ) : 'text';
 
 		return '<input type="' . $type . '" class="regular-text" value="' . $value . '" id="' . $field['id'] . '" name="' . $name . '">';
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPanels() {
+		return $this->panels;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getSections() {
+		$sections = array();
+		foreach ( $this->sections as $section ) {
+			$sections[] = wp_parse_args( $section, array(
+				'id'          => '',
+				'panel'       => '',
+				'title'       => '',
+				'description' => '',
+				'priority'    => 200,
+			) );
+		}
+
+		// Sort by priority
+		usort( $sections, function ( $a, $b ) {
+			return $a['priority'] - $b['priority'];
+		} );
+
+		return $sections;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getFields() {
+		$fields = array();
+
+		foreach ( $this->fields as $field ) {
+			if ( ! isset( $field['priority'] ) ) {
+				$field['priority'] = 200;
+			}
+			$fields[] = $field;
+		}
+
+		// Sort by priority
+		usort( $fields, function ( $a, $b ) {
+			return $a['priority'] - $b['priority'];
+		} );
+
+		return apply_filters( 'dialog_contact_form/settings/fields', $fields );
+	}
+
+	/**
+	 * @param mixed $panels
+	 */
+	public function setPanels( $panels ) {
+		$this->panels = $panels;
+	}
+
+	/**
+	 * @param array $sections
+	 */
+	public function setSections( $sections ) {
+		$this->sections = $sections;
+	}
+
+	/**
+	 * @param mixed $fields
+	 */
+	public function setFields( $fields ) {
+		$this->fields = $fields;
 	}
 
 	/**

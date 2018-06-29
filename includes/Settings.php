@@ -48,27 +48,94 @@ class Settings {
 			'option_name' => 'dialog_contact_form',
 		) );
 
+		$panels = array(
+			array(
+				'id'       => 'general_settings_panel',
+				'title'    => __( 'General Settings', 'dialog-contact-form' ),
+				'priority' => 10,
+			),
+			array(
+				'id'       => 'message_panel',
+				'title'    => __( 'Validation Messages', 'dialog-contact-form' ),
+				'priority' => 20,
+			),
+			array(
+				'id'       => 'smtp_server_panel',
+				'title'    => __( 'SMTP Settings', 'dialog-contact-form' ),
+				'priority' => 30,
+			),
+			array(
+				'id'       => 'integrations_panel',
+				'title'    => __( 'Integrations', 'dialog-contact-form' ),
+				'priority' => 40,
+			),
+		);
+
 		// Add settings page tab
-		$option_page->add_panel( array(
-			'id'       => 'dcf_general_settings_panel',
-			'title'    => __( 'General Settings', 'dialog-contact-form' ),
-			'priority' => 10,
-		) );
-		$option_page->add_panel( array(
-			'id'       => 'dcf_message_panel',
-			'title'    => __( 'Validation Messages', 'dialog-contact-form' ),
-			'priority' => 20,
-		) );
-		$option_page->add_panel( array(
-			'id'       => 'dcf_smpt_server_panel',
-			'title'    => __( 'SMTP Settings', 'dialog-contact-form' ),
-			'priority' => 40,
-		) );
-		$option_page->add_panel( array(
-			'id'       => 'dcf_integrations_panel',
-			'title'    => __( 'Integrations', 'dialog-contact-form' ),
-			'priority' => 50,
-		) );
+		$option_page->setPanels( apply_filters( 'dialog_contact_form/settings/panels', $panels ) );
+
+		$sections = array(
+			array(
+				'id'          => 'dcf_style_section',
+				'title'       => __( 'General Options', 'dialog-contact-form' ),
+				'description' => __( 'Plugin general options.', 'dialog-contact-form' ),
+				'panel'       => 'general_settings_panel',
+				'priority'    => 10,
+			),
+			array(
+				'id'          => 'dcf_dialog_section',
+				'title'       => __( 'Dialog/Modal', 'dialog-contact-form' ),
+				'description' => __( 'Configure fixed dialog/modal button at your site footer.', 'dialog-contact-form' ),
+				'panel'       => 'general_settings_panel',
+				'priority'    => 20,
+			),
+			array(
+				'id'          => 'dcf_message_section',
+				'title'       => __( 'General Validation Messages', 'dialog-contact-form' ),
+				'description' => __( 'Define general validation message. This message can be overwrite from each form.',
+					'dialog-contact-form' ),
+				'panel'       => 'message_panel',
+				'priority'    => 30,
+			),
+			array(
+				'id'          => 'dcf_field_message_section',
+				'title'       => __( 'Field Validation Messages', 'dialog-contact-form' ),
+				'description' => __( 'Define validation message for form fields. These message will be used for all forms.',
+					'dialog-contact-form' ),
+				'panel'       => 'message_panel',
+				'priority'    => 40,
+			),
+			array(
+				'id'          => 'dcf_smpt_server_section',
+				'title'       => __( 'SMTP Server Settings', 'dialog-contact-form' ),
+				'description' => '',
+				'panel'       => 'smtp_server_panel',
+				'priority'    => 50,
+			),
+			array(
+				'id'          => 'dcf_grecaptcha_section',
+				'title'       => __( 'reCAPTCHA', 'dialog-contact-form' ),
+				'description' => sprintf( __( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse. To use reCAPTCHA, you need to install an API key pair. %sGet your API Keys%s.',
+					'dialog-contact-form' ),
+					'<a target="_blank" href="https://www.google.com/recaptcha/admin#list">', '</a>' ),
+				'panel'       => 'integrations_panel',
+				'priority'    => 60,
+			),
+			array(
+				'id'          => 'dcf_mailChimp_section',
+				'title'       => __( 'MailChimp', 'dialog-contact-form' ),
+				'description' => sprintf(
+					__( 'To integrate MailChimp with our forms you need an %sAPI Key%s.', 'dialog-contact-form' ),
+					'<a href="https://kb.mailchimp.com/integrations/api-integrations/about-api-keys" target="_blank">',
+					'</a>'
+				),
+				'panel'       => 'integrations_panel',
+				'priority'    => 70,
+			)
+		);
+
+		// Add Sections
+		$option_page->setSections( apply_filters( 'dialog_contact_form/settings/sections', $sections ) );
 
 
 		// SMTP Server Settings
@@ -86,14 +153,6 @@ class Settings {
 	 * @param SettingHandler $option_page
 	 */
 	private static function smtp_server_settings( $option_page ) {
-		$option_page->add_section( array(
-			'id'          => 'dcf_smpt_server_section',
-			'title'       => __( 'SMTP Server Settings', 'dialog-contact-form' ),
-			'description' => '',
-			'panel'       => 'dcf_smpt_server_panel',
-			'priority'    => 20,
-		) );
-
 		$option_page->add_field( array(
 			'id'       => 'mailer',
 			'type'     => 'checkbox',
@@ -163,24 +222,6 @@ class Settings {
 	 * @param array $default_options
 	 */
 	private static function validation_messages( $option_page, $default_options ) {
-		// Add Sections
-		$option_page->add_section( array(
-			'id'          => 'dcf_message_section',
-			'title'       => __( 'General Validation Messages', 'dialog-contact-form' ),
-			'description' => __( 'Define general validation message. This message can be overwrite from each form.',
-				'dialog-contact-form' ),
-			'panel'       => 'dcf_message_panel',
-			'priority'    => 40,
-		) );
-		$option_page->add_section( array(
-			'id'          => 'dcf_field_message_section',
-			'title'       => __( 'Field Validation Messages', 'dialog-contact-form' ),
-			'description' => __( 'Define validation message for form fields. These message will be used for all forms.',
-				'dialog-contact-form' ),
-			'panel'       => 'dcf_message_panel',
-			'priority'    => 50,
-		) );
-
 		// Add Validation Messages section fields
 		$option_page->add_field( array(
 			'id'       => 'spam_message',
@@ -392,14 +433,6 @@ class Settings {
 	 * @param array $default_options
 	 */
 	private static function dialog_settings( $option_page, $default_options ) {
-		$option_page->add_section( array(
-			'id'          => 'dcf_dialog_section',
-			'title'       => __( 'Dialog/Modal', 'dialog-contact-form' ),
-			'description' => __( 'Configure fixed dialog/modal button at your site footer.', 'dialog-contact-form' ),
-			'panel'       => 'dcf_general_settings_panel',
-			'priority'    => 20,
-		) );
-
 		// Add Dialog/Modal section fields
 		$option_page->add_field( array(
 			'id'      => 'dialog_button_text',
@@ -438,15 +471,7 @@ class Settings {
 	 * @param SettingHandler $option_page
 	 */
 	private static function recaptcha_settings( $option_page ) {
-		$option_page->add_section( array(
-			'id'          => 'dcf_grecaptcha_section',
-			'title'       => __( 'reCAPTCHA', 'dialog-contact-form' ),
-			'description' => sprintf( __( 'reCAPTCHA is a free service from Google to protect your website from spam and abuse. To use reCAPTCHA, you need to install an API key pair. %sGet your API Keys%s.',
-				'dialog-contact-form' ),
-				'<a target="_blank" href="https://www.google.com/recaptcha/admin#list">', '</a>' ),
-			'panel'       => 'dcf_integrations_panel',
-			'priority'    => 10,
-		) );// Add Google reCAPTCHA fields
+		// Add Google reCAPTCHA fields
 		$option_page->add_field( array(
 			'id'       => 'recaptcha_site_key',
 			'type'     => 'text',
@@ -495,18 +520,6 @@ class Settings {
 	 * @param SettingHandler $option_page
 	 */
 	private static function mailchimp_settings( $option_page ) {
-		$option_page->add_section( array(
-			'id'          => 'dcf_mailChimp_section',
-			'title'       => __( 'MailChimp', 'dialog-contact-form' ),
-			'description' => sprintf(
-				__( 'To integrate MailChimp with our forms you need an %sAPI Key%s.', 'dialog-contact-form' ),
-				'<a href="https://kb.mailchimp.com/integrations/api-integrations/about-api-keys" target="_blank">',
-				'</a>'
-			),
-			'panel'       => 'dcf_integrations_panel',
-			'priority'    => 20,
-		) );
-
 		// Add MailChimp section fields
 		$option_page->add_field( array(
 			'id'       => 'mailchimp_api_key',
@@ -524,15 +537,6 @@ class Settings {
 	 * @param SettingHandler $option_page
 	 */
 	private static function general_settings( $option_page ) {
-		// Add Sections
-		$option_page->add_section( array(
-			'id'          => 'dcf_style_section',
-			'title'       => __( 'General Options', 'dialog-contact-form' ),
-			'description' => __( 'Plugin general options.', 'dialog-contact-form' ),
-			'panel'       => 'dcf_general_settings_panel',
-			'priority'    => 10,
-		) );
-
 		// Add Style section fields
 		$option_page->add_field( array(
 			'id'       => 'default_style',
