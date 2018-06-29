@@ -96,8 +96,8 @@ class Activation {
 	 * @param array $contact_forms array of \WP_Post class
 	 */
 	private static function upgrade_to_version_3( $contact_forms ) {
-		$version = get_option( 'dialog_contact_form_version', '3.0.0' );
-		if ( version_compare( DIALOG_CONTACT_FORM_VERSION, $version, '<' ) ) {
+		$version = get_option( 'dialog_contact_form_version' );
+		if ( version_compare( $version, '3.0.0', '>=' ) ) {
 			return;
 		}
 		// Update field validation for required field
