@@ -69,6 +69,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * Ensures only one instance of the class is loaded or can be loaded.
 		 *
 		 * @return Dialog_Contact_Form
+		 * @throws Exception
 		 */
 		public static function init() {
 			if ( is_null( self::$instance ) ) {
@@ -103,7 +104,14 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				// Configure PHPMailer for sending mail over SMTP
 				add_action( 'phpmailer_init', array( 'DialogContactForm\\PHPMailerConfig', 'config' ) );
 
-				do_action( 'dialog_contact_form/loaded', self::$instance );
+				/*
+                 * WP-CLI Commands
+                 */
+				if ( class_exists( 'WP_CLI' ) && class_exists( 'WP_CLI_Command' ) ) {
+					WP_CLI::add_command( 'dialog-contact-form', 'DialogContactForm\\CLI_Command' );
+				}
+
+				do_action( 'dialog_contact_form/loaded' );
 			}
 
 			return self::$instance;
