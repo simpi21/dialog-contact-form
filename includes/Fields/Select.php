@@ -75,7 +75,7 @@ class Select extends Field {
 		$html .= '</select>';
 		$html .= '</div>';
 
-		return $html;
+		return apply_filters( 'dialog_contact_form/preview/field', $html, $this );
 	}
 
 	/**

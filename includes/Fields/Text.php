@@ -50,7 +50,9 @@ class Text extends Field {
 			$this->setField( $field );
 		}
 
-		return '<input ' . $this->buildAttributes() . '>';
+		$html = '<input ' . $this->buildAttributes() . '>';
+
+		return apply_filters( 'dialog_contact_form/preview/field', $html, $this );
 	}
 
 	/**

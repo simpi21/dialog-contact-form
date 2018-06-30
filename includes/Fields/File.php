@@ -58,9 +58,9 @@ class File extends Field {
 			$attributes['name'] = $this->getName() . '[]';
 		}
 
-		$attributes = $this->arrayToAttributes( $attributes );
+		$html = '<input ' . $this->arrayToAttributes( $attributes ) . '>';
 
-		return '<input ' . $attributes . '>';
+		return apply_filters( 'dialog_contact_form/preview/field', $html, $this );
 	}
 
 	/**

@@ -49,7 +49,9 @@ class Html extends Field {
 			return '';
 		}
 
-		return wp_filter_post_kses( $this->field['html'] );
+		$html = wp_filter_post_kses( $this->field['html'] );
+
+		return apply_filters( 'dialog_contact_form/preview/field', $html, $this );
 	}
 
 	/**

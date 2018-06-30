@@ -65,7 +65,7 @@ class Submission {
 		/**
 		 * @var \DialogContactForm\Supports\Config $config
 		 */
-		do_action( 'dialog_contact_form_before_validation', $config );
+		do_action( 'dialog_contact_form/before_validation', $config );
 
 		$error_data = $this->validate_form_data( $config );
 
@@ -73,7 +73,7 @@ class Submission {
 		 * @var \DialogContactForm\Supports\Config $config
 		 * @var array $error_data
 		 */
-		do_action( 'dialog_contact_form_after_validation', $config, $error_data );
+		do_action( 'dialog_contact_form/after_validation', $config, $error_data );
 
 		// Exit if there is any error
 		if ( count( $error_data ) > 0 ) {

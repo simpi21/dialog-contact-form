@@ -82,7 +82,7 @@ class Recaptcha2 extends Field {
 
 		$html .= '</div></div></div>' . PHP_EOL;
 
-		return $html;
+		return apply_filters( 'dialog_contact_form/preview/field', $html, $this );
 	}
 
 	/**

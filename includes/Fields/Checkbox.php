@@ -74,7 +74,7 @@ class Checkbox extends Field {
 			$html       .= '</label>';
 		}
 
-		return $html;
+		return apply_filters( 'dialog_contact_form/preview/field', $html, $this );
 	}
 
 	/**

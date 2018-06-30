@@ -47,7 +47,9 @@ class Divider extends Field {
 			$this->setField( $field );
 		}
 
-		return '<hr class="' . $this->getClass() . '">';
+		$html = '<hr class="' . $this->getClass() . '">';
+
+		return apply_filters( 'dialog_contact_form/preview/field', $html, $this );
 	}
 
 	/**

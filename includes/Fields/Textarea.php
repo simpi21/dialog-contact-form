@@ -52,7 +52,9 @@ class Textarea extends Field {
 			$this->setField( $field );
 		}
 
-		return '<textarea ' . $this->buildAttributes() . '>' . $this->getValue() . '</textarea>';
+		$html = '<textarea ' . $this->buildAttributes() . '>' . $this->getValue() . '</textarea>';
+
+		return apply_filters( 'dialog_contact_form/preview/field', $html, $this );
 	}
 
 	/**

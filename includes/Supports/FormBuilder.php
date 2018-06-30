@@ -211,7 +211,7 @@ class FormBuilder {
 	 */
 	public function formContent( $submit_button = true ) {
 		// If there is no field, exist
-		if ( ! ( is_array( $this->fields ) && count( $this->fields ) > 0 ) ) {
+		if ( ! $this->isValidForm() ) {
 			return null;
 		}
 		$fieldManager = FieldManager::init();
@@ -261,12 +261,14 @@ class FormBuilder {
 
 			// Show error message if any
 			if ( isset( $field['field_name'], $this->errors[ $field['field_name'] ][0] ) ) {
-				$html .= '<div class="dcf-error-message">' . esc_attr( $this->errors[ $field['field_name'] ][0] ) . '</div>';
+				$html .= '<div class="dcf-error-message">';
+				$html .= esc_attr( $this->errors[ $field['field_name'] ][0] );
+				$html .= '</div>';
 			}
 
-			$html .= '</div>';
-			$html .= '</div>';
-			$html .= '</div>';
+			$html .= '</div>'; // .dcf-control
+			$html .= '</div>'; // .dcf-field
+			$html .= '</div>'; // .dcf-column
 		}
 
 		// If Google reCAPTCHA, add here

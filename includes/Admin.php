@@ -76,7 +76,7 @@ class Admin {
 		$args = array(
 			'label'               => __( 'Form', 'dialog-contact-form' ),
 			'description'         => __( 'Simple but flexible WordPress contact form.', 'dialog-contact-form' ),
-			'labels'              => apply_filters( 'dialog_contact_form_labels', $labels ),
+			'labels'              => apply_filters( 'dialog_contact_form/post_type/labels', $labels ),
 			'supports'            => array( 'title', ),
 			'hierarchical'        => false,
 			'public'              => false,
@@ -95,7 +95,7 @@ class Admin {
 			'show_in_rest'        => false,
 		);
 
-		register_post_type( $this->post_type, apply_filters( 'dialog_contact_form_args', $args ) );
+		register_post_type( $this->post_type, apply_filters( 'dialog_contact_form/post_type/args', $args ) );
 		add_filter( 'manage_edit-' . $this->post_type . '_columns', array( $this, 'columns_head' ) );
 		add_action( 'manage_' . $this->post_type . '_posts_custom_column', array( $this, 'content' ), 10, 2 );
 		// Remove Quick Edit from list table
@@ -394,7 +394,7 @@ class Admin {
 		if ( isset( $_POST['field'] ) && is_array( $_POST['field'] ) ) {
 			$_data = array();
 			foreach ( $_POST['field'] as $field ) {
-				$_data[] = array(
+				$_data[] = array_filter( array(
 					'field_title'        => isset( $field['field_title'] ) ? sanitize_text_field( $field['field_title'] ) : '',
 					'field_name'         => isset( $field['field_id'] ) ? sanitize_text_field( $field['field_id'] ) : '',
 					'field_id'           => isset( $field['field_id'] ) ? sanitize_text_field( $field['field_id'] ) : '',
@@ -427,7 +427,7 @@ class Admin {
 					'multiple'           => isset( $field['multiple'] ) ? sanitize_text_field( $field['multiple'] ) : '',
 					// HTML
 					'html'               => isset( $field['html'] ) ? wp_kses_post( $field['html'] ) : '',
-				);
+				) );
 			}
 
 			update_post_meta( $post_id, '_contact_form_fields', $_data );

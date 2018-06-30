@@ -172,6 +172,6 @@ class Sanitize {
 			'strong' => array(),
 		);
 
-		return apply_filters( 'dcf_allowed_html_tags_short_block', $allowed_tags );
+		return apply_filters( 'dialog_contact_form/short_block_html_tags', $allowed_tags );
 	}
 }
