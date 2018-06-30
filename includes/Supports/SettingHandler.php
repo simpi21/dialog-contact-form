@@ -449,7 +449,8 @@ class SettingHandler {
 				$value = isset( $this->options[ $field['id'] ] ) ? $this->options[ $field['id'] ] : '';
 
 				$table .= "<tr>";
-				$table .= sprintf( '<th scope="row"><label for="%1$s">%2$s</label></th>', $field['id'], $field['name'] );
+				$table .= sprintf( '<th scope="row"><label for="%1$s">%2$s</label></th>', $field['id'],
+					$field['name'] );
 
 				$table .= "<td>";
 
@@ -483,7 +484,8 @@ class SettingHandler {
 	 */
 	protected function text( $field, $name, $value ) {
 		$valid_types = array( 'text', 'email', 'password', 'number', 'url' );
-		$type        = isset( $field['type'] ) && in_array( $field['type'], $valid_types ) ? esc_attr( $field['type'] ) : 'text';
+		$type        = isset( $field['type'] ) && in_array( $field['type'],
+			$valid_types ) ? esc_attr( $field['type'] ) : 'text';
 
 		return '<input type="' . $type . '" class="regular-text" value="' . $value . '" id="' . $field['id'] . '" name="' . $name . '">';
 	}
@@ -531,12 +533,14 @@ class SettingHandler {
 			$fields[] = $field;
 		}
 
+		$fields = apply_filters( 'dialog_contact_form/settings/fields', $fields );
+
 		// Sort by priority
 		usort( $fields, function ( $a, $b ) {
 			return $a['priority'] - $b['priority'];
 		} );
 
-		return apply_filters( 'dialog_contact_form/settings/fields', $fields );
+		return $fields;
 	}
 
 	/**
@@ -592,7 +596,8 @@ class SettingHandler {
 			$value = '';
 		}
 
-		return sprintf( '<input type="text" class="regular-text date-picker" value="%1$s" id="%2$s" name="%3$s">', $value, $field['id'], $name );
+		return sprintf( '<input type="text" class="regular-text date-picker" value="%1$s" id="%2$s" name="%3$s">',
+			$value, $field['id'], $name );
 	}
 
 	/**
@@ -608,7 +613,8 @@ class SettingHandler {
 		$rows = ( isset( $field['rows'] ) ) ? $field['rows'] : 5;
 		$cols = ( isset( $field['cols'] ) ) ? $field['cols'] : 40;
 
-		return sprintf( '<textarea id="%2$s" name="%3$s" rows="%4$s" cols="%5$s">%1$s</textarea>', $value, $field['id'], $name, $rows, $cols );
+		return sprintf( '<textarea id="%2$s" name="%3$s" rows="%4$s" cols="%5$s">%1$s</textarea>', $value, $field['id'],
+			$name, $rows, $cols );
 	}
 
 	/**
@@ -623,7 +629,8 @@ class SettingHandler {
 	protected function checkbox( $field, $name, $value ) {
 		$checked = in_array( $value, array( 'on', 'yes', '1', 1, 'true', true ) ) ? 'checked="checked"' : '';
 		$table   = sprintf( '<input type="hidden" name="%1$s" value="0">', $name );
-		$table   .= sprintf( '<fieldset><legend class="screen-reader-text"><span>%1$s</span></legend><label for="%2$s"><input type="checkbox" value="1" id="%2$s" name="%4$s" %3$s>%1$s</label></fieldset>', $field['name'], $field['id'], $checked, $name );
+		$table   .= sprintf( '<fieldset><legend class="screen-reader-text"><span>%1$s</span></legend><label for="%2$s"><input type="checkbox" value="1" id="%2$s" name="%4$s" %3$s>%1$s</label></fieldset>',
+			$field['name'], $field['id'], $checked, $name );
 
 		return $table;
 	}
@@ -644,7 +651,8 @@ class SettingHandler {
 		$table .= sprintf( '<input type="hidden" name="%1$s" value="0">', $multicheck_name );
 		foreach ( $field['options'] as $key => $label ) {
 			$multichecked = ( in_array( $key, $this->options[ $field['id'] ] ) ) ? 'checked="checked"' : '';
-			$table        .= sprintf( '<label for="%1$s"><input type="checkbox" value="%1$s" id="%1$s" name="%2$s" %3$s>%4$s</label><br>', $key, $multicheck_name, $multichecked, $label );
+			$table        .= sprintf( '<label for="%1$s"><input type="checkbox" value="%1$s" id="%1$s" name="%2$s" %3$s>%4$s</label><br>',
+				$key, $multicheck_name, $multichecked, $label );
 		}
 		$table .= "</fieldset>";
 
@@ -661,12 +669,14 @@ class SettingHandler {
 	 * @return string
 	 */
 	protected function radio( $field, $name, $value ) {
-		$table = sprintf( '<fieldset><legend class="screen-reader-text"><span>%1$s</span></legend><p>', $field['name'] );
+		$table = sprintf( '<fieldset><legend class="screen-reader-text"><span>%1$s</span></legend><p>',
+			$field['name'] );
 
 		foreach ( $field['options'] as $key => $radio_label ) {
 
 			$radio_checked = ( $value == $key ) ? 'checked="checked"' : '';
-			$table         .= sprintf( '<label><input type="radio" %1$s value="%2$s" name="%3$s">%4$s</label><br>', $radio_checked, $key, $name, $radio_label );
+			$table         .= sprintf( '<label><input type="radio" %1$s value="%2$s" name="%3$s">%4$s</label><br>',
+				$radio_checked, $key, $name, $radio_label );
 		}
 		$table .= "</p></fieldset>";
 
