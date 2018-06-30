@@ -2,7 +2,8 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\Supports\FormBuilder;use DialogContactForm\Supports\Utils;
+use DialogContactForm\Supports\FormBuilder;
+use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -47,7 +48,8 @@ class Shortcode {
 	public function contact_form( $attributes ) {
 		if ( empty( $attributes['id'] ) ) {
 			if ( current_user_can( 'manage_options' ) ) {
-				return esc_html__( 'Dialog Contact form now required a form ID attribute. Please update your shortcode.', 'dialog-contact-form' );
+				return esc_html__( 'Dialog Contact form now required a form ID attribute. Please update your shortcode.',
+					'dialog-contact-form' );
 			}
 
 			return '';

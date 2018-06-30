@@ -77,6 +77,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				// define constants
 				self::$instance->define_constants();
 
+				// Check if PHP version is supported for our plugin
 				if ( ! self::$instance->is_supported_php() ) {
 					register_activation_hook( __FILE__, array( self::$instance, 'auto_deactivate' ) );
 					add_action( 'admin_notices', array( self::$instance, 'php_version_notice' ) );
@@ -87,15 +88,22 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				// Include Classes
 				spl_autoload_register( array( self::$instance, 'include_classes' ) );
 
+				// Register plugin activation activity
 				register_activation_hook( __FILE__, array( 'DialogContactForm\\Activation', 'install' ) );
 
 				// initialize the classes
 				add_action( 'plugins_loaded', array( self::$instance, 'init_classes' ) );
-				add_action( 'plugins_loaded', array( self::$instance, 'load_plugin_textdomain' ) );
-				add_action( 'admin_footer', array( self::$instance, 'form_template' ), 0 );
-				add_action( 'phpmailer_init', array( self::$instance, 'phpmailer_config' ) );
 
-				do_action( 'dialog_contact_form_init', self::$instance );
+				// Load plugin textdomain
+				add_action( 'plugins_loaded', array( self::$instance, 'load_plugin_textdomain' ) );
+
+				// Load form templates in admin footer
+				add_action( 'admin_footer', array( self::$instance, 'form_template' ), 0 );
+
+				// Configure PHPMailer for sending mail over SMTP
+				add_action( 'phpmailer_init', array( 'DialogContactForm\\PHPMailerConfig', 'config' ) );
+
+				do_action( 'dialog_contact_form/loaded', self::$instance );
 			}
 
 			return self::$instance;
@@ -177,17 +185,21 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		public function init_classes() {
 
 			if ( $this->is_request( 'admin' ) ) {
-				$this->container['admin']     = \DialogContactForm\Admin::init();
-				$this->container['entries']   = \DialogContactForm\Entries\EntryManager::init();
-				$this->container['settings']  = \DialogContactForm\Settings::init();
-				$this->container['adminajax'] = \DialogContactForm\AdminAjax::init();
+				$this->container['admin']      = \DialogContactForm\Admin::init();
+				$this->container['entries']    = \DialogContactForm\Entries\EntryManager::init();
+				$this->container['settings']   = \DialogContactForm\Settings::init();
+				$this->container['adminajax']  = \DialogContactForm\AdminAjax::init();
+				$this->container['gutenblock'] = \DialogContactForm\GutenbergBlock::init();
+			}
+
+			if ( $this->is_request( 'frontend' ) ) {
+				$this->container['preview']   = \DialogContactForm\Preview::init();
+				$this->container['shortcode'] = \DialogContactForm\Shortcode::init();
 			}
 
 			$this->container['scripts']    = \DialogContactForm\Scripts::init();
-			$this->container['rest']       = \DialogContactForm\RestApi::init();
 			$this->container['submission'] = \DialogContactForm\Submission::init();
-			$this->container['shortcode']  = \DialogContactForm\Shortcode::init();
-			$this->container['gutenblock'] = \DialogContactForm\GutenbergBlock::init();
+			$this->container['rest']       = \DialogContactForm\RestApi::init();
 		}
 
 		/**
@@ -217,46 +229,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			}
 
 			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/form-template.php';
-		}
-
-		/**
-		 * Configure PHPMailer for sending email over SMTP
-		 *
-		 * @param PHPMailer $mailer
-		 */
-		public function phpmailer_config( &$mailer ) {
-
-			$options = get_option( 'dialog_contact_form' );
-
-			if ( ! isset( $options['mailer'] ) ) {
-				return;
-			}
-
-			if ( ! in_array( $options['mailer'], array( 'yes', 'on', '1', 1, true, 'true' ), true ) ) {
-				return;
-			}
-
-			$host       = ! empty( $options['smpt_host'] ) ? sanitize_text_field( $options['smpt_host'] ) : '';
-			$username   = ! empty( $options['smpt_username'] ) ? sanitize_text_field( $options['smpt_username'] ) : '';
-			$password   = ! empty( $options['smpt_password'] ) ? sanitize_text_field( $options['smpt_password'] ) : '';
-			$port       = ! empty( $options['smpt_port'] ) ? absint( $options['smpt_port'] ) : '';
-			$encryption = ! empty( $options['encryption'] ) ? sanitize_text_field( $options['encryption'] ) : '';
-
-			if ( empty( $host ) || empty( $username ) || empty( $password ) || empty( $port ) ) {
-				return;
-			}
-
-			$mailer->isSMTP();
-			$mailer->SMTPAuth = true;
-			$mailer->Host     = $host;
-			$mailer->Port     = $port;
-			$mailer->Username = $username;
-			$mailer->Password = $password;
-
-			// Additional settings…
-			if ( in_array( $encryption, array( 'ssl', 'tls' ) ) ) {
-				$mailer->SMTPSecure = $encryption;
-			}
 		}
 
 		/**

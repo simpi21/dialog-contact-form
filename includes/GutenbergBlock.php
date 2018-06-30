@@ -20,33 +20,11 @@ class GutenbergBlock {
 	public static function init() {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
+
+			add_action( 'init', array( self::$instance, 'gutenberg_block' ) );
 		}
 
 		return self::$instance;
-	}
-
-	/**
-	 * Dialog_Contact_Form_Gutenberg_Block constructor.
-	 */
-	public function __construct() {
-		add_action( 'init', array( $this, 'gutenberg_block' ) );
-		add_filter( 'template_include', array( $this, 'template_include' ) );
-	}
-
-	/**
-	 * Form preview template
-	 *
-	 * @param $template
-	 *
-	 * @return string
-	 */
-	public function template_include( $template ) {
-		if ( isset( $_GET['dcf_forms_preview'], $_GET['dcf_forms_iframe'], $_GET['form_id'] ) ) {
-			wp_enqueue_script( 'jquery' );
-			$template = DIALOG_CONTACT_FORM_TEMPLATES . '/public/form.php';
-		}
-
-		return $template;
 	}
 
 	/**
