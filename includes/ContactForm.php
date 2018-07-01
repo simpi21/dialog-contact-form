@@ -36,7 +36,7 @@ class ContactForm {
 	/**
 	 * @var Config
 	 */
-	private $config;
+	private $settings;
 
 	/**
 	 * ContactForm constructor.
@@ -47,10 +47,10 @@ class ContactForm {
 		$post = get_post( $post );
 
 		if ( $post && self::POST_TYPE == get_post_type( $post ) ) {
-			$this->id     = $post->ID;
-			$this->name   = $post->post_name;
-			$this->title  = $post->post_title;
-			$this->config = Config::init( $post->ID );
+			$this->id       = $post->ID;
+			$this->name     = $post->post_name;
+			$this->title    = $post->post_title;
+			$this->settings = Config::init( $post->ID );
 		}
 	}
 
@@ -117,7 +117,22 @@ class ContactForm {
 	/**
 	 * @return Config
 	 */
-	public function config() {
-		return $this->config;
+	public function settings() {
+		return $this->settings;
+	}
+
+	/**
+	 * Delete current form
+	 *
+	 * @return bool
+	 */
+	public function delete() {
+		if ( wp_delete_post( $this->id, true ) ) {
+			$this->id = 0;
+
+			return true;
+		}
+
+		return false;
 	}
 }

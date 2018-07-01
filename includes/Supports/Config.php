@@ -193,6 +193,25 @@ class Config {
 	}
 
 	/**
+	 * Get config data as array
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'title'         => get_the_title( $this->getFormId() ),
+			'id'            => $this->getFormId(),
+			'fields'        => $this->getFormFields(),
+			'settings'      => $this->form_settings,
+			'actions'       => $this->getFormActions(),
+			'messages'      => $this->getValidationMessages(),
+			'has_file'      => $this->hasFile(),
+			'has_recaptcha' => $this->hasRecaptcha(),
+			'reset_form'    => $this->resetForm(),
+		);
+	}
+
+	/**
 	 * Get form ID
 	 *
 	 * @return bool

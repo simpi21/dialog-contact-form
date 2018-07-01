@@ -203,11 +203,11 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			if ( $this->is_request( 'frontend' ) ) {
 				$this->container['preview']   = \DialogContactForm\Preview::init();
 				$this->container['shortcode'] = \DialogContactForm\Shortcode::init();
+				$this->container['rest']      = \DialogContactForm\RestApi::init();
 			}
 
 			$this->container['scripts']    = \DialogContactForm\Scripts::init();
 			$this->container['submission'] = \DialogContactForm\Submission::init();
-			$this->container['rest']       = \DialogContactForm\RestApi::init();
 		}
 
 		/**

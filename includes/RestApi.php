@@ -150,7 +150,7 @@ class RestApi {
 	 * @return mixed|WP_Error|\WP_REST_Response
 	 */
 	public function get_contact_forms( WP_REST_Request $request ) {
-		if ( ! current_user_can( 'read_page' ) ) {
+		if ( ! current_user_can( 'edit_posts' ) ) {
 			return new WP_Error( 'forbidden',
 				__( "You are not allowed to access contact forms.", 'dialog-contact-form' ),
 				array( 'status' => 403 ) );
@@ -213,7 +213,7 @@ class RestApi {
 	 */
 	public function create_contact_form( WP_REST_Request $request ) {
 
-		if ( ! current_user_can( 'edit_page' ) ) {
+		if ( ! current_user_can( 'publish_pages' ) ) {
 			return new WP_Error( 'forbidden',
 				__( "You are not allowed to create a contact form.", 'dialog-contact-form' ),
 				array( 'status' => 403 ) );
@@ -221,6 +221,7 @@ class RestApi {
 
 		$templateManager = TemplateManager::init();
 		$template        = $request->get_param( 'template' );
+		$template        = in_array( $template, array_keys( $templateManager->all() ) ) ? $template : 'blank';
 		$className       = $templateManager->get( $template );
 		$class           = new $className;
 
@@ -230,7 +231,7 @@ class RestApi {
 		}
 
 		$post_id = wp_insert_post( array(
-			'post_title'     => $template->getTitle(),
+			'post_title'     => $class->getTitle(),
 			'post_status'    => 'publish',
 			'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
 			'comment_status' => 'closed',
@@ -243,13 +244,13 @@ class RestApi {
 				array( 'status' => 500 ) );
 		}
 
+		$class->run( $post_id );
+
 		$item     = new ContactForm( $post_id );
 		$response = array(
-			'id'            => $item->id(),
-			'slug'          => $item->name(),
-			'title'         => $item->title(),
-			'properties'    => array(),
-			'config_errors' => array(),
+			'id'    => $item->id(),
+			'slug'  => $item->name(),
+			'title' => $item->title(),
 		);
 
 		return rest_ensure_response( $response );
@@ -263,9 +264,23 @@ class RestApi {
 	 * @return mixed|\WP_REST_Response
 	 */
 	public function get_contact_form( WP_REST_Request $request ) {
+
 		$id = $request->get_param( 'id' );
 
-		$response = array();
+		if ( ! current_user_can( 'publish_pages', $id ) ) {
+			return new WP_Error( 'forbidden',
+				__( "You are not allowed to access the requested contact form.", 'dialog-contact-form' ),
+				array( 'status' => 403 ) );
+		}
+
+		$item = new ContactForm( $id );
+
+		if ( ! $item ) {
+			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
+				array( 'status' => 404 ) );
+		}
+
+		$response = $item->settings()->toArray();
 
 		return rest_ensure_response( $response );
 	}
@@ -279,6 +294,12 @@ class RestApi {
 	 */
 	public function update_contact_form( WP_REST_Request $request ) {
 		$id = $request->get_param( 'id' );
+
+		if ( ! current_user_can( 'publish_pages', $id ) ) {
+			return new WP_Error( 'forbidden',
+				__( "You are not allowed to access the requested contact form.", 'dialog-contact-form' ),
+				array( 'status' => 403 ) );
+		}
 
 		$response = array();
 
@@ -295,7 +316,28 @@ class RestApi {
 	public function delete_contact_form( WP_REST_Request $request ) {
 		$id = $request->get_param( 'id' );
 
-		$response = array();
+		if ( ! current_user_can( 'publish_pages', $id ) ) {
+			return new WP_Error( 'forbidden',
+				__( "You are not allowed to access the requested contact form.", 'dialog-contact-form' ),
+				array( 'status' => 403 ) );
+		}
+
+		$item = new ContactForm( $id );
+
+		if ( ! $item ) {
+			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
+				array( 'status' => 404 ) );
+		}
+
+		$result = $item->delete();
+
+		if ( ! $result ) {
+			return new WP_Error( 'cannot_delete',
+				__( "There was an error deleting the contact form.", 'dialog-contact-form' ),
+				array( 'status' => 500 ) );
+		}
+
+		$response = array( 'deleted' => true );
 
 		return rest_ensure_response( $response );
 	}
@@ -305,10 +347,21 @@ class RestApi {
 	 *
 	 * @param WP_REST_Request $request
 	 *
-	 * @return array
+	 * @return mixed|\WP_REST_Response
 	 */
 	public function get_form_entries( WP_REST_Request $request ) {
-		$id = $request->get_param( 'id' );
+		$form_id    = (int) $request->get_param( 'form_id' );
+		$capability = current_user_can( 'edit_posts' );
+
+		if ( $form_id ) {
+			$capability = current_user_can( 'publish_pages', $form_id );
+		}
+
+		if ( ! $capability ) {
+			return new WP_Error( 'forbidden',
+				__( "You are not allowed to access contact forms.", 'dialog-contact-form' ),
+				array( 'status' => 403 ) );
+		}
 
 		$response = array();
 
@@ -325,6 +378,12 @@ class RestApi {
 	public function get_form_entry( WP_REST_Request $request ) {
 		$id = $request->get_param( 'id' );
 
+		if ( ! current_user_can( 'publish_pages', $id ) ) {
+			return new WP_Error( 'forbidden',
+				__( "You are not allowed to access the requested contact form.", 'dialog-contact-form' ),
+				array( 'status' => 403 ) );
+		}
+
 		$response = array();
 
 		return rest_ensure_response( $response );
@@ -340,6 +399,12 @@ class RestApi {
 	public function update_form_entry( WP_REST_Request $request ) {
 		$id = $request->get_param( 'id' );
 
+		if ( ! current_user_can( 'publish_pages', $id ) ) {
+			return new WP_Error( 'forbidden',
+				__( "You are not allowed to access the requested contact form.", 'dialog-contact-form' ),
+				array( 'status' => 403 ) );
+		}
+
 		$response = array();
 
 		return rest_ensure_response( $response );
@@ -354,6 +419,12 @@ class RestApi {
 	 */
 	public function delete_form_entry( WP_REST_Request $request ) {
 		$id = $request->get_param( 'id' );
+
+		if ( ! current_user_can( 'publish_pages', $id ) ) {
+			return new WP_Error( 'forbidden',
+				__( "You are not allowed to access the requested contact form.", 'dialog-contact-form' ),
+				array( 'status' => 403 ) );
+		}
 
 		$response = array();
 
