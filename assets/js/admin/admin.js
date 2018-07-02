@@ -134,7 +134,7 @@
     $(document).ready(function () {
         $('select.select2').select2();
 
-        $('#actions_after_submit_actions')
+        $('#_contact_form_actions')
             .select2()
             .on("select2:select", function () {
                 var selections = $(this).val();

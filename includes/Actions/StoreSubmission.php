@@ -16,9 +16,11 @@ class StoreSubmission extends Action {
 	 * Redirect constructor.
 	 */
 	public function __construct() {
-		$this->priority = 10;
-		$this->id       = 'store_submission';
-		$this->title    = __( 'Store Submission', 'dialog-contact-form' );
+		$this->priority   = 10;
+		$this->id         = 'store_submission';
+		$this->title      = __( 'Store Submission', 'dialog-contact-form' );
+		$this->meta_group = 'store_submission';
+		$this->meta_key   = '_action_store_submission';
 	}
 
 	/**

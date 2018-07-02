@@ -21,7 +21,7 @@ class MailChimp extends Action {
 	 */
 	public function __construct() {
 		$this->priority   = 30;
-		$this->id         = 'mail_chimp';
+		$this->id         = 'mailchimp';
 		$this->title      = __( 'MailChimp', 'dialog-contact-form' );
 		$this->meta_group = 'mailchimp';
 		$this->meta_key   = '_action_mailchimp';
@@ -50,8 +50,8 @@ class MailChimp extends Action {
 				$mailchimp_list = $list;
 			}
 
-			if ( ! empty( $meta['mailchimp_list'] ) ) {
-				$_groups          = $handler->getGroups( $meta['mailchimp_list'] );
+			if ( ! empty( $meta['list'] ) ) {
+				$_groups          = $handler->getGroups( $meta['list'] );
 				$groups           = $_groups['groups'];
 				$mailchimp_groups = empty( $groups ) ? array() : $groups;
 			}
@@ -77,9 +77,9 @@ class MailChimp extends Action {
 		}
 
 		return array(
-			'mailchimp_api_key_source' => array(
+			'api_key_source' => array(
 				'type'        => 'select',
-				'id'          => 'mailchimp_api_key_source',
+				'id'          => 'api_key_source',
 				'group'       => $this->meta_group,
 				'meta_key'    => $this->meta_key,
 				'label'       => __( 'API Key', 'dialog-contact-form' ),
@@ -91,8 +91,8 @@ class MailChimp extends Action {
 					'custom'  => esc_html__( 'Custom', 'dialog-contact-form' ),
 				),
 			),
-			'mailchimp_api_key'        => array(
-				'id'          => 'mailchimp_api_key',
+			'api_key'        => array(
+				'id'          => 'api_key',
 				'group'       => $this->meta_group,
 				'meta_key'    => $this->meta_key,
 				'group_class' => 'dcf-input-group col-mailchimp_api_key',
@@ -101,26 +101,26 @@ class MailChimp extends Action {
 					'dialog-contact-form' ),
 				'sanitize'    => 'sanitize_text_field',
 			),
-			'mailchimp_list'           => array(
+			'list'           => array(
 				'type'     => 'select',
-				'id'       => 'mailchimp_list',
+				'id'       => 'list',
 				'group'    => $this->meta_group,
 				'meta_key' => $this->meta_key,
 				'label'    => __( 'List', 'dialog-contact-form' ),
 				'options'  => $mailchimp_list,
 			),
-			'mailchimp_groups'         => array(
+			'groups'         => array(
 				'type'     => 'select',
-				'id'       => 'mailchimp_groups',
+				'id'       => 'groups',
 				'group'    => $this->meta_group,
 				'meta_key' => $this->meta_key,
 				'label'    => __( 'Groups', 'dialog-contact-form' ),
 				'multiple' => true,
 				'options'  => $mailchimp_groups,
 			),
-			'mailchimp_double_opt_in'  => array(
+			'double_opt_in'  => array(
 				'type'        => 'buttonset',
-				'id'          => 'mailchimp_double_opt_in',
+				'id'          => 'double_opt_in',
 				'group'       => $this->meta_group,
 				'meta_key'    => $this->meta_key,
 				'label'       => __( 'Double Opt-In', 'dialog-contact-form' ),
@@ -132,29 +132,29 @@ class MailChimp extends Action {
 					'off' => __( 'No', 'dialog-contact-form' ),
 				),
 			),
-			'mailchimp_fields_map'     => array(
+			'fields_map'     => array(
 				'type'  => 'section',
 				'label' => __( 'Field Mapping', 'dialog-contact-form' ),
 			),
-			'mailchimp_map_email'      => array(
+			'map_email'      => array(
 				'type'     => 'select',
-				'id'       => 'mailchimp_map_email',
+				'id'       => 'map_email',
 				'group'    => $this->meta_group,
 				'meta_key' => $this->meta_key,
 				'label'    => __( 'Email Address', 'dialog-contact-form' ),
 				'options'  => $email_fields,
 			),
-			'mailchimp_map_first_name' => array(
+			'map_first_name' => array(
 				'type'     => 'select',
-				'id'       => 'mailchimp_map_first_name',
+				'id'       => 'map_first_name',
 				'group'    => $this->meta_group,
 				'meta_key' => $this->meta_key,
 				'label'    => __( 'First Name', 'dialog-contact-form' ),
 				'options'  => $text_fields,
 			),
-			'mailchimp_map_last_name'  => array(
+			'map_last_name'  => array(
 				'type'     => 'select',
-				'id'       => 'mailchimp_map_last_name',
+				'id'       => 'map_last_name',
 				'group'    => $this->meta_group,
 				'meta_key' => $this->meta_key,
 				'label'    => __( 'Last Name', 'dialog-contact-form' ),
@@ -175,41 +175,41 @@ class MailChimp extends Action {
 		$subscriber      = array();
 		$action_settings = get_post_meta( $config->getFormId(), '_action_mailchimp', true );
 
-		if ( empty( $action_settings['mailchimp_map_email'] ) ) {
+		if ( empty( $action_settings['map_email'] ) ) {
 			return false;
 		}
 
-		$subscriber['email_address'] = $data[ $action_settings['mailchimp_map_email'] ];
+		$subscriber['email_address'] = $data[ $action_settings['map_email'] ];
 
-		if ( ! empty( $action_settings['mailchimp_map_first_name'] ) ) {
-			$subscriber['merge_fields']['FNAME'] = $data[ $action_settings['mailchimp_map_first_name'] ];
+		if ( ! empty( $action_settings['map_first_name'] ) ) {
+			$subscriber['merge_fields']['FNAME'] = $data[ $action_settings['map_first_name'] ];
 		}
 
-		if ( ! empty( $action_settings['mailchimp_map_last_name'] ) ) {
-			$subscriber['merge_fields']['LNAME'] = $data[ $action_settings['mailchimp_map_last_name'] ];
+		if ( ! empty( $action_settings['map_last_name'] ) ) {
+			$subscriber['merge_fields']['LNAME'] = $data[ $action_settings['map_last_name'] ];
 		}
 
-		if ( ! empty( $action_settings['mailchimp_groups'] ) ) {
+		if ( ! empty( $action_settings['groups'] ) ) {
 			$subscriber['interests'] = array();
 
-			foreach ( $action_settings['mailchimp_groups'] as $mailchimp_group ) {
+			foreach ( $action_settings['groups'] as $mailchimp_group ) {
 				$subscriber['interests'][ $mailchimp_group ] = true;
 			}
 		}
 
-		if ( 'default' === $action_settings['mailchimp_api_key_source'] ) {
+		if ( 'default' === $action_settings['api_key_source'] ) {
 			$api_key = Utils::get_option( 'mailchimp_api_key' );
 		} else {
-			$api_key = $action_settings['mailchimp_api_key'];
+			$api_key = $action_settings['api_key'];
 		}
 
 		try {
 			$handler = new MailchimpHandler( $api_key );
 
-			$subscriber['status_if_new'] = 'yes' === $action_settings['mailchimp_double_opt_in'] ? 'pending' : 'subscribed';
+			$subscriber['status_if_new'] = 'yes' === $action_settings['double_opt_in'] ? 'pending' : 'subscribed';
 			$subscriber['status']        = 'subscribed';
 
-			$end_point = sprintf( 'lists/%s/members/%s', $action_settings['mailchimp_list'],
+			$end_point = sprintf( 'lists/%s/members/%s', $action_settings['list'],
 				md5( strtolower( $subscriber['email_address'] ) ) );
 
 			$response = $handler->post( $end_point, $subscriber, array(

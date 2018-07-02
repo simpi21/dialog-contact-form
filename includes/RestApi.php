@@ -301,7 +301,17 @@ class RestApi {
 				array( 'status' => 403 ) );
 		}
 
-		$response = array();
+		$item = new ContactForm( $id );
+
+		if ( ! $item ) {
+			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
+				array( 'status' => 404 ) );
+		}
+
+		$args = $request->get_params();
+		$item->update( $args );
+
+		$response = $item->settings()->toArray();
 
 		return rest_ensure_response( $response );
 	}

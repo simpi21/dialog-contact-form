@@ -74,11 +74,13 @@ abstract class Action {
 	 * Save action settings
 	 *
 	 * @param int $post_id
-	 * @param \WP_Post $post
+	 * @param null $data
 	 */
-	public function save( $post_id, $post ) {
-		if ( ! empty( $_POST[ $this->meta_group ] ) ) {
-			$sanitize_data = $this->sanitizeSettings( $_POST[ $this->meta_group ] );
+	public function save( $post_id, $data = null ) {
+		$data = empty( $data ) ? $_POST : $data;
+
+		if ( ! empty( $data[ $this->meta_group ] ) ) {
+			$sanitize_data = $this->sanitizeSettings( $data[ $this->meta_group ] );
 
 			update_post_meta( $post_id, $this->meta_key, $sanitize_data );
 		} else {

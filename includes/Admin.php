@@ -2,7 +2,6 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Supports\Metabox;
 
 // Exit if accessed directly
@@ -177,7 +176,8 @@ class Admin {
 					), site_url() ) );
 
 					$new_actions['edit'] = $actions['edit'];
-					$new_actions['view'] = '<a href="' . $preview_url . '" target="_blank">' . __( 'Preview', 'dialog-contact-form' ) . '</a>';
+					$new_actions['view'] = '<a href="' . $preview_url . '" target="_blank">' . __( 'Preview',
+							'dialog-contact-form' ) . '</a>';
 				}
 				if ( current_user_can( 'delete_post', $post->ID ) ) {
 					$new_actions['trash'] = $actions['trash'];
@@ -235,23 +235,19 @@ class Admin {
                 <div id="dcf-tab-3" class="dcf_options_panel">
 					<?php
 					Metabox::select( array(
-						'id'          => 'after_submit_actions',
-						'group'       => 'actions',
-						'meta_key'    => '_contact_form_actions',
+						'id'          => '_contact_form_actions',
 						'label'       => __( 'Add Actions', 'dialog-contact-form' ),
 						'description' => __( 'Add actions that will be performed after a visitor submits the form (e.g. send an email notification). Choosing an action will add its setting below.',
 							'dialog-contact-form' ),
 						'multiple'    => true,
-						'default'     => array( 'store_submission', 'success_message', 'redirect' ),
+						'default'     => array(),
 						'options'     => $this->get_actions_list( $actions ),
 					) );
 
-					$_actions          = get_post_meta( $post->ID, '_contact_form_actions', true );
-					$default_actions   = array( 'store_submission', 'success_message', 'redirect' );
-					$supported_actions = isset( $_actions['after_submit_actions'] ) ? $_actions['after_submit_actions'] : $default_actions;
+					$_actions = (array) get_post_meta( $post->ID, '_contact_form_actions', true );
 					/** @var \DialogContactForm\Abstracts\Action $action */
 					foreach ( $actions as $action ) {
-						$display = in_array( $action->getId(), $supported_actions ) ? 'block' : 'none';
+						$display = in_array( $action->getId(), $_actions ) ? 'block' : 'none';
 						echo '<div id="action-' . $action->getId() . '" data-id="closed" class="dcf-toggle dcf-toggle-action dcf-toggle--normal" style="display:' . $display . ';">';
 						echo '<span class="dcf-toggle-title">' . $action->getTitle() . '</span>';
 						echo '<div class="dcf-toggle-inner"><div class="dcf-toggle-content">';
@@ -378,77 +374,19 @@ class Admin {
 			return;
 		}
 
-		// - Update the post's metadata.
-		if ( isset( $_POST['config'] ) ) {
-			update_post_meta( $post_id, '_contact_form_config', self::sanitize_value( $_POST['config'] ) );
+		$data = array(
+			'config'   => $_POST['config'],
+			'messages' => $_POST['messages'],
+			'field'    => $_POST['field'],
+		);
+
+		$_actions = isset( $_POST['_contact_form_actions'] ) ? $_POST['_contact_form_actions'] : array();
+		foreach ( $_actions as $action ) {
+			$data['actions'][ $action ] = isset( $_POST[ $action ] ) ? $_POST[ $action ] : array();
 		}
 
-		if ( isset( $_POST['messages'] ) ) {
-			update_post_meta( $post_id, '_contact_form_messages', self::sanitize_value( $_POST['messages'] ) );
-		}
-
-		if ( isset( $_POST['actions'] ) ) {
-			update_post_meta( $post_id, '_contact_form_actions', self::sanitize_value( $_POST['actions'] ) );
-		}
-
-		if ( isset( $_POST['field'] ) && is_array( $_POST['field'] ) ) {
-			$_data = array();
-			foreach ( $_POST['field'] as $field ) {
-				$_data[] = array_filter( array(
-					'field_title'        => isset( $field['field_title'] ) ? sanitize_text_field( $field['field_title'] ) : '',
-					'field_name'         => isset( $field['field_id'] ) ? sanitize_text_field( $field['field_id'] ) : '',
-					'field_id'           => isset( $field['field_id'] ) ? sanitize_text_field( $field['field_id'] ) : '',
-					'field_type'         => isset( $field['field_type'] ) ? sanitize_text_field( $field['field_type'] ) : '',
-					'options'            => isset( $field['options'] ) ? wp_strip_all_tags( $field['options'] ) : '',
-					'number_min'         => isset( $field['number_min'] ) ? $this->positive_int( $field['number_min'] ) : '',
-					'number_max'         => isset( $field['number_max'] ) ? $this->positive_int( $field['number_max'] ) : '',
-					'number_step'        => isset( $field['number_step'] ) ? $this->positive_int( $field['number_step'] ) : '',
-					'field_value'        => isset( $field['field_value'] ) ? sanitize_text_field( $field['field_value'] ) : '',
-					'required_field'     => isset( $field['required_field'] ) ? sanitize_text_field( $field['required_field'] ) : '',
-					'field_class'        => isset( $field['field_class'] ) ? sanitize_text_field( $field['field_class'] ) : '',
-					'field_width'        => isset( $field['field_width'] ) ? sanitize_text_field( $field['field_width'] ) : '',
-					'validation'         => isset( $field['validation'] ) ? self::sanitize_value( $field['validation'] ) : array(),
-					'placeholder'        => isset( $field['placeholder'] ) ? sanitize_text_field( $field['placeholder'] ) : '',
-					'error_message'      => isset( $field['error_message'] ) ? sanitize_text_field( $field['error_message'] ) : '',
-					'autocomplete'       => isset( $field['autocomplete'] ) ? sanitize_text_field( $field['autocomplete'] ) : '',
-					// Acceptance Field
-					'acceptance_text'    => isset( $field['acceptance_text'] ) ? wp_kses_post( $field['acceptance_text'] ) : '',
-					'checked_by_default' => isset( $field['checked_by_default'] ) ? sanitize_text_field( $field['checked_by_default'] ) : '',
-					// Date Field
-					'min_date'           => isset( $field['min_date'] ) ? sanitize_text_field( $field['min_date'] ) : '',
-					'max_date'           => isset( $field['max_date'] ) ? sanitize_text_field( $field['max_date'] ) : '',
-					// Date & Time Field
-					'native_html5'       => isset( $field['native_html5'] ) ? sanitize_text_field( $field['native_html5'] ) : '',
-					// File Field
-					'max_file_size'      => isset( $field['max_file_size'] ) ? absint( $field['max_file_size'] ) : '',
-					'allowed_file_types' => isset( $field['allowed_file_types'] ) ? self::sanitize_value( $field['allowed_file_types'] ) : array(),
-					'rows'               => isset( $field['rows'] ) ? intval( $field['rows'] ) : '',
-					// File & Email
-					'multiple'           => isset( $field['multiple'] ) ? sanitize_text_field( $field['multiple'] ) : '',
-					// HTML
-					'html'               => isset( $field['html'] ) ? wp_kses_post( $field['html'] ) : '',
-				) );
-			}
-
-			update_post_meta( $post_id, '_contact_form_fields', $_data );
-		} else {
-			delete_post_meta( $post_id, '_contact_form_fields' );
-		}
-
-		$supported_actions = isset( $_POST['actions']['after_submit_actions'] ) ? $_POST['actions']['after_submit_actions'] : array();
-		$actions           = ActionManager::init();
-		foreach ( $actions as $action_id => $className ) {
-			if ( ! in_array( $action_id, $supported_actions ) ) {
-				continue;
-			}
-
-			$action = new $className;
-			if ( ! $action instanceof Action ) {
-				continue;
-			}
-
-			$action->save( $post_id, $post );
-		}
+		$contactForm = new ContactForm( $post );
+		$contactForm->update( $data );
 
 		/**
 		 * Let give option to save settings for other plugins
@@ -457,49 +395,6 @@ class Admin {
 		 * @param \WP_Post $post The post object.
 		 */
 		do_action( 'dialog_contact_form/save_post', $post_id, $post );
-	}
-
-	/**
-	 * Sanitize meta value
-	 *
-	 * @param $input
-	 *
-	 * @return array|string
-	 */
-	private static function sanitize_value( $input ) {
-		// Initialize the new array that will hold the sanitize values
-		$new_input = array();
-
-		if ( is_array( $input ) ) {
-			// Loop through the input and sanitize each of the values
-			foreach ( $input as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$new_input[ $key ] = self::sanitize_value( $value );
-				} else {
-					$new_input[ $key ] = sanitize_text_field( $value );
-				}
-			}
-		} else {
-			return sanitize_text_field( $input );
-		}
-
-		return $new_input;
-	}
-
-	/**
-	 * Check if the value is a positive integer
-	 *
-	 * @param $value
-	 *
-	 * @return int|null
-	 */
-	private function positive_int( $value ) {
-		$value = preg_replace( '/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $value );
-		if ( empty( $value ) ) {
-			return null;
-		}
-
-		return $value;
 	}
 
 	/**

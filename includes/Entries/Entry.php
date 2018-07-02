@@ -155,6 +155,16 @@ class Entry {
 	}
 
 	/**
+	 * @param array $data
+	 * @param array $where
+	 * @param null $format
+	 * @param null $where_format
+	 */
+	public function update( $data, $where, $format = null, $where_format = null ) {
+		$this->db->update( $this->table_name, $data, $where, $format, $where_format );
+	}
+
+	/**
 	 * Get form meta information
 	 *
 	 * @param null $current_time
@@ -333,13 +343,5 @@ class Entry {
 		} else {
 			return false;
 		}
-	}
-
-	public function update( $data, $where, $format = null, $where_format = null ) {
-		$this->db->update( $this->table_name, $data, $where, $format, $where_format );
-	}
-
-	public function delete( $where, $where_format = null ) {
-		$this->db->delete( $this->table_name, $where, $where_format );
 	}
 }

@@ -317,17 +317,21 @@ class Metabox {
 		global $post;
 		$post_id = $post instanceof \WP_Post ? $post->ID : 0;
 		// Meta Name
-		$group    = isset( $args['group'] ) ? $args['group'] : 'dialog_contact_form';
+		$group    = ! empty( $args['group'] ) ? $args['group'] : null;
 		$multiple = isset( $args['multiple'] ) ? '[]' : '';
-		$name     = sprintf( '%s[%s]%s', $group, $args['id'], $multiple );
+
+		if ( $group ) {
+			$id   = sprintf( '%s_%s', $group, $args['id'] );
+			$name = sprintf( '%s[%s]%s', $group, $args['id'], $multiple );
+		} else {
+			$id   = $args['id'];
+			$name = sprintf( '%s%s', $args['id'], $multiple );
+		}
 
 		// Meta Value
 		$default = isset( $args['default'] ) ? $args['default'] : '';
 		$meta    = get_post_meta( $post_id, $args['id'], true );
 		$value   = ! empty( $meta ) ? $meta : $default;
-
-		// ID
-		$id = sprintf( '%s_%s', $group, $args['id'] );
 
 		if ( isset( $args['meta_key'] ) ) {
 			$meta  = get_post_meta( $post_id, $args['meta_key'], true );

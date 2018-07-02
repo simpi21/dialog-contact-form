@@ -120,12 +120,10 @@ class Activation {
 
 			update_post_meta( $contact_form->ID, '_contact_form_fields', $new_fields );
 			update_post_meta( $contact_form->ID, '_contact_form_actions', array(
-				'after_submit_actions' => array(
-					'store_submission',
-					'email_notification',
-					'success_message',
-					'redirect'
-				)
+				'store_submission',
+				'email_notification',
+				'success_message',
+				'redirect'
 			) );
 			update_post_meta( $contact_form->ID, '_action_success_message', array(
 				'message' => Utils::get_option( 'mail_sent_ok' )

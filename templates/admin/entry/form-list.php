@@ -61,12 +61,11 @@ foreach ( $results as $row ) {
     <div class="dcf-form-list">
 		<?php
 		foreach ( $forms as $form ) {
-			$form_actions = get_post_meta( $form->ID, '_contact_form_actions', true );
-			if ( isset( $form_actions['after_submit_actions'] ) && is_array( $form_actions['after_submit_actions'] ) ) {
-				if ( ! in_array( 'store_submission', $form_actions['after_submit_actions'] ) ) {
-					continue;
-				}
+			$form_actions = (array) get_post_meta( $form->ID, '_contact_form_actions', true );
+			if ( ! in_array( 'store_submission', $form_actions ) ) {
+				continue;
 			}
+
 			$default_count   = array( 'unread' => 0, 'read' => 0, 'trash' => 0, );
 			$_count          = isset( $counts[ $form->ID ] ) ? $counts[ $form->ID ] : array();
 			$count           = wp_parse_args( $_count, $default_count );

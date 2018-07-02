@@ -162,7 +162,6 @@ class Config {
 			$this->form_settings = (array) get_post_meta( $this->form_id, '_contact_form_config', true );
 
 			$form_actions = (array) get_post_meta( $this->form_id, '_contact_form_actions', true );
-			$form_actions = isset( $form_actions['after_submit_actions'] ) ? $form_actions['after_submit_actions'] : array();
 			if ( empty( $form_actions ) ) {
 				$form_actions = array( 'email_notification', 'success_message', 'redirect' );
 			}

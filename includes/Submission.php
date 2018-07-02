@@ -225,19 +225,9 @@ class Submission {
 	public function validate_post_field( $value, $field, $config ) {
 		$messages       = $config->getValidationMessages();
 		$message        = array();
-		$validate_rules = is_array( $field['validation'] ) ? $field['validation'] : array();
 		$field_type     = $field['field_type'] ? $field['field_type'] : '';
 		$message_key    = sprintf( 'invalid_%s', $field_type );
 		$error_message  = isset( $messages[ $message_key ] ) ? $messages[ $message_key ] : $messages['generic_error'];
-
-		// Backward compatibility for required field.
-		if ( ! isset( $field['required_field'] ) ) {
-			if ( in_array( 'required', $validate_rules ) ) {
-				$field['required_field'] = 'on';
-			} else {
-				$field['required_field'] = 'off';
-			}
-		}
 
 		$fieldManager = FieldManager::init();
 		$class_name   = $fieldManager->get( $field_type );

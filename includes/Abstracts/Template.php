@@ -79,9 +79,7 @@ abstract class Template {
 		update_post_meta( $post_id, '_contact_form_fields', $this->formFields() );
 		update_post_meta( $post_id, '_contact_form_messages', $this->formValidationMessages() );
 		update_post_meta( $post_id, '_contact_form_config', $this->formSettings() );
-		update_post_meta( $post_id, '_contact_form_actions', array(
-			'after_submit_actions' => $form_actions_list,
-		) );
+		update_post_meta( $post_id, '_contact_form_actions', $form_actions_list );
 
 		$actions = ActionManager::init();
 		foreach ( $actions as $action_id => $className ) {
