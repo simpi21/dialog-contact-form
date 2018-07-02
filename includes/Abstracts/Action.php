@@ -77,10 +77,12 @@ abstract class Action {
 	 * @param null $data
 	 */
 	public function save( $post_id, $data = null ) {
-		$data = empty( $data ) ? $_POST : $data;
+		if ( func_num_args() === 1 ) {
+			$data = isset( $_POST[ $this->meta_group ] ) ? $_POST[ $this->meta_group ] : array();
+		}
 
-		if ( ! empty( $data[ $this->meta_group ] ) ) {
-			$sanitize_data = $this->sanitizeSettings( $data[ $this->meta_group ] );
+		if ( ! empty( $data ) ) {
+			$sanitize_data = $this->sanitizeSettings( $data );
 
 			update_post_meta( $post_id, $this->meta_key, $sanitize_data );
 		} else {

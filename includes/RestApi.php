@@ -3,7 +3,7 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Template;
-use DialogContactForm\Supports\Utils;
+use DialogContactForm\Entries\Entry;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -49,13 +49,13 @@ class RestApi {
 	/**
 	 * Fires when preparing to serve an API request.
 	 */
-	public function rest_api_init() {
+	public static function rest_api_init() {
 		$templates = TemplateManager::init();
 
 		register_rest_route( self::$namespace, '/forms', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'get_contact_forms' ),
+				'callback' => array( self::$instance, 'get_contact_forms' ),
 				'args'     => array(
 					'per_page' => array(
 						'required'    => false,
@@ -92,7 +92,7 @@ class RestApi {
 			),
 			array(
 				'methods'  => WP_REST_Server::CREATABLE,
-				'callback' => array( $this, 'create_contact_form' ),
+				'callback' => array( self::$instance, 'create_contact_form' ),
 				'args'     => array(
 					'template' => array(
 						'required'    => false,
@@ -108,37 +108,62 @@ class RestApi {
 		register_rest_route( self::$namespace, '/forms/(?P<id>\d+)', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'get_contact_form' ),
+				'callback' => array( self::$instance, 'get_contact_form' ),
 			),
 			array(
 				'methods'  => WP_REST_Server::EDITABLE,
-				'callback' => array( $this, 'update_contact_form' ),
+				'callback' => array( self::$instance, 'update_contact_form' ),
 			),
 			array(
 				'methods'  => WP_REST_Server::DELETABLE,
-				'callback' => array( $this, 'delete_contact_form' ),
+				'callback' => array( self::$instance, 'delete_contact_form' ),
 			),
 		) );
 
 		register_rest_route( self::$namespace, '/entries', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'get_form_entries' ),
+				'callback' => array( self::$instance, 'get_form_entries' ),
+				'args'     => array(
+					'per_page' => array(
+						'required'    => false,
+						'default'     => 50,
+						'description' => __( 'Number of entry to show per page. Use -1 to show all entries',
+							'dialog-contact-form' ),
+						'type'        => 'integer',
+					),
+					'offset'   => array(
+						'required'    => false,
+						'default'     => 0,
+						'description' => __( 'Number of entry to displace or pass over. The \'offset\' parameter is ignored when \'per_page\'=> -1 (show all entries) is used.',
+							'dialog-contact-form' ),
+						'type'        => 'integer',
+					),
+					'order'    => array(
+						'description' => __( 'Designates the ascending or descending order.', 'dialog-contact-form' ),
+						'required'    => false,
+						'default'     => 'DESC',
+						'enum'        => array( 'ASC', 'DESC' ),
+					),
+					'orderby'  => array(
+						'description' => __( 'Sort retrieved entries by parameter. One or more options can be passed.',
+							'dialog-contact-form' ),
+						'required'    => false,
+						'default'     => 'created_at',
+						'enum'        => array( 'id', 'form_id', 'user_id', 'status', 'created_at' ),
+					),
+				),
 			)
 		) );
 
 		register_rest_route( self::$namespace, '/entries/(?P<id>\d+)', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'get_form_entry' ),
-			),
-			array(
-				'methods'  => WP_REST_Server::EDITABLE,
-				'callback' => array( $this, 'update_form_entry' ),
+				'callback' => array( self::$instance, 'get_form_entry' ),
 			),
 			array(
 				'methods'  => WP_REST_Server::DELETABLE,
-				'callback' => array( $this, 'delete_form_entry' ),
+				'callback' => array( self::$instance, 'delete_form_entry' ),
 			),
 		) );
 	}
@@ -150,7 +175,7 @@ class RestApi {
 	 *
 	 * @return mixed|WP_Error|\WP_REST_Response
 	 */
-	public function get_contact_forms( WP_REST_Request $request ) {
+	public static function get_contact_forms( WP_REST_Request $request ) {
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			return new WP_Error( 'forbidden',
 				__( "You are not allowed to access contact forms.", 'dialog-contact-form' ),
@@ -212,7 +237,7 @@ class RestApi {
 	 *
 	 * @return mixed|WP_Error|\WP_REST_Response
 	 */
-	public function create_contact_form( WP_REST_Request $request ) {
+	public static function create_contact_form( WP_REST_Request $request ) {
 
 		if ( ! current_user_can( 'publish_pages' ) ) {
 			return new WP_Error( 'forbidden',
@@ -264,7 +289,7 @@ class RestApi {
 	 *
 	 * @return mixed|\WP_REST_Response
 	 */
-	public function get_contact_form( WP_REST_Request $request ) {
+	public static function get_contact_form( WP_REST_Request $request ) {
 
 		$id = $request->get_param( 'id' );
 
@@ -293,7 +318,7 @@ class RestApi {
 	 *
 	 * @return mixed|\WP_REST_Response
 	 */
-	public function update_contact_form( WP_REST_Request $request ) {
+	public static function update_contact_form( WP_REST_Request $request ) {
 		$id = $request->get_param( 'id' );
 
 		if ( ! current_user_can( 'publish_pages', $id ) ) {
@@ -324,7 +349,7 @@ class RestApi {
 	 *
 	 * @return mixed|\WP_REST_Response
 	 */
-	public function delete_contact_form( WP_REST_Request $request ) {
+	public static function delete_contact_form( WP_REST_Request $request ) {
 		$id = $request->get_param( 'id' );
 
 		if ( ! current_user_can( 'publish_pages', $id ) ) {
@@ -360,7 +385,7 @@ class RestApi {
 	 *
 	 * @return mixed|\WP_REST_Response
 	 */
-	public function get_form_entries( WP_REST_Request $request ) {
+	public static function get_form_entries( WP_REST_Request $request ) {
 		$form_id    = (int) $request->get_param( 'form_id' );
 		$capability = current_user_can( 'edit_posts' );
 
@@ -370,7 +395,7 @@ class RestApi {
 
 		if ( ! $capability ) {
 			return new WP_Error( 'forbidden',
-				__( "You are not allowed to access contact forms.", 'dialog-contact-form' ),
+				__( "You are not allowed to access contact forms entries.", 'dialog-contact-form' ),
 				array( 'status' => 403 ) );
 		}
 
@@ -397,45 +422,15 @@ class RestApi {
 			$args['orderby'] = (string) $orderby;
 		}
 
-		$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : 'created_at';
-		$order    = isset( $args['order'] ) ? $args['order'] : 'desc';
-		$offset   = isset( $args['offset'] ) ? intval( $args['offset'] ) : 0;
-		$per_page = isset( $args['per_page'] ) ? intval( $args['per_page'] ) : 50;
+		$entry   = new Entry();
+		$entries = $entry->find( $args );
 
-		global $wpdb;
-		$table1 = $wpdb->prefix . 'dcf_entries';
-		$table2 = $wpdb->prefix . 'dcf_entry_meta';
-
-		$sql = "SELECT * FROM {$table1}";
-		$sql .= " ORDER BY {$orderby} {$order}";
-		$sql .= " LIMIT $per_page OFFSET $offset";
-
-		$items = $wpdb->get_results( $sql, ARRAY_A );
-
-		if ( ! $items ) {
-			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
+		if ( ! $entries ) {
+			return new WP_Error( 'not_found', __( "The requested contact form entry was not found.", 'dialog-contact-form' ),
 				array( 'status' => 404 ) );
 		}
 
-		$ids     = Utils::array_column( $items, 'id' );
-		$ids     = implode( ',', $ids );
-		$sql     = "SELECT * FROM $table2 WHERE entry_id IN($ids)";
-		$entries = $wpdb->get_results( $sql, ARRAY_A );
-
-		$_meta = array();
-		foreach ( $entries as $entry ) {
-			if ( empty( $entry['meta_key'] ) ) {
-				continue;
-			}
-			$_meta[ $entry['entry_id'] ][ $entry['meta_key'] ] = $entry['meta_value'];
-		}
-
-		$data = array();
-		foreach ( $items as $item ) {
-			$data[] = $item + array( 'field_values' => $_meta[ $item['id'] ] );
-		}
-
-		return rest_ensure_response( $data );
+		return rest_ensure_response( $entries );
 	}
 
 	/**
@@ -445,62 +440,24 @@ class RestApi {
 	 *
 	 * @return mixed|\WP_REST_Response
 	 */
-	public function get_form_entry( WP_REST_Request $request ) {
+	public static function get_form_entry( WP_REST_Request $request ) {
 		$id = $request->get_param( 'id' );
 
 		if ( ! current_user_can( 'publish_pages', $id ) ) {
 			return new WP_Error( 'forbidden',
-				__( "You are not allowed to access the requested contact form.", 'dialog-contact-form' ),
+				__( "You are not allowed to access the requested contact form entry.", 'dialog-contact-form' ),
 				array( 'status' => 403 ) );
 		}
 
-		global $wpdb;
-		$table1 = $wpdb->prefix . 'dcf_entries';
-		$table2 = $wpdb->prefix . 'dcf_entry_meta';
+		$entry   = new Entry();
+		$entries = $entry->get( $id );
 
-		$items = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table1} WHERE id = %d", $id ),
-			ARRAY_A );
-
-		if ( ! $items ) {
-			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
+		if ( ! $entries ) {
+			return new WP_Error( 'not_found', __( "The requested form entry was not found.", 'dialog-contact-form' ),
 				array( 'status' => 404 ) );
 		}
 
-		$entries = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table2} WHERE entry_id = %d", $id ),
-			ARRAY_A );
-
-		$_meta = array();
-		foreach ( $entries as $entry ) {
-			if ( empty( $entry['meta_key'] ) ) {
-				continue;
-			}
-			$_meta[ $entry['meta_key'] ] = $entry['meta_value'];
-		}
-
-		$response = $items + array( 'field_values' => $_meta );
-
-		return rest_ensure_response( $response );
-	}
-
-	/**
-	 * Update form entry
-	 *
-	 * @param WP_REST_Request $request
-	 *
-	 * @return mixed|\WP_REST_Response
-	 */
-	public function update_form_entry( WP_REST_Request $request ) {
-		$id = $request->get_param( 'id' );
-
-		if ( ! current_user_can( 'publish_pages', $id ) ) {
-			return new WP_Error( 'forbidden',
-				__( "You are not allowed to access the requested contact form.", 'dialog-contact-form' ),
-				array( 'status' => 403 ) );
-		}
-
-		$response = array();
-
-		return rest_ensure_response( $response );
+		return rest_ensure_response( $entries );
 	}
 
 	/**
@@ -510,31 +467,24 @@ class RestApi {
 	 *
 	 * @return mixed|\WP_REST_Response
 	 */
-	public function delete_form_entry( WP_REST_Request $request ) {
+	public static function delete_form_entry( WP_REST_Request $request ) {
 		$id = (int) $request->get_param( 'id' );
 
 		if ( ! current_user_can( 'publish_pages', $id ) ) {
 			return new WP_Error( 'forbidden',
-				__( "You are not allowed to access the requested contact form.", 'dialog-contact-form' ),
+				__( "You are not allowed to access the requested form entry.", 'dialog-contact-form' ),
 				array( 'status' => 403 ) );
 		}
 
-		global $wpdb;
-		$table1 = $wpdb->prefix . 'dcf_entries';
-		$table2 = $wpdb->prefix . 'dcf_entry_meta';
-
-		$result = $wpdb->delete( $table1, array( 'id' => $id ), '%d' );
+		$entry  = new Entry();
+		$result = $entry->delete( $id );
 
 		if ( false === $result ) {
 			return new WP_Error( 'cannot_delete',
-				__( "There was an error deleting the contact form.", 'dialog-contact-form' ),
+				__( "There was an error deleting the form entry.", 'dialog-contact-form' ),
 				array( 'status' => 500 ) );
 		}
 
-		$wpdb->delete( $table2, array( 'entry_id' => $id ), '%d' );
-
-		$response = array( 'deleted' => true );
-
-		return rest_ensure_response( $response );
+		return rest_ensure_response( array( 'deleted' => true ) );
 	}
 }

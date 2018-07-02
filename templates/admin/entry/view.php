@@ -14,24 +14,18 @@ $entry = new Entry();
 $data  = $entry->get( $id );
 
 // Update status to read
-if ( isset( $data['meta_data']['status'] ) && 'unread' === $data['meta_data']['status'] ) {
+if ( isset( $data['status'] ) && 'unread' === $data['status'] ) {
 	$entry->update( array( 'status' => 'read' ), array( 'id' => $id ) );
 }
 
-$meta_data = array();
-if ( isset( $data['meta_data'] ) && is_array( $data['meta_data'] ) ) {
-	$meta_data = $data['meta_data'];
-	unset( $data['meta_data'] );
-}
-
-$browser    = new Browser( $meta_data['user_agent'] );
+$browser    = new Browser( $data['user_agent'] );
 $user_agent = sprintf( '%s / %s %s', $browser->getPlatform(), $browser->getBrowser(), $browser->getVersion() );
 
-$form_id    = isset( $meta_data['form_id'] ) ? $meta_data['form_id'] : 0;
-$created_at = isset( $meta_data['created_at'] ) ? $meta_data['created_at'] : 0;
+$form_id    = isset( $data['form_id'] ) ? $data['form_id'] : 0;
+$created_at = isset( $data['created_at'] ) ? $data['created_at'] : 0;
 $created_at = new \DateTime( $created_at );
 $form_title = get_the_title( $form_id );
-$form_title = sprintf( '%s : Entry # %s', $form_title, $meta_data['id'] );
+$form_title = sprintf( '%s : Entry # %s', $form_title, $data['id'] );
 
 $_fields      = array();
 $fields       = get_post_meta( $form_id, '_contact_form_fields', true );
@@ -96,7 +90,7 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
                     </h2>
                     <div class="inside">
                         <table class="form-table dcf-data-table">
-							<?php foreach ( $data as $_key => $value ) {
+							<?php foreach ( $data['field_values'] as $_key => $value ) {
 								$field = isset( $_fields[ $_key ] ) ? $_fields[ $_key ] : array();
 
 								$className = $fieldManager->get( $field['field_type'] );
@@ -169,17 +163,17 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
                             <li>
                                 <span class="label"><?php esc_html_e( 'Entry ID', 'dialog-contact-form' ); ?></span>
                                 <span class="sep">:</span>
-                                <span class="value">#<?php echo $meta_data['id']; ?></span>
+                                <span class="value">#<?php echo $data['id']; ?></span>
                             </li>
                             <li>
                                 <span class="label"><?php esc_html_e( 'Source', 'dialog-contact-form' ); ?></span>
                                 <span class="sep">:</span>
-                                <span class="value"><?php echo site_url( $meta_data['referer'] ); ?></span>
+                                <span class="value"><?php echo site_url( $data['referer'] ); ?></span>
                             </li>
                             <li>
                                 <span class="label"><?php esc_html_e( 'User IP', 'dialog-contact-form' ); ?></span>
                                 <span class="sep">:</span>
-                                <span class="value"><?php echo $meta_data['user_ip']; ?></span>
+                                <span class="value"><?php echo $data['user_ip']; ?></span>
                             </li>
                             <li>
                                 <span class="label"><?php esc_html_e( 'User agent', 'dialog-contact-form' ); ?></span>

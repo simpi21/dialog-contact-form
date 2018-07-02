@@ -58,26 +58,47 @@ class Entry {
 	}
 
 	/**
-	 * Get entries
+	 * Find entries
 	 *
-	 * @param $args
+	 * @param array $args
 	 *
-	 * @return null|object
+	 * @return array
 	 */
-	public function getEntries( $args ) {
-		$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : 'id';
+	public function find( $args = array() ) {
+		$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : 'created_at';
 		$order    = isset( $args['order'] ) ? $args['order'] : 'desc';
 		$offset   = isset( $args['offset'] ) ? intval( $args['offset'] ) : 0;
 		$per_page = isset( $args['per_page'] ) ? intval( $args['per_page'] ) : 50;
 
-		$items = $this->db->get_results( "
-                SELECT * FROM $this->table_name
-                ORDER BY $orderby $order
-                LIMIT $per_page
-                OFFSET $offset
-            ", OBJECT );
+		$sql = "SELECT * FROM {$this->table_name}";
+		$sql .= " ORDER BY {$orderby} {$order}";
+		$sql .= " LIMIT $per_page OFFSET $offset";
 
-		return $items;
+		$items = $this->db->get_results( $sql, ARRAY_A );
+
+		if ( ! $items ) {
+			return array();
+		}
+
+		$ids     = Utils::array_column( $items, 'id' );
+		$ids     = implode( ',', $ids );
+		$sql     = "SELECT * FROM {$this->meta_table_name} WHERE entry_id IN($ids)";
+		$entries = $this->db->get_results( $sql, ARRAY_A );
+
+		$_meta = array();
+		foreach ( $entries as $entry ) {
+			if ( empty( $entry['meta_key'] ) ) {
+				continue;
+			}
+			$_meta[ $entry['entry_id'] ][ $entry['meta_key'] ] = $this->unserialize( $entry['meta_value'] );
+		}
+
+		$data = array();
+		foreach ( $items as $item ) {
+			$data[] = $item + array( 'field_values' => $_meta[ $item['id'] ] );
+		}
+
+		return $data;
 	}
 
 	/**
@@ -89,39 +110,26 @@ class Entry {
 	 */
 	public function get( $entry_id ) {
 		$items = $this->db->get_row( $this->db->prepare(
-			"SELECT * FROM $this->table_name WHERE id = %d", $entry_id ),
+			"SELECT * FROM {$this->table_name} WHERE id = %d", $entry_id ),
 			ARRAY_A
 		);
 
 		$entries = $this->db->get_results( $this->db->prepare(
-			"SELECT * FROM $this->meta_table_name WHERE entry_id = %d", $entry_id ),
+			"SELECT * FROM {$this->meta_table_name} WHERE entry_id = %d", $entry_id ),
 			ARRAY_A
 		);
 
-		$_entries = array(
-			'meta_data' => $items,
-		);
+		$_meta = array();
 		foreach ( $entries as $entry ) {
-			$_entries[ $entry['meta_key'] ] = $this->unserialize( $entry['meta_value'] );
+			if ( empty( $entry['meta_key'] ) ) {
+				continue;
+			}
+			$_meta[ $entry['meta_key'] ] = $this->unserialize( $entry['meta_value'] );
 		}
+
+		$_entries = $items + array( 'field_values' => $_meta );
 
 		return $_entries;
-	}
-
-	/**
-	 * Unserialize value only if it was serialized.
-	 *
-	 * @param string $original Maybe unserialized original, if is needed.
-	 *
-	 * @return mixed Unserialized data can be any type.
-	 */
-	private function unserialize( $original ) {
-		// don't attempt to unserialize data that wasn't serialized going in
-		if ( is_serialized( $original ) ) {
-			return @unserialize( $original );
-		}
-
-		return $original;
 	}
 
 	/**
@@ -157,11 +165,29 @@ class Entry {
 	/**
 	 * @param array $data
 	 * @param array $where
-	 * @param null $format
-	 * @param null $where_format
+	 * @param string|array $format
+	 * @param string|array $where_format
 	 */
 	public function update( $data, $where, $format = null, $where_format = null ) {
 		$this->db->update( $this->table_name, $data, $where, $format, $where_format );
+	}
+
+	/**
+	 * Delete entry
+	 *
+	 * @param int $entry_id
+	 *
+	 * @return bool
+	 */
+	public function delete( $entry_id = 0 ) {
+		$result = $this->db->delete( $this->table_name, array( 'id' => $entry_id ), '%d' );
+
+		if ( false === $result ) {
+			return false;
+		}
+		$this->db->delete( $this->meta_table_name, array( 'entry_id' => $entry_id ), '%d' );
+
+		return true;
 	}
 
 	/**
@@ -244,6 +270,22 @@ class Entry {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Unserialize value only if it was serialized.
+	 *
+	 * @param string $original Maybe unserialized original, if is needed.
+	 *
+	 * @return mixed Unserialized data can be any type.
+	 */
+	private function unserialize( $original ) {
+		// don't attempt to unserialize data that wasn't serialized going in
+		if ( is_serialized( $original ) ) {
+			return @unserialize( $original );
+		}
+
+		return $original;
 	}
 
 	/**
