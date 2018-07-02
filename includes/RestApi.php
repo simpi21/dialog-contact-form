@@ -3,6 +3,7 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Template;
+use DialogContactForm\Supports\Utils;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -275,7 +276,7 @@ class RestApi {
 
 		$item = new ContactForm( $id );
 
-		if ( ! $item ) {
+		if ( ! $item->id() ) {
 			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
 				array( 'status' => 404 ) );
 		}
@@ -303,7 +304,7 @@ class RestApi {
 
 		$item = new ContactForm( $id );
 
-		if ( ! $item ) {
+		if ( ! $item->id() ) {
 			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
 				array( 'status' => 404 ) );
 		}
@@ -334,7 +335,7 @@ class RestApi {
 
 		$item = new ContactForm( $id );
 
-		if ( ! $item ) {
+		if ( ! $item->id() ) {
 			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
 				array( 'status' => 404 ) );
 		}
@@ -373,9 +374,68 @@ class RestApi {
 				array( 'status' => 403 ) );
 		}
 
-		$response = array();
+		$args = array();
 
-		return rest_ensure_response( $response );
+		$per_page = $request->get_param( 'per_page' );
+		$offset   = $request->get_param( 'offset' );
+		$order    = $request->get_param( 'order' );
+		$orderby  = $request->get_param( 'orderby' );
+
+		if ( null !== $per_page ) {
+			$args['per_page'] = (int) $per_page;
+		}
+
+		if ( null !== $offset ) {
+			$args['offset'] = (int) $offset;
+		}
+
+		if ( null !== $order ) {
+			$args['order'] = (string) $order;
+		}
+
+		if ( null !== $orderby ) {
+			$args['orderby'] = (string) $orderby;
+		}
+
+		$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : 'created_at';
+		$order    = isset( $args['order'] ) ? $args['order'] : 'desc';
+		$offset   = isset( $args['offset'] ) ? intval( $args['offset'] ) : 0;
+		$per_page = isset( $args['per_page'] ) ? intval( $args['per_page'] ) : 50;
+
+		global $wpdb;
+		$table1 = $wpdb->prefix . 'dcf_entries';
+		$table2 = $wpdb->prefix . 'dcf_entry_meta';
+
+		$sql = "SELECT * FROM {$table1}";
+		$sql .= " ORDER BY {$orderby} {$order}";
+		$sql .= " LIMIT $per_page OFFSET $offset";
+
+		$items = $wpdb->get_results( $sql, ARRAY_A );
+
+		if ( ! $items ) {
+			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
+				array( 'status' => 404 ) );
+		}
+
+		$ids     = Utils::array_column( $items, 'id' );
+		$ids     = implode( ',', $ids );
+		$sql     = "SELECT * FROM $table2 WHERE entry_id IN($ids)";
+		$entries = $wpdb->get_results( $sql, ARRAY_A );
+
+		$_meta = array();
+		foreach ( $entries as $entry ) {
+			if ( empty( $entry['meta_key'] ) ) {
+				continue;
+			}
+			$_meta[ $entry['entry_id'] ][ $entry['meta_key'] ] = $entry['meta_value'];
+		}
+
+		$data = array();
+		foreach ( $items as $item ) {
+			$data[] = $item + array( 'field_values' => $_meta[ $item['id'] ] );
+		}
+
+		return rest_ensure_response( $data );
 	}
 
 	/**
@@ -394,7 +454,30 @@ class RestApi {
 				array( 'status' => 403 ) );
 		}
 
-		$response = array();
+		global $wpdb;
+		$table1 = $wpdb->prefix . 'dcf_entries';
+		$table2 = $wpdb->prefix . 'dcf_entry_meta';
+
+		$items = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table1} WHERE id = %d", $id ),
+			ARRAY_A );
+
+		if ( ! $items ) {
+			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
+				array( 'status' => 404 ) );
+		}
+
+		$entries = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table2} WHERE entry_id = %d", $id ),
+			ARRAY_A );
+
+		$_meta = array();
+		foreach ( $entries as $entry ) {
+			if ( empty( $entry['meta_key'] ) ) {
+				continue;
+			}
+			$_meta[ $entry['meta_key'] ] = $entry['meta_value'];
+		}
+
+		$response = $items + array( 'field_values' => $_meta );
 
 		return rest_ensure_response( $response );
 	}
@@ -428,7 +511,7 @@ class RestApi {
 	 * @return mixed|\WP_REST_Response
 	 */
 	public function delete_form_entry( WP_REST_Request $request ) {
-		$id = $request->get_param( 'id' );
+		$id = (int) $request->get_param( 'id' );
 
 		if ( ! current_user_can( 'publish_pages', $id ) ) {
 			return new WP_Error( 'forbidden',
@@ -436,7 +519,21 @@ class RestApi {
 				array( 'status' => 403 ) );
 		}
 
-		$response = array();
+		global $wpdb;
+		$table1 = $wpdb->prefix . 'dcf_entries';
+		$table2 = $wpdb->prefix . 'dcf_entry_meta';
+
+		$result = $wpdb->delete( $table1, array( 'id' => $id ), '%d' );
+
+		if ( false === $result ) {
+			return new WP_Error( 'cannot_delete',
+				__( "There was an error deleting the contact form.", 'dialog-contact-form' ),
+				array( 'status' => 500 ) );
+		}
+
+		$wpdb->delete( $table2, array( 'entry_id' => $id ), '%d' );
+
+		$response = array( 'deleted' => true );
 
 		return rest_ensure_response( $response );
 	}
