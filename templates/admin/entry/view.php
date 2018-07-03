@@ -2,7 +2,7 @@
 
 use DialogContactForm\Abstracts\Field;
 use DialogContactForm\Entries\Entry;
-use DialogContactForm\FieldManager;
+use DialogContactForm\Collections\Fields;
 use DialogContactForm\Supports\Browser;
 
 // Exit if accessed directly
@@ -29,7 +29,7 @@ $form_title = sprintf( '%s : Entry # %s', $form_title, $data['id'] );
 
 $_fields      = array();
 $fields       = get_post_meta( $form_id, '_contact_form_fields', true );
-$fieldManager = FieldManager::init();
+$fieldManager = Fields::init();
 foreach ( $fields as $field ) {
 	$_fields[ $field['field_name'] ] = $field;
 }

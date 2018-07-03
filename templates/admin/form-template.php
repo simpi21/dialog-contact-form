@@ -1,13 +1,13 @@
 <?php
 
-use DialogContactForm\TemplateManager;
+use DialogContactForm\Collections\Templates;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$templateManager = TemplateManager::init();
+$templateManager = Templates::init();
 $templates       = $templateManager->getTemplatesByPriority();
 ?>
 <div id="modal-form-template" class="modal">

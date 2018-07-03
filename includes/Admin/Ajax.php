@@ -1,11 +1,19 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Admin;
 
 use DialogContactForm\Abstracts\Template;
-use DialogContactForm\Supports\Metabox;use DialogContactForm\Supports\Utils;
+use DialogContactForm\Collections\Fields;
+use DialogContactForm\Supports\Metabox;
+use DialogContactForm\Supports\Utils;
+use DialogContactForm\Collections\Templates;
 
-class AdminAjax {
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class Ajax {
 
 	/**
 	 * The instance of the class
@@ -40,7 +48,7 @@ class AdminAjax {
 
 		$field_type = is_string( $_POST['type'] ) ? $_POST['type'] : null;
 
-		$fieldManager = FieldManager::init();
+		$fieldManager = Fields::init();
 		$class_name   = $fieldManager->get( $field_type );
 		if ( ! class_exists( $class_name ) ) {
 			wp_send_json_error( __( 'Unknown field type.', 'dialog-contact-form' ), 422 );
@@ -406,7 +414,7 @@ class AdminAjax {
 			wp_die( __( 'Form template is not set properly.', 'dialog-contact-form' ) );
 		}
 
-		$templates = TemplateManager::init();
+		$templates = Templates::init();
 		$class     = $templates->get( $_REQUEST['template'] );
 		$template  = new $class;
 		if ( ! $template instanceof Template ) {

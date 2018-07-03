@@ -1,6 +1,6 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Admin;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {

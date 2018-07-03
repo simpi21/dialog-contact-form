@@ -157,7 +157,7 @@ class Activation {
 		$table_name      = $wpdb->prefix . self::$table_name;
 		$meta_table_name = $wpdb->prefix . self::$meta_table_name;
 
-		$entries_table_schema = "CREATE TABLE IF NOT EXISTS `{$table_name}` (
+		$entries_table_schema = "CREATE TABLE IF NOT EXISTS {$table_name} (
                 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `form_id` bigint(20) unsigned DEFAULT NULL,
                 `user_id` bigint(20) unsigned DEFAULT NULL,
@@ -170,7 +170,7 @@ class Activation {
                 KEY `form_id` (`form_id`)
             ) $collate;";
 
-		$meta_table_schema = "CREATE TABLE IF NOT EXISTS `{$meta_table_name}` (
+		$meta_table_schema = "CREATE TABLE IF NOT EXISTS {$meta_table_name} (
                 `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `entry_id` bigint(20) unsigned DEFAULT NULL,
                 `meta_key` varchar(255) DEFAULT NULL,

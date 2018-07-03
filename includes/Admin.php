@@ -2,6 +2,8 @@
 
 namespace DialogContactForm;
 
+use DialogContactForm\Collections\Actions;
+use DialogContactForm\Collections\Fields;
 use DialogContactForm\Supports\Metabox;
 
 // Exit if accessed directly
@@ -46,6 +48,7 @@ class Admin {
 		add_action( 'edit_form_after_title', array( $this, 'edit_form_after_title' ) );
 		add_action( 'admin_menu', array( $this, 'remove_submitdiv' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
+		add_action( 'admin_footer', array( $this, 'form_template' ), 0 );
 		add_action( 'save_post', array( $this, 'save_meta' ), 10, 2 );
 	}
 
@@ -199,7 +202,7 @@ class Admin {
 		if ( DIALOG_CONTACT_FORM_POST_TYPE !== $post->post_type ) {
 			return;
 		}
-		$actionManager = ActionManager::init();
+		$actionManager = Actions::init();
 		$actions       = $actionManager->getActionsByPriority();
 		?>
         <div class="dcf-tabs-wrapper">
@@ -277,6 +280,18 @@ class Admin {
 	}
 
 	/**
+	 * Load field template on admin
+	 */
+	public function form_template() {
+		global $post_type;
+		if ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE ) {
+			return;
+		}
+
+		include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/form-template.php';
+	}
+
+	/**
 	 * Add carousel slider meta box
 	 */
 	public function add_meta_boxes() {
@@ -304,7 +319,7 @@ class Admin {
 	public function form_fields( $post ) {
 
 		$default_class = 'dcf-fields-list is-half';
-		$fieldManager  = FieldManager::init();
+		$fieldManager  = Fields::init();
 		$types         = $fieldManager->getFieldsByPriority();
 
 		echo '<div class="dcf-fields-list-wrapper">';
@@ -425,7 +440,7 @@ class Admin {
 	/**
 	 * List of after submit actions
 	 *
-	 * @param \DialogContactForm\ActionManager $actions
+	 * @param \DialogContactForm\Collections\Actions $actions
 	 *
 	 * @return array
 	 */

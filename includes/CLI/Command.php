@@ -1,8 +1,9 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\CLI;
 
 use DialogContactForm\Abstracts\Template;
+use DialogContactForm\Collections\Templates;
 use WP_CLI;
 use WP_CLI_Command;
 
@@ -11,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class CLI_Command extends WP_CLI_Command {
+class Command extends WP_CLI_Command {
 	/**
 	 * Display Dialog Contact Form Information
 	 *
@@ -84,7 +85,7 @@ class CLI_Command extends WP_CLI_Command {
 	 */
 	public function create_form( $args, $assoc_args ) {
 		$template  = ! empty( $assoc_args['template'] ) ? $assoc_args['template'] : 'blank';
-		$templates = TemplateManager::init();
+		$templates = Templates::init();
 		$className = $templates->get( $template );
 		$template  = new $className;
 		if ( ! $template instanceof Template ) {

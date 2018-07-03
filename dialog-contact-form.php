@@ -3,7 +3,7 @@
  * Plugin Name: Dialog Contact Form
  * Plugin URI: http://wordpress.org/plugins/dialog-contact-form/
  * Description: Just another WordPress contact form plugin. Simple but flexible.
- * Version: 3.0.0-alpha2
+ * Version: 3.0.0-alpha3
  * Author: Sayful Islam
  * Author URI: https://sayfulislam.com
  * Requires at least: 4.4
@@ -48,7 +48,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 *
 		 * @var string
 		 */
-		private $version = '3.0.0-alpha2';
+		private $version = '3.0.0-alpha3';
 
 		/**
 		 * Holds various class instances
@@ -98,9 +98,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				// Load plugin textdomain
 				add_action( 'plugins_loaded', array( self::$instance, 'load_plugin_textdomain' ) );
 
-				// Load form templates in admin footer
-				add_action( 'admin_footer', array( self::$instance, 'form_template' ), 0 );
-
 				// Configure PHPMailer for sending mail over SMTP
 				add_action( 'phpmailer_init', array( 'DialogContactForm\\PHPMailerConfig', 'config' ) );
 
@@ -108,7 +105,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
                  * WP-CLI Commands
                  */
 				if ( class_exists( 'WP_CLI' ) && class_exists( 'WP_CLI_Command' ) ) {
-					WP_CLI::add_command( 'dialog-contact-form', 'DialogContactForm\\CLI_Command' );
+					WP_CLI::add_command( 'dialog-contact-form', 'DialogContactForm\\CLI\\Command' );
 				}
 
 				do_action( 'dialog_contact_form/loaded' );
@@ -195,14 +192,14 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			if ( $this->is_request( 'admin' ) ) {
 				$this->container['admin']      = \DialogContactForm\Admin::init();
 				$this->container['entries']    = \DialogContactForm\Entries\EntryManager::init();
-				$this->container['settings']   = \DialogContactForm\Settings::init();
-				$this->container['adminajax']  = \DialogContactForm\AdminAjax::init();
-				$this->container['gutenblock'] = \DialogContactForm\GutenbergBlock::init();
+				$this->container['settings']   = \DialogContactForm\Admin\Settings::init();
+				$this->container['adminajax']  = \DialogContactForm\Admin\Ajax::init();
+				$this->container['gutenblock'] = \DialogContactForm\Admin\GutenbergBlock::init();
 			}
 
 			if ( $this->is_request( 'frontend' ) ) {
-				$this->container['preview']   = \DialogContactForm\Preview::init();
-				$this->container['shortcode'] = \DialogContactForm\Shortcode::init();
+				$this->container['preview']   = \DialogContactForm\Display\Preview::init();
+				$this->container['shortcode'] = \DialogContactForm\Display\Shortcode::init();
 				$this->container['rest']      = \DialogContactForm\RestApi::init();
 			}
 
@@ -225,18 +222,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			if ( file_exists( $mofile_global ) ) {
 				load_textdomain( $this->plugin_name, $mofile_global );
 			}
-		}
-
-		/**
-		 * Load field template on admin
-		 */
-		public function form_template() {
-			global $post_type;
-			if ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE ) {
-				return;
-			}
-
-			include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/form-template.php';
 		}
 
 		/**

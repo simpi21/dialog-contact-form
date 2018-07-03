@@ -3,6 +3,7 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Template;
+use DialogContactForm\Collections\Templates;
 use DialogContactForm\Entries\Entry;
 use WP_Error;
 use WP_REST_Request;
@@ -50,7 +51,7 @@ class RestApi {
 	 * Fires when preparing to serve an API request.
 	 */
 	public static function rest_api_init() {
-		$templates = TemplateManager::init();
+		$templates = Templates::init();
 
 		register_rest_route( self::$namespace, '/forms', array(
 			array(
@@ -245,7 +246,7 @@ class RestApi {
 				array( 'status' => 403 ) );
 		}
 
-		$templateManager = TemplateManager::init();
+		$templateManager = Templates::init();
 		$template        = $request->get_param( 'template' );
 		$template        = in_array( $template, array_keys( $templateManager->all() ) ) ? $template : 'blank';
 		$className       = $templateManager->get( $template );

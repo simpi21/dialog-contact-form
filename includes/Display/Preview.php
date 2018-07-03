@@ -1,6 +1,11 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Display;
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Preview {
 
@@ -30,7 +35,7 @@ class Preview {
 		if ( isset( $_GET['dcf_forms_preview'], $_GET['dcf_forms_iframe'], $_GET['form_id'] ) ) {
 			if ( current_user_can( 'edit_page', $_GET['form_id'] ) ) {
 				wp_enqueue_script( 'jquery' );
-				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/public/form.php';
+				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/public/preview-form.php';
 			}
 		}
 

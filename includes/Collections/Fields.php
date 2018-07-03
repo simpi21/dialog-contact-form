@@ -1,6 +1,6 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Collections;
 
 use DialogContactForm\Abstracts\Field;
 use DialogContactForm\Supports\Collection;
@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class FieldManager extends Collection {
+class Fields extends Collection {
 
 	/**
 	 * @var object
@@ -18,7 +18,7 @@ class FieldManager extends Collection {
 	protected static $instance;
 
 	/**
-	 * @return FieldManager
+	 * @return Fields
 	 */
 	public static function init() {
 		if ( is_null( self::$instance ) ) {

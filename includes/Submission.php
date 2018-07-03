@@ -3,6 +3,8 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Action;
+use DialogContactForm\Collections\Actions;
+use DialogContactForm\Collections\Fields;
 use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Supports\Attachment;
 use DialogContactForm\Supports\Config;
@@ -94,7 +96,7 @@ class Submission {
 
 		// Sanitize form data
 		$data         = array();
-		$fieldManager = FieldManager::init();
+		$fieldManager = Fields::init();
 		foreach ( $config->getFormFields() as $field ) {
 			if ( 'file' == $field['field_type'] ) {
 				continue;
@@ -120,7 +122,7 @@ class Submission {
 		}
 
 		$response = array();
-		$actions  = ActionManager::init();
+		$actions  = Actions::init();
 
 		foreach ( $actions as $action_id => $className ) {
 
@@ -229,7 +231,7 @@ class Submission {
 		$message_key    = sprintf( 'invalid_%s', $field_type );
 		$error_message  = isset( $messages[ $message_key ] ) ? $messages[ $message_key ] : $messages['generic_error'];
 
-		$fieldManager = FieldManager::init();
+		$fieldManager = Fields::init();
 		$class_name   = $fieldManager->get( $field_type );
 		if ( ! class_exists( $class_name ) ) {
 			return $message;

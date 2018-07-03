@@ -3,6 +3,7 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Action;
+use DialogContactForm\Collections\Actions;
 use DialogContactForm\Supports\Config;
 
 // Exit if accessed directly
@@ -165,7 +166,7 @@ class ContactForm {
 		if ( isset( $data['actions'] ) && is_array( $data['actions'] ) ) {
 
 			$actions       = array();
-			$actionManager = ActionManager::init();
+			$actionManager = Actions::init();
 
 			foreach ( $data['actions'] as $action_id => $action_data ) {
 				$className = $actionManager->get( $action_id );

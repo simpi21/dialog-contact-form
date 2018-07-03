@@ -1,11 +1,11 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Collections;
 
 use DialogContactForm\Abstracts\Template;
 use DialogContactForm\Supports\Collection;
 
-class TemplateManager extends Collection {
+class Templates extends Collection {
 
 	/**
 	 * @var object
@@ -13,7 +13,7 @@ class TemplateManager extends Collection {
 	protected static $instance;
 
 	/**
-	 * @return TemplateManager
+	 * @return Templates
 	 */
 	public static function init() {
 		if ( is_null( self::$instance ) ) {

@@ -2,9 +2,9 @@
 
 namespace DialogContactForm\Entries;
 
-// Exit if accessed directly
 use DialogContactForm\Supports\Browser;
 
+// Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

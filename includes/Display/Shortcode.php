@@ -1,6 +1,6 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Display;
 
 use DialogContactForm\Supports\FormBuilder;
 use DialogContactForm\Supports\Utils;

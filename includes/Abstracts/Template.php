@@ -2,7 +2,7 @@
 
 namespace DialogContactForm\Abstracts;
 
-use DialogContactForm\ActionManager;
+use DialogContactForm\Collections\Actions;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -81,7 +81,7 @@ abstract class Template {
 		update_post_meta( $post_id, '_contact_form_config', $this->formSettings() );
 		update_post_meta( $post_id, '_contact_form_actions', $form_actions_list );
 
-		$actions = ActionManager::init();
+		$actions = Actions::init();
 		foreach ( $actions as $action_id => $className ) {
 			if ( ! in_array( $action_id, $form_actions_list ) ) {
 				continue;

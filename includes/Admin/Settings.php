@@ -1,6 +1,6 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Admin;
 
 use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Supports\SettingHandler;

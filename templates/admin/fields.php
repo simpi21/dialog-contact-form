@@ -1,6 +1,6 @@
 <?php
 
-use DialogContactForm\FieldManager;
+use DialogContactForm\Collections\Fields;
 use DialogContactForm\Supports\Metabox;
 use DialogContactForm\Supports\Utils;
 
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	$_fields = (array) get_post_meta( $post->ID, '_contact_form_fields', true );
 
 	if ( count( $_fields ) > 0 ) {
-		$fieldManager = FieldManager::init();
+		$fieldManager = Fields::init();
 
 		foreach ( $_fields as $_field_number => $_field ) {
 
@@ -30,10 +30,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			$supported = $class->getMetaboxFields();
 
 			$is_required_field = 'off';
-			$validation        = isset( $_field['validation'] ) ? (array) $_field['validation'] : array();
-			if ( in_array( 'required', $validation ) ) {
-				$is_required_field = 'on';
-			}
 			if ( isset( $_field['required_field'] ) && in_array( $_field['required_field'], array( 'on', 'off' ) ) ) {
 				$is_required_field = $_field['required_field'];
 			}

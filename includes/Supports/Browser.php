@@ -2,6 +2,11 @@
 
 namespace DialogContactForm\Supports;
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * File: Browser.php
  * Author: Chris Schuld (http://chrisschuld.com/)

@@ -2,7 +2,7 @@
 
 namespace DialogContactForm\Supports;
 
-use DialogContactForm\FieldManager;
+use DialogContactForm\Collections\Fields;
 use DialogContactForm\Fields\Recaptcha2;
 
 // Exit if accessed directly
@@ -214,7 +214,7 @@ class FormBuilder {
 		if ( ! $this->isValidForm() ) {
 			return null;
 		}
-		$fieldManager = FieldManager::init();
+		$fieldManager = Fields::init();
 		$nonce        = wp_create_nonce( 'dialog_contact_form_nonce' );
 		$referer      = esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 		$html         = '';
