@@ -2,7 +2,6 @@
 
 namespace DialogContactForm;
 
-use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
@@ -95,8 +94,6 @@ class Scripts {
 
 		$enabled_style = Utils::get_option( 'default_style', 'enable' );
 		$hl            = Utils::get_option( 'recaptcha_lang', 'en' );
-		$lang          = Recaptcha2::lang();
-		$hl            = in_array( $hl, array_keys( $lang ) ) ? $hl : 'en';
 		$captcha_url   = add_query_arg( array( 'hl' => $hl ), 'https://www.google.com/recaptcha/api.js' );
 
 		if ( 'disable' != $enabled_style ) {

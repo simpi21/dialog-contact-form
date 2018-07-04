@@ -1,9 +1,10 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\REST;
 
 use DialogContactForm\Abstracts\Template;
 use DialogContactForm\Collections\Templates;
+use DialogContactForm\ContactForm;
 use DialogContactForm\Entries\Entry;
 use WP_Error;
 use WP_REST_Request;
@@ -14,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class RestApi {
+class Controller {
 
 	/**
 	 * REST API namespace
@@ -59,35 +60,43 @@ class RestApi {
 				'callback' => array( self::$instance, 'get_contact_forms' ),
 				'args'     => array(
 					'per_page' => array(
-						'required'    => false,
-						'default'     => 50,
-						'description' => __( 'Number of form to show per page. Use -1 to show all forms',
+						'required'          => false,
+						'default'           => 50,
+						'description'       => __( 'Number of form to show per page. Use -1 to show all forms',
 							'dialog-contact-form' ),
-						'type'        => 'integer',
+						'type'              => 'integer',
+						'validate_callback' => 'is_numeric',
+						'sanitize_callback' => 'absint',
 					),
 					'offset'   => array(
-						'required'    => false,
-						'default'     => 0,
-						'description' => __( 'Number of form to displace or pass over. The \'offset\' parameter is ignored when \'per_page\'=> -1 (show all forms) is used.',
+						'required'          => false,
+						'default'           => 0,
+						'description'       => __( 'Number of form to displace or pass over. The \'offset\' parameter is ignored when \'per_page\'=> -1 (show all forms) is used.',
 							'dialog-contact-form' ),
-						'type'        => 'integer',
+						'type'              => 'integer',
+						'validate_callback' => 'is_numeric',
+						'sanitize_callback' => 'absint',
 					),
 					'order'    => array(
-						'description' => __( 'Designates the ascending or descending order.', 'dialog-contact-form' ),
-						'required'    => false,
-						'default'     => 'DESC',
-						'enum'        => array( 'ASC', 'DESC' ),
+						'description'       => __( 'Designates the ascending or descending order.',
+							'dialog-contact-form' ),
+						'required'          => false,
+						'default'           => 'DESC',
+						'enum'              => array( 'ASC', 'DESC' ),
+						'sanitize_callback' => 'sanitize_text_field',
 					),
 					'orderby'  => array(
-						'description' => __( 'Sort retrieved posts by parameter. One or more options can be passed.',
+						'description'       => __( 'Sort retrieved posts by parameter. One or more options can be passed.',
 							'dialog-contact-form' ),
-						'required'    => false,
-						'default'     => 'date',
-						'enum'        => array( 'ID', 'title', 'date', 'modified', 'rand' ),
+						'required'          => false,
+						'default'           => 'date',
+						'enum'              => array( 'ID', 'title', 'date', 'modified', 'rand' ),
+						'sanitize_callback' => 'sanitize_text_field',
 					),
 					'search'   => array(
-						'description' => __( 'Show forms based on a keyword search.', 'dialog-contact-form' ),
-						'type'        => 'string',
+						'description'       => __( 'Show forms based on a keyword search.', 'dialog-contact-form' ),
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
 					),
 				),
 			),
@@ -96,11 +105,12 @@ class RestApi {
 				'callback' => array( self::$instance, 'create_contact_form' ),
 				'args'     => array(
 					'template' => array(
-						'required'    => false,
-						'default'     => 'blank',
-						'description' => __( 'Template unique id.', 'dialog-contact-form' ),
-						'type'        => 'string',
-						'enum'        => array_keys( $templates->all() ),
+						'required'          => false,
+						'default'           => 'blank',
+						'description'       => __( 'Template unique id.', 'dialog-contact-form' ),
+						'type'              => 'string',
+						'enum'              => array_keys( $templates->all() ),
+						'sanitize_callback' => 'sanitize_text_field',
 					),
 				),
 			),
@@ -127,31 +137,38 @@ class RestApi {
 				'callback' => array( self::$instance, 'get_form_entries' ),
 				'args'     => array(
 					'per_page' => array(
-						'required'    => false,
-						'default'     => 50,
-						'description' => __( 'Number of entry to show per page. Use -1 to show all entries',
+						'required'          => false,
+						'default'           => 50,
+						'description'       => __( 'Number of entry to show per page. Use -1 to show all entries',
 							'dialog-contact-form' ),
-						'type'        => 'integer',
+						'type'              => 'integer',
+						'validate_callback' => 'is_numeric',
+						'sanitize_callback' => 'absint',
 					),
 					'offset'   => array(
-						'required'    => false,
-						'default'     => 0,
-						'description' => __( 'Number of entry to displace or pass over. The \'offset\' parameter is ignored when \'per_page\'=> -1 (show all entries) is used.',
+						'required'          => false,
+						'default'           => 0,
+						'description'       => __( 'Number of entry to displace or pass over. The \'offset\' parameter is ignored when \'per_page\'=> -1 (show all entries) is used.',
 							'dialog-contact-form' ),
-						'type'        => 'integer',
+						'type'              => 'integer',
+						'validate_callback' => 'is_numeric',
+						'sanitize_callback' => 'absint',
 					),
 					'order'    => array(
-						'description' => __( 'Designates the ascending or descending order.', 'dialog-contact-form' ),
-						'required'    => false,
-						'default'     => 'DESC',
-						'enum'        => array( 'ASC', 'DESC' ),
+						'description'       => __( 'Designates the ascending or descending order.',
+							'dialog-contact-form' ),
+						'required'          => false,
+						'default'           => 'DESC',
+						'enum'              => array( 'ASC', 'DESC' ),
+						'sanitize_callback' => 'sanitize_text_field',
 					),
 					'orderby'  => array(
-						'description' => __( 'Sort retrieved entries by parameter. One or more options can be passed.',
+						'description'       => __( 'Sort retrieved entries by parameter. One or more options can be passed.',
 							'dialog-contact-form' ),
-						'required'    => false,
-						'default'     => 'created_at',
-						'enum'        => array( 'id', 'form_id', 'user_id', 'status', 'created_at' ),
+						'required'          => false,
+						'default'           => 'created_at',
+						'enum'              => array( 'id', 'form_id', 'user_id', 'status', 'created_at' ),
+						'sanitize_callback' => 'sanitize_text_field',
 					),
 				),
 			)
@@ -427,7 +444,8 @@ class RestApi {
 		$entries = $entry->find( $args );
 
 		if ( ! $entries ) {
-			return new WP_Error( 'not_found', __( "The requested contact form entry was not found.", 'dialog-contact-form' ),
+			return new WP_Error( 'not_found',
+				__( "The requested contact form entry was not found.", 'dialog-contact-form' ),
 				array( 'status' => 404 ) );
 		}
 

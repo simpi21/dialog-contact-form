@@ -158,7 +158,7 @@ class SettingHandler {
 		$current_field = array();
 		foreach ( $this->getFields() as $field ) {
 			if ( $field['section'] == $section ) {
-				$current_field[] = $field;
+				$current_field[ $field['id'] ] = $field;
 			}
 		}
 
@@ -204,7 +204,7 @@ class SettingHandler {
 			return new \WP_Error( 'field_not_set', 'Required key is not set properly for creating tab.' );
 		}
 
-		$this->fields[] = $field;
+		$this->fields[ $field['id'] ] = $field;
 
 		return $this;
 	}
@@ -214,11 +214,13 @@ class SettingHandler {
 	 * @return void
 	 */
 	public function admin_init() {
-		register_setting(
-			$this->menu_fields['option_name'],
-			$this->menu_fields['option_name'],
-			array( $this, 'sanitize_callback' )
-		);
+		$option_group = $this->menu_fields['option_name'];
+		$option_name  = $this->menu_fields['option_name'];
+		register_setting( $option_group, $option_name, array(
+			'description'       => '',
+			'sanitize_callback' => array( $this, 'sanitize_callback' ),
+			'show_in_rest'      => false,
+		) );
 	}
 
 	/**
@@ -322,32 +324,34 @@ class SettingHandler {
 		// Loop through each setting being saved and
 		// pass it through a sanitization filter
 		foreach ( $input as $key => $value ) {
-			foreach ( $fields as $field ) {
-				if ( $field['id'] == $key ) {
-					$rule                 = empty( $field['validate'] ) ? $field['type'] : $field['validate'];
-					$output_array[ $key ] = $this->validate( $value, $rule );
-				}
+			$field = isset( $fields[ $key ] ) ? $fields[ $key ] : array();
+			if ( empty( $field['id'] ) ) {
+				continue;
 			}
+
+			$default = isset( $field['std'] ) ? $field['std'] : null;
+			$type    = isset( $field['type'] ) ? $field['type'] : 'text';
+
+			if ( isset( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
+				$output_array[ $key ] = call_user_func( $field['sanitize_callback'], $value );
+				continue;
+			}
+
+			if ( isset( $field['options'] ) && is_array( $field['options'] ) ) {
+				$output_array[ $key ] = in_array( $value, array_keys( $field['options'] ) ) ? $value : $default;
+				continue;
+			}
+
+			if ( 'checkbox' == $type ) {
+				$output_array[ $key ] = in_array( $input, array( 'on', 'yes', '1', 1, 'true', true ) ) ? 1 : 0;
+				continue;
+			}
+
+			$rule                 = empty( $field['validate'] ) ? $field['type'] : $field['validate'];
+			$output_array[ $key ] = $this->sanitize( $value, $rule );
 		}
 
 		return array_filter( array_merge( $options, $output_array ) );
-	}
-
-	/**
-	 * Get options parsed with default value
-	 * @return array
-	 */
-	public function get_options() {
-		$defaults = array();
-
-		foreach ( $this->getFields() as $value ) {
-			$std_value                = ( isset( $value['std'] ) ) ? $value['std'] : '';
-			$defaults[ $value['id'] ] = $std_value;
-		}
-
-		$options = wp_parse_args( get_option( $this->menu_fields['option_name'] ), $defaults );
-
-		return $this->options = $options;
 	}
 
 	/**
@@ -358,7 +362,7 @@ class SettingHandler {
 	 *
 	 * @return mixed
 	 */
-	private function validate( $input, $validation_rule = 'text' ) {
+	private function sanitize( $input, $validation_rule = 'text' ) {
 		switch ( $validation_rule ) {
 			case 'text':
 				return sanitize_text_field( $input );
@@ -376,28 +380,12 @@ class SettingHandler {
 				return sanitize_email( $input );
 				break;
 
-			case 'checkbox':
-				return in_array( $input, array( 'on', 'yes', '1', 1, 'true', true ) ) ? 1 : 0;
-				break;
-
-			case 'multi_checkbox':
-				return $input;
-				break;
-
-			case 'radio':
-				return sanitize_text_field( $input );
-				break;
-
-			case 'select':
-				return sanitize_text_field( $input );
-				break;
-
 			case 'date':
-				return date( 'F d, Y', strtotime( $input ) );
+				return $this->is_date( $input ) ? date( 'F d, Y', strtotime( $input ) ) : '';
 				break;
 
 			case 'textarea':
-				return wp_filter_nohtml_kses( $input );
+				return _sanitize_text_fields( $input, true );
 				break;
 
 			case 'inlinehtml':
@@ -416,6 +404,23 @@ class SettingHandler {
 				return sanitize_text_field( $input );
 				break;
 		}
+	}
+
+	/**
+	 * Get options parsed with default value
+	 * @return array
+	 */
+	public function get_options() {
+		$defaults = array();
+
+		foreach ( $this->getFields() as $value ) {
+			$std_value                = ( isset( $value['std'] ) ) ? $value['std'] : '';
+			$defaults[ $value['id'] ] = $std_value;
+		}
+
+		$options = wp_parse_args( get_option( $this->menu_fields['option_name'] ), $defaults );
+
+		return $this->options = $options;
 	}
 
 	/**

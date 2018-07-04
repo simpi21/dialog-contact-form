@@ -193,14 +193,14 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 				$this->container['admin']      = \DialogContactForm\Admin::init();
 				$this->container['entries']    = \DialogContactForm\Entries\EntryManager::init();
 				$this->container['settings']   = \DialogContactForm\Admin\Settings::init();
-				$this->container['adminajax']  = \DialogContactForm\Admin\Ajax::init();
+				$this->container['ajax']       = \DialogContactForm\Admin\Ajax::init();
 				$this->container['gutenblock'] = \DialogContactForm\Admin\GutenbergBlock::init();
 			}
 
 			if ( $this->is_request( 'frontend' ) ) {
 				$this->container['preview']   = \DialogContactForm\Display\Preview::init();
 				$this->container['shortcode'] = \DialogContactForm\Display\Shortcode::init();
-				$this->container['rest']      = \DialogContactForm\RestApi::init();
+				$this->container['rest']      = \DialogContactForm\REST\Controller::init();
 			}
 
 			$this->container['scripts']    = \DialogContactForm\Scripts::init();

@@ -85,7 +85,8 @@ class Settings {
 			array(
 				'id'          => 'dcf_dialog_section',
 				'title'       => __( 'Dialog/Modal', 'dialog-contact-form' ),
-				'description' => __( 'Configure fixed dialog/modal button at your site footer.', 'dialog-contact-form' ),
+				'description' => __( 'Configure fixed dialog/modal button at your site footer.',
+					'dialog-contact-form' ),
 				'panel'       => 'general_settings_panel',
 				'priority'    => 20,
 			),
@@ -163,40 +164,44 @@ class Settings {
 			'priority' => 10,
 		) );
 		$option_page->add_field( array(
-			'id'       => 'smpt_host',
-			'type'     => 'text',
-			'name'     => __( 'SMTP Host', 'dialog-contact-form' ),
-			'desc'     => __( 'Specify your SMTP server hostname', 'dialog-contact-form' ),
-			'std'      => '',
-			'section'  => 'dcf_smpt_server_section',
-			'priority' => 20,
+			'id'                => 'smpt_host',
+			'type'              => 'text',
+			'name'              => __( 'SMTP Host', 'dialog-contact-form' ),
+			'desc'              => __( 'Specify your SMTP server hostname', 'dialog-contact-form' ),
+			'std'               => '',
+			'section'           => 'dcf_smpt_server_section',
+			'priority'          => 20,
+			'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$option_page->add_field( array(
-			'id'       => 'smpt_username',
-			'type'     => 'text',
-			'name'     => __( 'SMTP Username', 'dialog-contact-form' ),
-			'desc'     => __( 'Specify the username for your SMTP server', 'dialog-contact-form' ),
-			'std'      => '',
-			'section'  => 'dcf_smpt_server_section',
-			'priority' => 30,
+			'id'                => 'smpt_username',
+			'type'              => 'text',
+			'name'              => __( 'SMTP Username', 'dialog-contact-form' ),
+			'desc'              => __( 'Specify the username for your SMTP server', 'dialog-contact-form' ),
+			'std'               => '',
+			'section'           => 'dcf_smpt_server_section',
+			'priority'          => 30,
+			'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$option_page->add_field( array(
-			'id'       => 'smpt_password',
-			'type'     => 'text',
-			'name'     => __( 'SMTP Password', 'dialog-contact-form' ),
-			'desc'     => __( 'Specify the password for your SMTP server', 'dialog-contact-form' ),
-			'std'      => '',
-			'section'  => 'dcf_smpt_server_section',
-			'priority' => 40,
+			'id'                => 'smpt_password',
+			'type'              => 'text',
+			'name'              => __( 'SMTP Password', 'dialog-contact-form' ),
+			'desc'              => __( 'Specify the password for your SMTP server', 'dialog-contact-form' ),
+			'std'               => '',
+			'section'           => 'dcf_smpt_server_section',
+			'priority'          => 40,
+			'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$option_page->add_field( array(
-			'id'       => 'smpt_port',
-			'type'     => 'text',
-			'name'     => __( 'SMTP Port', 'dialog-contact-form' ),
-			'desc'     => __( 'Specify the password for your SMTP server', 'dialog-contact-form' ),
-			'std'      => '',
-			'section'  => 'dcf_smpt_server_section',
-			'priority' => 50,
+			'id'                => 'smpt_port',
+			'type'              => 'text',
+			'name'              => __( 'SMTP Port', 'dialog-contact-form' ),
+			'desc'              => __( 'Specify the password for your SMTP server', 'dialog-contact-form' ),
+			'std'               => '',
+			'section'           => 'dcf_smpt_server_section',
+			'priority'          => 50,
+			'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$option_page->add_field( array(
 			'id'       => 'encryption',
@@ -435,25 +440,28 @@ class Settings {
 	private static function dialog_settings( $option_page, $default_options ) {
 		// Add Dialog/Modal section fields
 		$option_page->add_field( array(
-			'id'      => 'dialog_button_text',
-			'type'    => 'text',
-			'name'    => __( 'Dialog button text', 'dialog-contact-form' ),
-			'std'     => $default_options['dialog_button_text'],
-			'section' => 'dcf_dialog_section'
+			'id'                => 'dialog_button_text',
+			'type'              => 'text',
+			'name'              => __( 'Dialog button text', 'dialog-contact-form' ),
+			'std'               => $default_options['dialog_button_text'],
+			'section'           => 'dcf_dialog_section',
+			'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$option_page->add_field( array(
-			'id'      => 'dialog_button_background',
-			'type'    => 'color',
-			'name'    => __( 'Dialog button background', 'dialog-contact-form' ),
-			'std'     => $default_options['dialog_button_background'],
-			'section' => 'dcf_dialog_section'
+			'id'                => 'dialog_button_background',
+			'type'              => 'color',
+			'name'              => __( 'Dialog button background', 'dialog-contact-form' ),
+			'std'               => $default_options['dialog_button_background'],
+			'section'           => 'dcf_dialog_section',
+			'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$option_page->add_field( array(
-			'id'      => 'dialog_button_color',
-			'type'    => 'color',
-			'name'    => __( 'Dialog button color', 'dialog-contact-form' ),
-			'std'     => $default_options['dialog_button_color'],
-			'section' => 'dcf_dialog_section'
+			'id'                => 'dialog_button_color',
+			'type'              => 'color',
+			'name'              => __( 'Dialog button color', 'dialog-contact-form' ),
+			'std'               => $default_options['dialog_button_color'],
+			'section'           => 'dcf_dialog_section',
+			'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$option_page->add_field( array(
 			'id'      => 'dialog_form_id',
@@ -461,7 +469,6 @@ class Settings {
 			'name'    => __( 'Choose Form', 'dialog-contact-form' ),
 			'std'     => '',
 			'section' => 'dcf_dialog_section',
-			'options' => array(),
 		) );
 	}
 
@@ -473,22 +480,24 @@ class Settings {
 	private static function recaptcha_settings( $option_page ) {
 		// Add Google reCAPTCHA fields
 		$option_page->add_field( array(
-			'id'       => 'recaptcha_site_key',
-			'type'     => 'text',
-			'name'     => __( 'Site key', 'dialog-contact-form' ),
-			'desc'     => __( 'Enter google reCAPTCHA API site key', 'dialog-contact-form' ),
-			'std'      => '',
-			'priority' => 10,
-			'section'  => 'dcf_grecaptcha_section'
+			'id'                => 'recaptcha_site_key',
+			'type'              => 'text',
+			'name'              => __( 'Site key', 'dialog-contact-form' ),
+			'desc'              => __( 'Enter google reCAPTCHA API site key', 'dialog-contact-form' ),
+			'std'               => '',
+			'priority'          => 10,
+			'section'           => 'dcf_grecaptcha_section',
+			'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$option_page->add_field( array(
-			'id'       => 'recaptcha_secret_key',
-			'type'     => 'text',
-			'name'     => __( 'Secret key', 'dialog-contact-form' ),
-			'desc'     => __( 'Enter google reCAPTCHA API secret key', 'dialog-contact-form' ),
-			'std'      => '',
-			'priority' => 20,
-			'section'  => 'dcf_grecaptcha_section'
+			'id'                => 'recaptcha_secret_key',
+			'type'              => 'text',
+			'name'              => __( 'Secret key', 'dialog-contact-form' ),
+			'desc'              => __( 'Enter google reCAPTCHA API secret key', 'dialog-contact-form' ),
+			'std'               => '',
+			'priority'          => 20,
+			'section'           => 'dcf_grecaptcha_section',
+			'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$option_page->add_field( array(
 			'id'       => 'recaptcha_lang',
@@ -522,12 +531,13 @@ class Settings {
 	private static function mailchimp_settings( $option_page ) {
 		// Add MailChimp section fields
 		$option_page->add_field( array(
-			'id'       => 'mailchimp_api_key',
-			'type'     => 'text',
-			'name'     => __( 'API Key', 'dialog-contact-form' ),
-			'std'      => '',
-			'section'  => 'dcf_mailChimp_section',
-			'priority' => 10,
+			'id'                => 'mailchimp_api_key',
+			'type'              => 'text',
+			'name'              => __( 'API Key', 'dialog-contact-form' ),
+			'std'               => '',
+			'section'           => 'dcf_mailChimp_section',
+			'priority'          => 10,
+			'sanitize_callback' => 'sanitize_text_field',
 		) );
 	}
 
