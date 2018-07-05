@@ -348,53 +348,14 @@ class Config {
 			return array(
 				'form_id'    => $this->getFormId(),
 				'user_id'    => get_current_user_id(),
-				'user_ip'    => $this->getRemoteIp(),
-				'user_agent' => $this->getUserAgent(),
+				'user_ip'    => Utils::get_remote_ip(),
+				'user_agent' => Utils::get_user_agent(),
 				'referer'    => $this->getReferer(),
 				'created_at' => $current_time,
 			);
 		}
 
 		return $this->meta_data;
-	}
-
-	/**
-	 * Get user IP address
-	 *
-	 * @return string
-	 */
-	public function getRemoteIp() {
-		$server_ip_keys = array(
-			'HTTP_CLIENT_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_X_FORWARDED',
-			'HTTP_X_CLUSTER_CLIENT_IP',
-			'HTTP_FORWARDED_FOR',
-			'HTTP_FORWARDED',
-			'REMOTE_ADDR',
-		);
-
-		foreach ( $server_ip_keys as $key ) {
-			if ( isset( $_SERVER[ $key ] ) && filter_var( $_SERVER[ $key ], FILTER_VALIDATE_IP ) ) {
-				return $_SERVER[ $key ];
-			}
-		}
-
-		// Fallback local ip.
-		return '127.0.0.1';
-	}
-
-	/**
-	 * Get user browser name
-	 *
-	 * @return string
-	 */
-	public function getUserAgent() {
-		if ( isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
-			return substr( $_SERVER['HTTP_USER_AGENT'], 0, 254 );
-		}
-
-		return '';
 	}
 
 	/**

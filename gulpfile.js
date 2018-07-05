@@ -14,11 +14,13 @@ const autoprefixerOptions = {
 };
 
 gulp.task('scss', function () {
-    gulp.src('./assets/scss/*.scss')
+    gulp.src('./assets/scss/**/*.scss')
         .pipe(sourcemaps.init())
         .pipe(sass(sassOptions).on('error', sass.logError))
         .pipe(autoprefixer(autoprefixerOptions))
-        .pipe(gulp.dest('./assets/css'));
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./assets/css'))
+        .pipe(livereload());
 });
 
 gulp.task('js', function () {
@@ -49,7 +51,7 @@ gulp.task('js', function () {
 
 gulp.task('watch', function () {
     livereload.listen();
-    gulp.watch('./assets/scss/*.scss', ['scss']);
+    gulp.watch('./assets/scss/**/*.scss', ['scss']);
     gulp.watch('./assets/js/public/*.js', ['js']);
     gulp.watch('./assets/js/admin/*.js', ['js']);
 });
