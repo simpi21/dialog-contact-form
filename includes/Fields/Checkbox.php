@@ -31,7 +31,7 @@ class Checkbox extends Field {
 	public function __construct() {
 		$this->admin_id    = 'checkbox';
 		$this->admin_label = __( 'Checkbox', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="fas fa-list"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-checkbox"></use></svg>';
 		$this->priority    = 40;
 		$this->input_class = 'dcf-checkbox';
 		$this->type        = 'checkbox';

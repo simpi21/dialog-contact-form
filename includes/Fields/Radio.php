@@ -32,7 +32,7 @@ class Radio extends Field {
 	public function __construct() {
 		$this->admin_id    = 'radio';
 		$this->admin_label = __( 'Radio', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="far fa-dot-circle"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-radio"></use></svg>';
 		$this->priority    = 120;
 		$this->input_class = 'dcf-radio';
 		$this->type        = 'radio';

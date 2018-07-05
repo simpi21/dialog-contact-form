@@ -27,7 +27,7 @@ class Hidden extends Text {
 	public function __construct() {
 		$this->admin_id        = 'hidden';
 		$this->admin_label     = __( 'Hidden', 'dialog-contact-form' );
-		$this->admin_icon      = '<i class="far fa-eye-slash"></i>';
+		$this->admin_icon      = '<svg><use href="#dcf-icon-hidden"></use></svg>';
 		$this->priority        = 80;
 		$this->input_class     = 'dcf-input-hidden';
 		$this->type            = 'hidden';

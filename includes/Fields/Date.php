@@ -34,7 +34,7 @@ class Date extends Text {
 	public function __construct() {
 		$this->admin_id    = 'date';
 		$this->admin_label = __( 'Date', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="far fa-calendar-alt"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-date"></use></svg>';
 		$this->priority    = 90;
 		$this->input_class = 'dcf-input dcf-input-date';
 		$this->type        = 'date';

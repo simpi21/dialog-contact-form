@@ -32,7 +32,7 @@ class Url extends Text {
 	public function __construct() {
 		$this->admin_id    = 'url';
 		$this->admin_label = __( 'URL', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="fas fa-link"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-url"></use></svg>';
 		$this->priority    = 110;
 		$this->input_class = 'dcf-input dcf-input-url';
 		$this->type        = 'url';

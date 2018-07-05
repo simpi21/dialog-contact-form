@@ -34,7 +34,7 @@ class Textarea extends Field {
 	public function __construct() {
 		$this->admin_id    = 'textarea';
 		$this->admin_label = __( 'Textarea', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="fas fa-paragraph"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-textarea"></use></svg>';
 		$this->priority    = 20;
 		$this->input_class = 'dcf-textarea';
 		$this->type        = 'textarea';

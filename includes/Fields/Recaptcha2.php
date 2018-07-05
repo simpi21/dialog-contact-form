@@ -36,7 +36,7 @@ class Recaptcha2 extends Field {
 	public function __construct() {
 		$this->admin_id    = 'recaptcha';
 		$this->admin_label = __( 'reCAPTCHA', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="fas fa-sync-alt"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-recaptcha"></use></svg>';
 	}
 
 	/**

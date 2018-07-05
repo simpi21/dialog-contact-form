@@ -56,10 +56,6 @@ class Scripts {
 			DIALOG_CONTACT_FORM_ASSETS . '/css/admin.css',
 			array( 'wp-color-picker' ), DIALOG_CONTACT_FORM_VERSION, 'all' );
 
-		wp_enqueue_style( 'dialog-contact-form-icons',
-			DIALOG_CONTACT_FORM_ASSETS . '/fontawesome/css/fontawesome-all.min.css',
-			array( 'wp-color-picker' ), DIALOG_CONTACT_FORM_VERSION, 'all' );
-
 		wp_enqueue_script( 'wp-color-picker-alpha',
 			DIALOG_CONTACT_FORM_ASSETS . '/lib/wp-color-picker-alpha/wp-color-picker-alpha' . $suffix . '.js',
 			array( 'wp-color-picker' ), '2.1.3', true );

@@ -289,6 +289,7 @@ class Admin {
 		}
 
 		include_once DIALOG_CONTACT_FORM_TEMPLATES . '/admin/form-template.php';
+		include_once DIALOG_CONTACT_FORM_PATH . '/assets/icon/svg-icons.svg';
 	}
 
 	/**

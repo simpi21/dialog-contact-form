@@ -32,7 +32,7 @@ class Time extends Text {
 	public function __construct() {
 		$this->admin_id    = 'time';
 		$this->admin_label = __( 'Time', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="far fa-clock"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-time"></use></svg>';
 		$this->priority    = 100;
 		$this->input_class = 'dcf-input dcf-input-time';
 		$this->type        = 'time';

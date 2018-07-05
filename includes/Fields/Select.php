@@ -35,7 +35,7 @@ class Select extends Field {
 	public function __construct() {
 		$this->admin_id    = 'select';
 		$this->admin_label = __( 'Select', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="fas fa-angle-down"></i>';
+		$this->admin_icon  = '<svg width="30" height="30"><use href="#dcf-icon-select"></use></svg>';
 		$this->priority    = 130;
 		$this->input_class = 'dcf-select';
 		$this->type        = 'select';

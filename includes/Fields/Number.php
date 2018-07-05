@@ -36,7 +36,7 @@ class Number extends Field {
 	public function __construct() {
 		$this->admin_id    = 'number';
 		$this->admin_label = __( 'Number', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="fas fa-sort-numeric-up"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-number"></use></svg>';
 		$this->priority    = 70;
 		$this->input_class = 'dcf-input dcf-input-number';
 		$this->type        = 'number';

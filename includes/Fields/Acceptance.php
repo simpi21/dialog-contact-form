@@ -30,7 +30,7 @@ class Acceptance extends Text {
 	public function __construct() {
 		$this->admin_id           = 'acceptance';
 		$this->admin_label        = __( 'Acceptance', 'dialog-contact-form' );
-		$this->admin_icon         = '<i class="far fa-check-square"></i>';
+		$this->admin_icon         = '<svg><use href="#dcf-icon-acceptance"></use></svg>';
 		$this->priority           = 30;
 		$this->input_class        = 'dcf-checkbox';
 		$this->type               = 'checkbox';

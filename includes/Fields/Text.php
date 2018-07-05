@@ -33,7 +33,7 @@ class Text extends Field {
 	public function __construct() {
 		$this->admin_id    = 'text';
 		$this->admin_label = __( 'Text', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="fas fa-text-width"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-text"></use></svg>';
 		$this->priority    = 10;
 		$this->input_class = 'dcf-input dcf-input-text';
 	}

@@ -29,7 +29,7 @@ class Html extends Field {
 	public function __construct() {
 		$this->admin_id           = 'html';
 		$this->admin_label        = __( 'HTML', 'dialog-contact-form' );
-		$this->admin_icon         = '<i class="fas fa-code"></i>';
+		$this->admin_icon         = '<svg><use href="#dcf-icon-html"></use></svg>';
 		$this->priority           = 160;
 		$this->type               = 'html';
 		$this->show_in_entry      = false;

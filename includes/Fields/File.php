@@ -34,7 +34,7 @@ class File extends Field {
 	public function __construct() {
 		$this->admin_id    = 'file';
 		$this->admin_label = __( 'File', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="fas fa-upload"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-file"></use></svg>';
 		$this->priority    = 150;
 		$this->input_class = 'dcf-input-file';
 		$this->type        = 'file';

@@ -30,7 +30,7 @@ class Ip extends Text {
 	public function __construct() {
 		$this->admin_id    = 'ip';
 		$this->admin_label = __( 'IP Address', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="fas fa-mouse-pointer"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-id"></use></svg>';
 		$this->priority    = 120;
 		$this->input_class = 'dcf-input dcf-input-ip';
 		$this->type        = 'text';

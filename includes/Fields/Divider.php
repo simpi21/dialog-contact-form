@@ -28,7 +28,7 @@ class Divider extends Field {
 	public function __construct() {
 		$this->admin_id           = 'divider';
 		$this->admin_label        = __( 'Divider', 'dialog-contact-form' );
-		$this->admin_icon         = '<i class="fas fa-arrows-alt-h"></i>';
+		$this->admin_icon         = '<svg><use href="#dcf-icon-divider"></use></svg>';
 		$this->priority           = 170;
 		$this->input_class        = 'dcf-divider';
 		$this->show_label_in_form = false;

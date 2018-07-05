@@ -31,7 +31,7 @@ class Password extends Text {
 	public function __construct() {
 		$this->admin_id    = 'password';
 		$this->admin_label = __( 'Password', 'dialog-contact-form' );
-		$this->admin_icon  = '<i class="fas fa-key"></i>';
+		$this->admin_icon  = '<svg><use href="#dcf-icon-password"></use></svg>';
 		$this->priority    = 60;
 		$this->input_class = 'dcf-input dcf-input-password';
 		$this->type        = 'password';

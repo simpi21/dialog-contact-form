@@ -120,9 +120,34 @@ code.mailtag.code {
 	text-align: center;
 	box-sizing: border-box;
 	margin: -16px 10px -16px -16px;
+
+	svg {
+		width: 16px;
+		height: 16px;
+		box-sizing: border-box;
+	}
 }
 
 #shaplaFieldList {
 	width: 100%;
 	min-height: 50px;
+}
+
+.dcf-fields-list {
+	svg {
+		background: #f1f1f1;
+		box-sizing: border-box;
+		padding: 8px;
+		margin-right: 5px;
+		width: 30px;
+		height: 30px;
+		display: inline-block;
+		line-height: 1;
+
+		+ span {
+			display: inline-block;
+			line-height: 2.2;
+			vertical-align: top;
+		}
+	}
 }
