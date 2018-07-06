@@ -121,12 +121,13 @@ class Scripts {
 	 */
 	private function localize_script() {
 		$variables = array(
-			'ajaxurl'      => admin_url( 'admin-ajax.php' ),
-			'nonce'        => wp_create_nonce( 'dialog_contact_form_nonce' ),
-			'selector'     => 'dcf-form',
-			'fieldClass'   => 'dcf-has-error',
-			'errorClass'   => 'dcf-error-message',
-			'loadingClass' => 'is-loading',
+			'ajaxurl'        => admin_url( 'admin-ajax.php' ),
+			'nonce'          => wp_create_nonce( 'dialog_contact_form_nonce' ),
+			'selector'       => '.dcf-form',
+			'fieldClass'     => '.dcf-has-error',
+			'errorClass'     => '.dcf-error-message',
+			'loadingClass'   => '.is-loading',
+			'submitBtnClass' => '.dcf-submit',
 		);
 
 		return array_merge( $variables, $this->get_validation_messages() );

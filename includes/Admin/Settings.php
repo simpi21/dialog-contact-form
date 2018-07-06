@@ -575,5 +575,18 @@ class Settings {
 				'no'  => esc_html__( 'No', 'dialog-contact-form' ),
 			)
 		) );
+		$option_page->add_field( array(
+			'id'       => 'nonce_validation',
+			'type'     => 'radio',
+			'name'     => __( 'Enable Nonce validation', 'dialog-contact-form' ),
+			'desc'     => __( 'A nonce helps to protect forms from certain types of misuse, malicious or otherwise.', 'dialog-contact-form' ),
+			'std'      => 'enable',
+			'section'  => 'dcf_style_section',
+			'priority' => 30,
+			'options'  => array(
+				'enable'  => esc_html__( 'Enable', 'dialog-contact-form' ),
+				'disable' => esc_html__( 'Disable', 'dialog-contact-form' ),
+			)
+		) );
 	}
 }

@@ -8,6 +8,7 @@ use DialogContactForm\Collections\Fields;
 use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Supports\Attachment;
 use DialogContactForm\Supports\Config;
+use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -54,6 +55,17 @@ class Submission {
 		// If it is spam, do nothing
 		if ( $this->is_spam( $form_id ) ) {
 
+			if ( $this->is_ajax() ) {
+				wp_send_json( array(
+					'status'  => 'fail',
+					'message' => $config->getSpamMessage(),
+				), 403 );
+			}
+
+			return;
+		}
+
+		if ( 'disable' !== Utils::get_option( 'nonce_validation' ) && ! $this->is_nonce_valid() ) {
 			if ( $this->is_ajax() ) {
 				wp_send_json( array(
 					'status'  => 'fail',
@@ -225,11 +237,11 @@ class Submission {
 	 * @return array
 	 */
 	public function validate_post_field( $value, $field, $config ) {
-		$messages       = $config->getValidationMessages();
-		$message        = array();
-		$field_type     = $field['field_type'] ? $field['field_type'] : '';
-		$message_key    = sprintf( 'invalid_%s', $field_type );
-		$error_message  = isset( $messages[ $message_key ] ) ? $messages[ $message_key ] : $messages['generic_error'];
+		$messages      = $config->getValidationMessages();
+		$message       = array();
+		$field_type    = $field['field_type'] ? $field['field_type'] : '';
+		$message_key   = sprintf( 'invalid_%s', $field_type );
+		$error_message = isset( $messages[ $message_key ] ) ? $messages[ $message_key ] : $messages['generic_error'];
 
 		$fieldManager = Fields::init();
 		$class_name   = $fieldManager->get( $field_type );
@@ -266,6 +278,25 @@ class Submission {
 	}
 
 	/**
+	 * Check if nonce is valid
+	 *
+	 * @return bool
+	 */
+	private function is_nonce_valid() {
+		// Check if nonce field set
+		if ( ! isset( $_POST['_dcf_nonce'] ) ) {
+			return false;
+		}
+
+		// Check if nonce value is valid
+		if ( ! wp_verify_nonce( $_POST['_dcf_nonce'], 'dialog_contact_form_nonce' ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Check if current submitted form is spam
 	 *
 	 * @param int $form_id
@@ -273,16 +304,6 @@ class Submission {
 	 * @return bool
 	 */
 	private function is_spam( $form_id = 0 ) {
-		// Check if nonce field set
-		if ( ! isset( $_POST['_dcf_nonce'] ) ) {
-			return true;
-		}
-
-		// Check if nonce value is valid
-		if ( ! wp_verify_nonce( $_POST['_dcf_nonce'], 'dialog_contact_form_nonce' ) ) {
-			return true;
-		}
-
 		// Form ID is valid
 		$form = get_post( $form_id );
 		if ( ! $form instanceof \WP_Post ) {

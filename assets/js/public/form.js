@@ -8,10 +8,11 @@
         ajaxurl: '/wp-admin/admin-ajax.php',
         nonce: '',
         // Classes and Selectors
-        selector: 'dcf-form',
-        fieldClass: 'dcf-has-error',
-        errorClass: 'dcf-error-message',
-        loadingClass: 'is-loading',
+        selector: '.dcf-form',
+        fieldClass: '.dcf-has-error',
+        errorClass: '.dcf-error-message',
+        loadingClass: '.is-loading',
+        submitBtnClass: '.dcf-submit',
 
         // Messages
         invalid_required: 'Please fill out this field.',
@@ -20,8 +21,10 @@
         required_checkbox: 'Please check this field.',
         invalid_email: 'Please enter an email address.',
         invalid_url: 'Please enter a URL.',
-        invalid_too_short: 'Please lengthen this text to {minLength} characters or more. You are currently using {length} characters.',
-        invalid_too_long: 'Please shorten this text to no more than {maxLength} characters. You are currently using {length} characters.',
+        invalid_too_short: 'Please lengthen this text to {minLength} characters or more. ' +
+        'You are currently using {length} characters.',
+        invalid_too_long: 'Please shorten this text to no more than {maxLength} characters. ' +
+        'You are currently using {length} characters.',
         pattern_mismatch: 'Please match the requested format.',
         bad_input: 'Please enter a number.',
         step_mismatch: 'Please select a valid value.',
@@ -31,7 +34,8 @@
     };
 
     if (!Element.prototype.matches) {
-        Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+        Element.prototype.matches = Element.prototype.msMatchesSelector ||
+            Element.prototype.webkitMatchesSelector;
     }
 
     /**
@@ -50,6 +54,10 @@
         };
     }
 
+    var getClassName = function (className) {
+        return className.replace('.', '').replace('#', '');
+    };
+
     /**
      * Validate the field
      * @param field
@@ -60,8 +68,11 @@
         // Merge user options with existing settings or defaults
         var localSettings = settings;
 
-        // Don't validate submits, buttons, file and reset inputs, and disabled fields
-        if (field.disabled || field.type === 'file' || field.type === 'reset' || field.type === 'submit' || field.type === 'button') return;
+        // Don't validate file and disabled fields
+        if (field.disabled || field.type === 'file') return;
+
+        // Don't validate submits, buttons and reset inputs fields
+        if (field.type === 'reset' || field.type === 'submit' || field.type === 'button') return;
 
         // Get validity
         var validity = field.validity;
@@ -91,10 +102,13 @@
         }
 
         // If too short
-        if (validity.tooShort) return localSettings.invalid_too_short.replace('{minLength}', field.getAttribute('minLength')).replace('{length}', field.value.length);
+        if (validity.tooShort)
+            return localSettings.invalid_too_short
+                .replace('{minLength}', field.getAttribute('minLength')).replace('{length}', field.value.length);
 
         // If too long
-        if (validity.tooLong) return localSettings.invalid_too_long.replace('{minLength}', field.getAttribute('maxLength')).replace('{length}', field.value.length);
+        if (validity.tooLong) return localSettings.invalid_too_long
+            .replace('{minLength}', field.getAttribute('maxLength')).replace('{length}', field.value.length);
 
         // If number input isn't a number
         if (validity.badInput) return localSettings.bad_input;
@@ -134,10 +148,12 @@
     var showError = function (field, error) {
 
         // Merge user options with existing settings or defaults
-        var localSettings = settings;
+        var localSettings = settings,
+            fieldClass = getClassName(localSettings.fieldClass),
+            errorClass = getClassName(localSettings.errorClass);
 
         // Add error class to field
-        field.classList.add(localSettings.fieldClass);
+        field.classList.add(fieldClass);
 
         // If the field is a radio button and part of a group, error all and get the last item in the group
         if ((field.type === 'radio' || field.type === 'checkbox') && field.name) {
@@ -146,7 +162,7 @@
                 for (var i = 0; i < group.length; i++) {
                     // Only check fields in current form
                     if (group[i].form !== field.form) continue;
-                    group[i].classList.add(localSettings.fieldClass);
+                    group[i].classList.add(fieldClass);
                 }
                 field = group[group.length - 1];
             }
@@ -158,10 +174,10 @@
 
         // Check if error message field already exists
         // If not, create one
-        var message = field.form.querySelector('.' + localSettings.errorClass + '#error-for-' + id);
+        var message = field.form.querySelector('.' + errorClass + '#error-for-' + id);
         if (!message) {
             message = document.createElement('div');
-            message.className = localSettings.errorClass;
+            message.className = errorClass;
             message.id = 'error-for-' + id;
 
             // If the field is a radio button or checkbox, insert error after the label
@@ -200,10 +216,12 @@
     var removeError = function (field) {
 
         // Merge user options with existing settings or defaults
-        var localSettings = settings;
+        var localSettings = settings,
+            fieldClass = getClassName(localSettings.fieldClass),
+            errorClass = getClassName(localSettings.errorClass);
 
         // Remove error class to field
-        field.classList.remove(localSettings.fieldClass);
+        field.classList.remove(fieldClass);
 
         // Remove ARIA role from the field
         field.removeAttribute('aria-describedby');
@@ -215,7 +233,7 @@
                 for (var i = 0; i < group.length; i++) {
                     // Only check fields in current form
                     if (group[i].form !== field.form) continue;
-                    group[i].classList.remove(localSettings.fieldClass);
+                    group[i].classList.remove(fieldClass);
                 }
                 field = group[group.length - 1];
             }
@@ -227,29 +245,13 @@
 
 
         // Check if an error message is in the DOM
-        var message = field.form.querySelector('.' + localSettings.errorClass + '#error-for-' + id + '');
+        var message = field.form.querySelector('.' + errorClass + '#error-for-' + id + '');
         if (!message) return;
 
         // If so, hide it
         message.innerHTML = '';
         message.style.display = 'none';
         message.style.visibility = 'hidden';
-    };
-
-    /**
-     * Add the `novalidate` attribute to all forms
-     * @private
-     * @param {Boolean} remove  If true, remove the `novalidate` attribute
-     */
-    var addNoValidate = function (remove) {
-        var forms = document.querySelectorAll(settings.selector);
-        for (var i = 0; i < forms.length; i++) {
-            if (remove) {
-                forms[i].removeAttribute('novalidate');
-                continue;
-            }
-            forms[i].setAttribute('novalidate', true);
-        }
     };
 
     /**
@@ -260,7 +262,7 @@
     var blurHandler = function (event) {
 
         // Only run if the field is in a form to be validated
-        if (!event.target.form || !event.target.form.classList.contains(settings.selector)) return;
+        if (!event.target.form || !event.target.form.classList.contains(getClassName(settings.selector))) return;
 
         // Validate the field
         var error = hasError(event.target);
@@ -283,7 +285,7 @@
     var clickHandler = function (event) {
 
         // Only run if the field is in a form to be validated
-        if (!event.target.form || !event.target.form.classList.contains(settings.selector)) return;
+        if (!event.target.form || !event.target.form.classList.contains(getClassName(settings.selector))) return;
 
         // Only run if the field is a checkbox or radio
         var type = event.target.getAttribute('type');
@@ -322,8 +324,8 @@
                 control = fields.closest('.dcf-control');
                 messages = vMessages[field_name];
                 if (messages[0]) {
-                    fields.classList.add(settings.fieldClass);
-                    error = '<div class="' + settings.errorClass + '">' + messages[0] + '</div>';
+                    fields.classList.add(getClassName(settings.fieldClass));
+                    error = '<div class="' + getClassName(settings.errorClass) + '">' + messages[0] + '</div>';
                     control.insertAdjacentHTML('beforeend', error);
                 }
             }
@@ -337,7 +339,7 @@
         form.querySelector('.dcf-error').innerHTML = '';
 
         // Hide field help message if any
-        var helpText = form.querySelectorAll('.' + settings.errorClass);
+        var helpText = form.querySelectorAll('.' + getClassName(settings.errorClass));
         for (var i = 0; i < helpText.length; i++) {
             helpText[i].parentNode.removeChild(helpText[i]);
         }
@@ -345,7 +347,7 @@
         // Remove field validation border-color if any
         var allFields = form.querySelectorAll('.input, .textarea, .select select');
         for (i = 0; i < allFields.length; i++) {
-            allFields[i].classList.remove(settings.fieldClass);
+            allFields[i].classList.remove(getClassName(settings.fieldClass));
         }
     };
 
@@ -368,7 +370,7 @@
         'use strict';
 
         // Only run on forms flagged for validation
-        if (!event.target.classList.contains(settings.selector)) return;
+        if (!event.target.classList.contains(getClassName(settings.selector))) return;
 
         // Prevent form from submitting if there are errors or submission is disabled
         event.preventDefault();
@@ -397,10 +399,11 @@
 
         var form = event.target,
             dcfSuccess = form.querySelector('.dcf-success'),
-            submitBtn = form.querySelector('.dcf-submit');
+            submitBtn = form.querySelector('.' + getClassName(settings.submitBtnClass)),
+            loadingClass = getClassName(settings.loadingClass);
 
         // Add loading class to submit button
-        submitBtn.classList.add(settings.loadingClass);
+        submitBtn.classList.add(loadingClass);
 
         removeAllErrors(form);
 
@@ -416,7 +419,7 @@
         // Define what happens on successful data submission
         request.addEventListener("load", function (event) {
             // Remove loading class from submit button
-            submitBtn.classList.remove(settings.loadingClass);
+            submitBtn.classList.remove(loadingClass);
 
             var action,
                 xhr = event.target,
