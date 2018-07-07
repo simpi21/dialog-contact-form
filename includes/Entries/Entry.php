@@ -23,38 +23,27 @@ class Entry {
 	 *
 	 * @var string
 	 */
-	private $table_name = 'dcf_entries';
+	private $table_name;
 
 	/**
 	 * Entry meta table name
 	 *
 	 * @var string
 	 */
-	private $meta_table_name = 'dcf_entry_meta';
-
-	/**
-	 * @var array
-	 */
-	private $entries = array();
+	private $meta_table_name;
 
 	/**
 	 * Entry constructor.
-	 *
-	 * @param array $entries
 	 */
-	public function __construct( $entries = array() ) {
+	public function __construct() {
 		global $wpdb;
 
 		/*
          * Assign Database Tables using the DB prefix
          */
 		$this->db              = $wpdb;
-		$this->table_name      = $wpdb->prefix . $this->table_name;
-		$this->meta_table_name = $wpdb->prefix . $this->meta_table_name;
-
-		if ( $entries && is_object( $entries ) ) {
-			$this->entries = $entries;
-		}
+		$this->table_name      = $wpdb->prefix . 'dcf_entries';
+		$this->meta_table_name = $wpdb->prefix . 'dcf_entry_meta';
 	}
 
 	/**
@@ -203,58 +192,14 @@ class Entry {
 		}
 
 		return array(
-			'form_id'    => $this->getFormId(),
+			'form_id'    => Utils::get_form_id(),
 			'user_id'    => get_current_user_id(),
-			'user_ip'    => $this->getRemoteIp(),
-			'user_agent' => $this->getUserAgent(),
-			'referer'    => $this->getReferer(),
+			'user_ip'    => Utils::get_remote_ip(),
+			'user_agent' => Utils::get_user_agent(),
+			'referer'    => Utils::get_referer(),
 			'status'     => 'unread',
 			'created_at' => $current_time,
 		);
-	}
-
-	/**
-	 * Get the form id
-	 *
-	 * @return int
-	 */
-	private function getFormId() {
-		if ( isset( $_POST['_dcf_id'] ) && is_numeric( $_POST['_dcf_id'] ) ) {
-			return intval( $_POST['_dcf_id'] );
-		}
-
-		return 0;
-	}
-
-	/**
-	 * Get user IP address
-	 *
-	 * @return string
-	 */
-	private function getRemoteIp() {
-		return Utils::get_remote_ip();
-	}
-
-	/**
-	 * Get user browser name
-	 *
-	 * @return string
-	 */
-	private function getUserAgent() {
-		return Utils::get_user_agent();
-	}
-
-	/**
-	 * Get form referer
-	 *
-	 * @return string
-	 */
-	private function getReferer() {
-		if ( isset( $_POST['_dcf_referer'] ) && is_string( $_POST['_dcf_referer'] ) ) {
-			return sanitize_text_field( $_POST['_dcf_referer'] );
-		}
-
-		return '';
 	}
 
 	/**

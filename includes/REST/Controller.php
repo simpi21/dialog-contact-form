@@ -232,16 +232,15 @@ class Controller {
 			$args['s'] = (string) $search;
 		}
 
-		$items = ContactForm::find( $args );
+		$forms = ContactForm::find( $args );
 
 		$response = array();
 
-		/** @var ContactForm $item */
-		foreach ( $items as $item ) {
+		/** @var ContactForm $form */
+		foreach ( $forms as $form ) {
 			$response[] = array(
-				'id'    => $item->id(),
-				'slug'  => $item->name(),
-				'title' => $item->title(),
+				'id'    => $form->getId(),
+				'title' => $form->getTitle(),
 			);
 		}
 
@@ -290,11 +289,10 @@ class Controller {
 
 		$class->run( $post_id );
 
-		$item     = new ContactForm( $post_id );
+		$form     = new ContactForm( $post_id );
 		$response = array(
-			'id'    => $item->id(),
-			'slug'  => $item->name(),
-			'title' => $item->title(),
+			'id'    => $form->getId(),
+			'title' => $form->getTitle(),
 		);
 
 		return rest_ensure_response( $response );
@@ -317,14 +315,14 @@ class Controller {
 				array( 'status' => 403 ) );
 		}
 
-		$item = new ContactForm( $id );
+		$form = new ContactForm( $id );
 
-		if ( ! $item->id() ) {
+		if ( ! $form->getId() ) {
 			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
 				array( 'status' => 404 ) );
 		}
 
-		$response = $item->toArray();
+		$response = $form->toArray();
 
 		return rest_ensure_response( $response );
 	}
@@ -347,7 +345,7 @@ class Controller {
 
 		$form = new ContactForm( $id );
 
-		if ( ! $form->id() ) {
+		if ( ! $form->getId() ) {
 			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
 				array( 'status' => 404 ) );
 		}
@@ -377,7 +375,7 @@ class Controller {
 
 		$item = new ContactForm( $id );
 
-		if ( ! $item->id() ) {
+		if ( ! $item->getId() ) {
 			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
 				array( 'status' => 404 ) );
 		}

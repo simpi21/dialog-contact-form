@@ -27,11 +27,6 @@ class ContactForm {
 	/**
 	 * @var string
 	 */
-	protected $name;
-
-	/**
-	 * @var string
-	 */
 	protected $title;
 
 	/**
@@ -139,7 +134,6 @@ class ContactForm {
 
 		if ( $post && self::POST_TYPE == get_post_type( $post ) ) {
 			$this->id    = $post->ID;
-			$this->name  = $post->post_name;
 			$this->title = $post->post_title;
 
 			$this->form_fields   = (array) get_post_meta( $this->id, '_contact_form_fields', true );
@@ -368,8 +362,8 @@ class ContactForm {
 	 */
 	public function toArray() {
 		return array(
-			'title'         => $this->title(),
-			'id'            => $this->id(),
+			'title'         => $this->getTitle(),
+			'id'            => $this->getId(),
 			'fields'        => $this->getFormFields(),
 			'settings'      => $this->getFormSettings(),
 			'actions'       => $this->getFormActions(),
@@ -378,24 +372,6 @@ class ContactForm {
 			'has_recaptcha' => $this->hasRecaptcha(),
 			'reset_form'    => $this->resetForm(),
 		);
-	}
-
-	/**
-	 * Get current form title
-	 *
-	 * @return string
-	 */
-	public function title() {
-		return $this->title;
-	}
-
-	/**
-	 * Get current form id
-	 *
-	 * @return int
-	 */
-	public function id() {
-		return $this->id;
 	}
 
 	/**
@@ -462,24 +438,6 @@ class ContactForm {
 	}
 
 	/**
-	 * Get form ID
-	 *
-	 * @return bool
-	 */
-	public function getFormId() {
-		return $this->id();
-	}
-
-	/**
-	 * The form's slug.
-	 *
-	 * @return string
-	 */
-	public function name() {
-		return $this->name;
-	}
-
-	/**
 	 * Get form available fields type
 	 *
 	 * @return array
@@ -531,5 +489,32 @@ class ContactForm {
 	 */
 	public function getMailchimpApiKey() {
 		return $this->mailchimp_api_key;
+	}
+
+	/**
+	 * Get current form id
+	 *
+	 * @return int
+	 */
+	public function getId() {
+		return $this->id;
+	}
+
+	/**
+	 * Get current form title
+	 *
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->title;
+	}
+
+	/**
+	 * Check if current form is valid
+	 *
+	 * @return bool
+	 */
+	public function isValid() {
+		return (bool) $this->getId();
 	}
 }

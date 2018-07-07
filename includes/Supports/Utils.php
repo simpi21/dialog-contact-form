@@ -278,4 +278,17 @@ class Utils {
 
 		return '';
 	}
+
+	/**
+	 * Get the form id
+	 *
+	 * @return int
+	 */
+	public static function get_form_id() {
+		if ( isset( $_POST['_dcf_id'] ) && is_numeric( $_POST['_dcf_id'] ) ) {
+			return intval( $_POST['_dcf_id'] );
+		}
+
+		return 0;
+	}
 }

@@ -50,15 +50,15 @@ class Submission {
 		}
 
 		$form_id = isset( $_POST['_dcf_id'] ) ? intval( $_POST['_dcf_id'] ) : 0;
-		$config  = Config::init( $form_id );
+		$form    = Config::init( $form_id );
 
 		// If it is spam, do nothing
-		if ( ! $this->is_form_valid( $form_id ) ) {
+		if ( ! $form->isValid() ) {
 
 			if ( $this->is_ajax() ) {
 				wp_send_json( array(
 					'status'  => 'fail',
-					'message' => $config->getSpamMessage(),
+					'message' => $form->getSpamMessage(),
 				), 403 );
 			}
 
@@ -69,7 +69,7 @@ class Submission {
 			if ( $this->is_ajax() ) {
 				wp_send_json( array(
 					'status'  => 'fail',
-					'message' => $config->getSpamMessage(),
+					'message' => $form->getSpamMessage(),
 				), 403 );
 			}
 
@@ -77,17 +77,17 @@ class Submission {
 		}
 
 		/**
-		 * @var \DialogContactForm\Supports\Config $config
+		 * @var \DialogContactForm\Supports\Config $form
 		 */
-		do_action( 'dialog_contact_form/before_validation', $config );
+		do_action( 'dialog_contact_form/before_validation', $form );
 
-		$error_data = $this->validate_form_data( $config );
+		$error_data = $this->validate_form_data( $form );
 
 		/**
-		 * @var \DialogContactForm\Supports\Config $config
+		 * @var \DialogContactForm\Supports\Config $form
 		 * @var array $error_data
 		 */
-		do_action( 'dialog_contact_form/after_validation', $config, $error_data );
+		do_action( 'dialog_contact_form/after_validation', $form, $error_data );
 
 		// Exit if there is any error
 		if ( count( $error_data ) > 0 ) {
@@ -95,13 +95,13 @@ class Submission {
 			if ( $this->is_ajax() ) {
 				wp_send_json( array(
 					'status'     => 'fail',
-					'message'    => $config->getValidationErrorMessage(),
+					'message'    => $form->getValidationErrorMessage(),
 					'validation' => $error_data,
 				), 422 );
 			}
 
 			$GLOBALS['_dcf_errors']           = $error_data;
-			$GLOBALS['_dcf_validation_error'] = $config->getValidationErrorMessage();
+			$GLOBALS['_dcf_validation_error'] = $form->getValidationErrorMessage();
 
 			return;
 		}
@@ -109,7 +109,7 @@ class Submission {
 		// Sanitize form data
 		$data         = array();
 		$fieldManager = Fields::init();
-		foreach ( $config->getFormFields() as $field ) {
+		foreach ( $form->getFormFields() as $field ) {
 			if ( 'file' == $field['field_type'] ) {
 				continue;
 			}
@@ -128,8 +128,8 @@ class Submission {
 		}
 
 		// If form upload a file, handle here
-		if ( $config->hasFile() ) {
-			$attachments = Attachment::upload( $config->getFormFields() );
+		if ( $form->hasFile() ) {
+			$attachments = Attachment::upload( $form->getFormFields() );
 			$data        = $data + $attachments;
 		}
 
@@ -138,7 +138,7 @@ class Submission {
 
 		foreach ( $actions as $action_id => $className ) {
 
-			if ( ! in_array( $action_id, $config->getFormActions() ) ) {
+			if ( ! in_array( $action_id, $form->getFormActions() ) ) {
 				continue;
 			}
 
@@ -147,7 +147,7 @@ class Submission {
 				continue;
 			}
 
-			$response[ $action->getId() ] = $action::process( $config, $data );
+			$response[ $action->getId() ] = $action::process( $form, $data );
 		}
 
 		// If any action fails, display error message
@@ -155,12 +155,12 @@ class Submission {
 			if ( $this->is_ajax() ) {
 				wp_send_json( array(
 					'status'  => 'fail',
-					'message' => $config->getMailSendFailMessage(),
+					'message' => $form->getMailSendFailMessage(),
 					'actions' => $response,
 				), 500 );
 			}
 
-			$GLOBALS['_dcf_validation_error'] = $config->getMailSendFailMessage();
+			$GLOBALS['_dcf_validation_error'] = $form->getMailSendFailMessage();
 
 			return;
 		}
@@ -169,7 +169,7 @@ class Submission {
 			// Display success message
 			wp_send_json( array(
 				'status'     => 'success',
-				'reset_form' => $config->resetForm(),
+				'reset_form' => $form->resetForm(),
 				'actions'    => $response,
 			), 200 );
 		}
@@ -180,7 +180,7 @@ class Submission {
 		}
 
 		// Reset form Data
-		if ( $config->resetForm() ) {
+		if ( $form->resetForm() ) {
 			foreach ( array_keys( $data ) as $input_name ) {
 				if ( isset( $_POST[ $input_name ] ) ) {
 					unset( $_POST[ $input_name ] );
