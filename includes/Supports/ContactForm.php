@@ -17,92 +17,92 @@ class ContactForm {
 	/**
 	 * @var int
 	 */
-	private static $found_items = 0;
+	protected static $found_items = 0;
 
 	/**
 	 * @var int
 	 */
-	private $id = 0;
+	protected $id = 0;
 
 	/**
 	 * @var string
 	 */
-	private $name;
+	protected $name;
 
 	/**
 	 * @var string
 	 */
-	private $title;
+	protected $title;
 
 	/**
 	 * Global form options
 	 *
 	 * @var array
 	 */
-	private $options = array();
+	protected $options = array();
 
 	/**
 	 * Form validation messages
 	 *
 	 * @var array
 	 */
-	private $validation_messages = array();
+	protected $validation_messages = array();
 
 	/**
 	 * Current form fields
 	 *
 	 * @var array
 	 */
-	private $form_fields = array();
+	protected $form_fields = array();
 
 	/**
 	 * Current form settings
 	 *
 	 * @var array
 	 */
-	private $form_settings = array();
+	protected $form_settings = array();
 
 	/**
 	 * List of supported actions
 	 *
 	 * @var array
 	 */
-	private $form_actions = array();
+	protected $form_actions = array();
 
 	/**
 	 * List of field types for current form
 	 *
 	 * @var array
 	 */
-	private $field_types = array();
+	protected $field_types = array();
 
 	/**
 	 * Check current form has file field
 	 *
 	 * @var bool
 	 */
-	private $has_file = false;
+	protected $has_file = false;
 
 	/**
 	 * Check if reCAPTCHA is enabled
 	 *
 	 * @var bool
 	 */
-	private $has_recaptcha = false;
+	protected $has_recaptcha = false;
 
 	/**
 	 * MailChimp API key
 	 *
 	 * @var string
 	 */
-	private $mailchimp_api_key = '';
+	protected $mailchimp_api_key = '';
 
 	/**
 	 * If form should reset after successful submission
 	 *
 	 * @var bool
 	 */
-	private $reset_form = true;
+	protected $reset_form = true;
 
 	/**
 	 * ContactForm constructor.
@@ -462,6 +462,15 @@ class ContactForm {
 	}
 
 	/**
+	 * Get form ID
+	 *
+	 * @return bool
+	 */
+	public function getFormId() {
+		return $this->id();
+	}
+
+	/**
 	 * The form's slug.
 	 *
 	 * @return string
@@ -513,5 +522,14 @@ class ContactForm {
 	 */
 	public function getMailSendFailMessage() {
 		return esc_attr( $this->validation_messages['mail_sent_ng'] );
+	}
+
+	/**
+	 * Get MailChimp API key
+	 *
+	 * @return string
+	 */
+	public function getMailchimpApiKey() {
+		return $this->mailchimp_api_key;
 	}
 }

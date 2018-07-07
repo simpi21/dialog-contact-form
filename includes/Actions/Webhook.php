@@ -3,6 +3,7 @@
 namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Action;
+use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -46,7 +47,14 @@ class Webhook extends Action {
 			);
 
 			$body['fields'] = $data;
-			$body['meta']   = $config->getMetaData();
+			$body['meta']   = array(
+				'form_id'    => $form_id,
+				'user_id'    => get_current_user_id(),
+				'user_ip'    => Utils::get_remote_ip(),
+				'user_agent' => Utils::get_user_agent(),
+				'referer'    => Utils::get_referer(),
+				'created_at' => current_time( 'mysql' ),
+			);
 		} else {
 			$body              = $data;
 			$body['form_id']   = $settings['id'];
