@@ -1,13 +1,13 @@
 <?php
 
-namespace DialogContactForm\Supports;
+namespace DialogContactForm\Providers;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class MailChimpHandler {
+class MailChimpProvider {
 
 	/**
 	 * API base URL

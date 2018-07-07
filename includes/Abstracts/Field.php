@@ -554,11 +554,6 @@ abstract class Field {
 		if ( 'on' == $this->field['required_field'] ) {
 			return true;
 		}
-		// Backward compatibility
-		$validation = isset( $this->field['validation'] ) ? (array) $this->field['validation'] : array();
-		if ( in_array( 'required', $validation ) ) {
-			return true;
-		}
 
 		return false;
 	}
@@ -611,10 +606,6 @@ abstract class Field {
 			$options = explode( PHP_EOL, $this->field['options'] );
 
 			return array_map( 'trim', $options );
-		}
-
-		if ( empty( $this->field['options'] ) ) {
-			return array();
 		}
 
 		return array();

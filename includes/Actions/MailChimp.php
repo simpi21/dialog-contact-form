@@ -4,7 +4,7 @@ namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Supports\Config;
-use DialogContactForm\Supports\MailChimpHandler;
+use DialogContactForm\Providers\MailChimpProvider;
 use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
@@ -43,7 +43,7 @@ class MailChimp extends Action {
 		$mailchimp_groups = array();
 
 		try {
-			$handler = new MailchimpHandler( $this->api_key );
+			$handler = new MailChimpProvider( $this->api_key );
 			$lists   = $handler->getLists();
 			$list    = $lists['lists'];
 			if ( ! empty( $list ) ) {
@@ -204,7 +204,7 @@ class MailChimp extends Action {
 		}
 
 		try {
-			$handler = new MailchimpHandler( $api_key );
+			$handler = new MailChimpProvider( $api_key );
 
 			$subscriber['status_if_new'] = 'yes' === $action_settings['double_opt_in'] ? 'pending' : 'subscribed';
 			$subscriber['status']        = 'subscribed';
