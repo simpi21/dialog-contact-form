@@ -4,6 +4,7 @@ namespace DialogContactForm;
 
 use DialogContactForm\Collections\Actions;
 use DialogContactForm\Collections\Fields;
+use DialogContactForm\Supports\ContactForm;
 use DialogContactForm\Supports\Metabox;
 
 // Exit if accessed directly
@@ -401,8 +402,7 @@ class Admin {
 			$data['actions'][ $action ] = isset( $_POST[ $action ] ) ? $_POST[ $action ] : array();
 		}
 
-		$contactForm = new ContactForm( $post );
-		$contactForm->update( $data );
+		ContactForm::update( $post_id, $data );
 
 		/**
 		 * Let give option to save settings for other plugins

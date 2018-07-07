@@ -62,24 +62,6 @@ class FormBuilder {
 	private $options = array();
 
 	/**
-	 * @var object|null
-	 */
-	private static $instance = null;
-
-	/**
-	 * @param int $form_id
-	 *
-	 * @return FormBuilder
-	 */
-	public static function init( $form_id = 0 ) {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self( $form_id );
-		}
-
-		return self::$instance;
-	}
-
-	/**
 	 * Dialog_Contact_Form_Form constructor.
 	 *
 	 * @param int $form_id

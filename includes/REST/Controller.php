@@ -4,8 +4,8 @@ namespace DialogContactForm\REST;
 
 use DialogContactForm\Abstracts\Template;
 use DialogContactForm\Collections\Templates;
-use DialogContactForm\ContactForm;
 use DialogContactForm\Entries\Entry;
+use DialogContactForm\Supports\ContactForm;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -324,7 +324,7 @@ class Controller {
 				array( 'status' => 404 ) );
 		}
 
-		$response = $item->settings()->toArray();
+		$response = $item->toArray();
 
 		return rest_ensure_response( $response );
 	}
@@ -345,17 +345,16 @@ class Controller {
 				array( 'status' => 403 ) );
 		}
 
-		$item = new ContactForm( $id );
+		$form = new ContactForm( $id );
 
-		if ( ! $item->id() ) {
+		if ( ! $form->id() ) {
 			return new WP_Error( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ),
 				array( 'status' => 404 ) );
 		}
 
-		$args = $request->get_params();
-		$item->update( $args );
+		$form->update( $id, $request->get_params() );
 
-		$response = $item->settings()->toArray();
+		$response = $form->toArray();
 
 		return rest_ensure_response( $response );
 	}
@@ -383,9 +382,7 @@ class Controller {
 				array( 'status' => 404 ) );
 		}
 
-		$result = $item->delete();
-
-		if ( ! $result ) {
+		if ( ! $item->delete( $id ) ) {
 			return new WP_Error( 'cannot_delete',
 				__( "There was an error deleting the contact form.", 'dialog-contact-form' ),
 				array( 'status' => 500 ) );

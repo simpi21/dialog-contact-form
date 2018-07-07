@@ -53,7 +53,7 @@ class Submission {
 		$config  = Config::init( $form_id );
 
 		// If it is spam, do nothing
-		if ( $this->is_spam( $form_id ) ) {
+		if ( ! $this->is_form_valid( $form_id ) ) {
 
 			if ( $this->is_ajax() ) {
 				wp_send_json( array(
@@ -303,25 +303,25 @@ class Submission {
 	 *
 	 * @return bool
 	 */
-	private function is_spam( $form_id = 0 ) {
+	private function is_form_valid( $form_id = 0 ) {
 		// Form ID is valid
 		$form = get_post( $form_id );
 		if ( ! $form instanceof \WP_Post ) {
-			return true;
+			return false;
 		}
 
 		// Check if form post type and register post type is same
 		if ( DIALOG_CONTACT_FORM_POST_TYPE !== $form->post_type ) {
-			return true;
+			return false;
 		}
 
 		// Check form has fields
-		$fields = get_post_meta( $form_id, '_contact_form_fields', true );
-		if ( ! ( is_array( $fields ) && count( $fields ) > 0 ) ) {
-			return true;
+		$fields = (array) get_post_meta( $form_id, '_contact_form_fields', true );
+		if ( count( $fields ) < 1 ) {
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	/**

@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $form_id = isset( $_GET['form_id'] ) ? intval( $_GET['form_id'] ) : 0;
-$form = FormBuilder::init( $form_id );
+$form = new FormBuilder( $form_id );
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>

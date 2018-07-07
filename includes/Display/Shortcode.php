@@ -55,7 +55,9 @@ class Shortcode {
 			return '';
 		}
 
-		return FormBuilder::init( intval( $attributes['id'] ) )->form();
+		$form = new FormBuilder( intval( $attributes['id'] ) );
+
+		return $form->form();
 	}
 
 	/**
@@ -64,7 +66,7 @@ class Shortcode {
 	public function dialog_button() {
 		$options = Utils::get_option();
 		$form_id = isset( $options['dialog_form_id'] ) ? intval( $options['dialog_form_id'] ) : 0;
-		$form    = FormBuilder::init( $form_id );
+		$form    = new FormBuilder( $form_id );
 
 		if ( $form_id < 1 ) {
 			return;
