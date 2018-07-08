@@ -134,13 +134,14 @@ class Admin {
 		switch ( $column ) {
 			case "shortcode":
 				?>
-                <input
-                        type="text"
-                        onmousedown="this.clicked = 1;"
-                        onfocus="if (!this.clicked) this.select(); else this.clicked = 2;"
-                        onclick="if (this.clicked === 2) this.select(); this.clicked = 0;"
-                        value="[dialog_contact_form id='<?php echo $post_id; ?>']"
-                        style="background-color: #f1f1f1;letter-spacing: 1px;min-width: 300px;padding: 5px 8px;"
+                <label for="shortcode_<?php echo $post_id; ?>" class="screen-reader-text">
+					<?php esc_html_e( 'Select shortcode', 'dialog-contact-form' ); ?>
+                </label>
+                <input id="shortcode_<?php echo $post_id; ?>" type="text" class="dcf-copy-shortcode"
+                       value="[dialog_contact_form id='<?php echo $post_id; ?>']"
+                       onmousedown="this.clicked = 1;"
+                       onfocus="if (!this.clicked) this.select(); else this.clicked = 2;"
+                       onclick="if (this.clicked === 2) this.select(); this.clicked = 0;"
                 >
 				<?php
 				break;
@@ -350,21 +351,18 @@ class Admin {
 		?>
         <p><?php esc_html_e( 'Copy this shortcode and paste it into your post, page, or text widget content:
 ', 'dialog-contact-form' ); ?></p>
-        <input
-                type="text"
-                onmousedown="this.clicked = 1;"
-                onfocus="if (!this.clicked) this.select(); else this.clicked = 2;"
-                onclick="if (this.clicked === 2) this.select(); this.clicked = 0;"
-                value="<?php echo $shortcode; ?>"
-                style="background-color: #f1f1f1;letter-spacing: 1px;width: 100%;padding: 5px 8px;"
+        <input type="text" class="dcf-copy-shortcode widefat"
+               onmousedown="this.clicked = 1;" value="<?php echo $shortcode; ?>"
+               onfocus="if (!this.clicked) this.select(); else this.clicked = 2;"
+               onclick="if (this.clicked === 2) this.select(); this.clicked = 0;"
         >
         <div class="submitbox" id="submitpost" style="margin: 12px -12px -12px;">
             <input type="hidden" id="post_status" name="post_status" value="publish">
             <div id="major-publishing-actions">
                 <div id="preview-action" style="display: inline-block;">
                     <a class="preview button" href="<?php echo esc_url( $preview_url ); ?>" target="_blank">
-                        Preview Changes
-                        <span class="screen-reader-text"> (opens in a new window)</span>
+						<?php esc_html_e( 'Preview Changes' ); ?>
+                        <span class="screen-reader-text"> <?php esc_html_e( '(opens in a new window)' ); ?></span>
                     </a>
                 </div>
                 <div id="publishing-action">
@@ -392,9 +390,9 @@ class Admin {
 		}
 
 		$data = array(
-			'config'   => $_POST['config'],
-			'messages' => $_POST['messages'],
-			'field'    => $_POST['field'],
+			'config'   => isset( $_POST['config'] ) ? $_POST['config'] : array(),
+			'messages' => isset( $_POST['messages'] ) ? $_POST['messages'] : array(),
+			'field'    => isset( $_POST['field'] ) ? $_POST['field'] : array(),
 		);
 
 		$_actions = isset( $_POST['_contact_form_actions'] ) ? $_POST['_contact_form_actions'] : array();

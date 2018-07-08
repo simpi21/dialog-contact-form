@@ -110,7 +110,7 @@ class Submission {
 		$data         = array();
 		$fieldManager = Fields::init();
 		foreach ( $form->getFormFields() as $field ) {
-			if ( 'file' == $field['field_type'] ) {
+			if ( in_array( $field['field_type'], array( 'file', 'html', 'divider' ) ) ) {
 				continue;
 			}
 			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
@@ -242,6 +242,10 @@ class Submission {
 		$field_type    = $field['field_type'] ? $field['field_type'] : '';
 		$message_key   = sprintf( 'invalid_%s', $field_type );
 		$error_message = isset( $messages[ $message_key ] ) ? $messages[ $message_key ] : $messages['generic_error'];
+
+		if ( in_array( $field_type, array( 'html', 'hidden' ) ) ) {
+			return $message;
+		}
 
 		$fieldManager = Fields::init();
 		$class_name   = $fieldManager->get( $field_type );

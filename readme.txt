@@ -3,7 +3,7 @@ Contributors: sayful
 Tags: contact, contact form, email, feedback, form, modal, dialog
 Requires at least: 4.0
 Tested up to: 4.9
-Stable tag: 3.0.0-alpha1
+Stable tag: 3.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -11,25 +11,31 @@ Just another WordPress contact form plugin. Simple but flexible.
 
 == Description ==
 
-Just another WordPress contact form plugin. Simple but flexible.
+Dialog Contact Form is the ultimate FREE form creation tool for WordPress. Build forms within minutes using a simple yet powerful drag-and-drop form creator. Dialog Contact Form can manage multiple contact forms, plus you can customize the form and the mail contents flexibly with simple markup. The form supports Ajax-powered submitting, File upload, reCAPTCHA spam filtering and so on. For developers, utilize built-in hooks, filters, and even custom field templates to do whatever you need at any step in the form building or submission using Dialog Contact Form as a framework.
 
 = Features of Dialog Contact Forms include, but are not limited to: =
-* Beginner friendly WordPress contact form plugin.
-* Very simple and lightweight.
-* Form submission via AJAX, allowing a seamless user experience without page refreshes
-* No JavaScript dependency, Written in vanilla JavaScript.
-* Design for modern browser but also works for older browsers.
-* Support creating multiple forms.
-* Support upload file as attachment.
-* Support using multiple forms in same page.
-* Option page for SMTP settings for better mail delivery.
-* More than ten input field types.
-* Option to add unlimited fields for each form.
-* Google reCAPTCHA to protect your form from spam.
-* Option to arrange and re-arrange fields as your need.
-* Option to customize mail template as you want.
-* Custom field width: Full, Three Quarters, Two Thirds, Half, One Third, One Quarter.
+
+* Very simple and lightweight. Designed both PHP and JavaScript performance in mind and faster than many popular form plugin.
+* No JavaScript dependency, Written in vanilla JavaScript. Use JavaScript Constraint Validation API for form validation and FormData Objects for submitting form.
+* Form submission via AJAX, allowing a seamless user experience without page refreshes.
+* NO LIMITATIONS on the number of forms, fields, emails, actions, or submissions.
+* Support upload file as attachment and store file in WordPress media.
 * Give your users a success message or redirect them elsewhere after they complete a form.
+* Support Google reCAPTCHA to protect your form from spam.
+* Option page for SMTP settings for better mail delivery.
+
+= Privacy Notices =
+
+With the default configuration, this plugin, in itself, does not:
+
+* track users by stealth;
+* send any data to external servers;
+* use cookies.
+
+If you activate certain features in this plugin, the contact form submitter's personal data, including their IP address, may be sent to the service provider. Thus, confirming the provider's privacy policy is recommended. These features include:
+
+* reCAPTCHA ([Google](https://policies.google.com/?hl=en))
+* MailChimp ([The Rocket Science Group](https://mailchimp.com/legal/privacy/))
 
 = For Developers =
 
@@ -39,7 +45,15 @@ The Dialog Contact Form framework is on [GitHub](https://github.com/sayful1/dial
 
 = Where can I report a bug? =
 
-Report bugs, suggest ideas, and participate in development at <a href="https://github.com/sayful1/dialog-contact-form">https://github.com/sayful1/dialog-contact-form</a>.
+Report bugs, suggest ideas, and participate in development at [https://github.com/sayful1/dialog-contact-form](https://github.com/sayful1/dialog-contact-form).
+
+= Is Dialog Contact Form Responsive? =
+
+Form created by Dialog Contact Form is mobile responsive and looks beautiful in any device.
+
+= Are my forms protected from spam? =
+
+We have built-in integration with reCaptcha. So your forms are protected from the evil bots.
 
 
 == Installation ==
@@ -64,24 +78,29 @@ If you still need help. visit [WordPress codex](https://codex.wordpress.org/Mana
 
 == Upgrade Notice ==
 
-= 3.0.0-alpha1 =
+= 3.0.0 =
 
 Version 3 is a major update. After upgrading to version 3, check form and settings.
 
 == Changelog ==
 
-= version 3.0.0-alpha1 =
-* Feature   - MailChimp API integration.
+= version 3.0.0 =
+* Feature   - MailChimp email marketing integration.
+* Feature   - MailPoet & MailPoet 3 email marketing integration.
+* Feature   - Webhook integration.
 * Feature   - Add entries table to save visitor submitted data.
 * Feature   - Add client side validation using The HTML5 constraint validation API.
-* Feature   - Add Acceptance field type.
+* Feature   - Add Acceptance, Divider, Html field type.
 * Feature   - Add "Preview Changes" button to preview form design.
+* Feature   - Add REST API for managing form and entry over REST API.
+* Feature   - Add CLI Command for managing form and entry over command line interface.
+* Feature   - Add form action to erase or export user personal data from frontend.
+* Feature   - Add predefined and customizable form templates.
 * Added     - Moved validation message from individual form to settings page.
 * Added     - Add polyfill for ClassList and validityState for IE 9.
 * Added     - Add dcf- prefix in all css class.
-* Added     - Add action manager for managing multiple form submission actions.
+* Added     - Add action collections for managing multiple form submission actions.
 * Added     - Add support for multiple value for checkbox.
-* Added     - Add IP Address field type.
 * Added     - Add max_file_size, allowed_file_types, multiple_files option for file field.
 * Added     - Add accept attribute on file field.
 * Dev       - Add reCAPTCHA field.
