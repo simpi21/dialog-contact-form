@@ -43,10 +43,10 @@ class GetResponseProvider {
 	private function init_rest_client( $api_key ) {
 		$this->api_key     = $api_key;
 		$this->rest_client = new RestClient( 'https://api.getresponse.com/v3/' );
-		$this->rest_client->addHeaders( [
+		$this->rest_client->addHeaders( array(
 			'X-Auth-Token' => 'api-key ' . $api_key,
 			'Content-Type' => 'application/json',
-		] );
+		) );
 	}
 
 	/**
@@ -73,9 +73,9 @@ class GetResponseProvider {
 	public function get_lists() {
 		$results = $this->rest_client->get( 'campaigns' );
 
-		$lists = [
+		$lists = array(
 			'' => __( 'Select...', 'elementor-pro' ),
-		];
+		);
 
 		if ( ! empty( $results['body'] ) ) {
 			foreach ( $results['body'] as $index => $list ) {
@@ -86,9 +86,9 @@ class GetResponseProvider {
 			}
 		}
 
-		$return_array = [
+		$return_array = array(
 			'lists' => $lists,
-		];
+		);
 
 		return $return_array;
 	}
@@ -100,41 +100,41 @@ class GetResponseProvider {
 	public function get_fields() {
 		$results = $this->rest_client->get( 'custom-fields' );
 
-		$fields = [
-			[
+		$fields = array(
+			array(
 				'remote_label'    => __( 'Email', 'elementor-pro' ),
 				'remote_type'     => 'email',
 				'remote_id'       => 'email',
 				'remote_required' => true,
-			],
-			[
+			),
+			array(
 				'remote_label'    => __( 'Name', 'elementor-pro' ),
 				'remote_type'     => 'text',
 				'remote_id'       => 'name',
 				'remote_required' => false,
-			],
-		];
+			),
+		);
 
 		if ( ! empty( $results['body'] ) ) {
 			foreach ( $results['body'] as $field ) {
-				$fields[] = [
+				$fields[] = array(
 					'remote_label'    => $field['name'],
 					'remote_type'     => $this->normalize_type( $field['type'] ),
 					'remote_id'       => $field['customFieldId'],
 					'remote_required' => false,
-				];
+				);
 			}
 		}
 
-		$return_array = [
+		$return_array = array(
 			'fields' => $fields,
-		];
+		);
 
 		return $return_array;
 	}
 
 	private function normalize_type( $type ) {
-		static $types = [
+		static $types = array(
 			'text'          => 'text',
 			'number'        => 'number',
 			'address'       => 'text',
@@ -150,7 +150,7 @@ class GetResponseProvider {
 			'zip'           => 'text',
 			'country'       => 'text',
 			'gender'        => 'text',
-		];
+		);
 
 		return $types[ $type ];
 	}
@@ -163,7 +163,7 @@ class GetResponseProvider {
 	 * @return array|mixed
 	 * @throws \Exception
 	 */
-	public function create_subscriber( $subscriber_data = [] ) {
+	public function create_subscriber( $subscriber_data = array() ) {
 		return $this->rest_client->request( 'POST', 'contacts', wp_json_encode( $subscriber_data ), 202 );
 	}
 }

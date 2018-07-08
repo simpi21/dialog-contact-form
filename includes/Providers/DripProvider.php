@@ -41,10 +41,10 @@ class DripProvider {
 	private function init_rest_client( $api_token ) {
 		$this->api_token   = $api_token;
 		$this->rest_client = new RestClient( 'https://api.getdrip.com/v2/' );
-		$this->rest_client->addHeaders( [
+		$this->rest_client->addHeaders( array(
 			'Authorization' => 'Basic ' . base64_encode( $this->api_token ),
 			'Content-Type'  => 'application/vnd.api+json',
-		] );
+		) );
 	}
 
 	/**
@@ -71,9 +71,9 @@ class DripProvider {
 	public function get_accounts() {
 		$results = $this->rest_client->get( 'accounts' );
 
-		$accounts = [
+		$accounts = array(
 			'' => __( 'Select...', 'elementor-pro' ),
-		];
+		);
 
 		if ( ! empty( $results['body']['accounts'] ) ) {
 			foreach ( $results['body']['accounts'] as $index => $account ) {
@@ -81,9 +81,9 @@ class DripProvider {
 			}
 		}
 
-		$return_array = [
+		$return_array = array(
 			'accounts' => $accounts,
-		];
+		);
 
 		return $return_array;
 	}
@@ -97,9 +97,9 @@ class DripProvider {
 	 * @return array|mixed
 	 * @throws \Exception
 	 */
-	public function create_subscriber( $account_id = '', $subscriber_data = [] ) {
+	public function create_subscriber( $account_id = '', $subscriber_data = array() ) {
 		$end_point = sprintf( '%s/subscribers/', $account_id );
 
-		return $this->rest_client->post( $end_point, [ 'subscribers' => [ $subscriber_data ] ] );
+		return $this->rest_client->post( $end_point, array( 'subscribers' => array( $subscriber_data ) ) );
 	}
 }

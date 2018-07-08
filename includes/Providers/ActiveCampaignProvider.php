@@ -75,15 +75,15 @@ class ActiveCampaignProvider {
 	 * @throws \Exception
 	 */
 	public function get_lists() {
-		$results = $this->rest_client->get( '?api_action=list_list', [
+		$results = $this->rest_client->get( '?api_action=list_list', array(
 			'api_key'    => $this->api_key,
 			'ids'        => 'all',
 			'api_output' => 'json',
-		] );
+		) );
 
-		$lists = [
+		$lists = array(
 			'' => __( 'Select...', 'elementor-pro' ),
-		];
+		);
 
 		if ( ! empty( $results['body'] ) ) {
 			foreach ( $results['body'] as $index => $list ) {
@@ -95,10 +95,10 @@ class ActiveCampaignProvider {
 			}
 		}
 
-		$return_array = [
+		$return_array = array(
 			'lists'  => $lists,
 			'fields' => $this->get_fields(),
-		];
+		);
 
 		return $return_array;
 	}
@@ -109,25 +109,25 @@ class ActiveCampaignProvider {
 	 * @throws \Exception
 	 */
 	private function get_fields() {
-		$results = $this->rest_client->get( '?api_action=list_field_view', [
+		$results = $this->rest_client->get( '?api_action=list_field_view', array(
 			'api_key'    => $this->api_key,
 			'ids'        => 'all',
 			'api_output' => 'json',
-		] );
+		) );
 
-		$fields = [];
+		$fields = array();
 
 		if ( ! empty( $results['body'] ) ) {
 			foreach ( $results['body'] as $index => $field ) {
 				if ( ! is_array( $field ) ) {
 					continue;
 				}
-				$fields[] = [
+				$fields[] = array(
 					'remote_label'    => $field['title'],
 					'remote_type'     => $this->normalize_type( $field['type'] ),
 					'remote_id'       => 'field[' . $field['id'] . ',0]',
 					'remote_required' => (bool) $field['isrequired'],
-				];
+				);
 			}
 		}
 
@@ -135,7 +135,7 @@ class ActiveCampaignProvider {
 	}
 
 	private function normalize_type( $type ) {
-		static $types = [
+		static $types = array(
 			'text'     => 'text',
 			'number'   => 'number',
 			'address'  => 'text',
@@ -147,7 +147,7 @@ class ActiveCampaignProvider {
 			'dropdown' => 'select',
 			'birthday' => 'text',
 			'zip'      => 'text',
-		];
+		);
 
 		return $types[ $type ];
 	}
@@ -160,7 +160,7 @@ class ActiveCampaignProvider {
 	 * @return array|mixed
 	 * @throws \Exception
 	 */
-	public function create_subscriber( $subscriber_data = [] ) {
+	public function create_subscriber( $subscriber_data = array() ) {
 		$end_point = '?api_action=contact_add&api_key=' . $this->api_key . '&api_output=json';
 
 		return $this->rest_client->request( 'POST', $end_point, $subscriber_data );

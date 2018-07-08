@@ -69,12 +69,12 @@ class ConvertKitProvider {
 		$forms = $this->get_forms();
 		$tags  = $this->get_tags();
 
-		return [
-			'data' => [
+		return array(
+			'data' => array(
 				'forms' => $forms['forms'],
 				'tags'  => $tags['tags'],
-			],
-		];
+			),
+		);
 	}
 
 	/**
@@ -85,9 +85,9 @@ class ConvertKitProvider {
 	public function get_forms() {
 		$results = $this->rest_client->get( 'forms/?api_key=' . $this->api_key );
 
-		$forms = [
+		$forms = array(
 			'' => __( 'Select...', 'elementor-pro' ),
-		];
+		);
 
 		if ( ! empty( $results['body']['forms'] ) ) {
 			foreach ( $results['body']['forms'] as $index => $form ) {
@@ -98,9 +98,9 @@ class ConvertKitProvider {
 			}
 		}
 
-		$return_array = [
+		$return_array = array(
 			'forms' => $forms,
-		];
+		);
 
 		return $return_array;
 	}
@@ -112,9 +112,9 @@ class ConvertKitProvider {
 	public function get_tags() {
 		$results = $this->rest_client->get( 'tags/?api_key=' . $this->api_key );
 
-		$tags = [
+		$tags = array(
 			'' => __( 'Select...', 'elementor-pro' ),
-		];
+		);
 
 		if ( ! empty( $results['body']['tags'] ) ) {
 			foreach ( $results['body']['tags'] as $index => $tag ) {
@@ -125,9 +125,9 @@ class ConvertKitProvider {
 			}
 		}
 
-		$return_array = [
+		$return_array = array(
 			'tags' => $tags,
-		];
+		);
 
 		return $return_array;
 	}
@@ -141,7 +141,7 @@ class ConvertKitProvider {
 	 * @return array|mixed
 	 * @throws \Exception
 	 */
-	public function create_subscriber( $form_id, $subscriber_data = [] ) {
+	public function create_subscriber( $form_id, $subscriber_data = array() ) {
 		$endpoint = sprintf( 'forms/' . $form_id . '/subscribe?api_key=%s&email=%s', $this->api_key, $subscriber_data['email'] );
 
 		return $this->rest_client->post( $endpoint, $subscriber_data );

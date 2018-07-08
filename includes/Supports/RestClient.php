@@ -22,17 +22,17 @@ class RestClient {
 	/**
 	 * @var array
 	 */
-	public $request_cache = [];
+	public $request_cache = array();
 
 	/**
 	 * @var array
 	 */
-	private $headers = [];
+	private $headers = array();
 
 	/**
 	 * @var array
 	 */
-	private $request_args = [];
+	private $request_args = array();
 
 	/**
 	 * RestClient constructor.
@@ -119,13 +119,13 @@ class RestClient {
 	 */
 	public function request( $method = 'GET', $endpoint = '', $request_body = null, $valid_response_code = 200 ) {
 		$request_url      = $this->api_base_url . $endpoint;
-		$base_args        = [
+		$base_args        = array(
 			'method'  => $method,
 			'headers' => $this->headers,
-		];
+		);
 		$api_request_args = array_merge( $base_args, $this->request_args );
 		if ( null !== $request_body ) {
-			if ( in_array( $method, [ 'POST', 'PUT' ] ) ) {
+			if ( in_array( $method, array( 'POST', 'PUT' ) ) ) {
 				$api_request_args['body'] = $request_body;
 			} else {
 				$request_url = add_query_arg( $request_body, $request_url );
@@ -152,10 +152,10 @@ class RestClient {
 			throw new \Exception( 'Rest Client Error: unexpected response type' );
 		}
 
-		$return = [
+		$return = array(
 			'code' => $response_code,
 			'body' => $response_body,
-		];
+		);
 
 		$this->request_cache[ $cache_key ]['parsed'] = $return;
 
