@@ -76,10 +76,6 @@ class Textarea extends Field {
 	 * @return string
 	 */
 	public function sanitize( $value ) {
-		if ( function_exists( 'sanitize_textarea_field' ) ) {
-			return sanitize_textarea_field( $value );
-		}
-
 		return _sanitize_text_fields( $value, true );
 	}
 
@@ -89,12 +85,12 @@ class Textarea extends Field {
 	 * @return mixed
 	 */
 	protected function getValue() {
-		if ( isset( $_POST[ $this->field['field_name'] ] ) ) {
-			return esc_textarea( $_POST[ $this->field['field_name'] ] );
+		if ( isset( $_POST[ $this->get( 'field_name' ) ] ) ) {
+			return esc_textarea( $_POST[ $this->get( 'field_name' ) ] );
 		}
 
-		if ( ! empty( $this->field['field_value'] ) ) {
-			return esc_textarea( $this->field['field_value'] );
+		if ( $this->has( 'field_value' ) ) {
+			return esc_textarea( $this->get( 'field_value' ) );
 		}
 
 		return null;

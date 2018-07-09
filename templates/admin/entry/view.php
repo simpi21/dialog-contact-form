@@ -4,6 +4,7 @@ use DialogContactForm\Abstracts\Field;
 use DialogContactForm\Entries\Entry;
 use DialogContactForm\Collections\Fields;
 use DialogContactForm\Supports\Browser;
+use DialogContactForm\Supports\ContactForm;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,17 +22,21 @@ if ( isset( $data['status'] ) && 'unread' === $data['status'] ) {
 $browser    = new Browser( $data['user_agent'] );
 $user_agent = sprintf( '%s / %s %s', $browser->getPlatform(), $browser->getBrowser(), $browser->getVersion() );
 
-$form_id    = isset( $data['form_id'] ) ? $data['form_id'] : 0;
 $created_at = isset( $data['created_at'] ) ? $data['created_at'] : 0;
 $created_at = new \DateTime( $created_at );
-$form_title = get_the_title( $form_id );
+
+$form_id    = isset( $data['form_id'] ) ? $data['form_id'] : 0;
+$form       = new ContactForm( $form_id );
+$form_title = $form->getTitle();
 $form_title = sprintf( '%s : Entry # %s', $form_title, $data['id'] );
 
 $_fields      = array();
-$fields       = get_post_meta( $form_id, '_contact_form_fields', true );
+$fields       = $form->getFormFields();
 $fieldManager = Fields::init();
+
+/** @var \DialogContactForm\Abstracts\Field $field */
 foreach ( $fields as $field ) {
-	$_fields[ $field['field_name'] ] = $field;
+	$_fields[ $field->get( 'field_name' ) ] = $field;
 }
 
 if ( ! empty( $_REQUEST['redirect_to'] ) ) {
@@ -91,31 +96,19 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
                     <div class="inside">
                         <table class="form-table dcf-data-table">
 							<?php foreach ( $data['field_values'] as $_key => $value ) {
-								$field = isset( $_fields[ $_key ] ) ? $_fields[ $_key ] : array();
+								$field = isset( $_fields[ $_key ] ) ? $_fields[ $_key ] : null;
 
-								$className = $fieldManager->get( $field['field_type'] );
-								if ( ! class_exists( $className ) ) {
+								if ( ! $field instanceof Field ) {
 									continue;
 								}
 
-								$class = new $className;
-								if ( ! $class instanceof Field ) {
-									continue;
-								}
-
-								if ( ! $class->showInEntry() ) {
+								if ( ! $field->showInEntry() ) {
 									continue;
 								}
 								?>
                                 <tr>
                                     <th scope="row">
-										<?php
-										if ( isset( $field['field_title'] ) ) {
-											echo esc_html( $field['field_title'] );
-										} else {
-											esc_html_e( $_key );
-										}
-										?>
+										<?php echo esc_html( $field->get( 'field_title' ) ); ?>
                                     </th>
                                     <td>
 										<?php

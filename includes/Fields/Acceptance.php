@@ -96,7 +96,7 @@ class Acceptance extends Text {
 	 * @return string
 	 */
 	protected function getAcceptanceText() {
-		return ! empty( $this->field['acceptance_text'] ) ? $this->field['acceptance_text'] : '';
+		return $this->get( 'acceptance_text' );
 	}
 
 	/**
@@ -105,10 +105,6 @@ class Acceptance extends Text {
 	 * @return boolean
 	 */
 	protected function isCheckedByDefault() {
-		if ( empty( $this->field['checked_by_default'] ) ) {
-			return false;
-		}
-
-		return $this->validate( $this->field['checked_by_default'] );
+		return $this->validate( $this->get( 'checked_by_default' ) );
 	}
 }

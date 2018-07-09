@@ -45,11 +45,11 @@ class Html extends Field {
 	 * @return string
 	 */
 	public function render( $field = array() ) {
-		if ( empty( $this->field['html'] ) ) {
+		if ( ! $this->has( 'html' ) ) {
 			return '';
 		}
 
-		$html = wp_filter_post_kses( $this->field['html'] );
+		$html = wp_filter_post_kses( $this->get( 'html' ) );
 
 		return apply_filters( 'dialog_contact_form/preview/field', $html, $this );
 	}

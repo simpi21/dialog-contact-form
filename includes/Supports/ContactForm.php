@@ -3,7 +3,9 @@
 namespace DialogContactForm\Supports;
 
 use DialogContactForm\Abstracts\Action;
+use DialogContactForm\Abstracts\Field;
 use DialogContactForm\Collections\Actions;
+use DialogContactForm\Collections\Fields;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -136,8 +138,20 @@ class ContactForm {
 			$this->id    = $post->ID;
 			$this->title = $post->post_title;
 
-			$this->form_fields   = (array) get_post_meta( $this->id, '_contact_form_fields', true );
 			$this->form_settings = (array) get_post_meta( $this->id, '_contact_form_config', true );
+
+			$fieldCollections = Fields::init();
+			$form_fields      = (array) get_post_meta( $this->id, '_contact_form_fields', true );
+			foreach ( $form_fields as $form_field ) {
+				$type      = isset( $form_field['field_type'] ) ? $form_field['field_type'] : null;
+				$className = $fieldCollections->get( $type );
+				$field     = new $className;
+				if ( ! $field instanceof Field ) {
+					continue;
+				}
+				$field->setField( $form_field );
+				$this->form_fields[] = $field;
+			}
 
 			$form_actions = (array) get_post_meta( $this->id, '_contact_form_actions', true );
 			if ( empty( $form_actions ) ) {
@@ -294,7 +308,7 @@ class ContactForm {
 	private static function sanitize_field( $data ) {
 		$_data = array(
 			'field_title'        => isset( $data['field_title'] ) ? sanitize_text_field( $data['field_title'] ) : '',
-			'field_name'         => isset( $data['field_id'] ) ? sanitize_text_field( $data['field_id'] ) : '',
+			'field_name'         => isset( $data['field_id'] ) ? sanitize_title_with_dashes( $data['field_id'] ) : '',
 			'field_id'           => isset( $data['field_id'] ) ? sanitize_text_field( $data['field_id'] ) : '',
 			'field_type'         => isset( $data['field_type'] ) ? sanitize_text_field( $data['field_type'] ) : '',
 			'options'            => isset( $data['options'] ) ? wp_strip_all_tags( $data['options'] ) : '',

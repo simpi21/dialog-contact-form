@@ -97,8 +97,10 @@ class File extends Field {
 	 */
 	public function getMaxFileSize() {
 		$max_upload_size = wp_max_upload_size();
-		if ( isset( $this->field['max_file_size'] ) && is_numeric( $this->field['max_file_size'] ) ) {
-			$max_upload_size = $this->field['max_file_size'] * pow( 1024, 2 );
+		$max_file_size   = $this->get( 'max_file_size' );
+
+		if ( is_numeric( $max_file_size ) ) {
+			$max_upload_size = $max_file_size * pow( 1024, 2 );
 		}
 
 		return (int) $max_upload_size;
@@ -113,8 +115,8 @@ class File extends Field {
 		$mime_types         = array();
 		$allowed_mime_types = get_allowed_mime_types();
 
-		if ( ! empty( $this->field['allowed_file_types'] ) && is_array( $this->field['allowed_file_types'] ) ) {
-			foreach ( $this->field['allowed_file_types'] as $allowed_file_type ) {
+		if ( is_array( $this->get( 'allowed_file_types' ) ) ) {
+			foreach ( $this->get( 'allowed_file_types' ) as $allowed_file_type ) {
 				if ( ! isset( $allowed_mime_types[ $allowed_file_type ] ) ) {
 					continue;
 				}

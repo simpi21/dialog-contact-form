@@ -56,7 +56,7 @@ class Select extends Field {
 		$value      = $this->getValue();
 		$attributes = $this->buildAttributes( false );
 
-		if ( ! empty( $this->field['placeholder'] ) ) {
+		if ( $this->has( 'placeholder' ) ) {
 			unset( $attributes['placeholder'] );
 			$attributes['data-placeholder'] = $this->getPlaceholder();
 		}
@@ -64,7 +64,7 @@ class Select extends Field {
 		$html = '<div class="dcf-select-container">';
 		$html .= '<select ' . $this->arrayToAttributes( $attributes ) . '>';
 
-		if ( ! empty( $this->field['placeholder'] ) ) {
+		if ( $this->has( 'placeholder' ) ) {
 			$html .= sprintf( '<option value="">%s</option>', esc_attr( $this->field['placeholder'] ) );
 		}
 		foreach ( $options as $option ) {

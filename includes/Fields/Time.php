@@ -60,10 +60,6 @@ class Time extends Text {
 	 * @return bool
 	 */
 	protected function isHtmlTime() {
-		if ( empty( $this->field['native_html5'] ) ) {
-			return false;
-		}
-
-		return ( 'off' !== $this->field['native_html5'] );
+		return ( 'off' !== $this->get( 'native_html5' ) );
 	}
 }

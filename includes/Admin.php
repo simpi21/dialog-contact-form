@@ -317,9 +317,9 @@ class Admin {
 	}
 
 	/**
-	 * @param \WP_Post $post
+	 * Form fields list
 	 */
-	public function form_fields( $post ) {
+	public function form_fields() {
 
 		$default_class = 'dcf-fields-list is-half';
 		$fieldManager  = Fields::init();
@@ -351,7 +351,10 @@ class Admin {
 		?>
         <p><?php esc_html_e( 'Copy this shortcode and paste it into your post, page, or text widget content:
 ', 'dialog-contact-form' ); ?></p>
-        <input type="text" class="dcf-copy-shortcode widefat"
+        <label for="shortcode_<?php echo $post->ID; ?>" class="screen-reader-text">
+			<?php esc_html_e( 'Select shortcode', 'dialog-contact-form' ); ?>
+        </label>
+        <input type="text" class="dcf-copy-shortcode widefat" id="shortcode_<?php echo $post->ID; ?>"
                onmousedown="this.clicked = 1;" value="<?php echo $shortcode; ?>"
                onfocus="if (!this.clicked) this.select(); else this.clicked = 2;"
                onclick="if (this.clicked === 2) this.select(); this.clicked = 0;"
@@ -422,7 +425,8 @@ class Admin {
 			global $wpdb;
 			$table = $wpdb->prefix . "dcf_entries";
 
-			$query   = "SELECT form_id, COUNT( * ) AS num_entries FROM {$table} WHERE status != 'trash' GROUP BY form_id";
+			$query   = "SELECT form_id, COUNT( * ) AS num_entries";
+			$query   .= " FROM {$table} WHERE status != 'trash' GROUP BY form_id";
 			$results = $wpdb->get_results( $query, ARRAY_A );
 
 			$counts = array();
@@ -439,7 +443,7 @@ class Admin {
 	/**
 	 * List of after submit actions
 	 *
-	 * @param \DialogContactForm\Collections\Actions $actions
+	 * @param array $actions
 	 *
 	 * @return array
 	 */

@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-abstract class Field {
+abstract class Field implements \ArrayAccess {
 
 	/**
 	 * Input type attribute
@@ -354,8 +354,8 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function getId() {
-		return sanitize_title_with_dashes( $this->field['field_id'] . '-' . $this->form_id );
+	public function getId() {
+		return sanitize_title_with_dashes( $this->get( 'field_id' ) . '-' . $this->form_id );
 	}
 
 	/**
@@ -365,13 +365,13 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function getClass( $default = '' ) {
+	public function getClass( $default = '' ) {
 		if ( ! empty( $default ) ) {
 			$this->input_class = $default;
 		}
 		$class = $this->input_class;
-		if ( ! empty( $this->field['field_class'] ) ) {
-			$class = $this->field['field_class'];
+		if ( $this->has( 'field_class' ) ) {
+			$class = $this->get( 'field_class' );
 		}
 
 		if ( $this->hasError() ) {
@@ -386,7 +386,7 @@ abstract class Field {
 	 *
 	 * @return bool
 	 */
-	protected function hasError() {
+	public function hasError() {
 		if ( ! empty( $GLOBALS['_dcf_errors'][ $this->getName() ] ) ) {
 			return true;
 		}
@@ -399,8 +399,8 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function getName() {
-		return sanitize_title_with_dashes( $this->field['field_name'] );
+	public function getName() {
+		return esc_attr( $this->get( 'field_name' ) );
 	}
 
 	/**
@@ -408,12 +408,8 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function getPlaceholder() {
-		if ( empty( $this->field['placeholder'] ) ) {
-			return '';
-		}
-
-		return esc_attr( $this->field['placeholder'] );
+	public function getPlaceholder() {
+		return esc_attr( $this->get( 'placeholder' ) );
 	}
 
 	/**
@@ -421,12 +417,10 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function getRows() {
-		if ( isset( $this->field['rows'] ) && is_numeric( $this->field['rows'] ) ) {
-			return intval( $this->field['rows'] );
-		}
+	public function getRows() {
+		$rows = $this->get( 'rows' );
 
-		return '';
+		return is_numeric( $rows ) ? intval( $rows ) : '';
 	}
 
 	/**
@@ -434,12 +428,8 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function getAutocomplete() {
-		if ( empty( $this->field['autocomplete'] ) ) {
-			return '';
-		}
-
-		return esc_attr( $this->field['autocomplete'] );
+	public function getAutocomplete() {
+		return esc_attr( $this->get( 'autocomplete' ) );
 	}
 
 	/**
@@ -448,15 +438,11 @@ abstract class Field {
 	 * @return mixed
 	 */
 	protected function getValue() {
-		if ( isset( $_POST[ $this->field['field_name'] ] ) ) {
-			return esc_attr( $_POST[ $this->field['field_name'] ] );
+		if ( isset( $_POST[ $this->getName() ] ) ) {
+			return $_POST[ $this->getName() ];
 		}
 
-		if ( ! empty( $this->field['field_value'] ) ) {
-			return esc_attr( $this->field['field_value'] );
-		}
-
-		return null;
+		return $this->get( 'field_value' );
 	}
 
 	/**
@@ -464,7 +450,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function getAccept() {
+	public function getAccept() {
 		if ( 'file' !== $this->getType() ) {
 			return '';
 		}
@@ -472,7 +458,7 @@ abstract class Field {
 		$mimes              = array();
 		$allowed_mime_types = get_allowed_mime_types();
 
-		$file_types = $this->field['allowed_file_types'] ? $this->field['allowed_file_types'] : array();
+		$file_types = (array) $this->get( 'allowed_file_types' );
 		foreach ( $file_types as $file_type ) {
 			if ( isset( $allowed_mime_types[ $file_type ] ) ) {
 				$mimes[] = $allowed_mime_types[ $file_type ];
@@ -491,12 +477,10 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function getMax() {
-		if ( empty( $this->field['number_max'] ) ) {
-			return '';
-		}
+	public function getMax() {
+		$number_max = $this->get( 'number_max' );
 
-		return floatval( $this->field['number_max'] );
+		return ! empty( $number_max ) ? floatval( $this->field['number_max'] ) : '';
 	}
 
 	/**
@@ -504,12 +488,12 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function getMin() {
-		if ( empty( $this->field['number_min'] ) ) {
+	public function getMin() {
+		if ( ! $this->has( 'number_min' ) ) {
 			return '';
 		}
 
-		return floatval( $this->field['number_min'] );
+		return floatval( $this->get( 'number_min' ) );
 	}
 
 	/**
@@ -517,30 +501,12 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	protected function getStep() {
-		if ( empty( $this->field['number_step'] ) ) {
+	public function getStep() {
+		if ( ! $this->has( 'number_step' ) ) {
 			return '';
 		}
 
-		return floatval( $this->field['number_step'] );
-	}
-
-	/**
-	 * Get max date
-	 *
-	 * @return string
-	 */
-	protected function getMaxDate() {
-		return '';
-	}
-
-	/**
-	 * Get min date
-	 *
-	 * @return string
-	 */
-	protected function getMinDate() {
-		return '';
+		return floatval( $this->get( 'number_step' ) );
 	}
 
 	/**
@@ -549,7 +515,7 @@ abstract class Field {
 	 * @return bool
 	 */
 	public function isMultiple() {
-		return ( isset( $this->field['multiple'] ) && 'on' === $this->field['multiple'] );
+		return ( 'on' === $this->get( 'multiple' ) );
 	}
 
 	/**
@@ -558,17 +524,12 @@ abstract class Field {
 	 * @return bool
 	 */
 	public function isRequired() {
-		if ( empty( $this->field['required_field'] ) ) {
-			return false;
-		}
-
-		if ( 'on' == $this->field['required_field'] ) {
+		if ( 'on' == $this->get( 'required_field' ) ) {
 			return true;
 		}
 
 		// Backward compatibility
-		if ( isset( $this->field['validation'] ) && is_array( $this->field['validation'] ) &&
-		     in_array( 'required', $this->field['validation'] ) ) {
+		if ( in_array( 'required', (array) $this->get( 'validation' ) ) ) {
 			return true;
 		}
 
@@ -614,17 +575,122 @@ abstract class Field {
 	 *
 	 * @return array
 	 */
-	protected function getOptions() {
-		if ( is_array( $this->field['options'] ) ) {
-			return $this->field['options'];
+	public function getOptions() {
+		$options = $this->get( 'options' );
+
+		if ( is_array( $options ) ) {
+			return $options;
 		}
 
-		if ( is_string( $this->field['options'] ) ) {
-			$options = explode( PHP_EOL, $this->field['options'] );
-
-			return array_map( 'trim', $options );
+		if ( is_string( $options ) ) {
+			return array_map( 'trim', explode( PHP_EOL, $options ) );
 		}
 
 		return array();
+	}
+
+	/**
+	 * Does this field have a given key?
+	 *
+	 * @param string $key The data key
+	 *
+	 * @return bool
+	 */
+	public function has( $key ) {
+		return ! empty( $this->field[ $key ] );
+	}
+
+	/**
+	 * Set field item
+	 *
+	 * @param string $key The data key
+	 * @param mixed $value The data value
+	 */
+	public function set( $key, $value ) {
+		if ( is_null( $key ) ) {
+			$this->field[] = $value;
+		} else {
+			$this->field[ $key ] = $value;
+		}
+	}
+
+	/**
+	 * Get field item for key
+	 *
+	 * @param string $key The data key
+	 * @param mixed $default The default value to return if data key does not exist
+	 *
+	 * @return mixed The key's value, or the default value
+	 */
+	public function get( $key, $default = null ) {
+		return $this->has( $key ) ? $this->field[ $key ] : $default;
+	}
+
+	/**
+	 * Remove item from field
+	 *
+	 * @param string $key The data key
+	 */
+	public function remove( $key ) {
+		if ( $this->has( $key ) ) {
+			unset( $this->field[ $key ] );
+		}
+	}
+
+	/********************************************************************************
+	 * ArrayAccess interface
+	 *******************************************************************************/
+
+	/**
+	 * Whether a offset exists
+	 * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+	 *
+	 * @param mixed $offset An offset to check for.
+	 *
+	 * @return boolean true on success or false on failure.
+	 * @since 5.0.0
+	 */
+	public function offsetExists( $offset ) {
+		return $this->has( $offset );
+	}
+
+	/**
+	 * Offset to retrieve
+	 * @link http://php.net/manual/en/arrayaccess.offsetget.php
+	 *
+	 * @param mixed $offset The offset to retrieve.
+	 *
+	 * @return mixed Can return all value types.
+	 * @since 5.0.0
+	 */
+	public function offsetGet( $offset ) {
+		return $this->get( $offset );
+	}
+
+	/**
+	 * Offset to set
+	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
+	 *
+	 * @param mixed $offset The offset to assign the value to.
+	 * @param mixed $value The value to set.
+	 *
+	 * @return void
+	 * @since 5.0.0
+	 */
+	public function offsetSet( $offset, $value ) {
+		$this->set( $offset, $value );
+	}
+
+	/**
+	 * Offset to unset
+	 * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+	 *
+	 * @param mixed $offset The offset to unset.
+	 *
+	 * @return void
+	 * @since 5.0.0
+	 */
+	public function offsetUnset( $offset ) {
+		$this->remove( $offset );
 	}
 }

@@ -87,16 +87,14 @@ class Date extends Text {
 	 *
 	 * @return string
 	 */
-	protected function getMinDate() {
-		if ( empty( $this->field['min_date'] ) ) {
+	public function getMinDate() {
+		$min_date = $this->get( 'min_date' );
+
+		if ( ! $this->validate( $min_date ) ) {
 			return '';
 		}
 
-		if ( ! $this->validate( $this->field['min_date'] ) ) {
-			return '';
-		}
-
-		return esc_attr( $this->field['min_date'] );
+		return esc_attr( $min_date );
 	}
 
 	/**
@@ -104,16 +102,14 @@ class Date extends Text {
 	 *
 	 * @return string
 	 */
-	protected function getMaxDate() {
-		if ( empty( $this->field['max_date'] ) ) {
+	public function getMaxDate() {
+		$max_date = $this->get( 'max_date' );
+
+		if ( ! $this->validate( $max_date ) ) {
 			return '';
 		}
 
-		if ( ! $this->validate( $this->field['max_date'] ) ) {
-			return '';
-		}
-
-		return esc_attr( $this->field['max_date'] );
+		return esc_attr( $max_date );
 	}
 
 	/**
@@ -121,11 +117,7 @@ class Date extends Text {
 	 *
 	 * @return bool
 	 */
-	protected function isHtmlDate() {
-		if ( empty( $this->field['native_html5'] ) ) {
-			return false;
-		}
-
-		return ( 'off' !== $this->field['native_html5'] );
+	public function isHtmlDate() {
+		return ( 'off' !== $this->get( 'native_html5' ) );
 	}
 }

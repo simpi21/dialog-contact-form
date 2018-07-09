@@ -3,8 +3,9 @@
 namespace DialogContactForm;
 
 use DialogContactForm\Abstracts\Action;
+use DialogContactForm\Abstracts\Field;
 use DialogContactForm\Collections\Actions;
-use DialogContactForm\Collections\Fields;
+use DialogContactForm\Fields\File;
 use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Supports\Attachment;
 use DialogContactForm\Supports\Config;
@@ -91,9 +92,10 @@ class Submission {
 			$files = UploadedFile::getUploadedFiles();
 		}
 
+		/** @var Field|File $field */
 		foreach ( $fields as $field ) {
-			$field_name = isset( $field['field_name'] ) ? $field['field_name'] : '';
-			if ( 'file' == $field['field_type'] ) {
+			$field_name = $field->get( 'field_name' );
+			if ( 'file' == $field->get( 'field_type' ) ) {
 				$file    = isset( $files[ $field_name ] ) ? $files[ $field_name ] : false;
 				$message = Attachment::validate( $file, $field, $form );
 			} else {
@@ -135,25 +137,16 @@ class Submission {
 		}
 
 		// Sanitize form data
-		$data         = array();
-		$fieldManager = Fields::init();
+		$data = array();
+		/** @var Field $field */
 		foreach ( $fields as $field ) {
-			if ( in_array( $field['field_type'], array( 'file', 'html', 'divider' ) ) ) {
+			if ( 'file' === $field->get( 'field_type' ) || ! $field->isFillable() ) {
 				continue;
 			}
 
-			$class_name = $fieldManager->get( $field['field_type'] );
-			if ( ! class_exists( $class_name ) ) {
-				continue;
-			}
+			$value = isset( $_POST[ $field->get( 'field_name' ) ] ) ? $_POST[ $field->get( 'field_name' ) ] : '';
 
-			/** @var \DialogContactForm\Abstracts\Field $class */
-			$class = new $class_name;
-			$class->setField( $field );
-
-			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
-
-			$data[ $field['field_name'] ] = $class->sanitize( $value );
+			$data[ $field->get( 'field_name' ) ] = $field->sanitize( $value );
 		}
 
 		// If form upload a file, handle here
@@ -228,7 +221,7 @@ class Submission {
 	 * Validate form field
 	 *
 	 * @param mixed $value
-	 * @param array $field
+	 * @param \DialogContactForm\Abstracts\Field $field
 	 * @param \DialogContactForm\Supports\Config $config
 	 *
 	 * @return array
@@ -236,36 +229,25 @@ class Submission {
 	private function validate( $value, $field, $config ) {
 		$messages      = $config->getValidationMessages();
 		$message       = array();
-		$field_type    = $field['field_type'] ? $field['field_type'] : '';
-		$message_key   = sprintf( 'invalid_%s', $field_type );
+		$message_key   = sprintf( 'invalid_%s', $field->get( 'field_type' ) );
 		$error_message = isset( $messages[ $message_key ] ) ? $messages[ $message_key ] : $messages['generic_error'];
 
-		$fieldManager = Fields::init();
-		$class_name   = $fieldManager->get( $field_type );
-		if ( ! class_exists( $class_name ) ) {
-			return $message;
-		}
-
-		/** @var \DialogContactForm\Abstracts\Field $class */
-		$class = new $class_name;
-		$class->setField( $field );
-
-		if ( ! $class->isFillable() ) {
+		if ( ! $field->isFillable() ) {
 			return $message;
 		}
 
 		// If field is required, then check it is not empty
-		if ( $class->isRequired() && $class->isEmpty( $value ) ) {
+		if ( $field->isRequired() && $field->isEmpty( $value ) ) {
 			$message[] = $messages['invalid_required'];
 		}
 
 		// Check if value is acceptable for field type
-		if ( ! $class->validate( $value ) ) {
+		if ( ! $field->validate( $value ) ) {
 			$message[] = $error_message;
 		}
 
 		// If field is not required, hide message if field is empty
-		if ( ! $class->isRequired() && $class->isEmpty( $value ) ) {
+		if ( ! $field->isRequired() && $field->isEmpty( $value ) ) {
 			$message = array();
 		}
 

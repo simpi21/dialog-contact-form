@@ -43,7 +43,7 @@ class Hidden extends Text {
 	 * @return bool
 	 */
 	public function validate( $value ) {
-		return ( $value == $this->field['field_value'] );
+		return ( $value == $this->getValue() );
 	}
 
 	/**
@@ -52,10 +52,6 @@ class Hidden extends Text {
 	 * @return string
 	 */
 	protected function getValue() {
-		if ( ! empty( $this->field['field_value'] ) ) {
-			return esc_attr( $this->field['field_value'] );
-		}
-
-		return '';
+		return $this->get( 'field_value' );
 	}
 }

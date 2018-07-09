@@ -2,8 +2,6 @@
 
 namespace DialogContactForm\Supports;
 
-use DialogContactForm\Fields\File;
-
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -15,18 +13,18 @@ class Attachment {
 	 * Get error message for each uploaded files
 	 *
 	 * @param \DialogContactForm\Supports\UploadedFile $file
-	 * @param \DialogContactForm\Fields\File $file_field
+	 * @param \DialogContactForm\Fields\File $field
 	 * @param \DialogContactForm\Supports\Config $config
 	 *
 	 * @return string
 	 */
-	private static function getFileError( $file, $file_field, $config ) {
+	private static function getFileError( $file, $field, $config ) {
 
 		$messages = $config->getValidationMessages();
 
 		// If file is required and no file uploaded, return require message
 		if ( $file->getError() === UPLOAD_ERR_NO_FILE ) {
-			if ( $file_field->isRequired() ) {
+			if ( $field->isRequired() ) {
 				return $messages['required_file'];
 			} else {
 				return '';
@@ -34,7 +32,7 @@ class Attachment {
 		}
 
 		// check file size here.
-		if ( $file->getSize() > $file_field->getMaxFileSize() ) {
+		if ( $file->getSize() > $field->getMaxFileSize() ) {
 			return $messages['file_too_large'];
 		}
 
@@ -43,7 +41,7 @@ class Attachment {
 		$mime_type = $file_info->file( $file->getFile() );
 
 		// Get file extension from allowed mime types
-		$ext = array_search( $mime_type, $file_field->getAllowedMimeTypes(), true );
+		$ext = array_search( $mime_type, $field->getAllowedMimeTypes(), true );
 
 		// Check if uploaded file mime type is allowed
 		if ( false === strpos( $ext, $file->getClientExtension() ) ) {
@@ -57,35 +55,32 @@ class Attachment {
 	 * Validate file field
 	 *
 	 * @param array|\DialogContactForm\Supports\UploadedFile $file
-	 * @param array $field
+	 * @param \DialogContactForm\Fields\File $field
 	 * @param \DialogContactForm\Supports\Config $config
 	 *
 	 * @return array
 	 */
 	public static function validate( $file, $field, $config ) {
 
-		$class = new File();
-		$class->setField( $field );
-
 		$messages = $config->getValidationMessages();
 
-		if ( is_array( $file ) && ! $class->isMultiple() ) {
+		if ( is_array( $file ) && ! $field->isMultiple() ) {
 			return array( $messages['unsupported_file_multi'] );
 		}
 
-		if ( $class->isRequired() && false === $file ) {
+		if ( $field->isRequired() && false === $file ) {
 			return array( $messages['required_file'] );
 		}
 
 		$message = array();
 		if ( $file instanceof UploadedFile ) {
-			$message[] = self::getFileError( $file, $class, $config );
+			$message[] = self::getFileError( $file, $field, $config );
 		}
 
 		if ( is_array( $file ) ) {
 			foreach ( $file as $_file ) {
 				if ( $_file instanceof UploadedFile ) {
-					$message[] = self::getFileError( $_file, $class, $config );
+					$message[] = self::getFileError( $_file, $field, $config );
 				}
 			}
 		}
@@ -98,7 +93,7 @@ class Attachment {
 	 * Upload attachments
 	 *
 	 * @param array $files
-	 * @param $fields
+	 * @param array $fields
 	 *
 	 * @return array
 	 */
