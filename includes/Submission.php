@@ -8,6 +8,7 @@ use DialogContactForm\Collections\Fields;
 use DialogContactForm\Fields\Recaptcha2;
 use DialogContactForm\Supports\Attachment;
 use DialogContactForm\Supports\Config;
+use DialogContactForm\Supports\UploadedFile;
 use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
@@ -76,12 +77,39 @@ class Submission {
 			return;
 		}
 
+		$fields = $form->getFormFields();
+
 		/**
 		 * @var \DialogContactForm\Supports\Config $form
 		 */
 		do_action( 'dialog_contact_form/before_validation', $form );
 
-		$error_data = $this->validate_form_data( $form );
+		$error_data = array();
+		$files      = array();
+
+		if ( $form->hasFile() ) {
+			$files = UploadedFile::getUploadedFiles();
+		}
+
+		foreach ( $fields as $field ) {
+			$field_name = isset( $field['field_name'] ) ? $field['field_name'] : '';
+			if ( 'file' == $field['field_type'] ) {
+				$file    = isset( $files[ $field_name ] ) ? $files[ $field_name ] : false;
+				$message = Attachment::validate( $file, $field, $form );
+			} else {
+				$value   = isset( $_POST[ $field_name ] ) ? $_POST[ $field_name ] : null;
+				$message = $this->validate( $value, $field, $form );
+			}
+
+			if ( count( $message ) > 0 ) {
+				$error_data[ $field_name ] = $message;
+			}
+		}
+
+		// If Google reCAPTCHA enabled, verify it
+		if ( $form->hasRecaptcha() && ! Recaptcha2::_validate() ) {
+			$error_data['dcf_recaptcha'] = array( $form->getInvalidRecaptchaMessage() );
+		}
 
 		/**
 		 * @var \DialogContactForm\Supports\Config $form
@@ -109,27 +137,28 @@ class Submission {
 		// Sanitize form data
 		$data         = array();
 		$fieldManager = Fields::init();
-		foreach ( $form->getFormFields() as $field ) {
+		foreach ( $fields as $field ) {
 			if ( in_array( $field['field_type'], array( 'file', 'html', 'divider' ) ) ) {
 				continue;
 			}
-			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
 
 			$class_name = $fieldManager->get( $field['field_type'] );
-			if ( class_exists( $class_name ) ) {
-				/** @var \DialogContactForm\Abstracts\Field $class */
-				$class = new $class_name;
-				$class->setField( $field );
-
-				$data[ $field['field_name'] ] = $class->sanitize( $value );
-			} else {
-				$data[ $field['field_name'] ] = self::sanitize( $value, $field['field_type'] );
+			if ( ! class_exists( $class_name ) ) {
+				continue;
 			}
+
+			/** @var \DialogContactForm\Abstracts\Field $class */
+			$class = new $class_name;
+			$class->setField( $field );
+
+			$value = isset( $_POST[ $field['field_name'] ] ) ? $_POST[ $field['field_name'] ] : '';
+
+			$data[ $field['field_name'] ] = $class->sanitize( $value );
 		}
 
 		// If form upload a file, handle here
 		if ( $form->hasFile() ) {
-			$attachments = Attachment::upload( $form->getFormFields() );
+			$attachments = Attachment::upload( $files, $fields );
 			$data        = $data + $attachments;
 		}
 
@@ -196,38 +225,6 @@ class Submission {
 	}
 
 	/**
-	 * Validate user submitted form data
-	 *
-	 * @param \DialogContactForm\Supports\Config $config
-	 *
-	 * @return mixed
-	 */
-	private function validate_form_data( $config ) {
-		// Validate Form Data
-		$errorData = array();
-		foreach ( $config->getFormFields() as $field ) {
-			$field_name = isset( $field['field_name'] ) ? $field['field_name'] : '';
-			$value      = isset( $_POST[ $field_name ] ) ? $_POST[ $field_name ] : null;
-			if ( 'file' == $field['field_type'] ) {
-				$message = Attachment::validate( $field );
-			} else {
-				$message = $this->validate_post_field( $value, $field, $config );
-			}
-
-			if ( count( $message ) > 0 ) {
-				$errorData[ $field_name ] = $message;
-			}
-		}
-
-		// If Google reCAPTCHA enabled, verify it
-		if ( $config->hasRecaptcha() && ! Recaptcha2::_validate() ) {
-			$errorData['dcf_recaptcha'] = array( $config->getInvalidRecaptchaMessage() );
-		}
-
-		return $errorData;
-	}
-
-	/**
 	 * Validate form field
 	 *
 	 * @param mixed $value
@@ -236,16 +233,12 @@ class Submission {
 	 *
 	 * @return array
 	 */
-	public function validate_post_field( $value, $field, $config ) {
+	private function validate( $value, $field, $config ) {
 		$messages      = $config->getValidationMessages();
 		$message       = array();
 		$field_type    = $field['field_type'] ? $field['field_type'] : '';
 		$message_key   = sprintf( 'invalid_%s', $field_type );
 		$error_message = isset( $messages[ $message_key ] ) ? $messages[ $message_key ] : $messages['generic_error'];
-
-		if ( in_array( $field_type, array( 'html', 'hidden' ) ) ) {
-			return $message;
-		}
 
 		$fieldManager = Fields::init();
 		$class_name   = $fieldManager->get( $field_type );
@@ -257,8 +250,12 @@ class Submission {
 		$class = new $class_name;
 		$class->setField( $field );
 
+		if ( ! $class->isFillable() ) {
+			return $message;
+		}
+
 		// If field is required, then check it is not empty
-		if ( 'on' == $field['required_field'] && $class->isEmpty( $value ) ) {
+		if ( $class->isRequired() && $class->isEmpty( $value ) ) {
 			$message[] = $messages['invalid_required'];
 		}
 
@@ -268,7 +265,7 @@ class Submission {
 		}
 
 		// If field is not required, hide message if field is empty
-		if ( 'off' == $field['required_field'] && $class->isEmpty( $value ) ) {
+		if ( ! $class->isRequired() && $class->isEmpty( $value ) ) {
 			$message = array();
 		}
 
@@ -298,61 +295,6 @@ class Submission {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Check if current submitted form is spam
-	 *
-	 * @param int $form_id
-	 *
-	 * @return bool
-	 */
-	private function is_form_valid( $form_id = 0 ) {
-		// Form ID is valid
-		$form = get_post( $form_id );
-		if ( ! $form instanceof \WP_Post ) {
-			return false;
-		}
-
-		// Check if form post type and register post type is same
-		if ( DIALOG_CONTACT_FORM_POST_TYPE !== $form->post_type ) {
-			return false;
-		}
-
-		// Check form has fields
-		$fields = (array) get_post_meta( $form_id, '_contact_form_fields', true );
-		if ( count( $fields ) < 1 ) {
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Sanitize user input
-	 *
-	 * @param mixed $input
-	 * @param string $input_type
-	 *
-	 * @return array|string
-	 */
-	private static function sanitize( $input, $input_type = 'text' ) {
-		// Initialize the new array that will hold the sanitize values
-		$new_input = array();
-		if ( is_array( $input ) ) {
-			// Loop through the input and sanitize each of the values
-			foreach ( $input as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$new_input[ $key ] = self::sanitize( $value, $input_type );
-				} else {
-					$new_input[ $key ] = sanitize_text_field( $value );
-				}
-			}
-
-			return $new_input;
-		}
-
-		return sanitize_text_field( $input );
 	}
 
 	/**

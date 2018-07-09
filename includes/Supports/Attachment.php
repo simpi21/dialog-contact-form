@@ -12,45 +12,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Attachment {
 
 	/**
-	 * Get validation messages
-	 *
-	 * @return array
-	 */
-	private static function getValidationMessages() {
-		$options  = Utils::get_option();
-		$default  = Utils::validation_messages();
-		$messages = array();
-		foreach ( $default as $key => $message ) {
-			$messages[ $key ] = ! empty( $options[ $key ] ) ? $options[ $key ] : $message;
-		}
-
-		return $messages;
-	}
-
-	/**
 	 * Get error message for each uploaded files
 	 *
 	 * @param \DialogContactForm\Supports\UploadedFile $file
-	 * @param array $field
+	 * @param \DialogContactForm\Fields\File $file_field
+	 * @param \DialogContactForm\Supports\Config $config
 	 *
 	 * @return string
 	 */
-	private static function getFileError( $file, $field ) {
-		$is_required = self::isRequired( $field );
+	private static function getFileError( $file, $file_field, $config ) {
 
-		$messages = self::getValidationMessages();
+		$messages = $config->getValidationMessages();
 
 		// If file is required and no file uploaded, return require message
 		if ( $file->getError() === UPLOAD_ERR_NO_FILE ) {
-			if ( $is_required ) {
+			if ( $file_field->isRequired() ) {
 				return $messages['required_file'];
 			} else {
 				return '';
 			}
 		}
-
-		$file_field = new File();
-		$file_field->setField( $field );
 
 		// check file size here.
 		if ( $file->getSize() > $file_field->getMaxFileSize() ) {
@@ -75,33 +56,36 @@ class Attachment {
 	/**
 	 * Validate file field
 	 *
+	 * @param array|\DialogContactForm\Supports\UploadedFile $file
 	 * @param array $field
+	 * @param \DialogContactForm\Supports\Config $config
 	 *
 	 * @return array
 	 */
-	public static function validate( $field ) {
+	public static function validate( $file, $field, $config ) {
 
-		$files    = UploadedFile::getUploadedFiles();
-		$file     = isset( $files[ $field['field_name'] ] ) ? $files[ $field['field_name'] ] : false;
-		$messages = self::getValidationMessages();
+		$class = new File();
+		$class->setField( $field );
 
-		if ( is_array( $file ) && ! self::isMultiple( $field ) ) {
+		$messages = $config->getValidationMessages();
+
+		if ( is_array( $file ) && ! $class->isMultiple() ) {
 			return array( $messages['unsupported_file_multi'] );
 		}
 
-		if ( self::isRequired( $field ) && false === $file ) {
+		if ( $class->isRequired() && false === $file ) {
 			return array( $messages['required_file'] );
 		}
 
 		$message = array();
 		if ( $file instanceof UploadedFile ) {
-			$message[] = self::getFileError( $file, $field );
+			$message[] = self::getFileError( $file, $class, $config );
 		}
 
 		if ( is_array( $file ) ) {
 			foreach ( $file as $_file ) {
 				if ( $_file instanceof UploadedFile ) {
-					$message[] = self::getFileError( $_file, $field );
+					$message[] = self::getFileError( $_file, $class, $config );
 				}
 			}
 		}
@@ -113,13 +97,13 @@ class Attachment {
 	/**
 	 * Upload attachments
 	 *
+	 * @param array $files
 	 * @param $fields
 	 *
 	 * @return array
 	 */
-	public static function upload( $fields ) {
+	public static function upload( $files, $fields ) {
 		$attachments = array();
-		$files       = UploadedFile::getUploadedFiles();
 
 		foreach ( $fields as $field ) {
 			if ( 'file' !== $field['field_type'] ) {
@@ -147,7 +131,7 @@ class Attachment {
 	/**
 	 * Upload attachment
 	 *
-	 * @param UploadedFile $file
+	 * @param \DialogContactForm\Supports\UploadedFile $file
 	 *
 	 * @return array
 	 */
@@ -207,37 +191,5 @@ class Attachment {
 		} catch ( \Exception $exception ) {
 			return array();
 		}
-	}
-
-	/**
-	 * Check if current field is required
-	 *
-	 * @param $field
-	 *
-	 * @return bool
-	 */
-	private static function isRequired( $field ) {
-		if ( isset( $field['required_field'] ) && 'on' == $field['required_field'] ) {
-			return true;
-		}
-
-		// Backward compatibility
-		if ( isset( $field['validation'] ) && is_array( $field['validation'] )
-		     && in_array( 'required', $field['validation'] ) ) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Check if field support multiple file upload
-	 *
-	 * @param array $field
-	 *
-	 * @return bool
-	 */
-	private static function isMultiple( $field ) {
-		return ( isset( $field['multiple'] ) && 'on' === $field['multiple'] );
 	}
 }

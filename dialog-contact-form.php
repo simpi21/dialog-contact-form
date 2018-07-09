@@ -57,7 +57,6 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 */
 		private $container = array();
 
-
 		/**
 		 * Minimum PHP version required
 		 *

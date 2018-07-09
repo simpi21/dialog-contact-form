@@ -33,6 +33,7 @@ class Divider extends Field {
 		$this->input_class        = 'dcf-divider';
 		$this->show_label_in_form = false;
 		$this->show_in_entry      = false;
+		$this->is_fillable        = false;
 	}
 
 	/**

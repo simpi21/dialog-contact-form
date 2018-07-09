@@ -66,11 +66,12 @@ abstract class Field {
 	protected $is_hidden_field = false;
 
 	/**
-	 * Should this field value available only for administration purpose
+	 * Check if current field can hold user submitted value.
+	 * If set false, field will be exclude from sanitizing and validating
 	 *
 	 * @var bool
 	 */
-	protected $admin_only = false;
+	protected $is_fillable = true;
 
 	/**
 	 * Current form ID
@@ -259,6 +260,16 @@ abstract class Field {
 	 */
 	public function getPriority() {
 		return $this->priority;
+	}
+
+	/**
+	 * Check if current field can hold user submitted value.
+	 * If set false, field will be exclude from sanitizing and validating
+	 *
+	 * @return bool
+	 */
+	public function isFillable() {
+		return $this->is_fillable;
 	}
 
 	/**
@@ -537,7 +548,7 @@ abstract class Field {
 	 *
 	 * @return bool
 	 */
-	protected function isMultiple() {
+	public function isMultiple() {
 		return ( isset( $this->field['multiple'] ) && 'on' === $this->field['multiple'] );
 	}
 
@@ -552,6 +563,12 @@ abstract class Field {
 		}
 
 		if ( 'on' == $this->field['required_field'] ) {
+			return true;
+		}
+
+		// Backward compatibility
+		if ( isset( $this->field['validation'] ) && is_array( $this->field['validation'] ) &&
+		     in_array( 'required', $this->field['validation'] ) ) {
 			return true;
 		}
 

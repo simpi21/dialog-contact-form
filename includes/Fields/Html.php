@@ -33,7 +33,7 @@ class Html extends Field {
 		$this->priority           = 160;
 		$this->type               = 'html';
 		$this->show_in_entry      = false;
-		$this->admin_only         = true;
+		$this->is_fillable        = false;
 		$this->show_label_in_form = false;
 	}
 

@@ -1,7 +1,8 @@
 === Dialog Contact Form ===
 Contributors: sayful
 Tags: contact, contact form, email, feedback, form, modal, dialog
-Requires at least: 4.0
+Requires at least: 4.7
+Requires PHP: 5.3
 Tested up to: 4.9
 Stable tag: 3.0.0
 License: GPLv3
@@ -11,7 +12,7 @@ Just another WordPress contact form plugin. Simple but flexible.
 
 == Description ==
 
-Dialog Contact Form is the ultimate FREE form creation tool for WordPress. Build forms within minutes using a simple yet powerful drag-and-drop form creator. Dialog Contact Form can manage multiple contact forms, plus you can customize the form and the mail contents flexibly with simple markup. The form supports Ajax-powered submitting, File upload, reCAPTCHA spam filtering and so on. For developers, utilize built-in hooks, filters, and even custom field templates to do whatever you need at any step in the form building or submission using Dialog Contact Form as a framework.
+Dialog Contact Form is the ultimate FREE form creation tool for WordPress. Build forms within minutes using a simple yet powerful drag-and-drop form creator. Dialog Contact Form can manage multiple contact forms, plus you can customize the form and the mail contents flexibly with simple markup. The form supports Ajax-powered submitting, File upload, reCAPTCHA spam filtering and so on.
 
 = Features of Dialog Contact Forms include, but are not limited to: =
 
@@ -39,6 +40,8 @@ If you activate certain features in this plugin, the contact form submitter's pe
 
 = For Developers =
 
+For developers, utilize built-in hooks, filters, and even custom field templates to do whatever you need at any step in the form building or submission using Dialog Contact Form as a framework.
+
 The Dialog Contact Form framework is on [GitHub](https://github.com/sayful1/dialog-contact-form)! If you're a developer and want to help make Dialog Contact Form better, check it out.
 
 == Frequently Asked Questions ==
@@ -53,7 +56,7 @@ Form created by Dialog Contact Form is mobile responsive and looks beautiful in 
 
 = Are my forms protected from spam? =
 
-We have built-in integration with reCaptcha. So your forms are protected from the evil bots.
+We have built-in integration with reCAPTCHA. So your forms are protected from the evil bots.
 
 
 == Installation ==

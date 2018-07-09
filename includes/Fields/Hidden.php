@@ -33,7 +33,6 @@ class Hidden extends Text {
 		$this->type            = 'hidden';
 		$this->show_in_entry   = false;
 		$this->is_hidden_field = true;
-		$this->admin_only      = true;
 	}
 
 	/**
