@@ -2,7 +2,6 @@
 
 namespace DialogContactForm\Supports;
 
-use DialogContactForm\Collections\Fields;
 use DialogContactForm\Fields\Recaptcha2;
 
 // Exit if accessed directly
@@ -13,10 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 class FormBuilder {
 
 	/**
-	 * Form ID
-	 * @var int
+	 * @var ContactForm
 	 */
-	private $form_id = 0;
+	private $form;
 
 	/**
 	 * List of errors after validation
@@ -37,52 +35,15 @@ class FormBuilder {
 	private $error_message;
 
 	/**
-	 * Configuration for current form
-	 * @var array
-	 */
-	private $configuration = array();
-
-	/**
-	 * List of fields for current form
-	 * @var array
-	 */
-	private $fields = array();
-
-	/**
-	 * Check if form is valid
-	 *
-	 * @var bool
-	 */
-	private $is_valid_form = false;
-
-	/**
-	 * Plugin global options for all forms
-	 * @var array
-	 */
-	private $options = array();
-
-	/**
 	 * Dialog_Contact_Form_Form constructor.
 	 *
 	 * @param int $form_id
 	 */
 	public function __construct( $form_id = 0 ) {
-		$this->options         = Utils::get_option();
 		$this->errors          = isset( $GLOBALS['_dcf_errors'] ) ? $GLOBALS['_dcf_errors'] : array();
 		$this->success_message = isset( $GLOBALS['_dcf_mail_sent_ok'] ) ? $GLOBALS['_dcf_mail_sent_ok'] : null;
 		$this->error_message   = isset( $GLOBALS['_dcf_validation_error'] ) ? $GLOBALS['_dcf_validation_error'] : null;
-
-		if ( $form_id ) {
-			$this->form_id = $form_id;
-			$fields        = get_post_meta( $form_id, '_contact_form_fields', true );
-			$configuration = get_post_meta( $form_id, '_contact_form_config', true );
-
-			if ( is_array( $fields ) && count( $fields ) ) {
-				$this->fields        = $fields;
-				$this->is_valid_form = true;
-				$this->configuration = is_array( $configuration ) && count( $configuration ) ? $configuration : array();
-			}
-		}
+		$this->form            = new ContactForm( $form_id );
 	}
 
 	/**
@@ -104,32 +65,30 @@ class FormBuilder {
 	/**
 	 * Generate text field
 	 *
-	 * @param array $setting
+	 * @param \DialogContactForm\Abstracts\Field $field
 	 * @param bool $echo
 	 *
 	 * @return string
 	 */
-	public function label( $setting, $echo = true ) {
-		if ( 'placeholder' == $this->configuration['labelPosition'] ) {
+	public function label( $field, $echo = true ) {
+		if ( 'placeholder' == $this->form->getSetting( 'labelPosition' ) ) {
 			return '';
 		}
 
-		$validation    = isset( $setting['validation'] ) ? (array) $setting['validation'] : array();
 		$required_abbr = '';
-		if ( isset( $setting['required_field'] ) && 'on' == $setting['required_field'] ) {
+		if ( $field->isRequired() ) {
 			$required_abbr = sprintf( '&nbsp;<abbr class="dcf-required" title="%s">*</abbr>',
 				esc_html__( 'Required', 'dialog-contact-form' )
 			);
 		} // Backward compatibility
-		elseif ( in_array( 'required', $validation ) ) {
+		elseif ( in_array( 'required', (array) $field->get( 'validation' ) ) ) {
 			$required_abbr = sprintf( '&nbsp;<abbr class="dcf-required" title="%s">*</abbr>',
 				esc_html__( 'Required', 'dialog-contact-form' )
 			);
 		}
 
-		$id   = sanitize_title_with_dashes( $setting['field_id'] . '-' . $this->form_id );
 		$html = sprintf( '<label for="%1$s" class="label">%2$s%3$s</label>',
-			$id, esc_attr( $setting['field_title'] ), $required_abbr
+			$field->getId(), esc_attr( $field->get( 'field_title' ) ), $required_abbr
 		);
 
 		return self::printHtml( $html, $echo );
@@ -193,13 +152,12 @@ class FormBuilder {
 	 */
 	public function formContent( $submit_button = true ) {
 		// If there is no field, exist
-		if ( ! $this->isValidForm() ) {
+		if ( ! $this->getForm()->isValid() ) {
 			return null;
 		}
-		$fieldManager = Fields::init();
-		$nonce        = wp_create_nonce( 'dialog_contact_form_nonce' );
-		$referer      = esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) );
-		$html         = '';
+		$nonce   = wp_create_nonce( 'dialog_contact_form_nonce' );
+		$referer = esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		$html    = '';
 
 		$html .= '<div class="dcf-response">';
 		$html .= '<div class="dcf-success">' . $this->getSuccessMessage() . '</div>';
@@ -209,40 +167,31 @@ class FormBuilder {
 		// System field
 		$html .= '<input type="hidden" id="_dcf_nonce" name="_dcf_nonce" value="' . $nonce . '"/>';
 		$html .= '<input type="hidden" name="_dcf_referer" value="' . $referer . '"/>';
-		$html .= '<input type="hidden" name="_dcf_id" value="' . $this->form_id . '"/>';
+		$html .= '<input type="hidden" name="_dcf_id" value="' . $this->getForm()->getId() . '"/>';
 
-		foreach ( $this->fields as $field ) {
-			$field_type = isset( $field['field_type'] ) ? esc_attr( $field['field_type'] ) : 'text';
-			$class_name = $fieldManager->get( $field_type );
-			if ( ! method_exists( $class_name, 'render' ) ) {
-				continue;
-			}
-
-			/** @var \DialogContactForm\Abstracts\Field $field_class */
-			$field_class = new $class_name;
-			$field_class->setFormId( $this->form_id );
-			$field_class->setField( $field );
+		/** @var \DialogContactForm\Abstracts\Field $field */
+		foreach ( $this->getForm()->getFormFields() as $field ) {
 
 			$style = '';
-			if ( $field_class->isHiddenField() ) {
+			if ( $field->isHiddenField() ) {
 				$style .= 'style="display: none"';
 			}
 
-			$field_width = ! empty( $field['field_width'] ) ? esc_attr( $field['field_width'] ) : 'is-12';
+			$field_width = $field->has( 'field_width' ) ? esc_attr( $field->get( 'field_width' ) ) : 'is-12';
 
 			$html .= sprintf( '<div class="dcf-column %s" %s>', $field_width, $style );
 			$html .= '<div class="dcf-field">';
 
-			if ( $field_class->showLabel() ) {
+			if ( $field->showLabel() ) {
 				$html .= $this->label( $field, false );
 			}
 
 			$html .= '<div class="dcf-control">';
 
-			$html .= $field_class->render();
+			$html .= $field->render();
 
 			// Show error message if any
-			if ( isset( $field['field_name'], $this->errors[ $field['field_name'] ][0] ) ) {
+			if ( ! empty( $this->errors[ $field->getName() ][0] ) ) {
 				$html .= '<div class="dcf-error-message">';
 				$html .= esc_attr( $this->errors[ $field['field_name'] ][0] );
 				$html .= '</div>';
@@ -255,7 +204,7 @@ class FormBuilder {
 
 		// If Google reCAPTCHA, add here
 		$recaptcha = new Recaptcha2();
-		$recaptcha->setFormId( $this->form_id );
+		$recaptcha->setFormId( $this->getForm()->getId() );
 		$html .= $recaptcha->render();
 
 		// Submit button
@@ -287,18 +236,20 @@ class FormBuilder {
 	 * @return string
 	 */
 	public function submitButton() {
+		$btnAlign = $this->getForm()->getSetting( 'btnAlign', 'left' );
+		$btnLabel = $this->getForm()->getSetting( 'btnLabel', __( 'Submit', 'dialog-contact-form' ) );
+
 		$html = sprintf( '<div class="%s"><button type="submit" class="button dcf-submit">%s</button></div>',
-			( isset( $this->configuration['btnAlign'] ) && $this->configuration['btnAlign'] == 'right' ) ? 'dcf-level-right' : 'dcf-level-left',
-			esc_attr( $this->configuration['btnLabel'] )
+			( $btnAlign == 'right' ) ? 'dcf-level-right' : 'dcf-level-left', esc_attr( $btnLabel )
 		);
 
 		return $html;
 	}
 
 	/**
-	 * @return bool
+	 * @return ContactForm
 	 */
-	public function isValidForm() {
-		return $this->is_valid_form;
+	public function getForm() {
+		return $this->form;
 	}
 }

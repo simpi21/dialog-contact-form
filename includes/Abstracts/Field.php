@@ -21,7 +21,7 @@ abstract class Field implements \ArrayAccess {
 	 *
 	 * @var string
 	 */
-	protected $admin_icon = '<i class="fas fa-text-width"></i>';
+	protected $admin_icon = '<svg><use href="#dcf-icon-text"></use></svg>';
 
 	/**
 	 * Field Label for admin usage
@@ -507,6 +507,54 @@ abstract class Field implements \ArrayAccess {
 		}
 
 		return floatval( $this->get( 'number_step' ) );
+	}
+
+	/**
+	 * Get min date
+	 *
+	 * @return string
+	 */
+	public function getMinDate() {
+		$min_date = $this->get( 'min_date' );
+
+		if ( ! $this->validate( $min_date ) ) {
+			return '';
+		}
+
+		return esc_attr( $min_date );
+	}
+
+	/**
+	 * Get max date
+	 *
+	 * @return string
+	 */
+	public function getMaxDate() {
+		$max_date = $this->get( 'max_date' );
+
+		if ( ! $this->validate( $max_date ) ) {
+			return '';
+		}
+
+		return esc_attr( $max_date );
+	}
+
+	/**
+	 * Check if it is HTML5 Date
+	 *
+	 * @return bool
+	 */
+	public function isHtmlDate() {
+		return ( 'off' !== $this->get( 'native_html5' ) );
+	}
+
+	/**
+	 * Check if it is HTML5 Time
+	 *
+	 * @return bool
+	 */
+	protected function isHtmlTime() {
+		return ( 'off' !== $this->get( 'native_html5' ) );
 	}
 
 	/**

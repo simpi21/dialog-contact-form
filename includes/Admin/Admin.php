@@ -1,6 +1,6 @@
 <?php
 
-namespace DialogContactForm;
+namespace DialogContactForm\Admin;
 
 use DialogContactForm\Collections\Actions;
 use DialogContactForm\Collections\Fields;

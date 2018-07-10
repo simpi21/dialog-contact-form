@@ -189,11 +189,11 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		public function init_classes() {
 
 			if ( $this->is_request( 'admin' ) ) {
-				$this->container['admin']      = \DialogContactForm\Admin::init();
-				$this->container['entries']    = \DialogContactForm\Entries\EntryManager::init();
+				$this->container['admin']      = \DialogContactForm\Admin\Admin::init();
 				$this->container['settings']   = \DialogContactForm\Admin\Settings::init();
 				$this->container['ajax']       = \DialogContactForm\Admin\Ajax::init();
 				$this->container['gutenblock'] = \DialogContactForm\Admin\GutenbergBlock::init();
+				$this->container['entries']    = \DialogContactForm\Entries\EntryManager::init();
 			}
 
 			if ( $this->is_request( 'frontend' ) ) {

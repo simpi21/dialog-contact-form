@@ -45,6 +45,7 @@ class Submission {
 	 * Process form submission
 	 */
 	public function process_submission() {
+		$start = microtime( true );
 
 		// Early exist for non AJAX HTTP Request
 		if ( ! ( $this->is_ajax() && isset( $_POST['_dcf_nonce'], $_POST['_dcf_id'] ) ) ) {
@@ -60,6 +61,7 @@ class Submission {
 			if ( $this->is_ajax() ) {
 				wp_send_json( array(
 					'status'  => 'fail',
+					'time'    => microtime( true ) - $start,
 					'message' => $form->getSpamMessage(),
 				), 403 );
 			}
@@ -71,6 +73,7 @@ class Submission {
 			if ( $this->is_ajax() ) {
 				wp_send_json( array(
 					'status'  => 'fail',
+					'time'    => microtime( true ) - $start,
 					'message' => $form->getSpamMessage(),
 				), 403 );
 			}
@@ -125,6 +128,7 @@ class Submission {
 			if ( $this->is_ajax() ) {
 				wp_send_json( array(
 					'status'     => 'fail',
+					'time'       => microtime( true ) - $start,
 					'message'    => $form->getValidationErrorMessage(),
 					'validation' => $error_data,
 				), 422 );
@@ -177,6 +181,7 @@ class Submission {
 			if ( $this->is_ajax() ) {
 				wp_send_json( array(
 					'status'  => 'fail',
+					'time'    => microtime( true ) - $start,
 					'message' => $form->getMailSendFailMessage(),
 					'actions' => $response,
 				), 500 );
@@ -191,6 +196,7 @@ class Submission {
 			// Display success message
 			wp_send_json( array(
 				'status'     => 'success',
+				'time'       => microtime( true ) - $start,
 				'reset_form' => $form->resetForm(),
 				'actions'    => $response,
 			), 200 );

@@ -55,7 +55,16 @@ class Shortcode {
 			return '';
 		}
 
-		$form = new FormBuilder( intval( $attributes['id'] ) );
+		$form_id = intval( $attributes['id'] );
+		$form    = new FormBuilder( $form_id );
+
+		if ( ! $form->getForm()->isValid() ) {
+			if ( current_user_can( 'manage_options' ) ) {
+				return esc_html__( 'No form found with id #' . $form_id, 'dialog-contact-form' );
+			}
+
+			return '';
+		}
 
 		return $form->form();
 	}
@@ -66,47 +75,49 @@ class Shortcode {
 	public function dialog_button() {
 		$options = Utils::get_option();
 		$form_id = isset( $options['dialog_form_id'] ) ? intval( $options['dialog_form_id'] ) : 0;
-		$form    = new FormBuilder( $form_id );
 
 		if ( $form_id < 1 ) {
 			return;
 		}
 
+		$form_builder = new FormBuilder( $form_id );
+		$form         = $form_builder->getForm();
+
 		// Check if form is valid
-		if ( ! $form->isValidForm() ) {
+		if ( ! $form->isValid() ) {
 			return;
 		}
 
 		printf(
 			'<button class="button dcf-footer-btn" style="background-color: %2$s;color: %3$s" data-toggle="modal" data-target="#modal-%4$s">%1$s</button>',
-			$options['dialog_button_text'],
-			$options['dialog_button_background'],
-			$options['dialog_button_color'],
-			$options['dialog_form_id']
+			$form->getGlobalOption( 'dialog_button_text' ),
+			$form->getGlobalOption( 'dialog_button_background' ),
+			$form->getGlobalOption( 'dialog_button_color' ),
+			$form->getGlobalOption( 'dialog_form_id' )
 		);
 
 		ob_start();
 		?>
-        <div id="modal-<?php echo $form_id; ?>" class="modal">
+        <div id="modal-<?php echo $form->getId(); ?>" class="modal">
             <div class="modal-background"></div>
-			<?php echo $form->formOpen( array( 'class' => 'dcf-form' ) ); ?>
+			<?php echo $form_builder->formOpen( array( 'class' => 'dcf-form' ) ); ?>
             <div class="modal-card">
                 <div class="modal-card-head">
                     <p class="modal-card-title">
-						<?php echo esc_html( get_the_title( $form_id ) ); ?>
+						<?php echo esc_html( $form->getTitle() ); ?>
                     </p>
                     <button class="modal-close" data-dismiss="modal"></button>
                 </div>
                 <div class="modal-card-body">
                     <div class="dcf-columns">
-						<?php echo $form->formContent( false ); ?>
+						<?php echo $form_builder->formContent( false ); ?>
                     </div>
                 </div>
                 <div class="modal-card-foot">
-					<?php echo $form->submitButton(); ?>
+					<?php echo $form_builder->submitButton(); ?>
                 </div>
             </div>
-			<?php echo $form->formClose(); ?>
+			<?php echo $form_builder->formClose(); ?>
         </div>
 		<?php
 		$html = ob_get_contents();

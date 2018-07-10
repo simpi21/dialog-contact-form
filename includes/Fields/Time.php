@@ -53,13 +53,4 @@ class Time extends Text {
 
 		return (bool) preg_match( '/^(1[0-2]|0?[1-9]):[0-5][0-9] (AM|PM)$/i', $value );
 	}
-
-	/**
-	 * Check if it is HTML5 Date
-	 *
-	 * @return bool
-	 */
-	protected function isHtmlTime() {
-		return ( 'off' !== $this->get( 'native_html5' ) );
-	}
 }

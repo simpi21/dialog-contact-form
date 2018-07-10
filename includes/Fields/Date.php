@@ -81,43 +81,4 @@ class Date extends Text {
 
 		return checkdate( $date['month'], $date['day'], $date['year'] );
 	}
-
-	/**
-	 * Get min date
-	 *
-	 * @return string
-	 */
-	public function getMinDate() {
-		$min_date = $this->get( 'min_date' );
-
-		if ( ! $this->validate( $min_date ) ) {
-			return '';
-		}
-
-		return esc_attr( $min_date );
-	}
-
-	/**
-	 * Get max date
-	 *
-	 * @return string
-	 */
-	public function getMaxDate() {
-		$max_date = $this->get( 'max_date' );
-
-		if ( ! $this->validate( $max_date ) ) {
-			return '';
-		}
-
-		return esc_attr( $max_date );
-	}
-
-	/**
-	 * Check if it is HTML5 Date
-	 *
-	 * @return bool
-	 */
-	public function isHtmlDate() {
-		return ( 'off' !== $this->get( 'native_html5' ) );
-	}
 }

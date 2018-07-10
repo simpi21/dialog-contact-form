@@ -112,11 +112,6 @@ class ContactForm {
 			$this->options = Utils::get_option();
 		}
 
-		if ( ! empty( $this->options['mailchimp_api_key'] ) ) {
-			$this->mailchimp_api_key = $this->options['mailchimp_api_key'];
-			unset( $this->options['mailchimp_api_key'] );
-		}
-
 		if ( ! $this->validation_messages ) {
 			$default_messages = Utils::validation_messages();
 			$messages         = array();
@@ -176,12 +171,12 @@ class ContactForm {
 			}
 
 			// Check if reCAPTCHA is enabled
-			if ( isset( $this->form_settings['recaptcha'] ) && 'yes' === $this->form_settings['recaptcha'] ) {
+			if ( 'yes' === $this->getSetting( 'recaptcha' ) ) {
 				$this->has_recaptcha = true;
 			}
 
 			// If form should reset after submission
-			if ( isset( $this->form_settings['reset_form'] ) && 'no' === $this->form_settings['reset_form'] ) {
+			if ( 'no' === $this->getSetting( 'reset_form' ) ) {
 				$this->reset_form = false;
 			}
 		}
@@ -379,7 +374,7 @@ class ContactForm {
 			'title'         => $this->getTitle(),
 			'id'            => $this->getId(),
 			'fields'        => $this->getFormFields(),
-			'settings'      => $this->getFormSettings(),
+			'settings'      => $this->getSetting(),
 			'actions'       => $this->getFormActions(),
 			'messages'      => $this->getValidationMessages(),
 			'has_file'      => $this->hasFile(),
@@ -400,10 +395,17 @@ class ContactForm {
 	/**
 	 * Get current form settings
 	 *
+	 * @param string $key
+	 * @param mixed $default
+	 *
 	 * @return array
 	 */
-	public function getFormSettings() {
-		return $this->form_settings;
+	public function getSetting( $key = null, $default = null ) {
+		if ( empty( $key ) ) {
+			return $this->form_settings;
+		}
+
+		return isset( $this->form_settings[ $key ] ) ? $this->form_settings[ $key ] : $default;
 	}
 
 	/**
@@ -502,7 +504,7 @@ class ContactForm {
 	 * @return string
 	 */
 	public function getMailchimpApiKey() {
-		return $this->mailchimp_api_key;
+		return $this->getGlobalOption( 'mailchimp_api_key' );
 	}
 
 	/**
@@ -530,5 +532,33 @@ class ContactForm {
 	 */
 	public function isValid() {
 		return (bool) $this->getId();
+	}
+
+	/**
+	 * Get global form option
+	 *
+	 * @param null $option
+	 * @param bool $default
+	 *
+	 * @return mixed
+	 */
+	public function getGlobalOption( $option = null, $default = false ) {
+		$option = trim( $option );
+		if ( empty( $option ) ) {
+			return $this->options;
+		}
+
+		$value = null;
+
+		// Distinguish between `false` as a default, and not passing one.
+		if ( func_num_args() > 1 ) {
+			$value = $default;
+		}
+
+		if ( isset( $this->options[ $option ] ) ) {
+			$value = $this->options[ $option ];
+		}
+
+		return $value;
 	}
 }
