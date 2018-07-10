@@ -183,7 +183,7 @@ class Metabox {
 
 		echo self::field_before( $config );
 
-		echo '<div class="buttonset">';
+		echo '<div class="buttonset" data-initial_value="' . $value . '">';
 		foreach ( $config['options'] as $key => $option ) {
 			$input_id    = $input_id . '_' . $key;
 			$checked     = ( $value == $key ) ? ' checked="checked"' : '';

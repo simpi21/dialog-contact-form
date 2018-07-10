@@ -12,14 +12,35 @@
      */
     function updateValidationFieldName() {
         fieldList.find('.dcf-toggle').each(function (index) {
+
             $(this).find('input,textarea,select').each(function () {
                 var nameAttr = $(this).attr('name');
                 if (!!nameAttr) {
                     $(this).attr('name', nameAttr.replace(/\[\d+\]/g, '[' + index + ']'));
                 }
             });
+
+            // Update Buttonset checked fields
+            var buttons = $(this).find('.buttonset');
+            $.each(buttons, function () {
+                var _this = $(this),
+                    init_val = _this.data('initial_value'),
+                    radio = _this.find('input[type="radio"][value="' + init_val + '"]');
+
+                radio.prop('checked', true);
+            });
         });
     }
+
+    $(document).on('change', '.switch-input', function () {
+        var _this = $(this),
+            _val = _this.val(),
+            _buttonset = _this.closest('.buttonset');
+
+        if (_buttonset.length) {
+            _buttonset.data('initial_value', _val);
+        }
+    });
 
     // Draggable
     $(".dcf-fields-list").draggable({
@@ -49,7 +70,9 @@
                             dateFormat: 'yy-mm-dd'
                         });
                     });
-                    updateValidationFieldName();
+                    fieldList.find("select.select2").each(function () {
+                        $(this).select2();
+                    });
                 }
             });
         }

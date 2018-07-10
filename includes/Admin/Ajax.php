@@ -363,7 +363,7 @@ class Ajax {
 				'type'        => 'select',
 				'id'          => 'autocomplete',
 				'group'       => 'field',
-				'input_class' => 'dcf-input-text dcf-input-autocomplete',
+				'input_class' => 'dcf-input-text dcf-input-autocomplete select2',
 				'group_class' => 'dcf-input-group col-autocomplete',
 				'position'    => $index,
 				'meta_key'    => '_contact_form_fields',
