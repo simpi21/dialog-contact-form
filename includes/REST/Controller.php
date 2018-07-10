@@ -454,7 +454,7 @@ class Controller {
 		}
 
 		$entry   = new Entry();
-		$entries = $entry->get( $id );
+		$entries = $entry->findById( $id );
 
 		if ( ! $entries ) {
 			return new WP_Error( 'not_found', __( "The requested form entry was not found.", 'dialog-contact-form' ),

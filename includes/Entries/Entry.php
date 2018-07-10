@@ -2,6 +2,7 @@
 
 namespace DialogContactForm\Entries;
 
+use DialogContactForm\Supports\ContactForm;
 use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
@@ -33,9 +34,36 @@ class Entry {
 	private $meta_table_name;
 
 	/**
-	 * Entry constructor.
+	 * @var array
 	 */
-	public function __construct() {
+	private $entry = array(
+		'id'           => 0,
+		'form_id'      => 0,
+		'user_id'      => 0,
+		'user_ip'      => '127.0.0.1',
+		'user_agent'   => null,
+		'referer'      => null,
+		'status'       => null,
+		'created_at'   => null,
+		'field_values' => array(),
+	);
+
+	/**
+	 * @var array
+	 */
+	private $field_values = array();
+
+	/**
+	 * @var ContactForm
+	 */
+	private $form;
+
+	/**
+	 * Entry constructor.
+	 *
+	 * @param array $entry
+	 */
+	public function __construct( $entry = array() ) {
 		global $wpdb;
 
 		/*
@@ -44,6 +72,159 @@ class Entry {
 		$this->db              = $wpdb;
 		$this->table_name      = $wpdb->prefix . 'dcf_entries';
 		$this->meta_table_name = $wpdb->prefix . 'dcf_entry_meta';
+
+		if ( $entry ) {
+			$this->entry = $entry;
+		}
+	}
+
+	/**
+	 * Does this entry have a given key?
+	 *
+	 * @param string $key The data key
+	 *
+	 * @return bool
+	 */
+	public function has( $key ) {
+		return isset( $this->entry[ $key ] );
+	}
+
+	/**
+	 * Get entry item for key
+	 *
+	 * @param string $key The data key
+	 * @param mixed $default The default value to return if data key does not exist
+	 *
+	 * @return mixed The key's value, or the default value
+	 */
+	public function get( $key, $default = null ) {
+		return $this->has( $key ) ? $this->entry[ $key ] : $default;
+	}
+
+	/**
+	 * Get entry id
+	 *
+	 * @return int
+	 */
+	public function getId() {
+		return $this->get( 'id' );
+	}
+
+	/**
+	 * Get form id
+	 *
+	 * @return int
+	 */
+	public function getFormId() {
+		return $this->get( 'form_id' );
+	}
+
+	/**
+	 * Get form class related to entry
+	 *
+	 * @return ContactForm
+	 */
+	public function getForm() {
+		if ( ! $this->form instanceof ContactForm ) {
+			$this->form = new ContactForm( $this->getFormId() );
+		}
+
+		return $this->form;
+	}
+
+	/**
+	 * Get user id
+	 *
+	 * @return int
+	 */
+	public function getUserId() {
+		return $this->get( 'user_id' );
+	}
+
+	/**
+	 * Get user IP address
+	 *
+	 * @return int
+	 */
+	public function getUserIp() {
+		return $this->get( 'user_ip' );
+	}
+
+	/**
+	 * Get user agent
+	 *
+	 * @return string
+	 */
+	public function getUserAgent() {
+		return $this->get( 'user_agent' );
+	}
+
+	/**
+	 * Get form referer
+	 *
+	 * @return string
+	 */
+	public function getReferer() {
+		return $this->get( 'referer' );
+	}
+
+	/**
+	 * Get status
+	 *
+	 * @return string
+	 */
+	public function getStatus() {
+		return $this->get( 'status' );
+	}
+
+	/**
+	 * Get entry creation date
+	 *
+	 * @return mixed
+	 */
+	public function getCreatedAt() {
+		return $this->get( 'created_at' );
+	}
+
+	/**
+	 * Get field values
+	 *
+	 * @param string $key
+	 * @param mixed $default
+	 *
+	 * @return mixed
+	 */
+	public function getFieldValues( $key = null, $default = null ) {
+		$field_values = $this->get( 'field_values' );
+
+		if ( ! is_array( $field_values ) ) {
+			return array();
+		}
+
+		if ( empty( $key ) ) {
+			return $field_values;
+		}
+
+		return isset( $field_values[ $key ] ) ? $field_values[ $key ] : $default;
+	}
+
+	/**
+	 * Get entry data as array
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'id'           => $this->getId(),
+			'form_id'      => $this->getFormId(),
+			'user_id'      => $this->getUserId(),
+			'user_ip'      => $this->getUserIp(),
+			'user_agent'   => $this->getUserAgent(),
+			'referer'      => $this->getReferer(),
+			'status'       => $this->getStatus(),
+			'created_at'   => $this->getCreatedAt(),
+			'field_values' => $this->getFieldValues(),
+		);
 	}
 
 	/**
@@ -97,7 +278,7 @@ class Entry {
 	 *
 	 * @return array
 	 */
-	public function get( $entry_id ) {
+	public function findById( $entry_id ) {
 		$items = $this->db->get_row( $this->db->prepare(
 			"SELECT * FROM {$this->table_name} WHERE id = %d", $entry_id ),
 			ARRAY_A

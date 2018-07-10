@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $entry = new Entry();
-$data  = $entry->get( $id );
+$data  = $entry->findById( $id );
 
 // Update status to read
 if ( isset( $data['status'] ) && 'unread' === $data['status'] ) {
