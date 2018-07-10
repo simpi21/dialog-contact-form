@@ -71,7 +71,7 @@ class FormBuilder {
 	 * @return string
 	 */
 	public function label( $field, $echo = true ) {
-		if ( 'placeholder' == $this->form->getSetting( 'labelPosition' ) ) {
+		if ( 'placeholder' == $this->getForm()->getSetting( 'labelPosition' ) ) {
 			return '';
 		}
 
@@ -165,7 +165,7 @@ class FormBuilder {
 		$html .= '</div>';
 
 		// System field
-		$html .= '<input type="hidden" id="_dcf_nonce" name="_dcf_nonce" value="' . $nonce . '"/>';
+		$html .= '<input type="hidden" name="_dcf_nonce" value="' . $nonce . '"/>';
 		$html .= '<input type="hidden" name="_dcf_referer" value="' . $referer . '"/>';
 		$html .= '<input type="hidden" name="_dcf_id" value="' . $this->getForm()->getId() . '"/>';
 

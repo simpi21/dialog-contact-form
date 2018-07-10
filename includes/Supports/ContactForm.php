@@ -145,6 +145,7 @@ class ContactForm {
 					continue;
 				}
 				$field->setField( $form_field );
+				$field->setFormId( $this->getId() );
 				$this->form_fields[] = $field;
 			}
 

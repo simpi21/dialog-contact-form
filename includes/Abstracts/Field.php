@@ -355,7 +355,7 @@ abstract class Field implements \ArrayAccess {
 	 * @return string
 	 */
 	public function getId() {
-		return sanitize_title_with_dashes( $this->get( 'field_id' ) . '-' . $this->form_id );
+		return sanitize_title_with_dashes( $this->get( 'field_id' ) . '-' . $this->getFormId() );
 	}
 
 	/**

@@ -46,6 +46,8 @@ class Shortcode {
 	 * @return string
 	 */
 	public function contact_form( $attributes ) {
+		$start = microtime( true );
+
 		if ( empty( $attributes['id'] ) ) {
 			if ( current_user_can( 'manage_options' ) ) {
 				return esc_html__( 'Dialog Contact form now required a form ID attribute. Please update your shortcode.',
@@ -66,13 +68,21 @@ class Shortcode {
 			return '';
 		}
 
-		return $form->form();
+		$html = $form->form();
+
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$finish = round( microtime( true ) - $start, 6 );
+			$html   .= '<div style="display: none;">Form generated in ' . $finish . ' microseconds</div>';
+		}
+
+		return $html;
 	}
 
 	/**
 	 * Display dialog button
 	 */
 	public function dialog_button() {
+		$start   = microtime( true );
 		$options = Utils::get_option();
 		$form_id = isset( $options['dialog_form_id'] ) ? intval( $options['dialog_form_id'] ) : 0;
 
@@ -122,6 +132,11 @@ class Shortcode {
 		<?php
 		$html = ob_get_contents();
 		ob_end_clean();
+
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$finish = round( microtime( true ) - $start, 6 );
+			$html   .= '<div style="display: none;">Form generated in ' . $finish . ' microseconds</div>';
+		}
 
 		echo $html;
 	}
