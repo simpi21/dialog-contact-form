@@ -120,7 +120,6 @@ class Activation {
 
 			update_post_meta( $contact_form->ID, '_contact_form_fields', $new_fields );
 			update_post_meta( $contact_form->ID, '_contact_form_actions', array(
-				'store_submission',
 				'email_notification',
 				'success_message',
 				'redirect'

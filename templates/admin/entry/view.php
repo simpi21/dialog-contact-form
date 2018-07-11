@@ -2,9 +2,7 @@
 
 use DialogContactForm\Abstracts\Field;
 use DialogContactForm\Entries\Entry;
-use DialogContactForm\Collections\Fields;
 use DialogContactForm\Supports\Browser;
-use DialogContactForm\Supports\ContactForm;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,28 +13,21 @@ $entry = new Entry();
 $data  = $entry->findById( $id );
 
 // Update status to read
-if ( isset( $data['status'] ) && 'unread' === $data['status'] ) {
+if ( 'unread' === $data->getStatus() ) {
 	$entry->update( array( 'status' => 'read' ), array( 'id' => $id ) );
 }
 
-$browser    = new Browser( $data['user_agent'] );
+$browser    = new Browser( $data->getUserAgent() );
 $user_agent = sprintf( '%s / %s %s', $browser->getPlatform(), $browser->getBrowser(), $browser->getVersion() );
 
-$created_at = isset( $data['created_at'] ) ? $data['created_at'] : 0;
-$created_at = new \DateTime( $created_at );
+$form       = $data->getForm();
+$form_title = sprintf( '%s : Entry # %s', $form->getTitle(), $data->getId() );
 
-$form_id    = isset( $data['form_id'] ) ? $data['form_id'] : 0;
-$form       = new ContactForm( $form_id );
-$form_title = $form->getTitle();
-$form_title = sprintf( '%s : Entry # %s', $form_title, $data['id'] );
 
-$_fields      = array();
-$fields       = $form->getFormFields();
-$fieldManager = Fields::init();
-
+$fields = array();
 /** @var \DialogContactForm\Abstracts\Field $field */
-foreach ( $fields as $field ) {
-	$_fields[ $field->get( 'field_name' ) ] = $field;
+foreach ( $form->getFormFields() as $field ) {
+	$fields[ $field->getName() ] = $field;
 }
 
 if ( ! empty( $_REQUEST['redirect_to'] ) ) {
@@ -95,8 +86,10 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
                     </h2>
                     <div class="inside">
                         <table class="form-table dcf-data-table">
-							<?php foreach ( $data['field_values'] as $_key => $value ) {
-								$field = isset( $_fields[ $_key ] ) ? $_fields[ $_key ] : null;
+							<?php
+							foreach ( $data['field_values'] as $_key => $value ) {
+
+								$field = isset( $fields[ $_key ] ) ? $fields[ $_key ] : null;
 
 								if ( ! $field instanceof Field ) {
 									continue;
@@ -105,41 +98,12 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
 								if ( ! $field->showInEntry() ) {
 									continue;
 								}
-								?>
-                                <tr>
-                                    <th scope="row">
-										<?php echo esc_html( $field->get( 'field_title' ) ); ?>
-                                    </th>
-                                    <td>
-										<?php
-										if ( is_string( $value ) ) {
-											echo wpautop( $value );
-										} elseif ( is_numeric( $value ) ) {
-											if ( is_float( $value ) ) {
-												echo floatval( $value );
-											} else {
-												echo intval( $value );
-											}
-										} elseif ( is_array( $value ) ) {
-											foreach ( $value as $v_key => $v_value ) {
-												if ( is_string( $v_value ) ) {
-													echo $v_value;
-												} elseif ( is_array( $v_value ) ) {
-													if ( isset( $v_value['attachment_id'] ) && is_numeric( $v_value['attachment_id'] ) ) {
-														$url = wp_get_attachment_url( $v_value['attachment_id'] );
-														echo '<a href="' . $url . '" target="_blank">';
-														echo wp_get_attachment_image( $v_value['attachment_id'] );
-														echo '</a>';
-													} else {
-														echo implode( '<br>', $v_value );
-													}
-												}
-											}
-										}
-										?>
-                                    </td>
-                                </tr>
-							<?php } ?>
+								echo '<tr>';
+								echo '<th scope="row">' . esc_html( $field->get( 'field_title' ) ) . '</th>';
+								echo '<td>' . $data->formatFieldValue( $value ) . '</td>';
+								echo '</tr>';
+							}
+							?>
                         </table>
                     </div>
 
@@ -156,17 +120,17 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
                             <li>
                                 <span class="label"><?php esc_html_e( 'Entry ID', 'dialog-contact-form' ); ?></span>
                                 <span class="sep">:</span>
-                                <span class="value">#<?php echo $data['id']; ?></span>
+                                <span class="value">#<?php echo $data->getId(); ?></span>
                             </li>
                             <li>
                                 <span class="label"><?php esc_html_e( 'Source', 'dialog-contact-form' ); ?></span>
                                 <span class="sep">:</span>
-                                <span class="value"><?php echo site_url( $data['referer'] ); ?></span>
+                                <span class="value"><?php echo $data->getReferer(); ?></span>
                             </li>
                             <li>
                                 <span class="label"><?php esc_html_e( 'User IP', 'dialog-contact-form' ); ?></span>
                                 <span class="sep">:</span>
-                                <span class="value"><?php echo $data['user_ip']; ?></span>
+                                <span class="value"><?php echo $data->getUserIp(); ?></span>
                             </li>
                             <li>
                                 <span class="label"><?php esc_html_e( 'User agent', 'dialog-contact-form' ); ?></span>
@@ -176,7 +140,7 @@ if ( ! empty( $_REQUEST['redirect_to'] ) ) {
                             <li>
                                 <span class="label"><?php esc_html_e( 'Date', 'dialog-contact-form' ); ?></span>
                                 <span class="sep">:</span>
-                                <span class="value"><?php echo $created_at->format( 'r' ); ?></span>
+                                <span class="value"><?php echo $data->getCreatedAt()->format( 'r' ); ?></span>
                             </li>
                         </ul>
                         <div class="submitbox" id="submitpost" style="margin: 12px -12px -12px;">

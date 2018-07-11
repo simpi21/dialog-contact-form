@@ -1,6 +1,6 @@
 === Dialog Contact Form ===
 Contributors: sayful
-Tags: contact, contact form, email, feedback, form, modal, dialog
+Tags: form, forms, contact form, form builder, feedback, email, ajax, captcha
 Requires at least: 4.7
 Requires PHP: 5.3
 Tested up to: 4.9

@@ -18,7 +18,7 @@ class Attachment {
 	 *
 	 * @return string
 	 */
-	private static function getFileError( $file, $field, $config ) {
+	private static function validateIndividualFile( $file, $field, $config ) {
 
 		$messages = $config->getValidationMessages();
 
@@ -74,13 +74,13 @@ class Attachment {
 
 		$message = array();
 		if ( $file instanceof UploadedFile ) {
-			$message[] = self::getFileError( $file, $field, $config );
+			$message[] = self::validateIndividualFile( $file, $field, $config );
 		}
 
 		if ( is_array( $file ) ) {
 			foreach ( $file as $_file ) {
 				if ( $_file instanceof UploadedFile ) {
-					$message[] = self::getFileError( $_file, $field, $config );
+					$message[] = self::validateIndividualFile( $_file, $field, $config );
 				}
 			}
 		}

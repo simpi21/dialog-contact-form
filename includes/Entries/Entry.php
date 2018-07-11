@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Entry {
+class Entry implements \JsonSerializable, \ArrayAccess {
 
 	/**
 	 * WordPress database
@@ -49,11 +49,6 @@ class Entry {
 	);
 
 	/**
-	 * @var array
-	 */
-	private $field_values = array();
-
-	/**
 	 * @var ContactForm
 	 */
 	private $form;
@@ -63,7 +58,7 @@ class Entry {
 	 *
 	 * @param array $entry
 	 */
-	public function __construct( $entry = array() ) {
+	public function __construct( $entry = null ) {
 		global $wpdb;
 
 		/*
@@ -73,7 +68,7 @@ class Entry {
 		$this->table_name      = $wpdb->prefix . 'dcf_entries';
 		$this->meta_table_name = $wpdb->prefix . 'dcf_entry_meta';
 
-		if ( $entry ) {
+		if ( ! is_null( $entry ) ) {
 			$this->entry = $entry;
 		}
 	}
@@ -90,6 +85,20 @@ class Entry {
 	}
 
 	/**
+	 * Set collection item
+	 *
+	 * @param string $key The data key
+	 * @param mixed $value The data value
+	 */
+	public function set( $key, $value ) {
+		if ( is_null( $key ) ) {
+			$this->entry[] = $value;
+		} else {
+			$this->entry[ $key ] = $value;
+		}
+	}
+
+	/**
 	 * Get entry item for key
 	 *
 	 * @param string $key The data key
@@ -99,6 +108,17 @@ class Entry {
 	 */
 	public function get( $key, $default = null ) {
 		return $this->has( $key ) ? $this->entry[ $key ] : $default;
+	}
+
+	/**
+	 * Remove item from collection
+	 *
+	 * @param string $key The data key
+	 */
+	public function remove( $key ) {
+		if ( $this->has( $key ) ) {
+			unset( $this->entry[ $key ] );
+		}
 	}
 
 	/**
@@ -165,7 +185,7 @@ class Entry {
 	 * @return string
 	 */
 	public function getReferer() {
-		return $this->get( 'referer' );
+		return site_url( $this->get( 'referer' ) );
 	}
 
 	/**
@@ -180,10 +200,16 @@ class Entry {
 	/**
 	 * Get entry creation date
 	 *
-	 * @return mixed
+	 * @return \DateTime
 	 */
 	public function getCreatedAt() {
-		return $this->get( 'created_at' );
+		$created_at      = $this->get( 'created_at' );
+		$timezone_string = get_option( 'timezone_string' );
+
+		$created_at = new \DateTime( $created_at );
+		$created_at->setTimezone( new \DateTimeZone( $timezone_string ) );
+
+		return $created_at;
 	}
 
 	/**
@@ -206,6 +232,55 @@ class Entry {
 		}
 
 		return isset( $field_values[ $key ] ) ? $field_values[ $key ] : $default;
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return string
+	 */
+	public function formatFieldValue( $value ) {
+		if ( empty( $value ) ) {
+			return '';
+		}
+		if ( is_string( $value ) ) {
+			return wpautop( $value );
+		}
+
+		if ( is_numeric( $value ) ) {
+			if ( is_float( $value ) ) {
+				return floatval( $value );
+			}
+
+			return intval( $value );
+		}
+
+		if ( is_object( $value ) ) {
+			$value = json_decode( json_encode( $value ), true );
+		}
+
+		if ( is_array( $value ) ) {
+			foreach ( $value as $v_key => $v_value ) {
+				if ( is_string( $v_value ) ) {
+					return wpautop( $v_value );
+				}
+
+				if ( is_array( $v_value ) ) {
+					if ( isset( $v_value['attachment_id'] ) && is_numeric( $v_value['attachment_id'] ) ) {
+						$url  = wp_get_attachment_url( $v_value['attachment_id'] );
+						$html = '<a href="' . $url . '" target="_blank">';
+						$html .= wp_get_attachment_image( $v_value['attachment_id'] );
+						$html .= '</a>';
+
+						return $html;
+					}
+
+					return implode( '<br>', $v_value );
+				}
+			}
+		}
+
+		return '';
 	}
 
 	/**
@@ -265,7 +340,8 @@ class Entry {
 
 		$data = array();
 		foreach ( $items as $item ) {
-			$data[] = $item + array( 'field_values' => $_meta[ $item['id'] ] );
+			$_data  = $item + array( 'field_values' => $_meta[ $item['id'] ] );
+			$data[] = new self( $_data );
 		}
 
 		return $data;
@@ -276,7 +352,7 @@ class Entry {
 	 *
 	 * @param int $entry_id
 	 *
-	 * @return array
+	 * @return Entry|false
 	 */
 	public function findById( $entry_id ) {
 		$items = $this->db->get_row( $this->db->prepare(
@@ -289,6 +365,10 @@ class Entry {
 			ARRAY_A
 		);
 
+		if ( ! $items ) {
+			return false;
+		}
+
 		$_meta = array();
 		foreach ( $entries as $entry ) {
 			if ( empty( $entry['meta_key'] ) ) {
@@ -299,7 +379,7 @@ class Entry {
 
 		$_entries = $items + array( 'field_values' => $_meta );
 
-		return $_entries;
+		return new self( $_entries );
 	}
 
 	/**
@@ -511,5 +591,77 @@ class Entry {
 		} else {
 			return false;
 		}
+	}
+
+	/********************************************************************************
+	 * JsonSerializable interface
+	 *******************************************************************************/
+
+	/**
+	 * Specify data which should be serialized to JSON
+	 * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+	 * @return mixed data which can be serialized by <b>json_encode</b>,
+	 * which is a value of any type other than a resource.
+	 * @since 5.4.0
+	 */
+	public function jsonSerialize() {
+		return $this->toArray();
+	}
+
+	/********************************************************************************
+	 * ArrayAccess interface
+	 *******************************************************************************/
+
+	/**
+	 * Whether a offset exists
+	 * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+	 *
+	 * @param mixed $offset An offset to check for.
+	 *
+	 * @return boolean true on success or false on failure.
+	 * @since 5.0.0
+	 */
+	public function offsetExists( $offset ) {
+		return $this->has( $offset );
+	}
+
+	/**
+	 * Offset to retrieve
+	 * @link http://php.net/manual/en/arrayaccess.offsetget.php
+	 *
+	 * @param mixed $offset The offset to retrieve.
+	 *
+	 * @return mixed Can return all value types.
+	 * @since 5.0.0
+	 */
+	public function offsetGet( $offset ) {
+		return $this->get( $offset );
+	}
+
+	/**
+	 * Offset to set
+	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
+	 *
+	 * @param mixed $offset The offset to assign the value to.
+	 * @param mixed $value The value to set.
+	 *
+	 * @return void
+	 * @since 5.0.0
+	 */
+	public function offsetSet( $offset, $value ) {
+		$this->set( $offset, $value );
+	}
+
+	/**
+	 * Offset to unset
+	 * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+	 *
+	 * @param mixed $offset The offset to unset.
+	 *
+	 * @return void
+	 * @since 5.0.0
+	 */
+	public function offsetUnset( $offset ) {
+		$this->remove( $offset );
 	}
 }
