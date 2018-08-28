@@ -478,9 +478,11 @@ abstract class Field implements \ArrayAccess {
 	 * @return string
 	 */
 	public function getMax() {
-		$number_max = $this->get( 'number_max' );
+		if ( ! $this->has( 'number_max' ) ) {
+			return '';
+		}
 
-		return ! empty( $number_max ) ? floatval( $this->field['number_max'] ) : '';
+		return floatval( $this->get( 'number_max' ) );
 	}
 
 	/**
