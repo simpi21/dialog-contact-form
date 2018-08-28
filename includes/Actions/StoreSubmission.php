@@ -32,9 +32,7 @@ class StoreSubmission extends Action {
 	 * @return mixed
 	 */
 	public static function process( $config, $data ) {
-		$entry = new Entry();
-
-		return $entry->insert( $data );
+		return Entry::insert( $data );
 	}
 
 	/**

@@ -1,0 +1,28 @@
+# EditorConfig: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# 4 space indentation
+[*.js]
+indent_style = tab
+indent_size = 4
+
+# PHP PSR-2 Coding Standards: http://www.php-fig.org/psr/psr-2/
+# All PHP files MUST use the Unix LF (linefeed) line ending.
+# Code MUST use an indent of 4 spaces, and MUST NOT use tabs for indenting.
+# All PHP files MUST end with a single blank line.
+# There MUST NOT be trailing whitespace at the end of non-blank lines.
+[*.php]
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true

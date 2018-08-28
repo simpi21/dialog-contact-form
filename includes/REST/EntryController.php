@@ -3,9 +3,6 @@
 namespace DialogContactForm\REST;
 
 use DialogContactForm\Entries\Entry;
-use WP_Error;
-use WP_REST_Request;
-use WP_REST_Server;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -42,8 +39,8 @@ class EntryController extends Controller {
 	public static function register_routes() {
 		register_rest_route( self::$namespace, '/entries', array(
 			array(
-				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( self::$instance, 'get_form_entries' ),
+				'methods'  => \WP_REST_Server::READABLE,
+				'callback' => array( self::$instance, 'get_items' ),
 				'args'     => array(
 					'per_page' => array(
 						'required'    => false,
@@ -81,24 +78,24 @@ class EntryController extends Controller {
 
 		register_rest_route( self::$namespace, '/entries/(?P<id>\d+)', array(
 			array(
-				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( self::$instance, 'get_form_entry' ),
+				'methods'  => \WP_REST_Server::READABLE,
+				'callback' => array( self::$instance, 'get_item' ),
 			),
 			array(
-				'methods'  => WP_REST_Server::DELETABLE,
-				'callback' => array( self::$instance, 'delete_form_entry' ),
+				'methods'  => \WP_REST_Server::DELETABLE,
+				'callback' => array( self::$instance, 'delete_item' ),
 			),
 		) );
 	}
 
 	/**
-	 * Get a collection of entries
+	 * Retrieves a collection of items.
 	 *
-	 * @param WP_REST_Request $request
+	 * @param \WP_REST_Request $request Full data about the request.
 	 *
-	 * @return mixed|\WP_REST_Response
+	 * @return \WP_REST_Response Response object
 	 */
-	public static function get_form_entries( WP_REST_Request $request ) {
+	public function get_items( $request ) {
 		$form_id    = (int) $request->get_param( 'form_id' );
 		$capability = current_user_can( 'edit_posts' );
 
@@ -107,9 +104,8 @@ class EntryController extends Controller {
 		}
 
 		if ( ! $capability ) {
-			return new WP_Error( 'forbidden',
-				__( "You are not allowed to access contact forms entries.", 'dialog-contact-form' ),
-				array( 'status' => 403 ) );
+			return $this->respondForbidden( null,
+				__( "You are not authorized to perform the action.", 'dialog-contact-form' ) );
 		}
 
 		$args = array();
@@ -135,70 +131,63 @@ class EntryController extends Controller {
 			$args['orderby'] = (string) $orderby;
 		}
 
-		$entry   = new Entry();
-		$entries = $entry->find( $args );
+		$entries = Entry::find( $args );
 
 		if ( ! $entries ) {
-			return new WP_Error( 'not_found',
-				__( "The requested contact form entry was not found.", 'dialog-contact-form' ),
-				array( 'status' => 404 ) );
+			return $this->respondNotFound( null,
+				__( "The requested contact form entry was not found.", 'dialog-contact-form' ) );
 		}
 
-		return rest_ensure_response( $entries );
+		return $this->respondOK( $entries );
 	}
 
 	/**
-	 * Get form entry
+	 * Retrieves one item from the collection.
 	 *
-	 * @param WP_REST_Request $request
+	 * @param \WP_REST_Request $request
 	 *
-	 * @return mixed|\WP_REST_Response
+	 * @return \WP_REST_Response
 	 */
-	public static function get_form_entry( WP_REST_Request $request ) {
+	public function get_item( $request ) {
 		$id = $request->get_param( 'id' );
 
 		if ( ! current_user_can( 'publish_pages', $id ) ) {
-			return new WP_Error( 'forbidden',
-				__( "You are not allowed to access the requested contact form entry.", 'dialog-contact-form' ),
-				array( 'status' => 403 ) );
+			return $this->respondForbidden( null,
+				__( "You are not authorized to perform the action.", 'dialog-contact-form' ) );
 		}
 
-		$entry   = new Entry();
-		$entries = $entry->findById( $id );
+		$entries = Entry::findById( $id );
 
 		if ( ! $entries ) {
-			return new WP_Error( 'not_found', __( "The requested form entry was not found.", 'dialog-contact-form' ),
-				array( 'status' => 404 ) );
+			return $this->respondNotFound( null,
+				__( "The requested form entry was not found.", 'dialog-contact-form' ) );
 		}
 
-		return rest_ensure_response( $entries );
+		return $this->respondOK( $entries );
 	}
 
 	/**
-	 * Delete form entry
+	 * Deletes one item from the collection.
 	 *
-	 * @param WP_REST_Request $request
+	 * @param \WP_REST_Request $request Full data about the request.
 	 *
-	 * @return mixed|\WP_REST_Response
+	 * @return \WP_REST_Response Response object
 	 */
-	public static function delete_form_entry( WP_REST_Request $request ) {
+	public function delete_item( $request ) {
 		$id = (int) $request->get_param( 'id' );
 
 		if ( ! current_user_can( 'publish_pages', $id ) ) {
-			return new WP_Error( 'forbidden',
-				__( "You are not allowed to access the requested form entry.", 'dialog-contact-form' ),
-				array( 'status' => 403 ) );
+			return $this->respondForbidden( null,
+				__( "You are not authorized to perform the action.", 'dialog-contact-form' ) );
 		}
 
-		$entry  = new Entry();
-		$result = $entry->delete( $id );
+		$result = Entry::delete( $id );
 
 		if ( false === $result ) {
-			return new WP_Error( 'cannot_delete',
-				__( "There was an error deleting the form entry.", 'dialog-contact-form' ),
-				array( 'status' => 500 ) );
+			return $this->respondInternalServerError( null,
+				__( "There was an error deleting the form entry.", 'dialog-contact-form' ) );
 		}
 
-		return rest_ensure_response( array( 'deleted' => true ) );
+		return $this->respondOK( array( 'deleted' => true ) );
 	}
 }

@@ -9,12 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$entry = new Entry();
-$data  = $entry->findById( $id );
+$data = Entry::findById( $id );
 
 // Update status to read
 if ( 'unread' === $data->getStatus() ) {
-	$entry->update( array( 'status' => 'read' ), array( 'id' => $id ) );
+	Entry::update( array( 'status' => 'read' ), array( 'id' => $id ) );
 }
 
 $browser    = new Browser( $data->getUserAgent() );

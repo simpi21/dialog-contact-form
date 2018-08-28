@@ -143,9 +143,9 @@ class FormController extends Controller {
 	 *
 	 * @param \WP_REST_Request $request
 	 *
-	 * @return mixed|\WP_REST_Response
+	 * @return \WP_REST_Response
 	 */
-	public function get_item( \WP_REST_Request $request ) {
+	public function get_item( $request ) {
 
 		$id = $request->get_param( 'id' );
 
@@ -173,7 +173,7 @@ class FormController extends Controller {
 	 *
 	 * @return \WP_REST_Response Response object
 	 */
-	public function create_item( \WP_REST_Request $request ) {
+	public function create_item( $request ) {
 
 		if ( ! current_user_can( 'publish_pages' ) ) {
 			return $this->respondForbidden( null,
@@ -225,7 +225,7 @@ class FormController extends Controller {
 	 *
 	 * @return \WP_REST_Response Response object
 	 */
-	public function update_item( \WP_REST_Request $request ) {
+	public function update_item( $request ) {
 		$id = $request->get_param( 'id' );
 
 		if ( ! current_user_can( 'publish_pages', $id ) ) {
@@ -254,7 +254,7 @@ class FormController extends Controller {
 	 *
 	 * @return \WP_REST_Response Response object
 	 */
-	public function delete_item( \WP_REST_Request $request ) {
+	public function delete_item( $request ) {
 		$id = $request->get_param( 'id' );
 
 		if ( ! current_user_can( 'publish_pages', $id ) ) {

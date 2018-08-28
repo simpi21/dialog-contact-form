@@ -190,6 +190,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 
 			if ( $this->is_request( 'admin' ) ) {
 				$this->container['admin']      = \DialogContactForm\Admin\Admin::init();
+				$this->container['menu']       = \DialogContactForm\Admin\Menu::init();
 				$this->container['settings']   = \DialogContactForm\Admin\Settings::init();
 				$this->container['ajax']       = \DialogContactForm\Admin\Ajax::init();
 				$this->container['gutenblock'] = \DialogContactForm\Admin\GutenbergBlock::init();

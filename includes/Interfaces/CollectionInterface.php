@@ -8,7 +8,7 @@ namespace DialogContactForm\Interfaces;
  * @package DialogContactForm
  * @since   3.0.0
  */
-interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate {
+interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Does this collection have a given key?
