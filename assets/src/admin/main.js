@@ -5,7 +5,7 @@ import menuFix from "./utils/admin-menu-fix.js";
 
 jQuery.ajaxSetup({
     beforeSend: function (xhr) {
-        xhr.setRequestHeader('X-WP-Nonce', window.vueWpStarterSettings.nonce);
+        xhr.setRequestHeader('X-WP-Nonce', window.dcfApiSettings.nonce);
     }
 });
 
@@ -15,5 +15,5 @@ new Vue({
     render: h => h(App)
 });
 
-// fix the admin menu for the slug "vue-wp-starter"
+// fix the admin menu for the slug "dialog-contact-form"
 menuFix('dialog-contact-form');

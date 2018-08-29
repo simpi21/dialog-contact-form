@@ -1,7 +1,7 @@
 <template>
     <p class="search-box">
         <label class="screen-reader-text" :for="id">{{screenReaderText}}</label>
-        <input type="search" :id="id" v-model="query" @input="input">
+        <input type="search" :id="id" v-model="query" @input="input" name="s">
         <button type="button" class="button" id="search-submit" @click.prevent="submit">{{buttonText}}</button>
     </p>
 </template>
