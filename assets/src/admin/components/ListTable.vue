@@ -1,7 +1,7 @@
 <template>
     <div :class="{ 'table-loading': loading }">
 
-        <div class="table-loader-wrap" v-if="loading">
+        <div class="table-loader-wrap" v-show="loading">
             <div class="table-loader-center">
                 <div class="table-loader">Loading</div>
             </div>
@@ -140,7 +140,7 @@
             },
 
             colspan() {
-                let columns = Object.keys(this.items).length;
+                let columns = Object.keys(this.columns).length;
 
                 if (this.showCb) {
                     columns += 1;

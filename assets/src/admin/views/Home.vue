@@ -6,30 +6,12 @@
 
         <list-table
                 :columns="{
-    'title': {      label: 'Title',      sortable: true    },
-    'author': {      label: 'Author'    }
-  }"
+                    'title': { label: 'Title', sortable: true },
+                    'shortcode': { label: 'Shortcode' },
+                    'entries': { label: 'Entries' },
+                }"
                 :loading="false"
-                :items="[
-    {
-      id: 1,
-      title: 'Wings of Fire: An Autobiography',
-      author: ['A.P.J. Abdul Kalam'],
-      image: 'https://images.gr-assets.com/books/1295670969l/634583.jpg'
-    },
-    {
-      id: 2,
-      title: 'Who Moved My Cheese?',
-      author: ['Spencer Johnson', 'Kenneth H. Blanchard'],
-      image: 'https://images.gr-assets.com/books/1388639717l/4894.jpg'
-    },
-    {
-      id: 3,
-      title: 'Option B',
-      author: ['Sheryl Sandberg', 'Adam Grant', 'Adam M. Grant'],
-      image: 'https://images.gr-assets.com/books/1493998427l/32938155.jpg'
-    }
-  ]"
+                :items="items"
                 :actions="[
     {
       key: 'edit',
@@ -41,28 +23,23 @@
     }
   ]"
                 :show-cb="true"
-                :total-items="15"
-                :bulk-actions="[
-    {
-      key: 'trash',
-      label: 'Move to Trash'
-    }
-  ]"
-                :total-pages="5"
-                :per-page="3"
-                :current-page="1"
+                :bulk-actions="[{ key: 'trash', label: 'Move to Trash' }]"
+                :total-items="totalItems"
+                :total-pages="totalItems"
+                :per-page="perPage"
+                :current-page="currentPage"
                 action-column="title"
                 @pagination="goToPage"
                 @action:click="onActionClick"
                 @bulk:click="onBulkAction"
         >
             <template slot="title" slot-scope="data">
-                <img :src="data.row.image" :alt="data.row.title" width="50">
                 <strong><a href="#">{{ data.row.title }}</a></strong>
             </template>
 
-            <template slot="author" slot-scope="data">
-                {{ data.row.author.join(', ') }}
+            <template slot="shortcode" slot-scope="data">
+                <input type="text" class="dcf-copy-shortcode"
+                       :value="shortcode(data.row)" onclick="copyToClipboard('data')">
             </template>
         </list-table>
 
@@ -77,7 +54,11 @@
         name: "Home",
         data() {
             return {
+                items: [],
                 currentPage: 1,
+                totalItems: 0,
+                perPage: 20,
+                loading: true,
             }
         },
         components: {
@@ -85,6 +66,11 @@
             ListTable
         },
         methods: {
+            shortcode(item) {
+                return `[dialog_contact_form id='${item.id}']`
+            },
+            copyToClipboard(data) {
+            },
             search(query) {
                 console.log(query);
             },
@@ -109,7 +95,27 @@
 
                 // this.loadItems(comun, order);
             },
-        }
+            list() {
+                let $ = jQuery, self = this;
+                $.ajax({
+                    method: 'GET',
+                    url: window.dcfApiSettings.root + '/forms',
+                    success: function (response) {
+                        let items = response.data.items,
+                            pagination = response.data.meta.pagination;
+
+                        self.loading = false;
+                        self.items = items;
+                        self.currentPage = pagination.currentPage;
+                        self.totalItems = pagination.totalCount;
+                        self.perPage = pagination.limit;
+                    }
+                });
+            }
+        },
+        created() {
+            this.list();
+        },
     }
 </script>
 

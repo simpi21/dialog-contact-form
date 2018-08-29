@@ -4,6 +4,7 @@ namespace DialogContactForm\REST;
 
 use DialogContactForm\Abstracts\Template;
 use DialogContactForm\Collections\Templates;
+use DialogContactForm\Models\Form;
 use DialogContactForm\Supports\ContactForm;
 
 // Exit if accessed directly
@@ -125,15 +126,26 @@ class FormController extends Controller {
 
 		$forms = ContactForm::find( $args );
 
-		$response = array();
+		$response = array(
+			'items' => array(),
+			'meta'  => array(),
+		);
 
 		/** @var ContactForm $form */
 		foreach ( $forms as $form ) {
-			$response[] = array(
+			$response['items'][] = array(
 				'id'    => $form->getId(),
 				'title' => $form->getTitle(),
 			);
 		}
+
+		$counts = Form::totalCount();
+
+		$response['meta']['pagination'] = $this->getPaginationMetadata( [
+			'totalCount' => isset( $counts['publish'] ) ? intval( $counts['publish'] ) : 0,
+			'limit'      => $per_page,
+			'offset'     => $offset,
+		] );
 
 		return $this->respondOK( $response );
 	}
