@@ -20,7 +20,7 @@ class Assets {
         if ( is_null( self::$instance ) ) {
             self::$instance = new self();
 
-            add_action( 'wp_loaded', [ self::$instance, 'register' ] );
+            add_action( 'wp_loaded', array( self::$instance, 'register' ) );
         }
 
         return self::$instance;
@@ -73,18 +73,18 @@ class Assets {
      */
     public function get_scripts() {
         $prefix  = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-        $scripts = [
-            'dialog-contact-form-vendor' => [
+        $scripts = array(
+            'dialog-contact-form-vendor' => array(
                 'src'       => DIALOG_CONTACT_FORM_ASSETS . '/js/vendor' . $prefix . '.js',
-                'deps'      => [],
+                'deps'      => array(),
                 'in_footer' => true
-            ],
-            'dialog-contact-form-admins'  => [
+            ),
+            'dialog-contact-form-admins' => array(
                 'src'       => DIALOG_CONTACT_FORM_ASSETS . '/js/admins' . $prefix . '.js',
-                'deps'      => [ 'jquery', 'dialog-contact-form-vendor' ],
+                'deps'      => array( 'jquery', 'dialog-contact-form-vendor' ),
                 'in_footer' => true
-            ]
-        ];
+            )
+        );
 
         return $scripts;
     }
@@ -95,14 +95,14 @@ class Assets {
      * @return array
      */
     public function get_styles() {
-        $styles = [
-            'dialog-contact-form-public' => [
+        $styles = array(
+            'dialog-contact-form-public' => array(
                 'src' => DIALOG_CONTACT_FORM_ASSETS . '/css/public.css'
-            ],
-            'dialog-contact-form-admins'  => [
+            ),
+            'dialog-contact-form-admins' => array(
                 'src' => DIALOG_CONTACT_FORM_ASSETS . '/css/admins.css'
-            ],
-        ];
+            ),
+        );
 
         return $styles;
     }
