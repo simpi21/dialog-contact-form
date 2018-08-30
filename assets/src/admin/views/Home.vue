@@ -12,16 +12,7 @@
                 }"
                 :loading="false"
                 :items="items"
-                :actions="[
-    {
-      key: 'edit',
-      label: 'Edit'
-    },
-    {
-      key: 'trash',
-      label: 'Delete'
-    }
-  ]"
+                :actions="[ { key: 'edit', label: 'Edit' }, { key: 'view', label: 'Preview' }, { key: 'trash', label: 'Trash' }]"
                 :show-cb="true"
                 :bulk-actions="[{ key: 'trash', label: 'Move to Trash' }]"
                 :total-items="totalItems"
@@ -39,7 +30,11 @@
 
             <template slot="shortcode" slot-scope="data">
                 <input type="text" class="dcf-copy-shortcode"
-                       :value="shortcode(data.row)" onclick="copyToClipboard('data')">
+                       :value="shortcode(data.row)" @click="copyToClipboard($event)">
+            </template>
+
+            <template slot="entries" slot-scope="data">
+                {{data.row.entries}}
             </template>
         </list-table>
 
@@ -69,7 +64,13 @@
             shortcode(item) {
                 return `[dialog_contact_form id='${item.id}']`
             },
-            copyToClipboard(data) {
+            copyToClipboard(event) {
+                let input = event.target,
+                    value = input.value;
+
+                input.select();
+                document.execCommand("copy");
+                alert("Copied: " + value);
             },
             search(query) {
                 console.log(query);
@@ -120,5 +121,33 @@
 </script>
 
 <style lang="scss">
+    .toplevel_page_dialog-contact-form {
+        .dcf-copy-shortcode {
+            background-color: #f1f1f1;
+            letter-spacing: 1px;
+            padding: 5px 8px;
+            width: 100%;
+            max-width: 20em;
 
+            &.widefat {
+                max-width: 100%;
+            }
+        }
+
+        @media screen and (min-width: 783px) {
+            .wp-list-table {
+                th, td {
+                    &.title {
+                        width: calc(50% - 2.5em);
+                    }
+                    &.shortcode {
+                        width: 40%;
+                    }
+                    &.entries {
+                        width: 10%;
+                    }
+                }
+            }
+        }
+    }
 </style>
