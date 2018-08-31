@@ -70,6 +70,7 @@ class Scripts {
 			DIALOG_CONTACT_FORM_ASSETS . '/js/admin' . $suffix . '.js',
 			array(
 				'jquery',
+				'dialog-contact-form-vendor',
 				'select2',
 				'jquery-ui-tabs',
 				'jquery-ui-sortable',
