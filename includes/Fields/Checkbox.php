@@ -131,12 +131,12 @@ class Checkbox extends Field {
 	 * @return mixed
 	 */
 	protected function getValue() {
-		if ( empty( $_POST[ $this->field['field_name'] ] ) ) {
+		if ( empty( $_POST[ $this->getName() ] ) ) {
 			return array();
 		}
 
-		if ( is_array( $_POST[ $this->field['field_name'] ] ) ) {
-			return $_POST[ $this->field['field_name'] ];
+		if ( is_array( $_POST[ $this->getName() ] ) ) {
+			return $_POST[ $this->getName() ];
 		}
 
 		return array();

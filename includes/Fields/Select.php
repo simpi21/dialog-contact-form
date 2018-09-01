@@ -65,7 +65,7 @@ class Select extends Field {
 		$html .= '<select ' . $this->arrayToAttributes( $attributes ) . '>';
 
 		if ( $this->has( 'placeholder' ) ) {
-			$html .= sprintf( '<option value="">%s</option>', esc_attr( $this->field['placeholder'] ) );
+			$html .= sprintf( '<option value="">%s</option>', esc_attr( $this->getPlaceholder() ) );
 		}
 		foreach ( $options as $option ) {
 			$option   = trim( $option );
