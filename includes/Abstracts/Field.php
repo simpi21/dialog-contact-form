@@ -138,7 +138,7 @@ abstract class Field extends Collection {
 	 * @return array The collection's source data
 	 */
 	public function all() {
-		return array(
+		$field = array(
 			'type'               => $this->getType(),
 			'label'              => $this->get( 'field_title' ),
 			'id'                 => $this->get( 'field_id' ),
@@ -152,16 +152,42 @@ abstract class Field extends Collection {
 			'field_width'        => $this->get( 'field_width' ),
 			'placeholder'        => $this->getPlaceholder(),
 			'autocomplete'       => $this->getAutocomplete(),
-			'acceptance_text'    => $this->get( 'acceptance_text' ),
-			'checked_by_default' => $this->get( 'checked_by_default' ),
+			'acceptance_text'    => $this->getAcceptanceText(),
+			'checked_by_default' => $this->isCheckedByDefault(),
 			'min_date'           => $this->getMinDate(),
 			'max_date'           => $this->getMaxDate(),
-			// 'max_file_size'      => $this->getMaxFileSize(),
-			// 'allowed_file_types'      => $this->getAllowedMimeTypes(),
+			'max_file_size'      => $this->getMaxFileSize(),
+			'allowed_file_types' => $this->getAllowedMimeTypes(),
 			'rows'               => $this->getRows(),
 			'multiple'           => $this->isMultiple(),
-			'html'               => wp_filter_post_kses( $this->get( 'html' ) ),
+			'html'               => $this->get( 'html' ),
 		);
+
+		return $field;
+	}
+
+	/**
+	 * Get max upload size in bytes
+	 *
+	 * @return int
+	 */
+	public function getMaxFileSize() {
+		$max_file_size = $this->get( 'max_file_size' );
+
+		if ( is_numeric( $max_file_size ) ) {
+			return $max_file_size * pow( 1024, 2 );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get allowed file types
+	 *
+	 * @return array
+	 */
+	public function getAllowedMimeTypes() {
+		return $this->get( 'allowed_file_types', array() );
 	}
 
 	/**
@@ -663,5 +689,25 @@ abstract class Field extends Collection {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Get field acceptance text
+	 *
+	 * @return string
+	 */
+	protected function getAcceptanceText() {
+		return $this->get( 'acceptance_text' );
+	}
+
+	/**
+	 * Check if field is checked by default
+	 *
+	 * @return boolean
+	 */
+	protected function isCheckedByDefault() {
+		$value = $this->get( 'checked_by_default' );
+
+		return in_array( $value, array( 'yes', 'on', '1', 1, true, 'true' ), true );
 	}
 }

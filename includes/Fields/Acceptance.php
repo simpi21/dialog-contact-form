@@ -89,22 +89,4 @@ class Acceptance extends Text {
 	public function sanitize( $value ) {
 		return in_array( $value, array( 'on', 'off' ) ) ? $value : 'off';
 	}
-
-	/**
-	 * Get field acceptance text
-	 *
-	 * @return string
-	 */
-	protected function getAcceptanceText() {
-		return $this->get( 'acceptance_text' );
-	}
-
-	/**
-	 * Check if field is checked by default
-	 *
-	 * @return boolean
-	 */
-	protected function isCheckedByDefault() {
-		return $this->validate( $this->get( 'checked_by_default' ) );
-	}
 }
