@@ -186,12 +186,12 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 * @return void
 		 */
 		public function init_classes() {
-			$this->container['assets'] = \DialogContactForm\Assets::init();
+			$this->container['assets']   = \DialogContactForm\Assets::init();
+			$this->container['settings'] = \DialogContactForm\Admin\Settings::init();
 
 			if ( $this->is_request( 'admin' ) ) {
 				$this->container['admin']      = \DialogContactForm\Admin\Admin::init();
 				$this->container['menu']       = \DialogContactForm\Admin\Menu::init();
-				$this->container['settings']   = \DialogContactForm\Admin\Settings::init();
 				$this->container['ajax']       = \DialogContactForm\Admin\Ajax::init();
 				$this->container['gutenblock'] = \DialogContactForm\Admin\GutenbergBlock::init();
 				$this->container['entries']    = \DialogContactForm\Entries\EntryManager::init();
@@ -204,8 +204,9 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 
 			// REST Controllers
 			if ( $this->is_request( 'frontend' ) ) {
-				$this->container['rest-form']  = \DialogContactForm\REST\FormController::init();
-				$this->container['rest-entry'] = \DialogContactForm\REST\EntryController::init();
+				$this->container['rest-form']    = \DialogContactForm\REST\FormController::init();
+				$this->container['rest-entry']   = \DialogContactForm\REST\EntryController::init();
+				$this->container['rest-setting'] = \DialogContactForm\REST\SettingController::init();
 			}
 
 			$this->container['scripts']    = \DialogContactForm\Scripts::init();

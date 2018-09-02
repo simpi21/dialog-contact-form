@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1 class="wp-heading-inline">Edit Form</h1>
+		<h1 class="wp-heading-inline">Edit Form #{{form_id}}</h1>
 		<hr class="wp-header-end">
 
 		<tabs>
