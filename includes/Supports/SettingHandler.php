@@ -248,9 +248,9 @@ class SettingHandler {
 		$this->get_options();
 		ob_start(); ?>
 
-        <div class="wrap">
+		<div class="wrap">
 			<?php $this->option_page_tabs(); ?>
-            <form method="POST" action="options.php">
+			<form method="POST" action="options.php">
 				<?php
 				// Output nonce, action, and option_page fields for a settings page.
 				settings_fields( $this->menu_fields['option_name'] );
@@ -259,8 +259,8 @@ class SettingHandler {
 				// Echoes a submit button
 				submit_button();
 				?>
-            </form>
-        </div>
+			</form>
+		</div>
 		<?php
 		echo ob_get_clean();
 	}
@@ -299,6 +299,50 @@ class SettingHandler {
 	}
 
 	/**
+	 * @param array $input
+	 *
+	 * @return array
+	 */
+	public function sanitize_options( array $input ) {
+		$output_array = array();
+		$fields       = $this->getFields();
+		$options      = (array) $this->get_options();
+		foreach ( $fields as $field ) {
+			$key     = isset( $field['id'] ) ? $field['id'] : null;
+			$default = isset( $field['std'] ) ? $field['std'] : null;
+			$type    = isset( $field['type'] ) ? $field['type'] : 'text';
+			$value   = isset( $input[ $field['id'] ] ) ? $input[ $field['id'] ] : $options[ $field['id'] ];
+
+			if ( isset( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
+				$output_array[ $key ] = call_user_func( $field['sanitize_callback'], $value );
+				continue;
+			}
+
+			if ( isset( $field['options'] ) && is_array( $field['options'] ) ) {
+				$output_array[ $key ] = in_array( $value, array_keys( $field['options'] ) ) ? $value : $default;
+				continue;
+			}
+
+			if ( 'checkbox' == $type ) {
+				$output_array[ $key ] = in_array( $input, array( 'on', 'yes', '1', 1, 'true', true ) ) ? 1 : 0;
+				continue;
+			}
+
+			$rule                 = empty( $field['validate'] ) ? $field['type'] : $field['validate'];
+			$output_array[ $key ] = $this->sanitize( $value, $rule );
+		}
+
+		return $output_array;
+	}
+
+	/**
+	 * @param array $options
+	 */
+	public function update( array $options ) {
+		update_option( $this->menu_fields['option_name'], $options );
+	}
+
+	/**
 	 * Sanitize each setting field as needed
 	 *
 	 * @param array $input Contains all settings fields as array keys
@@ -315,7 +359,7 @@ class SettingHandler {
 		}
 
 		$panels = $this->getPanels();
-		if ( count( $panels ) > 0 ) {
+		if ( isset( $_POST['_wp_http_referer'] ) && count( $panels ) > 0 ) {
 			parse_str( $_POST['_wp_http_referer'], $referrer );
 			$tab    = isset( $referrer['tab'] ) ? $referrer['tab'] : $panels[0]['id'];
 			$fields = $this->getFieldsByPanel( $tab );

@@ -86,8 +86,11 @@ class SettingController extends Controller {
 	 */
 	public function create_item( $request ) {
 		$settings = SettingHandler::init();
-		$options  = $request->get_param( 'options' );
 
-		return $this->respondOK( array( 'settings' => $settings->getFields(), 'options' => $options ) );
+		$options       = $request->get_param( 'options' );
+		$sanitize_data = $settings->sanitize_options( $options );
+		$settings->update( $sanitize_data );
+
+		return $this->respondOK();
 	}
 }
