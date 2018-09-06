@@ -1,0 +1,56 @@
+<template>
+	<div class="dcf-button-group">
+		<template v-for="(label, key) in data.options">
+
+			<input class="switch-input" type="radio" :id="`${data.id}-${key}`" :value="key"
+				   @change="$emit('input', $event.target.value)" :checked="value === key">
+			<label class="switch-label switch-label-on" :for="`${data.id}-${key}`" v-text="label"></label>
+		</template>
+	</div>
+</template>
+
+<script>
+	export default {
+		name: "ButtonGroup",
+		props: {
+			data: {
+				required: true,
+			},
+
+			value: {
+				default: false
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.dcf-button-group {
+		display: inline-flex;
+		flex-wrap: wrap;
+
+		.switch-label {
+			background: rgba(0, 0, 0, .05);
+			border-right: 1px solid rgba(0, 0, 0, .2);
+			color: #555;
+			margin: 0;
+			padding: 0.75em 1em;
+			font-size: 14px;
+			flex-grow: 1;
+			text-align: center;
+
+			&:last-child {
+				border-right: none;
+			}
+		}
+		.switch-input {
+			display: none;
+			&:checked {
+				+ .switch-label {
+					background-color: #3498DB;
+					color: #fff;
+				}
+			}
+		}
+	}
+</style>

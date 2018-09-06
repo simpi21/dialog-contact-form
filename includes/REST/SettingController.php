@@ -43,6 +43,17 @@ class SettingController extends Controller {
 				'callback' => array( self::$instance, 'get_items' ),
 				'args'     => array(),
 			),
+			array(
+				'methods'  => \WP_REST_Server::CREATABLE,
+				'callback' => array( self::$instance, 'create_item' ),
+				'args'     => array(
+					'options' => array(
+						'required'    => false,
+						'default'     => array(),
+						'description' => __( 'Options to save.', 'dialog-contact-form' ),
+					),
+				),
+			),
 		) );
 	}
 
@@ -64,5 +75,19 @@ class SettingController extends Controller {
 		);
 
 		return $this->respondOK( $response );
+	}
+
+	/**
+	 * Retrieves a collection of items.
+	 *
+	 * @param \WP_REST_Request $request Full data about the request.
+	 *
+	 * @return \WP_REST_Response Response object
+	 */
+	public function create_item( $request ) {
+		$settings = SettingHandler::init();
+		$options  = $request->get_param( 'options' );
+
+		return $this->respondOK( array( 'settings' => $settings->getFields(), 'options' => $options ) );
 	}
 }

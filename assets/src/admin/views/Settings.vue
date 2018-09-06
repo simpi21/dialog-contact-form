@@ -13,8 +13,27 @@
 									<label :for="field.id" v-text="field.name"></label>
 								</th>
 								<td>
-									<input type="text" class="regular-text" :id="field.id" :value="getOption(field.id)"
-										   @input="$emit('input', $event.target.value)">
+									<template v-if="field.type === 'textarea'">
+										<textarea class="regular-text" :id="field.id" :rows="field.rows"
+												  v-model="options[field.id]"></textarea>
+									</template>
+									<template v-else-if="field.type === 'checkbox'">
+										<switches v-model="options[field.id]"></switches>
+									</template>
+									<template v-else-if="field.type === 'radio'">
+										<button-group :data="field" v-model="options[field.id]"></button-group>
+									</template>
+									<template v-else-if="field.type === 'select'">
+										<select class="regular-text" v-model="options[field.id]">
+											<option value="">-- Choose --</option>
+											<option v-for="(label, value) in field.options" :value="value"
+													v-text="label"></option>
+										</select>
+									</template>
+									<template v-else>
+										<input type="text" class="regular-text" :id="field.id"
+											   v-model="options[field.id]">
+									</template>
 									<p class="description" v-if="field.desc" v-html="field.desc"></p>
 								</td>
 							</tr>
@@ -23,16 +42,21 @@
 				</template>
 			</tab>
 		</tabs>
+		<p class="submit">
+			<input type="submit" class="button button-primary" value="Save Changes" @click="saveOptions">
+		</p>
 	</div>
 </template>
 
 <script>
 	import Tabs from '../../components/Tabs.vue';
 	import Tab from '../../components/Tab.vue';
+	import Switches from '../../elements/Switches.vue';
+	import ButtonGroup from '../../elements/ButtonGroup.vue';
 
 	export default {
 		name: "Settings",
-		components: {Tabs, Tab},
+		components: {Tabs, Tab, Switches, ButtonGroup},
 		data() {
 			return {
 				panels: [],
@@ -56,6 +80,20 @@
 						self.sections = data.sections;
 						self.fields = data.fields;
 						self.options = data.options;
+					}
+				})
+			},
+			saveOptions() {
+				let $ = jQuery, self = this;
+				$.ajax({
+					method: 'POST',
+					url: window.dcfApiSettings.root + '/settings',
+					data: {
+						options: self.options,
+					},
+					success: function (response) {
+						let data = response.data;
+						alert('Options has been saved!');
 					}
 				})
 			}
