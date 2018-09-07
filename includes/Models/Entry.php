@@ -42,4 +42,38 @@ class Entry extends Model {
 
 		return $counts;
 	}
+
+	/**
+	 * Count entries by status and form id
+	 *
+	 * @return array
+	 */
+	public static function statusCount() {
+		global $wpdb;
+		$table = $wpdb->prefix . self::$table_name;
+
+		$query   = "SELECT status, form_id, COUNT( * ) AS num_entries";
+		$query   .= " FROM {$table} GROUP BY status, form_id";
+		$results = $wpdb->get_results( $query, ARRAY_A );
+
+		$counts = array();
+		foreach ( $results as $row ) {
+			$counts[ $row['form_id'] ][ $row['status'] ] = intval( $row['num_entries'] );
+		}
+
+		$status = [];
+		foreach ( $counts as $form_id => $count ) {
+
+			$default_count = array( 'unread' => 0, 'read' => 0, 'trash' => 0, );
+			$count         = wp_parse_args( $count, $default_count );
+
+			$status[ $form_id ] = [
+				'form_title' => get_the_title( $form_id ),
+				'form_id'    => $form_id,
+				'status'     => $count,
+			];
+		}
+
+		return $status;
+	}
 }

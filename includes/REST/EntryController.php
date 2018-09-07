@@ -4,9 +4,8 @@ namespace DialogContactForm\REST;
 
 use DialogContactForm\Entries\Entry;
 
-// Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	exit; // Exit if accessed directly
 }
 
 class EntryController extends Controller {
@@ -84,6 +83,13 @@ class EntryController extends Controller {
 			array(
 				'methods'  => \WP_REST_Server::DELETABLE,
 				'callback' => array( self::$instance, 'delete_item' ),
+			),
+		) );
+
+		register_rest_route( self::$namespace, '/entries/list', array(
+			array(
+				'methods'  => \WP_REST_Server::READABLE,
+				'callback' => array( self::$instance, 'get_item_list' ),
 			),
 		) );
 	}
@@ -189,5 +195,18 @@ class EntryController extends Controller {
 		}
 
 		return $this->respondOK( array( 'deleted' => true ) );
+	}
+
+	/**
+	 * Deletes one item from the collection.
+	 *
+	 * @param \WP_REST_Request $request Full data about the request.
+	 *
+	 * @return \WP_REST_Response Response object
+	 */
+	public function get_item_list( $request ) {
+		$counts = \DialogContactForm\Models\Entry::statusCount();
+
+		return $this->respondOK( [ 'items' => $counts ] );
 	}
 }

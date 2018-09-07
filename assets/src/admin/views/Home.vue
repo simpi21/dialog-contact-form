@@ -101,7 +101,7 @@
 					}
 				}
 				if ('edit' === action) {
-					window.location.href = `#/entries/${row.id}/edit`;
+					window.location.href = `#/forms/${row.id}/edit`;
 				}
 			},
 			onBulkAction(action, items) {

@@ -45,6 +45,7 @@
 		<p class="submit">
 			<input type="submit" class="button button-primary" value="Save Changes" @click="saveOptions">
 		</p>
+		<snackbars :show="snackbars.show" :body="snackbars.body"></snackbars>
 	</div>
 </template>
 
@@ -53,16 +54,21 @@
 	import Tab from '../../components/Tab.vue';
 	import Switches from '../../elements/Switches.vue';
 	import ButtonGroup from '../../elements/ButtonGroup.vue';
+	import Snackbars from "../../elements/Snackbars";
 
 	export default {
 		name: "Settings",
-		components: {Tabs, Tab, Switches, ButtonGroup},
+		components: {Snackbars, Tabs, Tab, Switches, ButtonGroup, Snackbars},
 		data() {
 			return {
 				panels: [],
 				sections: [],
 				fields: [],
 				options: [],
+				snackbars: {
+					show: false,
+					body: '',
+				}
 			}
 		},
 		methods: {
@@ -91,9 +97,11 @@
 					data: {
 						options: self.options,
 					},
-					success: function (response) {
-						let data = response.data;
-						alert('Options has been saved!');
+					success: function () {
+						self.snackbars = {
+							show: true,
+							body: 'Options has been saved!'
+						};
 					}
 				})
 			}
