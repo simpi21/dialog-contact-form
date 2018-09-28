@@ -11,10 +11,16 @@ function isProduction() {
 let devtool = '#eval-source-map';
 let appName = '[name].js';
 let entryPoints = {
-	admins: './assets/src/admin/main.js',
+	'admin': './assets/js/admin/admin.js',
+	'form': ['./assets/js/public/form.js', './assets/js/public/modal.js'],
+	'polyfill': [
+		'./assets/js/polyfill/classList.js',
+		'./assets/js/polyfill/validityState.js'
+	],
+	'admin-vue': './assets/src/admin/main.js',
 	vendor: Object.keys(config.dependencies),
-	admin: './assets/scss/admin.scss',
-	style: './assets/scss/style.scss',
+	'admin-style': './assets/scss/admin.scss',
+	'frontend-style': './assets/scss/style.scss',
 };
 
 let exportPath = path.resolve(__dirname, './assets/js');
@@ -30,7 +36,7 @@ plugins.push(extractCss);
 // Extract all 3rd party modules into a separate 'vendor' chunk
 plugins.push(new webpack.optimize.CommonsChunkPlugin({
 	name: 'vendor',
-	filename: 'vendor.js',
+	filename: isProduction() ? 'vendor.min.js' : 'vendor.js',
 }));
 
 // Compress extracted CSS. We are using this plugin so that possible

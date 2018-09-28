@@ -80,7 +80,7 @@ class Assets {
                 'in_footer' => true
             ),
             'dialog-contact-form-admins' => array(
-                'src'       => DIALOG_CONTACT_FORM_ASSETS . '/js/admins' . $prefix . '.js',
+                'src'       => DIALOG_CONTACT_FORM_ASSETS . '/js/admin-vue' . $prefix . '.js',
                 'deps'      => array( 'jquery', 'dialog-contact-form-vendor' ),
                 'in_footer' => true
             )
