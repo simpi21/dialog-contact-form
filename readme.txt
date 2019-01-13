@@ -3,8 +3,8 @@ Contributors: sayful
 Tags: form, forms, contact form, form builder, feedback, email, ajax, captcha
 Requires at least: 4.7
 Requires PHP: 5.3
-Tested up to: 4.9
-Stable tag: 3.0.0
+Tested up to: 5.0
+Stable tag: 3.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.txt
 

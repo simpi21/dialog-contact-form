@@ -24,7 +24,7 @@ gulp.task('scss', function () {
 });
 
 gulp.task('js', function () {
-    gulp.src('./assets/js/admin/*.js')
+    gulp.src('./assets/src/admin/*.js')
         .pipe(concat('admin.js'))
         .pipe(gulp.dest('./assets/js'))
         .pipe(concat('admin.min.js'))
@@ -32,7 +32,7 @@ gulp.task('js', function () {
         .pipe(gulp.dest('./assets/js'))
         .pipe(livereload());
 
-    gulp.src('./assets/js/public/*.js')
+    gulp.src('./assets/src/public/*.js')
         .pipe(concat('form.js'))
         .pipe(gulp.dest('./assets/js'))
         .pipe(concat('form.min.js'))
@@ -40,10 +40,18 @@ gulp.task('js', function () {
         .pipe(gulp.dest('./assets/js'))
         .pipe(livereload());
 
-    gulp.src('./assets/js/polyfill/*.js')
+    gulp.src('./assets/src/polyfill/*.js')
         .pipe(concat('polyfill.js'))
         .pipe(gulp.dest('./assets/js'))
         .pipe(concat('polyfill.min.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('./assets/js'))
+        .pipe(livereload());
+
+    gulp.src('./assets/src/gutenberg/*.js')
+        .pipe(concat('gutenberg-block.js'))
+        .pipe(gulp.dest('./assets/js'))
+        .pipe(concat('gutenberg-block.min.js'))
         .pipe(uglify())
         .pipe(gulp.dest('./assets/js'))
         .pipe(livereload());
@@ -52,8 +60,10 @@ gulp.task('js', function () {
 gulp.task('watch', function () {
     livereload.listen();
     gulp.watch('./assets/scss/**/*.scss', ['scss']);
-    gulp.watch('./assets/js/public/*.js', ['js']);
-    gulp.watch('./assets/js/admin/*.js', ['js']);
+    gulp.watch('./assets/src/public/*.js', ['js']);
+    gulp.watch('./assets/src/admin/*.js', ['js']);
+    gulp.watch('./assets/src/polyfill/*.js', ['js']);
+    gulp.watch('./assets/src/gutenberg/*.js', ['js']);
 });
 
 gulp.task('default', ['scss', 'js', 'watch']);

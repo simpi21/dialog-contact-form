@@ -33,7 +33,7 @@ class Preview {
 	 */
 	public static function template_include( $template ) {
 		if ( isset( $_GET['dcf_forms_preview'], $_GET['dcf_forms_iframe'], $_GET['form_id'] ) ) {
-			if ( current_user_can( 'edit_page', $_GET['form_id'] ) ) {
+			if ( current_user_can( 'edit_pages' ) ) {
 				wp_enqueue_script( 'jquery' );
 				$template = DIALOG_CONTACT_FORM_TEMPLATES . '/public/preview-form.php';
 			}

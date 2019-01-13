@@ -1,0 +1,138 @@
+.dcf-form-container {
+	position: relative;
+}
+
+.dcf-form-iframe {
+	min-height: 300px;
+	width: 100%;
+}
+
+.dcf-form-overlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+.dcf-title {
+	display: inline;
+	position: absolute;
+	margin: 0;
+	padding: 5px;
+	top: 20px;
+}
+
+.dcf-forms-title {
+	margin: 0 0 10px;
+	line-height: 1.2;
+}
+
+.dcf-block-logo {
+	max-width: 50px !important;
+	max-height: 50px;
+	float: left;
+	margin-right: 15px;
+	margin-bottom: 10px;
+}
+
+#dcf-forms-filter-input-main {
+	clear: both;
+}
+
+.dcf-forms-iframe-container {
+	position: relative;
+}
+
+.dcf-forms-iframe-overlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+.dcf-forms-block-form-selector {
+	background-color: lightgrey;
+	border-bottom: 1px solid;
+	margin-bottom: 5px;
+	padding: 4px;
+}
+
+.dcf-forms-filter-input {
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
+	padding: 0;
+	width: 100%;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	position: relative;
+}
+
+.dcf-forms-filter-input .blocks-select-control__input {
+	margin: 0 0 0 0;
+}
+
+.dcf-forms-filter-input-el {
+	border: none !important;
+	box-shadow: none !important;
+	width: 95%;
+	position: relative;
+	display: inline-block;
+}
+
+.dcf-forms-filter-input-icon {
+	display: inline-block;
+	content: '&#9662;';
+	color: #999;
+	font-size: 14px;
+	right: .77em;
+	position: absolute;
+	top: .2em;
+}
+
+#dcf-forms-formFilter-main {
+	border-top: none;
+	border-left: none;
+	border-bottom: none;
+}
+
+#dcf-forms-formFilter-sidebar {
+	border-top: none;
+	border-left: none;
+	border-bottom: none;
+	width: 95%;
+}
+
+#dcf-forms-filter-input-icon-sidebar {
+	font-size: 1.4em;
+	top: .35em;
+	right: .45em;
+}
+
+.dcf-forms-filter-input-el.blocks-select-control__input > .components-base-control__field {
+	margin-bottom: 0;
+}
+
+.dcf-forms-filter-option-container {
+	display: none;
+	position: absolute;
+	background-color: #edeff0;
+	z-index: 10000;
+	padding: 4px;
+	width: 100%;
+	border-radius: 5px;
+	max-height: 200px;
+	overflow: scroll;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+}
+
+.dcf-forms-filter-option {
+	list-style: none;
+}
+
+.dcf-forms-filter-option:hover {
+	background-color: #0073aa;
+	color: white;
+}

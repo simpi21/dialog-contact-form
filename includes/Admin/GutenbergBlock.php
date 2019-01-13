@@ -36,11 +36,11 @@ class GutenbergBlock {
 		}
 		wp_register_script( 'dialog-contact-form-gutenberg-block',
 			DIALOG_CONTACT_FORM_ASSETS . '/js/gutenberg-block.js',
-			array( 'wp-blocks', 'wp-element' )
+			array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-editor' )
 		);
 
 		wp_register_style( 'dialog-contact-form-gutenberg-style',
-			DIALOG_CONTACT_FORM_ASSETS . '/css/dcf-gutenberg.css',
+			DIALOG_CONTACT_FORM_ASSETS . '/css/gutenberg-block.css',
 			array( 'wp-edit-blocks' )
 		);
 
@@ -70,12 +70,7 @@ class GutenbergBlock {
 			'post_status'    => 'publish',
 		) );
 
-		$_forms = array(
-			array(
-				'value' => '',
-				'label' => '-- Select a Form --',
-			)
-		);
+		$_forms = array();
 		foreach ( $forms as $form ) {
 			if ( ! $form instanceof \WP_Post ) {
 				continue;
@@ -90,6 +85,7 @@ class GutenbergBlock {
 		return array(
 			'forms'         => $_forms,
 			'site_url'      => site_url(),
+			'block_logo'    => site_url(),
 			'block_title'   => __( 'Dialog Contact Form', 'dialog-contact-form' ),
 			'selected_form' => __( 'Selected Form', 'dialog-contact-form' ),
 		);

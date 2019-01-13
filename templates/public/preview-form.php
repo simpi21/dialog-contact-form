@@ -59,7 +59,7 @@ $form = new FormBuilder( $form_id );
         // get the height of the form
         var height = $form.find('.columns.is-multiline').outerHeight(true);
 
-        if (frameEl) {
+        if (frameEl && height) {
             frameEl.height = height;
         }
     });
