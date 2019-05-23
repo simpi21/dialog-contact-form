@@ -2,20 +2,26 @@
 
 namespace DialogContactForm\Entries;
 
+use ArrayAccess;
+use DateTime;
+use DateTimeZone;
 use DialogContactForm\Supports\ContactForm;
 use DialogContactForm\Supports\Utils;
+use Exception;
+use JsonSerializable;
+use wpdb;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Entry implements \JsonSerializable, \ArrayAccess {
+class Entry implements JsonSerializable, ArrayAccess {
 
 	/**
 	 * WordPress database
 	 *
-	 * @var \wpdb
+	 * @var wpdb
 	 */
 	private $db;
 
@@ -200,14 +206,26 @@ class Entry implements \JsonSerializable, \ArrayAccess {
 	/**
 	 * Get entry creation date
 	 *
-	 * @return \DateTime
+	 * @return DateTime
+	 * @throws Exception
 	 */
 	public function getCreatedAt() {
-		$created_at      = $this->get( 'created_at' );
-		$timezone_string = get_option( 'timezone_string' );
+		$created_at = $this->get( 'created_at' );
+		$created_at = new DateTime( $created_at );
 
-		$created_at = new \DateTime( $created_at );
-		$created_at->setTimezone( new \DateTimeZone( $timezone_string ) );
+		$timezone_string       = get_option( 'timezone_string' );
+		$valid_timezone_string = in_array( $timezone_string, DateTimeZone::listIdentifiers() );
+
+		$gmt_offset = get_option( 'gmt_offset' );
+		$hours      = (int) $gmt_offset;
+		$minutes    = abs( ( $gmt_offset - (int) $gmt_offset ) * 60 );
+		$offset     = sprintf( '%+03d:%02d', $hours, $minutes );
+
+		if ( $valid_timezone_string ) {
+			$created_at->setTimezone( new DateTimeZone( $timezone_string ) );
+		} else {
+			$created_at->setTimezone( new DateTimeZone( $offset ) );
+		}
 
 		return $created_at;
 	}
