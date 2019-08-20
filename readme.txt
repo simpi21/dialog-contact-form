@@ -3,7 +3,7 @@ Contributors: sayful
 Tags: form, forms, contact form, form builder, feedback, email, ajax, captcha
 Requires at least: 4.7
 Requires PHP: 5.3
-Tested up to: 5.0
+Tested up to: 5.2
 Stable tag: 3.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.txt
@@ -87,7 +87,13 @@ Version 3 is a major update. After upgrading to version 3, check form and settin
 
 == Changelog ==
 
-= version 3.0.0 =
+= version 3.0.1 - 2019-08-20 =
+* Fix - Fix timeZone is not working and making error notice.
+* Fix - Fix gutenberg block error.
+* Fix - Fix preview form gives meta cap warning.
+* Dev - Add Webpack for stylesheet and javaScript module bundler.
+
+= version 3.0.0 - 2018-07-11=
 * Feature   - MailChimp email marketing integration.
 * Feature   - MailPoet & MailPoet 3 email marketing integration.
 * Feature   - Webhook integration.

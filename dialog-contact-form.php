@@ -6,8 +6,8 @@
  * Version: 3.0.1
  * Author: Sayful Islam
  * Author URI: https://sayfulislam.com
- * Requires at least: 4.4
- * Tested up to: 5.0
+ * Requires at least: 4.7
+ * Tested up to: 5.2
  * Text Domain: dialog-contact-form
  * License: GPLv3
  * License URI: https://www.gnu.org/licenses/gpl-3.0.txt
