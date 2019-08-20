@@ -4,7 +4,7 @@
 (function () {
     'use strict';
 
-    var settings = window.DialogContactForm || {
+    let settings = window.DialogContactForm || {
         ajaxurl: '/wp-admin/admin-ajax.php',
         nonce: '',
         // Classes and Selectors
@@ -22,9 +22,9 @@
         invalid_email: 'Please enter an email address.',
         invalid_url: 'Please enter a URL.',
         invalid_too_short: 'Please lengthen this text to {minLength} characters or more. ' +
-        'You are currently using {length} characters.',
+            'You are currently using {length} characters.',
         invalid_too_long: 'Please shorten this text to no more than {maxLength} characters. ' +
-        'You are currently using {length} characters.',
+            'You are currently using {length} characters.',
         pattern_mismatch: 'Please match the requested format.',
         bad_input: 'Please enter a number.',
         step_mismatch: 'Please select a valid value.',
@@ -54,7 +54,7 @@
         };
     }
 
-    var getClassName = function (className) {
+    const getClassName = function (className) {
         return className.replace('.', '').replace('#', '');
     };
 
@@ -63,10 +63,10 @@
      * @param field
      * @returns {string}
      */
-    var hasError = function (field) {
+    const hasError = function (field) {
 
         // Merge user options with existing settings or defaults
-        var localSettings = settings;
+        let localSettings = settings;
 
         // Don't validate file and disabled fields
         if (field.disabled || field.type === 'file') return;
@@ -135,7 +135,6 @@
 
         // If all else fails, return a generic catchall error
         return localSettings.generic_error;
-
     };
 
 
@@ -145,7 +144,7 @@
      * @param field
      * @param error
      */
-    var showError = function (field, error) {
+    const showError = function (field, error) {
 
         // Merge user options with existing settings or defaults
         var localSettings = settings,
@@ -213,7 +212,7 @@
      *
      * @param field
      */
-    var removeError = function (field) {
+    const removeError = function (field) {
 
         // Merge user options with existing settings or defaults
         var localSettings = settings,
@@ -255,17 +254,27 @@
     };
 
     /**
+     * Check if form element
+     *
+     * @param {Event} event
+     * @returns {boolean}
+     */
+    const isFormElement = function (event) {
+        return event.target.form && event.target.form.classList.contains(getClassName(settings.selector))
+    };
+
+    /**
      * Check field validity when it loses focus
      * @private
      * @param  {Event} event The blur event
      */
-    var blurHandler = function (event) {
+    const blurHandler = function (event) {
 
         // Only run if the field is in a form to be validated
-        if (!event.target.form || !event.target.form.classList.contains(getClassName(settings.selector))) return;
+        if (!isFormElement(event)) return;
 
         // Validate the field
-        var error = hasError(event.target);
+        let error = hasError(event.target);
 
         // If there's an error, show it
         if (error) {
@@ -282,17 +291,17 @@
      * @private
      * @param  {Event} event The click event
      */
-    var clickHandler = function (event) {
+    const clickHandler = function (event) {
 
         // Only run if the field is in a form to be validated
-        if (!event.target.form || !event.target.form.classList.contains(getClassName(settings.selector))) return;
+        if (!isFormElement(event)) return;
 
         // Only run if the field is a checkbox or radio
-        var type = event.target.getAttribute('type');
+        let type = event.target.getAttribute('type');
         if (!(type === 'checkbox' || type === 'radio')) return;
 
         // Validate the field
-        var error = hasError(event.target);
+        let error = hasError(event.target);
 
         // If there's an error, show it
         if (error) {
@@ -302,11 +311,10 @@
 
         // Otherwise, remove any errors that exist
         removeError(event.target);
-
     };
 
-    var showServerError = function (form, errors) {
-        var vMessages, field_name, fields, control, messages, error;
+    const showServerError = function (form, errors) {
+        let vMessages, field_name, fields, control, messages, error;
 
         // Get error message and print on error div
         if (errors.message) {
@@ -332,27 +340,27 @@
         }
     };
 
-    var removeAllErrors = function (form) {
+    const removeAllErrors = function (form) {
         // Hide success message if any
         form.querySelector('.dcf-success').innerHTML = '';
         // Hide error message if any
         form.querySelector('.dcf-error').innerHTML = '';
 
         // Hide field help message if any
-        var helpText = form.querySelectorAll('.' + getClassName(settings.errorClass));
-        for (var i = 0; i < helpText.length; i++) {
+        let helpText = form.querySelectorAll('.' + getClassName(settings.errorClass));
+        for (let i = 0; i < helpText.length; i++) {
             helpText[i].parentNode.removeChild(helpText[i]);
         }
 
         // Remove field validation border-color if any
-        var allFields = form.querySelectorAll('.input, .textarea, .select select');
-        for (i = 0; i < allFields.length; i++) {
+        let allFields = form.querySelectorAll('.input, .textarea, .select select');
+        for (let i = 0; i < allFields.length; i++) {
             allFields[i].classList.remove(getClassName(settings.fieldClass));
         }
     };
 
-    var isURL = function (str) {
-        var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+    const isURL = function (str) {
+        let pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
             '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
             '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
             '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
@@ -362,12 +370,47 @@
     };
 
     /**
+     * Submit form data
+     *
+     * @param {element} form
+     * @param {string} url
+     * @returns {Promise<unknown>}
+     */
+    const submitFormData = function (form, url) {
+        return new Promise((resolve, reject) => {
+            // Get form fields data
+            let formData = new FormData(form);
+            // Add action params with form data
+            formData.append('action', 'dcf_submit_form');
+
+            let request = new XMLHttpRequest();
+
+            // Define what happens on successful data submission
+            request.addEventListener("load", event => {
+
+                let xhr = event.target, response = JSON.parse(xhr.responseText);
+
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    resolve(response);
+                } else {
+                    reject(response);
+                }
+            });
+
+            // Set up our request
+            request.open("POST", url, true);
+
+            // The data sent is what the user provided in the form
+            request.send(formData);
+        });
+    };
+
+    /**
      * Check all fields on submit
      * @private
      * @param  {Event} event  The submit event
      */
-    var submitHandler = function (event) {
-        'use strict';
+    const submitHandler = function (event) {
 
         // Only run on forms flagged for validation
         if (!event.target.classList.contains(getClassName(settings.selector))) return;
@@ -376,13 +419,13 @@
         event.preventDefault();
 
         // Get all of the form elements
-        var fields = event.target.elements;
+        let form = event.target, fields = form.elements;
 
         // Validate each field
         // Store the first field with an error to a variable so we can bring it into focus later
-        var hasErrors;
-        for (var i = 0; i < fields.length; i++) {
-            var error = hasError(fields[i]);
+        let hasErrors;
+        for (let i = 0; i < fields.length; i++) {
+            let error = hasError(fields[i]);
             if (error) {
                 showError(fields[i], error);
                 if (!hasErrors) {
@@ -397,8 +440,7 @@
             return;
         }
 
-        var form = event.target,
-            dcfSuccess = form.querySelector('.dcf-success'),
+        let dcfSuccess = form.querySelector('.dcf-success'),
             submitBtn = form.querySelector('.' + getClassName(settings.submitBtnClass)),
             loadingClass = getClassName(settings.loadingClass);
 
@@ -407,54 +449,31 @@
 
         removeAllErrors(form);
 
-        // Get form fields data
-        var formData = new FormData(form);
-        // Add action params with form data
-        formData.append('action', 'dcf_submit_form');
-        // Add nonce field with form data
-        // formData.append('_dcf_nonce', settings.nonce);
-
-        var request = new XMLHttpRequest();
-
-        // Define what happens on successful data submission
-        request.addEventListener("load", function (event) {
-            // Remove loading class from submit button
+        submitFormData(form, settings.ajaxurl).then(response => {
             submitBtn.classList.remove(loadingClass);
+            let actions = response.actions ? response.actions : {};
+            // Remove form fields value
+            if (response.reset_form) {
+                form.reset();
+            }
 
-            var action,
-                xhr = event.target,
-                response = JSON.parse(xhr.responseText),
-                actions = response.actions ? response.actions : {};
-
-            if (xhr.status >= 200 && xhr.status < 300) {
-                // Remove form fields value
-                if (response.reset_form) {
-                    form.reset();
-                }
-
-                for (action in actions) {
-                    if (actions.hasOwnProperty(action)) {
-                        // Get success message and print on success div
-                        if ('success_message' === action) {
-                            dcfSuccess.innerHTML = '<p>' + actions[action] + '</p>';
-                        }
-                        if ('redirect' === action && isURL(actions[action])) {
-                            setTimeout(function (url) {
-                                window.location.href = url;
-                            }, 1000, actions[action]);
-                        }
+            for (let action in actions) {
+                if (actions.hasOwnProperty(action)) {
+                    // Get success message and print on success div
+                    if ('success_message' === action) {
+                        dcfSuccess.innerHTML = '<p>' + actions[action] + '</p>';
+                    }
+                    if ('redirect' === action && isURL(actions[action])) {
+                        setTimeout(function (url) {
+                            window.location.href = url;
+                        }, 1000, actions[action]);
                     }
                 }
-            } else {
-                showServerError(form, response);
             }
+        }).catch(error => {
+            submitBtn.classList.remove(loadingClass);
+            showServerError(form, error);
         });
-
-        // Set up our request
-        request.open("POST", settings.ajaxurl, true);
-
-        // The data sent is what the user provided in the form
-        request.send(formData);
     };
 
     /**

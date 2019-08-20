@@ -66,8 +66,7 @@ class Scripts {
 		wp_enqueue_style( 'select2', DIALOG_CONTACT_FORM_ASSETS . '/css/select2.css',
 			array(), DIALOG_CONTACT_FORM_VERSION, 'all' );
 
-		wp_enqueue_script( 'dialog-contact-form-admin',
-			DIALOG_CONTACT_FORM_ASSETS . '/js/admin' . $suffix . '.js',
+		wp_enqueue_script( 'dialog-contact-form-admin', DIALOG_CONTACT_FORM_ASSETS . '/js/admin.js',
 			array(
 				'jquery',
 				'select2',
@@ -86,27 +85,22 @@ class Scripts {
 	public function frontend_scripts() {
 		global $is_IE;
 
-		$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
-
 		$enabled_style = Utils::get_option( 'default_style', 'enable' );
 		$hl            = Utils::get_option( 'recaptcha_lang', 'en' );
 		$captcha_url   = add_query_arg( array( 'hl' => $hl ), 'https://www.google.com/recaptcha/api.js' );
 
 		if ( 'disable' != $enabled_style ) {
-			wp_enqueue_style( 'dialog-contact-form',
-				DIALOG_CONTACT_FORM_ASSETS . '/css/style.css',
+			wp_enqueue_style( 'dialog-contact-form', DIALOG_CONTACT_FORM_ASSETS . '/css/frontend.css',
 				array(), DIALOG_CONTACT_FORM_VERSION, 'all' );
 		}
 
 		// Polyfill for IE
 		if ( $is_IE ) {
-			wp_enqueue_script( 'dialog-contact-form-polyfill',
-				DIALOG_CONTACT_FORM_ASSETS . '/js/polyfill' . $suffix . '.js',
+			wp_enqueue_script( 'dialog-contact-form-polyfill', DIALOG_CONTACT_FORM_ASSETS . '/js/polyfill.js',
 				array(), null, false );
 		}
 
-		wp_enqueue_script( 'dialog-contact-form',
-			DIALOG_CONTACT_FORM_ASSETS . '/js/form' . $suffix . '.js',
+		wp_enqueue_script( 'dialog-contact-form', DIALOG_CONTACT_FORM_ASSETS . '/js/frontend.js',
 			array(), DIALOG_CONTACT_FORM_VERSION, true );
 
 		wp_register_script( 'dialog-contact-form-recaptcha', $captcha_url, '', null, true );
