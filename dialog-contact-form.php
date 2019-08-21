@@ -197,9 +197,11 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 			}
 
 			if ( $this->is_request( 'frontend' ) ) {
-				$this->container['preview']   = \DialogContactForm\Display\Preview::init();
-				$this->container['shortcode'] = \DialogContactForm\Display\Shortcode::init();
-				$this->container['rest']      = \DialogContactForm\REST\Controller::init();
+				$this->container['preview']    = \DialogContactForm\Display\Preview::init();
+				$this->container['shortcode']  = \DialogContactForm\Display\Shortcode::init();
+				$this->container['rest-form']  = \DialogContactForm\REST\FormController::init();
+				$this->container['rest-entry'] = \DialogContactForm\REST\EntryController::init();
+//				$this->container['rest']       = \DialogContactForm\REST\Controller::init();
 			}
 
 			$this->container['scripts']    = \DialogContactForm\Scripts::init();
@@ -274,7 +276,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		/**
 		 * What type of request is this?
 		 *
-		 * @param  string $type admin, ajax, cron or frontend.
+		 * @param string $type admin, ajax, cron or frontend.
 		 *
 		 * @return bool
 		 */

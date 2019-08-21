@@ -133,7 +133,7 @@ class Entry implements JsonSerializable, ArrayAccess {
 	 * @return int
 	 */
 	public function getId() {
-		return $this->get( 'id' );
+		return intval( $this->get( 'id' ) );
 	}
 
 	/**
@@ -142,7 +142,7 @@ class Entry implements JsonSerializable, ArrayAccess {
 	 * @return int
 	 */
 	public function getFormId() {
-		return $this->get( 'form_id' );
+		return intval( $this->get( 'form_id' ) );
 	}
 
 	/**
@@ -164,7 +164,7 @@ class Entry implements JsonSerializable, ArrayAccess {
 	 * @return int
 	 */
 	public function getUserId() {
-		return $this->get( 'user_id' );
+		return intval( $this->get( 'user_id' ) );
 	}
 
 	/**
@@ -315,7 +315,7 @@ class Entry implements JsonSerializable, ArrayAccess {
 			'user_agent'   => $this->getUserAgent(),
 			'referer'      => $this->getReferer(),
 			'status'       => $this->getStatus(),
-			'created_at'   => $this->getCreatedAt(),
+			'created_at'   => $this->getCreatedAt()->format( DateTime::ISO8601 ),
 			'field_values' => $this->getFieldValues(),
 		);
 	}
@@ -328,12 +328,18 @@ class Entry implements JsonSerializable, ArrayAccess {
 	 * @return array
 	 */
 	public function find( $args = array() ) {
-		$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : 'created_at';
-		$order    = isset( $args['order'] ) ? $args['order'] : 'desc';
-		$offset   = isset( $args['offset'] ) ? intval( $args['offset'] ) : 0;
-		$per_page = isset( $args['per_page'] ) ? intval( $args['per_page'] ) : 50;
+		$form_id      = isset( $args['form_id'] ) ? intval( $args['form_id'] ) : 0;
+		$orderby      = isset( $args['orderby'] ) ? $args['orderby'] : 'created_at';
+		$order        = isset( $args['order'] ) ? $args['order'] : 'desc';
+		$per_page     = isset( $args['per_page'] ) ? absint( $args['per_page'] ) : 10;
+		$current_page = isset( $args['page'] ) ? absint( $args['page'] ) : 1;
+		$current_page = $current_page >= 1 ? $current_page : 1;
+		$offset       = ( $current_page - 1 ) * $per_page;
 
-		$sql = "SELECT * FROM {$this->table_name}";
+		$sql = "SELECT * FROM {$this->table_name} WHERE 1 = 1";
+		if ( $form_id ) {
+			$sql .= $this->db->prepare( " AND form_id = %d", $form_id );
+		}
 		$sql .= " ORDER BY {$orderby} {$order}";
 		$sql .= " LIMIT $per_page OFFSET $offset";
 
