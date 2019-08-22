@@ -53,6 +53,13 @@ class EntryController extends ApiController {
 			],
 		] );
 
+		register_rest_route( $this->namespace, '/entries/status', [
+			[
+				'methods'  => WP_REST_Server::READABLE,
+				'callback' => [ $this, 'get_forms_status' ],
+			],
+		] );
+
 		register_rest_route( $this->namespace, '/entries/(?P<id>\d+)', [
 			[
 				'methods'  => WP_REST_Server::READABLE,
@@ -167,7 +174,82 @@ class EntryController extends ApiController {
 	 * @return WP_REST_Response Response object on success, or WP_Error object on failure.
 	 */
 	public function update_batch_items( $request ) {
-		return $this->respondOK( [ 'batch' => true ] );
+		$trash_items   = $request->get_param( 'trash' );
+		$restore_items = $request->get_param( 'restore' );
+		$delete_items  = $request->get_param( 'delete' );
+		$ids           = [];
+		$entry         = new Entry;
+
+		if ( ! empty( $trash_items ) ) {
+			$ids = is_string( $trash_items ) ? explode( ',', $trash_items ) : $trash_items;
+			$ids = count( $ids ) ? array_map( 'intval', $ids ) : [];
+			foreach ( $ids as $id ) {
+				$entry->update( [ 'status' => 'trash' ], [ 'id' => $id ], '%s', '%d' );
+			}
+		}
+
+		if ( ! empty( $restore_items ) ) {
+			$ids = is_string( $restore_items ) ? explode( ',', $restore_items ) : $restore_items;
+			$ids = count( $ids ) ? array_map( 'intval', $ids ) : [];
+			foreach ( $ids as $id ) {
+				$entry->update( [ 'status' => 'read' ], [ 'id' => $id ], '%s', '%d' );
+			}
+		}
+
+		if ( ! empty( $delete_items ) ) {
+			$ids = is_string( $delete_items ) ? explode( ',', $delete_items ) : $delete_items;
+			$ids = count( $ids ) ? array_map( 'intval', $ids ) : [];
+			foreach ( $ids as $id ) {
+				$entry->delete( $id );
+			}
+		}
+
+		return $this->respondOK( $ids );
+	}
+
+	/**
+	 * Get entries status group by form id
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_REST_Response Response object on success, or WP_Error object on failure.
+	 */
+	public function get_forms_status( $request ) {
+		global $wpdb;
+
+		$forms = get_posts( array(
+			'posts_per_page' => - 1,
+			'orderby'        => 'ID',
+			'order'          => 'DESC',
+			'post_type'      => 'dialog-contact-form',
+			'post_status'    => 'publish',
+		) );
+
+		$table   = $wpdb->prefix . "dcf_entries";
+		$query   = "SELECT status, form_id, COUNT( * ) AS num_entries FROM {$table} GROUP BY status, form_id";
+		$results = $wpdb->get_results( $query, ARRAY_A );
+
+		$counts = array();
+		foreach ( $results as $row ) {
+			$counts[ $row['form_id'] ][ $row['status'] ] = intval( $row['num_entries'] );
+		}
+
+		$default_count = array( 'unread' => 0, 'read' => 0, 'trash' => 0, );
+
+		$response = [];
+		foreach ( $forms as $form ) {
+			$_count       = isset( $counts[ $form->ID ] ) ? $counts[ $form->ID ] : array();
+			$count        = wp_parse_args( $_count, $default_count );
+			$count['all'] = ( $count['unread'] + $count['read'] );
+
+			$response[] = [
+				'form_id'    => $form->ID,
+				'form_title' => $form->post_title,
+				'counts'     => $count,
+			];
+		}
+
+		return $this->respondOK( $response );
 	}
 
 	/**
