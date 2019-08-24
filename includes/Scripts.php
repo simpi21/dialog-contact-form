@@ -32,11 +32,33 @@ class Scripts {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
 
+			add_action( 'admin_head', [ self::$instance, 'localize_data' ], 9 );
+			add_action( 'wp_head', [ self::$instance, 'localize_data' ], 9 );
+
 			add_action( 'admin_enqueue_scripts', array( self::$instance, 'admin_scripts' ) );
 			add_action( 'wp_enqueue_scripts', array( self::$instance, 'frontend_scripts' ), 30 );
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * Global localize data both for admin and frontend
+	 */
+	public static function localize_data() {
+		$is_user_logged_in = is_user_logged_in();
+
+		$data = [
+			'homeUrl'        => home_url(),
+			'isUserLoggedIn' => $is_user_logged_in,
+			'restRoot'       => esc_url_raw( rest_url( 'dialog-contact-form/v1' ) ),
+		];
+
+		if ( $is_user_logged_in ) {
+			$data['restNonce'] = wp_create_nonce( 'wp_rest' );
+		}
+
+		echo '<script>window.dcfSettings = ' . wp_json_encode( $data ) . '</script>';
 	}
 
 	/**
@@ -47,7 +69,7 @@ class Scripts {
 	public function admin_scripts( $hook ) {
 		global $post_type;
 		if ( ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE ) && ( 'dialog-contact-form_page_dcf-settings' != $hook ) ) {
-			return;
+			// return;
 		}
 
 		$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';
@@ -76,7 +98,7 @@ class Scripts {
 				'jquery-ui-accordion',
 				'wp-color-picker-alpha'
 			),
-			DIALOG_CONTACT_FORM_VERSION, true );
+			dialog_contact_form()->get_version(), true );
 	}
 
 	/**

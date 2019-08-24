@@ -73,7 +73,23 @@ class EntryManager {
 			array( $this, 'entries_page' )
 		);
 
+		add_submenu_page(
+			'edit.php?post_type=dialog-contact-form',
+			__( 'Entries - beta', 'dialog-contact-form' ),
+			__( 'Entries -beta ', 'dialog-contact-form' ),
+			'manage_options',
+			'entries',
+			array( $this, 'entry_page_callback' )
+		);
+
 		add_action( "load-$hook", array( $this, 'screen_option' ) );
+	}
+
+	/**
+	 * Entry page callback
+	 */
+	public function entry_page_callback() {
+		echo '<div id="dialog-contact-form-admin"></div>';
 	}
 
 	/**

@@ -145,6 +145,19 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		}
 
 		/**
+		 * Get plugin version number
+		 *
+		 * @return string
+		 */
+		public function get_version() {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				return $this->version . '-' . time();
+			}
+
+			return $this->version;
+		}
+
+		/**
 		 * Include classes
 		 *
 		 * @param string $className class name
