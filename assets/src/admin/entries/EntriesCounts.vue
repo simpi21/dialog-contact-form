@@ -19,7 +19,6 @@
 </template>
 
 <script>
-    import axios from 'axios';
     import {CrudMixin} from "../../components/CrudMixin";
     import StatusList from "../../shapla/shapla-data-table/src/statusList";
 
@@ -56,7 +55,6 @@
                 ];
             },
             changeStatus(form_id, status) {
-                console.log(form_id, status);
                 this.$router.push({name: 'EntriesList', params: {form_id: form_id, status: status.key}})
             }
         }

@@ -4,6 +4,7 @@ namespace DialogContactForm\Actions;
 
 use DialogContactForm\Abstracts\Action;
 use DialogContactForm\Entries\Entry;
+use DialogContactForm\Supports\Config;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,12 +22,13 @@ class StoreSubmission extends Action {
 		$this->title      = __( 'Store Submission', 'dialog-contact-form' );
 		$this->meta_group = 'store_submission';
 		$this->meta_key   = '_action_store_submission';
+		$this->settings   = $this->settings();
 	}
 
 	/**
 	 * Process current action
 	 *
-	 * @param \DialogContactForm\Supports\Config $config Contact form configurations
+	 * @param Config $config Contact form configurations
 	 * @param array $data User submitted sanitized data
 	 *
 	 * @return mixed
@@ -42,11 +44,53 @@ class StoreSubmission extends Action {
 	 *
 	 * @return string
 	 */
-	public function getDescription() {
+	public function _getDescription() {
 		$html = '<p class="description">';
 		$html .= esc_html__( 'No settings are available for this action.', 'dialog-contact-form' );
 		$html .= '</p>';
 
 		return $html;
+	}
+
+
+	/**
+	 * Action settings
+	 *
+	 * @return array
+	 */
+	private function settings() {
+		global $post;
+		$_fields = (array) get_post_meta( $post->ID, '_contact_form_fields', true );
+		$options = [
+			'form_title' => __( 'Form Title', 'dialog-contact-form' ),
+			'id'         => __( 'Entry: ID', 'dialog-contact-form' ),
+			'form_id'    => __( 'Entry: Form ID', 'dialog-contact-form' ),
+			'user_id'    => __( 'Entry: User ID', 'dialog-contact-form' ),
+			'user_ip'    => __( 'Entry: User IP', 'dialog-contact-form' ),
+			'user_agent' => __( 'Entry: User Agent', 'dialog-contact-form' ),
+			'referer'    => __( 'Entry: Referer', 'dialog-contact-form' ),
+			'status'     => __( 'Entry: Status', 'dialog-contact-form' ),
+			'created_at' => __( 'Entry: Date', 'dialog-contact-form' ),
+		];
+
+		foreach ( $_fields as $item ) {
+			if ( ! empty( $item['field_id'] ) && ! empty( $item['field_title'] ) ) {
+				$options[ $item['field_id'] ] = 'Field: ' . $item['field_title'];
+			}
+		}
+
+		return [
+			'data_table_fields' => [
+				'type'        => 'select',
+				'multiple'    => true,
+				'id'          => 'data_table_fields',
+				'group'       => $this->meta_group,
+				'meta_key'    => $this->meta_key,
+				'label'       => __( 'Data Table Fields', 'dialog-contact-form' ),
+				'description' => __( 'Choose fields that should display as columns on entry data table page.',
+					'dialog-contact-form' ),
+				'options'     => $options,
+			]
+		];
 	}
 }

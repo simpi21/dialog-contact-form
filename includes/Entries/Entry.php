@@ -55,6 +55,13 @@ class Entry implements JsonSerializable, ArrayAccess {
 	);
 
 	/**
+	 * Valid entry status
+	 *
+	 * @var array
+	 */
+	protected $statuses = [ 'read', 'unread', 'trash' ];
+
+	/**
 	 * @var ContactForm
 	 */
 	private $form;
@@ -325,7 +332,7 @@ class Entry implements JsonSerializable, ArrayAccess {
 	 *
 	 * @param array $args
 	 *
-	 * @return array
+	 * @return self[]
 	 */
 	public function find( $args = array() ) {
 		$form_id      = isset( $args['form_id'] ) ? intval( $args['form_id'] ) : 0;
@@ -336,9 +343,16 @@ class Entry implements JsonSerializable, ArrayAccess {
 		$current_page = $current_page >= 1 ? $current_page : 1;
 		$offset       = ( $current_page - 1 ) * $per_page;
 
+		$status = isset( $args['status'] ) ? $args['status'] : 'all';
+
 		$sql = "SELECT * FROM {$this->table_name} WHERE 1 = 1";
 		if ( $form_id ) {
 			$sql .= $this->db->prepare( " AND form_id = %d", $form_id );
+		}
+		if ( in_array( $status, $this->statuses ) ) {
+			$sql .= $this->db->prepare( " AND status = %s", $args['status'] );
+		} else {
+			$sql .= $this->db->prepare( " AND status != %s", 'trash' );
 		}
 		$sql .= " ORDER BY {$orderby} {$order}";
 		$sql .= " LIMIT $per_page OFFSET $offset";
@@ -488,6 +502,34 @@ class Entry implements JsonSerializable, ArrayAccess {
 	}
 
 	/**
+	 * Get form entries counts
+	 *
+	 * @param int $form_id
+	 *
+	 * @return array
+	 */
+	public static function get_form_entries_counts( $form_id ) {
+		$self    = new static();
+		$table   = $self->table_name;
+		$query   = "SELECT status, COUNT( * ) AS num_entries FROM {$table} WHERE 1 = 1";
+		$query   .= $self->db->prepare( " AND form_id = %d", $form_id );
+		$query   .= " GROUP BY status";
+		$results = $self->db->get_results( $query, ARRAY_A );
+
+		$default_count = array( 'unread' => 0, 'read' => 0, 'trash' => 0, );
+
+		$counts = array();
+		foreach ( $results as $row ) {
+			$counts[ $row['status'] ] = intval( $row['num_entries'] );
+		}
+
+		$counts        = wp_parse_args( $counts, $default_count );
+		$counts['all'] = ( $counts['unread'] + $counts['read'] );
+
+		return $counts;
+	}
+
+	/**
 	 * Serialize data, if needed.
 	 *
 	 * @param string|array|object $data Data that might be serialized.
@@ -615,6 +657,24 @@ class Entry implements JsonSerializable, ArrayAccess {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Get entry table columns label
+	 *
+	 * @return array
+	 */
+	public static function get_columns_label() {
+		return [
+			'id'         => __( 'ID', 'dialog-contact-form' ),
+			'form_id'    => __( 'Form ID', 'dialog-contact-form' ),
+			'user_id'    => __( 'User ID', 'dialog-contact-form' ),
+			'user_ip'    => __( 'User IP', 'dialog-contact-form' ),
+			'user_agent' => __( 'User Agent', 'dialog-contact-form' ),
+			'referer'    => __( 'Referer', 'dialog-contact-form' ),
+			'status'     => __( 'Status', 'dialog-contact-form' ),
+			'created_at' => __( 'Date', 'dialog-contact-form' ),
+		];
 	}
 
 	/********************************************************************************

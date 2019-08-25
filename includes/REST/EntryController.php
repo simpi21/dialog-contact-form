@@ -34,10 +34,43 @@ class EntryController extends ApiController {
 	}
 
 	/**
+	 * @param $form_id
+	 *
+	 * @return array
+	 */
+	protected static function get_data_table_columns( $form_id ) {
+		$fields       = (array) get_post_meta( $form_id, '_contact_form_fields', true );
+		$action_store = get_post_meta( $form_id, '_action_store_submission', true );
+		$columns_keys = isset( $action_store['data_table_fields'] ) ? $action_store['data_table_fields'] : [];
+		$entryColumns = Entry::get_columns_label();
+		$columns      = [];
+		foreach ( $columns_keys as $index => $key ) {
+			if ( isset( $entryColumns[ $key ] ) ) {
+				$columns[ $index ] = [ 'key' => $key, 'label' => $entryColumns[ $key ] ];
+			} else {
+				foreach ( $fields as $field ) {
+					if ( $field['field_id'] == $key ) {
+						$columns[ $index ] = [ 'key' => $key, 'label' => $field['field_title'] ];
+					}
+				}
+			}
+		}
+
+		return $columns;
+	}
+
+	/**
 	 * Registers the routes for the objects of the controller.
 	 */
 	public function register_routes() {
 		register_rest_route( $this->namespace, '/entries', [
+			[
+				'methods'  => WP_REST_Server::READABLE,
+				'callback' => [ $this, 'get_items' ],
+				'args'     => $this->get_collection_params()
+			],
+		] );
+		register_rest_route( $this->namespace, '/forms/(?P<form_id>\d+)/entries', [
 			[
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => [ $this, 'get_items' ],
@@ -87,11 +120,19 @@ class EntryController extends ApiController {
 
 		$args = array();
 
-		$form_id  = $request->get_param( 'form_id' );
-		$page     = $request->get_param( 'page' );
+		$form_id = $request->get_param( 'form_id' );
+
+		$page = $request->get_param( 'page' );
+		$page = is_numeric( $page ) && intval( $page ) > 0 ? $page : 1;
+
 		$per_page = $request->get_param( 'per_page' );
-		$order    = $request->get_param( 'order' );
-		$orderby  = $request->get_param( 'orderby' );
+		$per_page = is_numeric( $per_page ) && intval( $per_page ) > 0 ? $per_page : 1;
+
+		$order   = $request->get_param( 'order' );
+		$orderby = $request->get_param( 'orderby' );
+
+		$status = $request->get_param( 'status' );
+		$status = in_array( $status, [ 'all', 'read', 'unread', 'trash' ] ) ? $status : 'all';
 
 		if ( null !== $form_id ) {
 			$args['form_id'] = (int) $form_id;
@@ -113,10 +154,69 @@ class EntryController extends ApiController {
 			$args['orderby'] = (string) $orderby;
 		}
 
-		$entry = new Entry();
-		$items = $entry->find( $args );
+		if ( null !== $status ) {
+			$args['status'] = (string) $status;
+		}
 
-		return $this->respondOK( [ 'items' => $items ] );
+		$columns      = self::get_data_table_columns( $form_id );
+		$columns_keys = wp_list_pluck( $columns, 'key' );
+
+		$_items = ( new Entry )->find( $args );
+		$items  = [];
+		foreach ( $_items as $index => $item ) {
+			$items[ $index ] = [ 'id' => $item->getId() ];
+			$data            = $item->toArray();
+			$field_values    = $data['field_values'];
+			foreach ( $columns_keys as $columns_key ) {
+				if ( isset( $data[ $columns_key ] ) ) {
+					$items[ $index ][ $columns_key ] = $data[ $columns_key ];
+				}
+				if ( isset( $field_values[ $columns_key ] ) ) {
+					$items[ $index ][ $columns_key ] = $field_values[ $columns_key ];
+				}
+			}
+		}
+
+		$counts     = Entry::get_form_entries_counts( $form_id );
+		$pagination = $this->getPaginationMetadata( [
+			'totalCount'  => $counts[ $status ],
+			'limit'       => $per_page,
+			'currentPage' => $page,
+		] );
+
+		return $this->respondOK( [
+			'items'      => $items,
+			'counts'     => $counts,
+			'pagination' => $pagination,
+			'metaData'   => [
+				'columns'          => $columns,
+				'primaryColumn'    => $columns[0]['key'],
+				'actions'          => [
+					[ 'key' => 'view', 'label' => __( 'View', 'dialog-contact-form' ) ],
+					[ 'key' => 'trash', 'label' => __( 'Trash', 'dialog-contact-form' ) ],
+				],
+				'trashActions'     => [
+					[ 'key' => 'restore', 'label' => __( 'Restore', 'dialog-contact-form' ) ],
+					[ 'key' => 'delete', 'label' => __( 'Delete Permanently', 'dialog-contact-form' ) ],
+				],
+				'bulkActions'      => [
+					[ 'key' => 'trash', 'label' => __( 'Move to Trash', 'dialog-contact-form' ) ],
+				],
+				'trashBulkActions' => [
+					[ 'key' => 'restore', 'label' => __( 'Restore', 'dialog-contact-form' ) ],
+					[ 'key' => 'delete', 'label' => __( 'Delete Permanently', 'dialog-contact-form' ) ],
+				],
+				'statuses'         => [
+					[ 'key' => 'all', 'label' => __( 'All', 'dialog-contact-form' ), 'count' => $counts['all'] ],
+					[ 'key' => 'read', 'label' => __( 'Read', 'dialog-contact-form' ), 'count' => $counts['read'] ],
+					[ 'key'   => 'unread',
+					  'label' => __( 'Unread', 'dialog-contact-form' ),
+					  'count' => $counts['unread']
+					],
+					[ 'key' => 'trash', 'label' => __( 'Trash', 'dialog-contact-form' ), 'count' => $counts['trash'] ],
+				],
+			]
+		] );
 	}
 
 	/**

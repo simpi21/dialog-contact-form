@@ -7,7 +7,7 @@
             <option v-for="action in actions" :key="action.key" :value="action.key">{{ action.label }}</option>
         </select>
 
-        <button @click="handleBulkAction" :disabled="!isApplyActive">Apply</button>
+        <button @click="handleBulkAction" :disabled="!isApplyActive" class="button">Apply</button>
     </div>
 </template>
 
