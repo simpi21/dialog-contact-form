@@ -31,7 +31,7 @@ const CrudMixin = {
         get_item(url, config = {}) {
             return new Promise((resolve, reject) => {
                 axios.get(url, config).then(response => {
-                    resolve(response);
+                    resolve(response.data.data);
                 }).catch(error => {
                     reject(error);
                 })

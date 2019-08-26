@@ -209,9 +209,10 @@ class EntryController extends ApiController {
 				'statuses'         => [
 					[ 'key' => 'all', 'label' => __( 'All', 'dialog-contact-form' ), 'count' => $counts['all'] ],
 					[ 'key' => 'read', 'label' => __( 'Read', 'dialog-contact-form' ), 'count' => $counts['read'] ],
-					[ 'key'   => 'unread',
-					  'label' => __( 'Unread', 'dialog-contact-form' ),
-					  'count' => $counts['unread']
+					[
+						'key'   => 'unread',
+						'label' => __( 'Unread', 'dialog-contact-form' ),
+						'count' => $counts['unread']
 					],
 					[ 'key' => 'trash', 'label' => __( 'Trash', 'dialog-contact-form' ), 'count' => $counts['trash'] ],
 				],
@@ -231,15 +232,49 @@ class EntryController extends ApiController {
 			return $this->respondForbidden();
 		}
 
-		$id      = $request->get_param( 'id' );
-		$entry   = new Entry();
-		$entries = $entry->findById( $id );
+		$id = $request->get_param( 'id' );
 
-		if ( ! $entries ) {
+		$entry = ( new Entry )->findById( $id );
+
+		if ( ! $entry ) {
 			return $this->respondNotFound();
 		}
 
-		return $this->respondOK( $entries );
+		$metaData = $entry->toArray();
+		$data     = $entry->getFieldValues();
+
+		$form   = $entry->getForm();
+		$fields = $form->getFormFields();
+
+		$response = [
+			'id'         => $entry->getId(),
+			'form_id'    => $entry->getFormId(),
+			'form_title' => $form->getTitle(),
+			'meta_data'  => [],
+			'form_data'  => [],
+		];
+
+		$entryColumns = Entry::get_columns_label();
+		foreach ( $entryColumns as $key => $label ) {
+			$response['meta_data'][] = [
+				'key'   => $key,
+				'label' => $label,
+				'value' => isset( $metaData[ $key ] ) ? $metaData[ $key ] : '',
+			];
+		}
+
+		foreach ( $fields as $field ) {
+			if ( empty( $field['field_id'] ) ) {
+				continue;
+			}
+			$response['form_data'][] = [
+				'key'   => $field['field_id'],
+				'label' => $field['field_title'],
+				'value' => isset( $data[ $field['field_id'] ] ) ? $data[ $field['field_id'] ] : '',
+			];
+		}
+
+		return $this->respondOK( $response );
 	}
 
 	/**

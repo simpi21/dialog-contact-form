@@ -1,6 +1,7 @@
 <template>
     <div>
         <h1 class="wp-heading-inline">Entries</h1>
+        <a href="#" class="page-title-action" @click="goBackToStatusPage">Back to Entries Counts</a>
         <hr class="wp-header-end">
         <status-list :statuses="statuses" @change="changeStatus"></status-list>
         <data-table
@@ -97,7 +98,13 @@
                 this.currentPage = page;
                 this.getEntries();
             },
+            goBackToStatusPage() {
+                this.$router.push({name: 'EntriesCounts'});
+            },
             handleAction(action, item) {
+                if ('view' === action) {
+                    this.$router.push({name: 'SingleEntry', params: {id: item.id}});
+                }
                 if (-1 !== ['trash', 'restore', 'delete'].indexOf(action)) {
                     let message = 'Are you sure to do this?';
                     if ('trash' === action) message = 'Are you sure move this item to trash?';
