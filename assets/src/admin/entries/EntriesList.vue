@@ -13,7 +13,11 @@
                 @pagination="goToPage"
                 @action:click="handleAction"
                 @bulk:apply="handleBulkAction"
-        ></data-table>
+        >
+            <template slot="created_at" slot-scope="item">
+                {{(new Date(item.row.created_at)).toLocaleString()}}
+            </template>
+        </data-table>
     </div>
 </template>
 

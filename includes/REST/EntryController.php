@@ -42,6 +42,18 @@ class EntryController extends ApiController {
 		$fields       = (array) get_post_meta( $form_id, '_contact_form_fields', true );
 		$action_store = get_post_meta( $form_id, '_action_store_submission', true );
 		$columns_keys = isset( $action_store['data_table_fields'] ) ? $action_store['data_table_fields'] : [];
+		if ( empty( $columns_keys ) ) {
+			$columns_keys = [];
+			foreach ( $fields as $field ) {
+				if ( ! in_array( $field['field_type'], [ 'textarea', 'file' ] ) ) {
+					$columns_keys[] = $field['field_id'];
+				}
+			}
+			if ( count( $columns_keys ) > 4 ) {
+				array_splice( $columns_keys, 4, count( $columns_keys ) );
+			}
+			$columns_keys[] = 'created_at';
+		}
 		$entryColumns = Entry::get_columns_label();
 		$columns      = [];
 		foreach ( $columns_keys as $index => $key ) {

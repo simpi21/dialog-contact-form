@@ -322,7 +322,7 @@ class Entry implements JsonSerializable, ArrayAccess {
 			'user_agent'   => $this->getUserAgent(),
 			'referer'      => $this->getReferer(),
 			'status'       => $this->getStatus(),
-			'created_at'   => $this->getCreatedAt()->format( DateTime::ISO8601 ),
+			'created_at'   => $this->getCreatedAt()->format( 'Y-m-d\TH:i:s' ),
 			'field_values' => $this->getFieldValues(),
 		);
 	}

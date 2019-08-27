@@ -61,23 +61,16 @@ class StoreSubmission extends Action {
 	private function settings() {
 		global $post;
 		$_fields = (array) get_post_meta( $post->ID, '_contact_form_fields', true );
-		$options = [
-			'form_title' => __( 'Form Title', 'dialog-contact-form' ),
-			'id'         => __( 'Entry: ID', 'dialog-contact-form' ),
-			'form_id'    => __( 'Entry: Form ID', 'dialog-contact-form' ),
-			'user_id'    => __( 'Entry: User ID', 'dialog-contact-form' ),
-			'user_ip'    => __( 'Entry: User IP', 'dialog-contact-form' ),
-			'user_agent' => __( 'Entry: User Agent', 'dialog-contact-form' ),
-			'referer'    => __( 'Entry: Referer', 'dialog-contact-form' ),
-			'status'     => __( 'Entry: Status', 'dialog-contact-form' ),
-			'created_at' => __( 'Entry: Date', 'dialog-contact-form' ),
-		];
+		$options = [];
 
 		foreach ( $_fields as $item ) {
 			if ( ! empty( $item['field_id'] ) && ! empty( $item['field_title'] ) ) {
 				$options[ $item['field_id'] ] = 'Field: ' . $item['field_title'];
 			}
 		}
+
+		$options['status']     = __( 'Entry: Status', 'dialog-contact-form' );
+		$options['created_at'] = __( 'Entry: Date', 'dialog-contact-form' );
 
 		return [
 			'data_table_fields' => [
