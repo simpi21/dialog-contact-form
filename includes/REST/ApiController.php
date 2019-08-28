@@ -358,6 +358,24 @@ class ApiController extends WP_REST_Controller {
 	/**
 	 * Generate pagination metadata
 	 *
+	 * @param int $total_items
+	 * @param int $per_page
+	 * @param int $current_page
+	 *
+	 * @return array
+	 */
+	public static function get_pagination_data( $total_items, $per_page = 10, $current_page = 1 ) {
+		return array(
+			"total_items"  => $total_items,
+			"per_page"     => $per_page,
+			"current_page" => $current_page,
+			"total_pages"  => ceil( $total_items / $per_page ),
+		);
+	}
+
+	/**
+	 * Generate pagination metadata
+	 *
 	 * @param array $args
 	 *
 	 * @return array

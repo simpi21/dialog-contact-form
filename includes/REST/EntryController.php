@@ -193,24 +193,20 @@ class EntryController extends ApiController {
 			}
 		}
 
-		$counts     = Entry::get_form_entries_counts( $form_id );
-		$pagination = $this->getPaginationMetadata( [
-			'totalCount'  => $counts[ $status ],
-			'limit'       => $per_page,
-			'currentPage' => $page,
-		] );
-
+		$counts   = Entry::get_form_entries_counts( $form_id );
 		$metaData = $this->get_collection_metadata( $counts, $status );
 
-		return $this->respondOK( [
+		$response = [
 			'items'      => $items,
 			'counts'     => $counts,
-			'pagination' => $pagination,
+			'pagination' => self::get_pagination_data( $counts[ $status ], $per_page, $page ),
 			'metaData'   => array_merge( [
 				'columns'       => $columns,
 				'primaryColumn' => $columns[0]['key'],
 			], $metaData )
-		] );
+		];
+
+		return $this->respondOK( $response );
 	}
 
 	/**
@@ -243,6 +239,7 @@ class EntryController extends ApiController {
 			'id'         => $entry->getId(),
 			'form_id'    => $entry->getFormId(),
 			'form_title' => $form->getTitle(),
+			'status'     => $entry->getStatus(),
 			'meta_data'  => [],
 			'form_data'  => [],
 		];
@@ -475,11 +472,16 @@ class EntryController extends ApiController {
 		$data = [];
 
 		$data['statuses'] = [
-			[ 'key' => 'all', 'label' => __( 'All', 'dialog-contact-form' ), 'count' => $counts['all'] ],
-			[ 'key' => 'read', 'label' => __( 'Read', 'dialog-contact-form' ), 'count' => $counts['read'] ],
-			[ 'key' => 'unread', 'label' => __( 'Unread', 'dialog-contact-form' ), 'count' => $counts['unread'] ],
-			[ 'key' => 'trash', 'label' => __( 'Trash', 'dialog-contact-form' ), 'count' => $counts['trash'] ],
+			[ 'key' => 'all', 'label' => __( 'All', 'dialog-contact-form' ) ],
+			[ 'key' => 'read', 'label' => __( 'Read', 'dialog-contact-form' ) ],
+			[ 'key' => 'unread', 'label' => __( 'Unread', 'dialog-contact-form' ) ],
+			[ 'key' => 'trash', 'label' => __( 'Trash', 'dialog-contact-form' ) ],
 		];
+
+		foreach ( $data['statuses'] as $index => $_status ) {
+			$data['statuses'][ $index ]['count']  = isset( $counts[ $_status['key'] ] ) ? $counts[ $_status['key'] ] : 0;
+			$data['statuses'][ $index ]['active'] = ( $_status['key'] == $status );
+		}
 
 		if ( 'trash' == $status ) {
 			$data['actions'][] = [ 'key' => 'restore', 'label' => __( 'Restore', 'dialog-contact-form' ) ];

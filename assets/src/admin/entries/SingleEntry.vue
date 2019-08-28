@@ -71,6 +71,9 @@
                     this.form_title = data.form_title;
                     this.form_data = data.form_data;
                     this.meta_data = data.meta_data;
+                    if (data.status && 'unread' === data.status) {
+                        this.markReadIfUnread();
+                    }
                     this.$store.commit('SET_LOADING_STATUS', false);
                 }).catch(error => {
                     console.log(error);
@@ -79,6 +82,10 @@
             },
             goBackToListPage() {
                 this.$router.push({name: 'EntriesList', params: {form_id: this.form_id, status: 'all'}});
+            },
+            markReadIfUnread() {
+                this.update_item(dcfSettings.restRoot + '/entries/batch', {mark_read: [this.id]})
+                    .catch(error => console.log(error));
             }
         }
     }

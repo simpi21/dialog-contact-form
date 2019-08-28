@@ -3,13 +3,16 @@
         <h1 class="wp-heading-inline">Entries</h1>
         <a href="#" class="page-title-action" @click="goBackToStatusPage">Back to Entries Counts</a>
         <hr class="wp-header-end">
-        <status-list :statuses="statuses" @change="changeStatus"></status-list>
+        <status-list :statuses="metaData.statuses" @change="changeStatus"></status-list>
         <data-table
                 :rows="items"
                 :columns="columns"
                 :actions="actions"
                 :bulk-actions="bulkActions"
                 :action-column="metaData.primaryColumn"
+                :per-page="pagination.limit"
+                :current-page="currentPage"
+                :total-items="pagination.totalCount"
                 @pagination="goToPage"
                 @action:click="handleAction"
                 @bulk:apply="handleBulkAction"
@@ -39,7 +42,9 @@
                 search: '',
                 currentPage: 1,
                 columns: [],
-                metaData: {},
+                metaData: {
+                    statuses: [],
+                },
             }
         },
         computed: {
@@ -48,17 +53,6 @@
             },
             bulkActions() {
                 return this.metaData.bulk_actions;
-            },
-            statuses() {
-                if (this.metaData.statuses && this.metaData.statuses.length > 0) {
-                    return this.metaData.statuses.map(element => {
-                        if (element.key === this.status) {
-                            element['active'] = true;
-                        }
-                        return element;
-                    });
-                }
-                return [];
             }
         },
         mounted() {
@@ -89,6 +83,7 @@
             changeStatus(status) {
                 this.status = status.key;
                 this.search = '';
+                this.currentPage = 1;
                 this.$router.push({
                     name: 'EntriesList', params: {
                         form_id: this.form_id,

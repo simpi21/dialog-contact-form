@@ -68,8 +68,10 @@ class Scripts {
 	 */
 	public function admin_scripts( $hook ) {
 		global $post_type;
-		if ( ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE ) && ( 'dialog-contact-form_page_dcf-settings' != $hook ) ) {
-			// return;
+		if ( ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE )
+		     && ( 'dialog-contact-form_page_dcf-settings' != $hook )
+		     && ( 'dialog-contact-form_page_dcf-entries' != $hook ) ) {
+			return;
 		}
 
 		$suffix = ( defined( "SCRIPT_DEBUG" ) && SCRIPT_DEBUG ) ? '' : '.min';

@@ -150,8 +150,8 @@ class Admin {
 				$entry_url     = add_query_arg( array(
 					'post_type' => 'dialog-contact-form',
 					'page'      => 'dcf-entries',
-					'form_id'   => $post_id,
 				), admin_url( 'edit.php' ) );
+				$entry_url     = $entry_url . "#/forms/" . $post_id . "/entries/all";
 				$count_entries = $this->count_entries();
 				$entry_count   = isset( $count_entries[ $post_id ] ) ? $count_entries[ $post_id ] : 0;
 				echo '<a href="' . esc_url( $entry_url ) . '">' . $entry_count . '</a>';
