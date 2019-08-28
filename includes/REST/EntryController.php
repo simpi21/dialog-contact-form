@@ -92,7 +92,7 @@ class EntryController extends ApiController {
 
 		register_rest_route( $this->namespace, '/entries/batch', [
 			[
-				'methods'  => WP_REST_Server::CREATABLE,
+				'methods'  => WP_REST_Server::EDITABLE,
 				'callback' => [ $this, 'update_batch_items' ],
 				'args'     => $this->get_batch_params()
 			],
@@ -125,7 +125,6 @@ class EntryController extends ApiController {
 	 * @return WP_REST_Response Response object on success, or WP_Error object on failure.
 	 */
 	public function get_items( $request ) {
-
 		if ( ! current_user_can( 'publish_pages' ) ) {
 			return $this->respondForbidden();
 		}
@@ -133,6 +132,7 @@ class EntryController extends ApiController {
 		$args = array();
 
 		$form_id = $request->get_param( 'form_id' );
+		$search  = $request->get_param( 'search' );
 
 		$page = $request->get_param( 'page' );
 		$page = is_numeric( $page ) && intval( $page ) > 0 ? $page : 1;
@@ -170,6 +170,10 @@ class EntryController extends ApiController {
 			$args['status'] = (string) $status;
 		}
 
+		if ( ! empty( $search ) ) {
+			$args['search'] = $search;
+		}
+
 		$columns      = self::get_data_table_columns( $form_id );
 		$columns_keys = wp_list_pluck( $columns, 'key' );
 
@@ -196,39 +200,16 @@ class EntryController extends ApiController {
 			'currentPage' => $page,
 		] );
 
+		$metaData = $this->get_collection_metadata( $counts, $status );
+
 		return $this->respondOK( [
 			'items'      => $items,
 			'counts'     => $counts,
 			'pagination' => $pagination,
-			'metaData'   => [
-				'columns'          => $columns,
-				'primaryColumn'    => $columns[0]['key'],
-				'actions'          => [
-					[ 'key' => 'view', 'label' => __( 'View', 'dialog-contact-form' ) ],
-					[ 'key' => 'trash', 'label' => __( 'Trash', 'dialog-contact-form' ) ],
-				],
-				'trashActions'     => [
-					[ 'key' => 'restore', 'label' => __( 'Restore', 'dialog-contact-form' ) ],
-					[ 'key' => 'delete', 'label' => __( 'Delete Permanently', 'dialog-contact-form' ) ],
-				],
-				'bulkActions'      => [
-					[ 'key' => 'trash', 'label' => __( 'Move to Trash', 'dialog-contact-form' ) ],
-				],
-				'trashBulkActions' => [
-					[ 'key' => 'restore', 'label' => __( 'Restore', 'dialog-contact-form' ) ],
-					[ 'key' => 'delete', 'label' => __( 'Delete Permanently', 'dialog-contact-form' ) ],
-				],
-				'statuses'         => [
-					[ 'key' => 'all', 'label' => __( 'All', 'dialog-contact-form' ), 'count' => $counts['all'] ],
-					[ 'key' => 'read', 'label' => __( 'Read', 'dialog-contact-form' ), 'count' => $counts['read'] ],
-					[
-						'key'   => 'unread',
-						'label' => __( 'Unread', 'dialog-contact-form' ),
-						'count' => $counts['unread']
-					],
-					[ 'key' => 'trash', 'label' => __( 'Trash', 'dialog-contact-form' ), 'count' => $counts['trash'] ],
-				],
-			]
+			'metaData'   => array_merge( [
+				'columns'       => $columns,
+				'primaryColumn' => $columns[0]['key'],
+			], $metaData )
 		] );
 	}
 
@@ -321,11 +302,13 @@ class EntryController extends ApiController {
 	 * @return WP_REST_Response Response object on success, or WP_Error object on failure.
 	 */
 	public function update_batch_items( $request ) {
-		$trash_items   = $request->get_param( 'trash' );
-		$restore_items = $request->get_param( 'restore' );
-		$delete_items  = $request->get_param( 'delete' );
-		$ids           = [];
-		$entry         = new Entry;
+		$trash_items       = $request->get_param( 'trash' );
+		$restore_items     = $request->get_param( 'restore' );
+		$delete_items      = $request->get_param( 'delete' );
+		$mark_read_items   = $request->get_param( 'mark_read' );
+		$mark_unread_items = $request->get_param( 'mark_unread' );
+		$ids               = [];
+		$entry             = new Entry;
 
 		if ( ! empty( $trash_items ) ) {
 			$ids = is_string( $trash_items ) ? explode( ',', $trash_items ) : $trash_items;
@@ -348,6 +331,22 @@ class EntryController extends ApiController {
 			$ids = count( $ids ) ? array_map( 'intval', $ids ) : [];
 			foreach ( $ids as $id ) {
 				$entry->delete( $id );
+			}
+		}
+
+		if ( ! empty( $mark_read_items ) ) {
+			$ids = is_string( $mark_read_items ) ? explode( ',', $mark_read_items ) : $mark_read_items;
+			$ids = count( $ids ) ? array_map( 'intval', $ids ) : [];
+			foreach ( $ids as $id ) {
+				$entry->mark_as_read( $id );
+			}
+		}
+
+		if ( ! empty( $mark_unread_items ) ) {
+			$ids = is_string( $mark_unread_items ) ? explode( ',', $mark_unread_items ) : $mark_unread_items;
+			$ids = count( $ids ) ? array_map( 'intval', $ids ) : [];
+			foreach ( $ids as $id ) {
+				$entry->mark_as_unread( $id );
 			}
 		}
 
@@ -441,10 +440,82 @@ class EntryController extends ApiController {
 	 */
 	public function get_batch_params() {
 		return [
-			'delete' => [
-				'description' => __( 'List of items ids to delete.', 'dialog-contact-form' ),
+			'trash'       => [
+				'description' => __( 'List of items ids to be sent to trash.', 'dialog-contact-form' ),
+				'required'    => false,
+			],
+			'restore'     => [
+				'description' => __( 'List of items ids to be restored from trash.', 'dialog-contact-form' ),
+				'required'    => false,
+			],
+			'delete'      => [
+				'description' => __( 'List of items ids to delete permanently.', 'dialog-contact-form' ),
+				'required'    => false,
+			],
+			'mark_read'   => [
+				'description' => __( 'List of items ids to be marked as read.', 'dialog-contact-form' ),
+				'required'    => false,
+			],
+			'mark_unread' => [
+				'description' => __( 'List of items ids to marked as unread.', 'dialog-contact-form' ),
 				'required'    => false,
 			],
 		];
+	}
+
+	/**
+	 * Get collection metadata
+	 *
+	 * @param array $counts
+	 * @param string $status
+	 *
+	 * @return array
+	 */
+	private function get_collection_metadata( $counts, $status = 'all' ) {
+		$data = [];
+
+		$data['statuses'] = [
+			[ 'key' => 'all', 'label' => __( 'All', 'dialog-contact-form' ), 'count' => $counts['all'] ],
+			[ 'key' => 'read', 'label' => __( 'Read', 'dialog-contact-form' ), 'count' => $counts['read'] ],
+			[ 'key' => 'unread', 'label' => __( 'Unread', 'dialog-contact-form' ), 'count' => $counts['unread'] ],
+			[ 'key' => 'trash', 'label' => __( 'Trash', 'dialog-contact-form' ), 'count' => $counts['trash'] ],
+		];
+
+		if ( 'trash' == $status ) {
+			$data['actions'][] = [ 'key' => 'restore', 'label' => __( 'Restore', 'dialog-contact-form' ) ];
+			$data['actions'][] = [ 'key' => 'delete', 'label' => __( 'Delete Permanently', 'dialog-contact-form' ) ];
+
+			$data['bulk_actions'][] = [ 'key' => 'restore', 'label' => __( 'Restore', 'dialog-contact-form' ) ];
+			$data['bulk_actions'][] = [
+				'key'   => 'delete',
+				'label' => __( 'Delete Permanently', 'dialog-contact-form' )
+			];
+		} else {
+
+			$data['actions'][] = [ 'key' => 'view', 'label' => __( 'View', 'dialog-contact-form' ) ];
+
+			if ( 'read' == $status ) {
+				$unread_action          = [
+					'key'   => 'mark_unread',
+					'label' => __( 'Mark as unread', 'dialog-contact-form' )
+				];
+				$data['actions'][]      = $unread_action;
+				$data['bulk_actions'][] = $unread_action;
+			}
+
+			if ( 'unread' == $status ) {
+				$read_action            = [
+					'key'   => 'mark_read',
+					'label' => __( 'Mark as read', 'dialog-contact-form' )
+				];
+				$data['actions'][]      = $read_action;
+				$data['bulk_actions'][] = $read_action;
+			}
+			$data['actions'][] = [ 'key' => 'trash', 'label' => __( 'Trash', 'dialog-contact-form' ) ];
+
+			$data['bulk_actions'][] = [ 'key' => 'trash', 'label' => __( 'Move to Trash', 'dialog-contact-form' ) ];
+		}
+
+		return $data;
 	}
 }

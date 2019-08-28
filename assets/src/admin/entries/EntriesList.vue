@@ -13,6 +13,8 @@
                 @pagination="goToPage"
                 @action:click="handleAction"
                 @bulk:apply="handleBulkAction"
+                @search:submit="handleSearchSubmit"
+                @search:input="handleSearchInput"
         >
             <template slot="created_at" slot-scope="item">
                 {{(new Date(item.row.created_at)).toLocaleString()}}
@@ -34,6 +36,7 @@
             return {
                 form_id: 0,
                 status: 'all',
+                search: '',
                 currentPage: 1,
                 columns: [],
                 metaData: {},
@@ -41,16 +44,10 @@
         },
         computed: {
             actions() {
-                if ('trash' === this.status) {
-                    return this.metaData.trashActions;
-                }
                 return this.metaData.actions;
             },
             bulkActions() {
-                if ('trash' === this.status) {
-                    return this.metaData.trashBulkActions;
-                }
-                return this.metaData.bulkActions;
+                return this.metaData.bulk_actions;
             },
             statuses() {
                 if (this.metaData.statuses && this.metaData.statuses.length > 0) {
@@ -77,7 +74,8 @@
                     params: {
                         page: this.currentPage,
                         status: this.status,
-                        form_id: this.form_id
+                        form_id: this.form_id,
+                        search: this.search,
                     }
                 }).then(data => {
                     this.metaData = data.metaData;
@@ -90,6 +88,7 @@
             },
             changeStatus(status) {
                 this.status = status.key;
+                this.search = '';
                 this.$router.push({
                     name: 'EntriesList', params: {
                         form_id: this.form_id,
@@ -105,9 +104,25 @@
             goBackToStatusPage() {
                 this.$router.push({name: 'EntriesCounts'});
             },
+            handleSearchSubmit(text) {
+                this.search = text;
+                this.getEntries();
+            },
+            handleSearchInput(text) {
+                if (text.length < 1) {
+                    this.search = '';
+                    this.getEntries();
+                }
+            },
             handleAction(action, item) {
                 if ('view' === action) {
                     this.$router.push({name: 'SingleEntry', params: {id: item.id}});
+                }
+                if ('mark_read' === action) {
+                    this.batchReadUnreadAction([item.id], action);
+                }
+                if ('mark_unread' === action) {
+                    this.batchReadUnreadAction([item.id], action);
                 }
                 if (-1 !== ['trash', 'restore', 'delete'].indexOf(action)) {
                     let message = 'Are you sure to do this?';
@@ -122,6 +137,12 @@
                 }
             },
             handleBulkAction(action, ids) {
+                if ('mark_read' === action) {
+                    this.batchReadUnreadAction(ids, action);
+                }
+                if ('mark_unread' === action) {
+                    this.batchReadUnreadAction(ids, action);
+                }
                 if (-1 !== ['trash', 'restore', 'delete'].indexOf(action)) {
                     let message = 'Are you sure to do this?';
                     if ('trash' === action) message = 'Are you sure to trash all selected items?';
@@ -133,6 +154,18 @@
                         }
                     });
                 }
+            },
+            batchReadUnreadAction(ids, action) {
+                this.$store.commit('SET_LOADING_STATUS', true);
+                let data = {};
+                data[action] = ids;
+                this.update_item(dcfSettings.restRoot + '/entries/batch', data).then(() => {
+                    this.$store.commit('SET_LOADING_STATUS', false);
+                    this.getEntries();
+                }).catch(error => {
+                    this.$store.commit('SET_LOADING_STATUS', false);
+                    console.log(error);
+                });
             },
             batchTrashAction(ids, action) {
                 this.$store.commit('SET_LOADING_STATUS', true);

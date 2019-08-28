@@ -87,6 +87,22 @@ class Entry implements JsonSerializable, ArrayAccess {
 	}
 
 	/**
+	 * @param $args
+	 *
+	 * @return array
+	 */
+	protected static function get_order_and_pagination_data( $args ) {
+		$orderby      = isset( $args['orderby'] ) ? $args['orderby'] : 'created_at';
+		$order        = isset( $args['order'] ) ? $args['order'] : 'desc';
+		$per_page     = isset( $args['per_page'] ) ? absint( $args['per_page'] ) : 10;
+		$current_page = isset( $args['page'] ) ? absint( $args['page'] ) : 1;
+		$current_page = $current_page >= 1 ? $current_page : 1;
+		$offset       = ( $current_page - 1 ) * $per_page;
+
+		return array( $orderby, $order, $per_page, $offset );
+	}
+
+	/**
 	 * Does this entry have a given key?
 	 *
 	 * @param string $key The data key
@@ -335,25 +351,35 @@ class Entry implements JsonSerializable, ArrayAccess {
 	 * @return self[]
 	 */
 	public function find( $args = array() ) {
-		$form_id      = isset( $args['form_id'] ) ? intval( $args['form_id'] ) : 0;
-		$orderby      = isset( $args['orderby'] ) ? $args['orderby'] : 'created_at';
-		$order        = isset( $args['order'] ) ? $args['order'] : 'desc';
-		$per_page     = isset( $args['per_page'] ) ? absint( $args['per_page'] ) : 10;
-		$current_page = isset( $args['page'] ) ? absint( $args['page'] ) : 1;
-		$current_page = $current_page >= 1 ? $current_page : 1;
-		$offset       = ( $current_page - 1 ) * $per_page;
+		list( $orderby, $order, $per_page, $offset ) = self::get_order_and_pagination_data( $args );
 
-		$status = isset( $args['status'] ) ? $args['status'] : 'all';
+		$form_id = isset( $args['form_id'] ) ? intval( $args['form_id'] ) : 0;
+		$status  = isset( $args['status'] ) ? $args['status'] : 'all';
+		$search  = ! empty( $args['search'] ) ? esc_sql( $args['search'] ) : null;
 
-		$sql = "SELECT * FROM {$this->table_name} WHERE 1 = 1";
+		$sql = "SELECT * FROM {$this->table_name}";
+
+		if ( ! empty( $search ) ) {
+			$sql .= " RIGHT JOIN {$this->meta_table_name} ON {$this->table_name}.id = {$this->meta_table_name}.entry_id";
+		}
+
+		$sql .= " WHERE 1 = 1";
+
 		if ( $form_id ) {
 			$sql .= $this->db->prepare( " AND form_id = %d", $form_id );
 		}
+
 		if ( in_array( $status, $this->statuses ) ) {
 			$sql .= $this->db->prepare( " AND status = %s", $args['status'] );
 		} else {
 			$sql .= $this->db->prepare( " AND status != %s", 'trash' );
 		}
+
+		if ( ! empty( $search ) ) {
+			$sql .= $this->db->prepare( " AND {$this->meta_table_name}.meta_value LIKE %s", '%' . $search . '%' );
+			$sql .= "GROUP BY {$this->meta_table_name}.entry_id";
+		}
+
 		$sql .= " ORDER BY {$orderby} {$order}";
 		$sql .= " LIMIT $per_page OFFSET $offset";
 
@@ -458,6 +484,24 @@ class Entry implements JsonSerializable, ArrayAccess {
 	 */
 	public function update( $data, $where, $format = null, $where_format = null ) {
 		$this->db->update( $this->table_name, $data, $where, $format, $where_format );
+	}
+
+	/**
+	 * Mark entry as read
+	 *
+	 * @param int $id
+	 */
+	public function mark_as_read( $id ) {
+		$this->update( [ 'status' => 'read' ], [ 'id' => $id ], '%s', '%d' );
+	}
+
+	/**
+	 * Mark entry as unread
+	 *
+	 * @param int $id
+	 */
+	public function mark_as_unread( $id ) {
+		$this->update( [ 'status' => 'unread' ], [ 'id' => $id ], '%s', '%d' );
 	}
 
 	/**
