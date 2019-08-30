@@ -45,6 +45,9 @@ class EntryController extends ApiController {
 		if ( empty( $columns_keys ) ) {
 			$columns_keys = [];
 			foreach ( $fields as $field ) {
+				if ( empty( $field['field_id'] ) ) {
+					continue;
+				}
 				if ( ! in_array( $field['field_type'], [ 'textarea', 'file' ] ) ) {
 					$columns_keys[] = $field['field_id'];
 				}
@@ -131,6 +134,8 @@ class EntryController extends ApiController {
 
 		$args = array();
 
+		$metadata = $request->get_param( 'metadata' );
+
 		$form_id = $request->get_param( 'form_id' );
 		$search  = $request->get_param( 'search' );
 
@@ -193,18 +198,20 @@ class EntryController extends ApiController {
 			}
 		}
 
-		$counts   = Entry::get_form_entries_counts( $form_id );
-		$metaData = $this->get_collection_metadata( $counts, $status );
+		$counts = Entry::get_form_entries_counts( $form_id );
 
 		$response = [
 			'items'      => $items,
-			'counts'     => $counts,
 			'pagination' => self::get_pagination_data( $counts[ $status ], $per_page, $page ),
-			'metaData'   => array_merge( [
+		];
+
+		if ( $metadata ) {
+			$metaData             = $this->get_collection_metadata( $counts, $status );
+			$response['metaData'] = array_merge( [
 				'columns'       => $columns,
 				'primaryColumn' => $columns[0]['key'],
-			], $metaData )
-		];
+			], $metaData );
+		}
 
 		return $this->respondOK( $response );
 	}
@@ -385,6 +392,10 @@ class EntryController extends ApiController {
 			$count        = wp_parse_args( $_count, $default_count );
 			$count['all'] = ( $count['unread'] + $count['read'] );
 
+			if ( $count['all'] < 1 && $count['trash'] < 1 ) {
+				continue;
+			}
+
 			$response[] = [
 				'form_id'    => $form->ID,
 				'form_title' => $form->post_title,
@@ -404,26 +415,33 @@ class EntryController extends ApiController {
 		$params = parent::get_collection_params();
 
 		$params = array_merge( $params, [
-			'form_id' => [
+			'form_id'  => [
 				'description'       => __( 'Retrieve items only related to form ID.', 'dialog-contact-form' ),
 				'required'          => false,
 				'type'              => 'integer',
 				'sanitize_callback' => 'absint',
 				'validate_callback' => 'rest_validate_request_arg',
 			],
-			'order'   => [
+			'order'    => [
 				'description' => __( 'Designates the ascending or descending order.', 'dialog-contact-form' ),
 				'required'    => false,
 				'default'     => 'DESC',
 				'enum'        => [ 'ASC', 'DESC' ],
 				'type'        => 'string',
 			],
-			'orderby' => [
+			'orderby'  => [
 				'description' => __( 'Sort retrieved entries by parameter.', 'dialog-contact-form' ),
 				'required'    => false,
 				'default'     => 'id',
 				'enum'        => [ 'id', 'form_id', 'user_id', 'status', 'created_at' ],
 				'type'        => 'string',
+			],
+			'metadata' => [
+				'description'       => __( 'Include entry metadata.', 'dialog-contact-form' ),
+				'required'          => false,
+				'default'           => false,
+				'type'              => 'boolean',
+				'validate_callback' => 'rest_validate_request_arg',
 			],
 		] );
 

@@ -4,7 +4,7 @@ Tags: form, forms, contact form, form builder, feedback, email, ajax, captcha
 Requires at least: 4.7
 Requires PHP: 5.3
 Tested up to: 5.2
-Stable tag: 3.0.1
+Stable tag: 3.1.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -86,6 +86,11 @@ If you still need help. visit [WordPress codex](https://codex.wordpress.org/Mana
 Version 3 is a major update. After upgrading to version 3, check form and settings.
 
 == Changelog ==
+
+= version 3.1.0 - 2019-08-30 =
+* Feature - Re-design entries list page, status counts page and single entry page with Vue.
+* Dev - Update REST controller classes.
+* Add - Add entry status REST endpoint for getting form status counts.
 
 = version 3.0.1 - 2019-08-20 =
 * Fix - Fix timeZone is not working and making error notice.

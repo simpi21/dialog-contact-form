@@ -3,7 +3,7 @@
  * Plugin Name: Dialog Contact Form
  * Plugin URI: http://wordpress.org/plugins/dialog-contact-form/
  * Description: Just another WordPress contact form plugin. Simple but flexible.
- * Version: 3.0.1
+ * Version: 3.1.0
  * Author: Sayful Islam
  * Author URI: https://sayfulislam.com
  * Requires at least: 4.7
@@ -48,7 +48,7 @@ if ( ! class_exists( 'Dialog_Contact_Form' ) ) {
 		 *
 		 * @var string
 		 */
-		private $version = '3.0.1';
+		private $version = '3.1.0';
 
 		/**
 		 * Holds various class instances

@@ -10,9 +10,9 @@
                 :actions="actions"
                 :bulk-actions="bulkActions"
                 :action-column="metaData.primaryColumn"
-                :per-page="pagination.limit"
                 :current-page="currentPage"
-                :total-items="pagination.totalCount"
+                :per-page="pagination.per_page"
+                :total-items="pagination.total_items"
                 @pagination="goToPage"
                 @action:click="handleAction"
                 @bulk:apply="handleBulkAction"
@@ -29,7 +29,7 @@
 <script>
     import {CrudMixin} from "../../components/CrudMixin";
     import dataTable from 'shapla-data-table';
-    import StatusList from "../../shapla/shapla-data-table/src/statusList";
+    import StatusList from "shapla-data-table/src/statusList";
 
     export default {
         name: "EntriesList",
@@ -64,12 +64,13 @@
         methods: {
             getEntries() {
                 this.$store.commit('SET_LOADING_STATUS', true);
-                this.get_items(dcfSettings.restRoot + '/entries', {
+                this.get_items(dcfSettings.restRoot + '/forms/' + this.form_id + '/entries', {
                     params: {
                         page: this.currentPage,
                         status: this.status,
                         form_id: this.form_id,
                         search: this.search,
+                        metadata: true,
                     }
                 }).then(data => {
                     this.metaData = data.metaData;
