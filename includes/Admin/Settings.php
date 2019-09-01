@@ -26,9 +26,34 @@ class Settings {
 			self::$instance = new self();
 
 			self::settings();
+
+			add_action( 'admin_menu', [ self::$instance, 'add_setting_menu' ] );
 		}
 
 		return self::$instance;
+	}
+
+	public function add_setting_menu() {
+		add_submenu_page(
+			'edit.php?post_type=dialog-contact-form',
+			__( 'Settings - beta', 'dialog-contact-form' ),
+			__( 'Settings - beta', 'dialog-contact-form' ),
+			'manage_options',
+			'dcf-settings-beta',
+			array( $this, 'setting_page_callback' )
+		);
+	}
+
+	public function setting_page_callback() {
+		$settings = SettingHandler::init();
+		$data     = [
+			'panels'   => $settings->getPanels(),
+			'sections' => $settings->getSections(),
+			'fields'   => $settings->getFields(),
+			'options'  => $settings->get_options(),
+		];
+		echo '<script>var dcfAdminSettings = ' . wp_json_encode( $data ) . '</script>';
+		echo '<div id="dialog-contact-form-settings"></div>';
 	}
 
 	/**
@@ -465,10 +490,11 @@ class Settings {
 		) );
 		$option_page->add_field( array(
 			'id'      => 'dialog_form_id',
-			'type'    => 'form_list',
+			'type'    => 'select',
 			'name'    => __( 'Choose Form', 'dialog-contact-form' ),
 			'std'     => '',
 			'section' => 'dcf_dialog_section',
+			'options' => self::form_list(),
 		) );
 	}
 
@@ -588,5 +614,31 @@ class Settings {
 				'disable' => esc_html__( 'Disable', 'dialog-contact-form' ),
 			)
 		) );
+	}
+
+	/**
+	 * select input field
+	 *
+	 * @return array
+	 */
+	private static function form_list() {
+		$contact_forms = get_posts( array(
+			'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
+			'posts_per_page' => - 1,
+			'post_status'    => 'publish'
+		) );
+
+		if ( count( $contact_forms ) < 1 ) {
+			return array();
+		}
+
+		$options = array();
+
+		/** @var \WP_Post $contact_form */
+		foreach ( $contact_forms as $contact_form ) {
+			$options[ $contact_form->ID ] = $contact_form->post_title;
+		}
+
+		return $options;
 	}
 }

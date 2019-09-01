@@ -18,7 +18,8 @@ let entryPoints = {
     admin: [
         "./assets/scss/admin.scss",
         "./assets/src/admin/admin.js",
-        "./assets/src/admin/main.js"
+        "./assets/src/admin/main.js",
+        "./assets/src/admin/settings/main.js",
     ],
     'gutenberg-block': [
         "./assets/scss/gutenberg-block.scss",

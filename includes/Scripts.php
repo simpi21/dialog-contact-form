@@ -50,6 +50,7 @@ class Scripts {
 
 		$data = [
 			'homeUrl'        => home_url(),
+			'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
 			'isUserLoggedIn' => $is_user_logged_in,
 			'restRoot'       => esc_url_raw( rest_url( 'dialog-contact-form/v1' ) ),
 		];
@@ -70,6 +71,7 @@ class Scripts {
 		global $post_type;
 		if ( ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE )
 		     && ( 'dialog-contact-form_page_dcf-settings' != $hook )
+		     && ( 'dialog-contact-form_page_dcf-settings-beta' != $hook ) // Temp
 		     && ( 'dialog-contact-form_page_dcf-entries' != $hook ) ) {
 			return;
 		}
