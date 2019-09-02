@@ -62,16 +62,6 @@ class SettingHandler {
 	}
 
 	/**
-	 * Initialization or class
-	 */
-	public function __construct() {
-		if ( is_admin() ) {
-			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-			add_action( 'admin_init', array( $this, 'admin_init' ) );
-		}
-	}
-
-	/**
 	 * Add new admin menu
 	 *
 	 * This method is accessible outside the class for creating menu
@@ -168,7 +158,7 @@ class SettingHandler {
 	/**
 	 * Filter settings fields by page tab
 	 *
-	 * @param  string $current_tab
+	 * @param string $current_tab
 	 *
 	 * @return array
 	 */
@@ -210,92 +200,47 @@ class SettingHandler {
 	}
 
 	/**
-	 * Register setting and its sanitization callback.
-	 * @return void
-	 */
-	public function admin_init() {
-		$option_group = $this->menu_fields['option_name'];
-		$option_name  = $this->menu_fields['option_name'];
-		register_setting( $option_group, $option_name, array(
-			'description'       => '',
-			'sanitize_callback' => array( $this, 'sanitize_callback' ),
-			'show_in_rest'      => false,
-		) );
-	}
-
-	/**
-	 * Create admin menu
-	 */
-	public function admin_menu() {
-		$page_title  = $this->menu_fields['page_title'];
-		$menu_title  = $this->menu_fields['menu_title'];
-		$menu_slug   = $this->menu_fields['menu_slug'];
-		$capability  = isset( $this->menu_fields['capability'] ) ? $this->menu_fields['capability'] : 'manage_options';
-		$parent_slug = isset( $this->menu_fields['parent_slug'] ) ? $this->menu_fields['parent_slug'] : null;
-
-		if ( ! empty( $parent_slug ) ) {
-			add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug,
-				array( $this, 'page_content' ) );
-		} else {
-			add_menu_page( $page_title, $menu_title, $capability, $menu_slug, array( $this, 'page_content' ) );
-		}
-	}
-
-	/**
-	 * Load page content
-	 */
-	public function page_content() {
-		$this->get_options();
-		ob_start(); ?>
-
-        <div class="wrap">
-			<?php $this->option_page_tabs(); ?>
-            <form method="POST" action="options.php">
-				<?php
-				// Output nonce, action, and option_page fields for a settings page.
-				settings_fields( $this->menu_fields['option_name'] );
-				// Get setting fields
-				$this->setting_fields();
-				// Echoes a submit button
-				submit_button();
-				?>
-            </form>
-        </div>
-		<?php
-		echo ob_get_clean();
-	}
-
-	/**
-	 * Generate Option Page Tabs
+	 * @param array $input
 	 *
-	 * @return void
+	 * @return array
 	 */
-	private function option_page_tabs() {
-		$panels = $this->getPanels();
+	public function sanitize_options( array $input ) {
+		$output_array = array();
+		$fields       = $this->getFields();
+		$options      = (array) $this->get_options();
+		foreach ( $fields as $field ) {
+			$key     = isset( $field['id'] ) ? $field['id'] : null;
+			$default = isset( $field['std'] ) ? $field['std'] : null;
+			$type    = isset( $field['type'] ) ? $field['type'] : 'text';
+			$value   = isset( $input[ $field['id'] ] ) ? $input[ $field['id'] ] : $options[ $field['id'] ];
 
-		if ( count( $panels ) < 1 ) {
-			return;
-		}
-
-		$current_tab = isset ( $_GET['tab'] ) ? $_GET['tab'] : $panels[0]['id'];
-		$page        = $this->menu_fields['menu_slug'];
-
-		echo '<h2 class="nav-tab-wrapper wp-clearfix">';
-		foreach ( $panels as $tab ) {
-			$class = ( $tab['id'] === $current_tab ) ? 'nav-tab nav-tab-active' : 'nav-tab';
-			$args  = array(
-				'page' => $page,
-				'tab'  => $tab['id'],
-			);
-			if ( isset( $_GET['post_type'] ) ) {
-				$args['post_type'] = $_GET['post_type'];
+			if ( isset( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
+				$output_array[ $key ] = call_user_func( $field['sanitize_callback'], $value );
+				continue;
 			}
 
-			$tab_url = '?' . http_build_query( $args );
+			if ( isset( $field['options'] ) && is_array( $field['options'] ) ) {
+				$output_array[ $key ] = in_array( $value, array_keys( $field['options'] ) ) ? $value : $default;
+				continue;
+			}
 
-			echo '<a class="' . esc_attr( $class ) . '" href="' . $tab_url . '">' . esc_html( $tab['title'] ) . '</a>';
+			if ( 'checkbox' == $type ) {
+				$output_array[ $key ] = in_array( $input, array( 'on', 'yes', '1', 1, 'true', true ) ) ? 1 : 0;
+				continue;
+			}
+
+			$rule                 = empty( $field['validate'] ) ? $field['type'] : $field['validate'];
+			$output_array[ $key ] = $this->sanitize( $value, $rule );
 		}
-		echo '</h2>';
+
+		return $output_array;
+	}
+
+	/**
+	 * @param array $options
+	 */
+	public function update( array $options ) {
+		update_option( $this->menu_fields['option_name'], $options );
 	}
 
 	/**
@@ -357,8 +302,8 @@ class SettingHandler {
 	/**
 	 * Validate the option's value
 	 *
-	 * @param  mixed $input
-	 * @param  string $validation_rule
+	 * @param mixed $input
+	 * @param string $validation_rule
 	 *
 	 * @return mixed
 	 */
@@ -421,78 +366,6 @@ class SettingHandler {
 		$options = wp_parse_args( get_option( $this->menu_fields['option_name'] ), $defaults );
 
 		return $this->options = $options;
-	}
-
-	/**
-	 * Settings fields
-	 *
-	 *
-	 * @return void
-	 */
-	private function setting_fields() {
-		$table       = "";
-		$panels      = $this->getPanels();
-		$current_tab = isset ( $_GET['tab'] ) ? $_GET['tab'] : $panels[0]['id'];
-		$panel       = $current_tab;
-		$sections    = $this->getSectionsByPanel( $panel );
-
-		foreach ( $sections as $section ) {
-			if ( ! empty( $section['title'] ) ) {
-				$table .= '<h2 class="title">' . esc_html( $section['title'] ) . '</h2>';
-			}
-			if ( ! empty( $section['description'] ) ) {
-				$table .= '<p class="description">' . ( $section['description'] ) . '</p>';
-			}
-
-			$fields = $this->getFieldsBySection( $section['id'] );
-
-			$table .= "<table class='form-table'>";
-
-			foreach ( $fields as $field ) {
-				$name  = sprintf( '%s[%s]', $this->menu_fields['option_name'], $field['id'] );
-				$type  = isset( $field['type'] ) ? $field['type'] : 'text';
-				$value = isset( $this->options[ $field['id'] ] ) ? $this->options[ $field['id'] ] : '';
-
-				$table .= "<tr>";
-				$table .= sprintf( '<th scope="row"><label for="%1$s">%2$s</label></th>', $field['id'],
-					$field['name'] );
-
-				$table .= "<td>";
-
-				if ( method_exists( $this, $type ) ) {
-					$table .= $this->$type( $field, $name, $value );
-				} else {
-					$table .= $this->text( $field, $name, $value );
-				}
-
-				if ( ! empty( $field['desc'] ) ) {
-					$table .= sprintf( '<p class="description">%s</p>', $field['desc'] );
-				}
-				$table .= "</td>";
-				$table .= "</tr>";
-			}
-
-			$table .= "</table>";
-
-		}
-		echo $table;
-	}
-
-	/**
-	 * text input field
-	 *
-	 * @param  array $field
-	 * @param  string $name
-	 * @param  string $value
-	 *
-	 * @return string
-	 */
-	protected function text( $field, $name, $value ) {
-		$valid_types = array( 'text', 'email', 'password', 'number', 'url' );
-		$type        = isset( $field['type'] ) && in_array( $field['type'],
-			$valid_types ) ? esc_attr( $field['type'] ) : 'text';
-
-		return '<input type="' . $type . '" class="regular-text" value="' . $value . '" id="' . $field['id'] . '" name="' . $name . '">';
 	}
 
 	/**
@@ -570,209 +443,9 @@ class SettingHandler {
 	}
 
 	/**
-	 * color input field
-	 *
-	 * @param  array $field
-	 * @param  string $name
-	 * @param  string $value
-	 *
-	 * @return string
-	 */
-	protected function color( $field, $name, $value ) {
-		$default_color = ( isset( $field['std'] ) ) ? $field['std'] : "";
-
-		return sprintf( '<input type="text" class="color-picker dcf-colorpicker" value="%1$s" id="%2$s" name="%3$s" data-default-color="%4$s" data-alpha="true">',
-			$value, $field['id'], $name, $default_color );
-	}
-
-	/**
-	 * date input field
-	 *
-	 * @param  array $field
-	 * @param  string $name
-	 * @param  string $value
-	 *
-	 * @return string
-	 */
-	protected function date( $field, $name, $value ) {
-		if ( $this->is_date( $value ) ) {
-			$value = date( "F d, Y", strtotime( $value ) );
-		} else {
-			$value = '';
-		}
-
-		return sprintf( '<input type="text" class="regular-text date-picker" value="%1$s" id="%2$s" name="%3$s">',
-			$value, $field['id'], $name );
-	}
-
-	/**
-	 * textarea input field
-	 *
-	 * @param  array $field
-	 * @param  string $name
-	 * @param  string $value
-	 *
-	 * @return string
-	 */
-	protected function textarea( $field, $name, $value ) {
-		$rows = ( isset( $field['rows'] ) ) ? $field['rows'] : 5;
-		$cols = ( isset( $field['cols'] ) ) ? $field['cols'] : 40;
-
-		return sprintf( '<textarea id="%2$s" name="%3$s" rows="%4$s" cols="%5$s">%1$s</textarea>', $value, $field['id'],
-			$name, $rows, $cols );
-	}
-
-	/**
-	 * checkbox input field
-	 *
-	 * @param  array $field
-	 * @param  string $name
-	 * @param  string $value
-	 *
-	 * @return string
-	 */
-	protected function checkbox( $field, $name, $value ) {
-		$checked = in_array( $value, array( 'on', 'yes', '1', 1, 'true', true ) ) ? 'checked="checked"' : '';
-		$table   = sprintf( '<input type="hidden" name="%1$s" value="0">', $name );
-		$table   .= sprintf( '<fieldset><legend class="screen-reader-text"><span>%1$s</span></legend><label for="%2$s"><input type="checkbox" value="1" id="%2$s" name="%4$s" %3$s>%1$s</label></fieldset>',
-			$field['name'], $field['id'], $checked, $name );
-
-		return $table;
-	}
-
-	/**
-	 * multi checkbox input field
-	 *
-	 * @param  array $field
-	 * @param  string $name
-	 * @param  string $value
-	 *
-	 * @return string
-	 */
-	protected function multi_checkbox( $field, $name, $value ) {
-		$table           = "<fieldset>";
-		$multicheck_name = $name . "[]";
-
-		$table .= sprintf( '<input type="hidden" name="%1$s" value="0">', $multicheck_name );
-		foreach ( $field['options'] as $key => $label ) {
-			$multichecked = ( in_array( $key, $this->options[ $field['id'] ] ) ) ? 'checked="checked"' : '';
-			$table        .= sprintf( '<label for="%1$s"><input type="checkbox" value="%1$s" id="%1$s" name="%2$s" %3$s>%4$s</label><br>',
-				$key, $multicheck_name, $multichecked, $label );
-		}
-		$table .= "</fieldset>";
-
-		return $table;
-	}
-
-	/**
-	 * radio input field
-	 *
-	 * @param  array $field
-	 * @param  string $name
-	 * @param  string $value
-	 *
-	 * @return string
-	 */
-	protected function radio( $field, $name, $value ) {
-		$table = sprintf( '<fieldset><legend class="screen-reader-text"><span>%1$s</span></legend><p>',
-			$field['name'] );
-
-		foreach ( $field['options'] as $key => $radio_label ) {
-
-			$radio_checked = ( $value == $key ) ? 'checked="checked"' : '';
-			$table         .= sprintf( '<label><input type="radio" %1$s value="%2$s" name="%3$s">%4$s</label><br>',
-				$radio_checked, $key, $name, $radio_label );
-		}
-		$table .= "</p></fieldset>";
-
-		return $table;
-	}
-
-	/**
-	 * select input field
-	 *
-	 * @param  array $field
-	 * @param  string $name
-	 * @param  string $value
-	 *
-	 * @return string
-	 */
-	protected function select( $field, $name, $value ) {
-		$table = sprintf( '<select id="%1$s" name="%2$s" class="regular-text">', $field['id'], $name );
-		foreach ( $field['options'] as $key => $select_label ) {
-			$selected = ( $value == $key ) ? 'selected="selected"' : '';
-			$table    .= sprintf( '<option value="%1$s" %2$s>%3$s</option>', $key, $selected, $select_label );
-		}
-		$table .= "</select>";
-
-		return $table;
-	}
-
-	/**
-	 * select input field
-	 *
-	 * @param  array $field
-	 * @param  string $name
-	 * @param  string $value
-	 *
-	 * @return string
-	 */
-	protected function form_list( $field, $name, $value ) {
-		$contact_forms = get_posts( array(
-			'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
-			'posts_per_page' => - 1,
-			'post_status'    => 'publish'
-		) );
-
-		if ( count( $contact_forms ) < 1 ) {
-			printf(
-				'<p>%s</p>',
-				esc_html__( 'Yor did not add any form yet. Please add a form first.', 'dialog-contact-form' )
-			);
-		}
-
-		$options = array(
-			'' => __( 'Choose Form', 'dialog-contact-form' ),
-		);
-
-		/** @var \WP_Post $contact_form */
-		foreach ( $contact_forms as $contact_form ) {
-			$options[ $contact_form->ID ] = $contact_form->post_title;
-		}
-
-		$field['options'] = $options;
-
-		return $this->select( $field, $name, $value );
-	}
-
-	/**
-	 * wp_editor input field
-	 *
-	 * @param  array $field
-	 * @param  string $name
-	 * @param  string $value
-	 *
-	 * @return string
-	 */
-	protected function wp_editor( $field, $name, $value ) {
-		ob_start();
-		echo "<div class='sp-wp-editor-container'>";
-		wp_editor( $value, $field['id'], array(
-			'textarea_name' => $name,
-			'tinymce'       => false,
-			'media_buttons' => false,
-			'textarea_rows' => isset( $field['rows'] ) ? $field['rows'] : 6,
-			'quicktags'     => array( "buttons" => "strong,em,link,img,ul,li,ol" ),
-		) );
-		echo "</div>";
-
-		return ob_get_clean();
-	}
-
-	/**
 	 * Check if the given input is a valid date.
 	 *
-	 * @param  mixed $value
+	 * @param mixed $value
 	 *
 	 * @return boolean
 	 */

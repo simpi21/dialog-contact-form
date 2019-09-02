@@ -27,7 +27,7 @@ class Settings {
 
 			self::settings();
 
-			add_action( 'admin_menu', [ self::$instance, 'add_setting_menu' ] );
+			add_action( 'admin_menu', [ self::$instance, 'add_setting_menu' ], 99 );
 		}
 
 		return self::$instance;
@@ -36,10 +36,10 @@ class Settings {
 	public function add_setting_menu() {
 		add_submenu_page(
 			'edit.php?post_type=dialog-contact-form',
-			__( 'Settings - beta', 'dialog-contact-form' ),
-			__( 'Settings - beta', 'dialog-contact-form' ),
+			__( 'Settings', 'dialog-contact-form' ),
+			__( 'Settings', 'dialog-contact-form' ),
 			'manage_options',
-			'dcf-settings-beta',
+			'dcf-settings',
 			array( $this, 'setting_page_callback' )
 		);
 	}

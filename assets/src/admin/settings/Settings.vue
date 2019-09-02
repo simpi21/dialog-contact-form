@@ -86,12 +86,17 @@
         },
         methods: {
             saveOptions() {
+                this.$store.commit('SET_LOADING_STATUS', true);
                 axios.post(dcfSettings.restRoot + '/settings', {options: this.options}).then(() => {
+                    this.$store.commit('SET_LOADING_STATUS', false);
                     this.$store.commit('SET_NOTIFICATION', {
-                        message: 'Options has been updated.'
+                        title: 'Success!',
+                        message: 'Options has been updated.',
+                        type: 'success'
                     })
                 }).catch(error => {
                     console.error(error);
+                    this.$store.commit('SET_LOADING_STATUS', false);
                     this.$store.commit('SET_NOTIFICATION', {
                         title: 'Error!',
                         message: 'Something went wrong.',
