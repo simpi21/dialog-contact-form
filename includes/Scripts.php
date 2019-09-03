@@ -71,7 +71,7 @@ class Scripts {
 		global $post_type;
 		if ( ( $post_type != DIALOG_CONTACT_FORM_POST_TYPE )
 		     && ( 'dialog-contact-form_page_dcf-settings' != $hook )
-		     && ( 'dialog-contact-form_page_dcf-settings-beta' != $hook ) // Temp
+		     && ( 'dialog-contact-form_page_dcf-forms' != $hook )
 		     && ( 'dialog-contact-form_page_dcf-entries' != $hook ) ) {
 			return;
 		}

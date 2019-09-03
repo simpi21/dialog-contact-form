@@ -51,6 +51,22 @@ class Admin {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'admin_footer', array( $this, 'form_template' ), 0 );
 		add_action( 'save_post', array( $this, 'save_meta' ), 10, 2 );
+		add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
+	}
+
+	public function add_admin_menu() {
+		add_submenu_page(
+			'edit.php?post_type=dialog-contact-form',
+			__( 'Forms - beta', 'dialog-contact-form' ),
+			__( 'Forms - beta', 'dialog-contact-form' ),
+			'manage_options',
+			'dcf-forms',
+			array( $this, 'menu_page_callback' )
+		);
+	}
+
+	public function menu_page_callback() {
+		echo '<div id="dialog-contact-form-admin-forms"></div>';
 	}
 
 	/**

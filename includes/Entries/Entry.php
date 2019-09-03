@@ -574,6 +574,27 @@ class Entry implements JsonSerializable, ArrayAccess {
 	}
 
 	/**
+	 * Count form entries
+	 *
+	 * @return array
+	 */
+	public static function count_entries() {
+		$self  = new static();
+		$table = $self->table_name;
+
+		$query   = "SELECT form_id, COUNT( * ) AS num_entries";
+		$query   .= " FROM {$table} WHERE status != 'trash' GROUP BY form_id";
+		$results = $self->db->get_results( $query, ARRAY_A );
+
+		$counts = array();
+		foreach ( $results as $row ) {
+			$counts[ $row['form_id'] ] = intval( $row['num_entries'] );
+		}
+
+		return $counts;
+	}
+
+	/**
 	 * Serialize data, if needed.
 	 *
 	 * @param string|array|object $data Data that might be serialized.

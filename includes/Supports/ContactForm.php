@@ -218,6 +218,29 @@ class ContactForm {
 	}
 
 	/**
+	 * Get form counts
+	 *
+	 * @return array
+	 */
+	public static function get_counts() {
+		global $wpdb;
+		$query = $wpdb->prepare(
+			"SELECT post_status, COUNT( * ) AS num_posts FROM {$wpdb->posts} WHERE post_type = %s",
+			self::POST_TYPE
+		);
+		$query .= ' GROUP BY post_status';
+
+		$results = (array) $wpdb->get_results( $query, ARRAY_A );
+		$counts  = array_fill_keys( [ 'publish', 'trash' ], 0 );
+
+		foreach ( $results as $row ) {
+			$counts[ $row['post_status'] ] = intval( $row['num_posts'] );
+		}
+
+		return $counts;
+	}
+
+	/**
 	 * Update current form
 	 *
 	 * @param int $form_id
