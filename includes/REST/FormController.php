@@ -2,6 +2,8 @@
 
 namespace DialogContactForm\REST;
 
+use DialogContactForm\Abstracts\Template;
+use DialogContactForm\Collections\Templates;
 use DialogContactForm\Entries\Entry;
 use DialogContactForm\Supports\ContactForm;
 use WP_REST_Request;
@@ -128,10 +130,11 @@ class FormController extends ApiController {
 		/** @var ContactForm $form */
 		foreach ( $forms as $form ) {
 			$items[] = [
-				'id'       => $form->getId(),
-				'title'    => $form->getTitle(),
-				'entries'  => isset( $entries_counts[ $form->getId() ] ) ? $entries_counts[ $form->getId() ] : 0,
-				'edit_url' => add_query_arg( [
+				'id'        => $form->getId(),
+				'title'     => $form->getTitle(),
+				'shortcode' => sprintf( "[dialog_contact_form id='%s']", $form->getId() ),
+				'entries'   => isset( $entries_counts[ $form->getId() ] ) ? $entries_counts[ $form->getId() ] : 0,
+				'edit_url'  => add_query_arg( [
 					'post'   => $form->getId(),
 					'action' => 'edit'
 				], admin_url( 'post.php' ) ),
@@ -151,6 +154,56 @@ class FormController extends ApiController {
 		}
 
 		return $this->respondOK( $response );
+	}
+
+	/**
+	 * Creates one item from the collection.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_REST_Response Response object on success, or WP_Error object on failure.
+	 */
+	public function create_item( $request ) {
+		if ( ! current_user_can( 'publish_pages' ) ) {
+			return new WP_Error( 'forbidden',
+				__( "You are not allowed to create a contact form.", 'dialog-contact-form' ),
+				array( 'status' => 403 ) );
+		}
+
+		$templateManager = Templates::init();
+		$template        = $request->get_param( 'template' );
+		$template        = in_array( $template, array_keys( $templateManager->all() ) ) ? $template : 'blank';
+		$className       = $templateManager->get( $template );
+		$class           = new $className;
+
+		if ( ! $class instanceof Template ) {
+			return new WP_Error( 'template_not_found', __( "Form template is not available.", 'dialog-contact-form' ),
+				array( 'status' => 400 ) );
+		}
+
+		$post_id = wp_insert_post( array(
+			'post_title'     => $class->getTitle(),
+			'post_status'    => 'publish',
+			'post_type'      => DIALOG_CONTACT_FORM_POST_TYPE,
+			'comment_status' => 'closed',
+			'ping_status'    => 'closed',
+		) );
+
+		if ( is_wp_error( $post_id ) ) {
+			return new WP_Error( 'cannot_save',
+				__( "There was an error saving the contact form.", 'contact-form-7' ),
+				array( 'status' => 500 ) );
+		}
+
+		$class->run( $post_id );
+
+		$form     = new ContactForm( $post_id );
+		$response = array(
+			'id'    => $form->getId(),
+			'title' => $form->getTitle(),
+		);
+
+		return rest_ensure_response( $response );
 	}
 
 	/**

@@ -4,6 +4,7 @@ namespace DialogContactForm\Admin;
 
 use DialogContactForm\Collections\Actions;
 use DialogContactForm\Collections\Fields;
+use DialogContactForm\Collections\Templates;
 use DialogContactForm\Supports\ContactForm;
 use DialogContactForm\Supports\Metabox;
 
@@ -66,6 +67,17 @@ class Admin {
 	}
 
 	public function menu_page_callback() {
+		$templateManager = Templates::init();
+		$templates       = $templateManager->getTemplatesByPriority();
+		$data            = [];
+		foreach ( $templates as $template ) {
+			$data[] = [
+				'id'          => $template->getId(),
+				'title'       => $template->getTitle(),
+				'description' => $template->getDescription(),
+			];
+		}
+		echo '<script>var dcfFormTemplates = ' . wp_json_encode( $data ) . '</script>';
 		echo '<div id="dialog-contact-form-admin-forms"></div>';
 	}
 

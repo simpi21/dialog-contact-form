@@ -59,7 +59,7 @@ class Templates extends Collection {
 	/**
 	 * Get templates by priority
 	 *
-	 * @return array
+	 * @return Template[]
 	 */
 	public function getTemplatesByPriority() {
 		$tempCollections = $this->all();
