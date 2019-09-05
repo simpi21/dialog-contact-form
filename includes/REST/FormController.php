@@ -157,6 +157,32 @@ class FormController extends ApiController {
 	}
 
 	/**
+	 * Retrieves one item from the collection.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_REST_Response Response object on success, or WP_Error object on failure.
+	 */
+	public function get_item( $request ) {
+		$id = $request->get_param( 'id' );
+
+		if ( ! current_user_can( 'publish_pages', $id ) ) {
+			return $this->respondForbidden( 'forbidden',
+				__( "You are not allowed to access the requested contact form.", 'dialog-contact-form' ) );
+		}
+
+		$form = new ContactForm( $id );
+
+		if ( ! $form->getId() ) {
+			return $this->respondNotFound( 'not_found', __( "The requested contact form was not found.", 'dialog-contact-form' ) );
+		}
+
+		$response = $form->toArray();
+
+		return $this->respondOK( $response );
+	}
+
+	/**
 	 * Creates one item from the collection.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
@@ -165,9 +191,8 @@ class FormController extends ApiController {
 	 */
 	public function create_item( $request ) {
 		if ( ! current_user_can( 'publish_pages' ) ) {
-			return new WP_Error( 'forbidden',
-				__( "You are not allowed to create a contact form.", 'dialog-contact-form' ),
-				array( 'status' => 403 ) );
+			return $this->respondForbidden( 'forbidden',
+				__( "You are not allowed to create a contact form.", 'dialog-contact-form' ) );
 		}
 
 		$templateManager = Templates::init();
@@ -177,8 +202,9 @@ class FormController extends ApiController {
 		$class           = new $className;
 
 		if ( ! $class instanceof Template ) {
-			return new WP_Error( 'template_not_found', __( "Form template is not available.", 'dialog-contact-form' ),
-				array( 'status' => 400 ) );
+			return $this->respondNotFound( 'template_not_found',
+				__( "Form template is not available.", 'dialog-contact-form' )
+			);
 		}
 
 		$post_id = wp_insert_post( array(
@@ -190,9 +216,7 @@ class FormController extends ApiController {
 		) );
 
 		if ( is_wp_error( $post_id ) ) {
-			return new WP_Error( 'cannot_save',
-				__( "There was an error saving the contact form.", 'contact-form-7' ),
-				array( 'status' => 500 ) );
+			return $this->respondInternalServerError();
 		}
 
 		$class->run( $post_id );

@@ -150,8 +150,8 @@
             },
             handleAction(action, item) {
                 if ('edit' === action) {
-                    // this.$router.push({name: 'SingleEntry', params: {id: item.id}});
-                    window.location.href = item.edit_url;
+                    this.$router.push({name: 'EditForm', params: {id: item.id}});
+                    // window.location.href = item.edit_url;
                 }
                 if (-1 !== ['trash', 'restore', 'delete'].indexOf(action)) {
                     let message = 'Are you sure to do this?';
