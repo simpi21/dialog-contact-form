@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-abstract class Field implements \ArrayAccess {
+abstract class Field extends Data {
 
 	/**
 	 * Input type attribute
@@ -79,13 +79,6 @@ abstract class Field implements \ArrayAccess {
 	 * @var int
 	 */
 	protected $form_id = 0;
-
-	/**
-	 * Current field configuration
-	 *
-	 * @var array
-	 */
-	protected $field = array();
 
 	/**
 	 * Check if current field has any error
@@ -162,16 +155,16 @@ abstract class Field implements \ArrayAccess {
 	 * @return array
 	 */
 	public function getField() {
-		return $this->field;
+		return $this->data;
 	}
 
 	/**
 	 * Set field configuration
 	 *
-	 * @param array $field
+	 * @param array $data
 	 */
-	public function setField( $field ) {
-		$this->field = $field;
+	public function setField( $data ) {
+		$this->data = $data;
 	}
 
 	/**
@@ -186,7 +179,7 @@ abstract class Field implements \ArrayAccess {
 	/**
 	 * Check if the value is present.
 	 *
-	 * @param  mixed $value
+	 * @param mixed $value
 	 *
 	 * @return boolean
 	 */
@@ -480,7 +473,7 @@ abstract class Field implements \ArrayAccess {
 	public function getMax() {
 		$number_max = $this->get( 'number_max' );
 
-		return ! empty( $number_max ) ? floatval( $this->field['number_max'] ) : '';
+		return ! empty( $number_max ) ? floatval( $number_max ) : '';
 	}
 
 	/**
@@ -635,110 +628,5 @@ abstract class Field implements \ArrayAccess {
 		}
 
 		return array();
-	}
-
-	/**
-	 * Does this field have a given key?
-	 *
-	 * @param string $key The data key
-	 *
-	 * @return bool
-	 */
-	public function has( $key ) {
-		return ! empty( $this->field[ $key ] );
-	}
-
-	/**
-	 * Set field item
-	 *
-	 * @param string $key The data key
-	 * @param mixed $value The data value
-	 */
-	public function set( $key, $value ) {
-		if ( is_null( $key ) ) {
-			$this->field[] = $value;
-		} else {
-			$this->field[ $key ] = $value;
-		}
-	}
-
-	/**
-	 * Get field item for key
-	 *
-	 * @param string $key The data key
-	 * @param mixed $default The default value to return if data key does not exist
-	 *
-	 * @return mixed The key's value, or the default value
-	 */
-	public function get( $key, $default = null ) {
-		return $this->has( $key ) ? $this->field[ $key ] : $default;
-	}
-
-	/**
-	 * Remove item from field
-	 *
-	 * @param string $key The data key
-	 */
-	public function remove( $key ) {
-		if ( $this->has( $key ) ) {
-			unset( $this->field[ $key ] );
-		}
-	}
-
-	/********************************************************************************
-	 * ArrayAccess interface
-	 *******************************************************************************/
-
-	/**
-	 * Whether a offset exists
-	 * @link http://php.net/manual/en/arrayaccess.offsetexists.php
-	 *
-	 * @param mixed $offset An offset to check for.
-	 *
-	 * @return boolean true on success or false on failure.
-	 * @since 5.0.0
-	 */
-	public function offsetExists( $offset ) {
-		return $this->has( $offset );
-	}
-
-	/**
-	 * Offset to retrieve
-	 * @link http://php.net/manual/en/arrayaccess.offsetget.php
-	 *
-	 * @param mixed $offset The offset to retrieve.
-	 *
-	 * @return mixed Can return all value types.
-	 * @since 5.0.0
-	 */
-	public function offsetGet( $offset ) {
-		return $this->get( $offset );
-	}
-
-	/**
-	 * Offset to set
-	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
-	 *
-	 * @param mixed $offset The offset to assign the value to.
-	 * @param mixed $value The value to set.
-	 *
-	 * @return void
-	 * @since 5.0.0
-	 */
-	public function offsetSet( $offset, $value ) {
-		$this->set( $offset, $value );
-	}
-
-	/**
-	 * Offset to unset
-	 * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-	 *
-	 * @param mixed $offset The offset to unset.
-	 *
-	 * @return void
-	 * @since 5.0.0
-	 */
-	public function offsetUnset( $offset ) {
-		$this->remove( $offset );
 	}
 }
