@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1 class="wp-heading-inline">Forms</h1>
-        <a href="#" class="page-title-action" @click="openAddNewModal = true">Add New</a>
+        <a href="#" class="page-title-action" @click.prevent="openAddNewModal = true">Add New</a>
         <hr class="wp-header-end">
         <status-list :statuses="metaData.statuses" @change="changeStatus"></status-list>
         <data-table

@@ -1,6 +1,7 @@
 <template>
     <div class="dialog-contact-form--edit-form">
         <h1 class="wp-heading-inline">Edit Form: {{title}}</h1>
+        <a href="#" class="page-title-action" @click.prevent="backToForms">Back to Forms</a>
         <hr class="wp-header-end">
         <tabs>
             <tab name="Form Fields" :selected="true">
@@ -8,7 +9,7 @@
                     <column :tablet="8">
                         <columns :multiline="true" :gapless="true">
                             <column :class="`${field.field_width}`" v-for="field in fields" :key="field.field_id">
-                                <field :field="field"></field>
+                                <field :field="field" @click:action="handleFieldAction"></field>
                             </column>
                         </columns>
                     </column>
@@ -65,6 +66,21 @@
             },
             isTextField(type) {
                 return -1 !== ['text', 'email', 'url', 'date', 'password'].indexOf(type);
+            },
+            backToForms() {
+                this.$router.push({name: 'FormsList'});
+            },
+            handleFieldAction(action, field) {
+                let index = this.fields.indexOf(field);
+                if ('delete' === action) {
+                    this.$delete(this.fields, index);
+                }
+                if ('duplicate' === action) {
+                    let _field = JSON.parse(JSON.stringify(field));
+                    _field['field_name'] = _field['field_id'] = field['field_id'] + '-copy';
+                    _field['field_title'] = field['field_title'] + ' Copy';
+                    this.fields.splice(index + 1, 0, _field);
+                }
             }
         }
     }
