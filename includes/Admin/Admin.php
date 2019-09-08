@@ -67,18 +67,33 @@ class Admin {
 	}
 
 	public function menu_page_callback() {
+		$data = [
+			'templates' => [],
+			'actions'   => [],
+			'fields'    => [],
+		];
+
 		$templateManager = Templates::init();
-		$templates       = $templateManager->getTemplatesByPriority();
-		$data            = [];
-		foreach ( $templates as $template ) {
-			$data[] = [
-				'id'          => $template->getId(),
-				'title'       => $template->getTitle(),
-				'description' => $template->getDescription(),
+		foreach ( $templateManager->getTemplatesByPriority() as $template ) {
+			$data['templates'][] = $template->toArray();
+		}
+
+		$actionManager = Actions::init();
+		foreach ( $actionManager->getActionsByPriority() as $action ) {
+			$data['actions'][] = $action->toArray();
+		}
+
+		$actionManager = Fields::init();
+		foreach ( $actionManager->getFieldsByPriority() as $field ) {
+			$data['fields'][] = [
+				'id'    => $field->getAdminId(),
+				'title' => $field->getAdminLabel(),
+				'icon'  => $field->getAdminIcon(),
 			];
 		}
-		echo '<script>var dcfFormTemplates = ' . wp_json_encode( $data ) . '</script>';
+		echo '<script>window.dialogContactForm = ' . wp_json_encode( $data ) . '</script>';
 		echo '<div id="dialog-contact-form-admin-forms"></div>';
+		include_once DIALOG_CONTACT_FORM_PATH . '/assets/icon/svg-icons.svg';
 	}
 
 	/**

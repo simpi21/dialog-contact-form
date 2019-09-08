@@ -399,7 +399,7 @@ class ContactForm {
 			'id'            => $this->getId(),
 			'fields'        => $this->getFormFields(),
 			'settings'      => $this->getSetting(),
-			'actions'       => $this->getFormActions(),
+			'actions'       => $this->getFormActionsSettings(),
 			'messages'      => $this->getValidationMessages(),
 			'has_file'      => $this->hasFile(),
 			'has_recaptcha' => $this->hasRecaptcha(),
@@ -439,6 +439,28 @@ class ContactForm {
 	 */
 	public function getFormActions() {
 		return $this->form_actions;
+	}
+
+	/**
+	 * Get form actions settings
+	 *
+	 * @return array
+	 */
+	public function getFormActionsSettings() {
+		$actions        = $this->getFormActions();
+		$actionsManager = new Actions();
+
+		$settings = [];
+		foreach ( $actions as $action ) {
+			$actionName  = $actionsManager->get( $action );
+			$actionClass = new $actionName;
+			if ( ! $actionClass instanceof Action ) {
+				continue;
+			}
+			$settings[ $action ] = get_post_meta( $this->getId(), $actionClass->getMetaKey(), true );
+		}
+
+		return $settings;
 	}
 
 	/**

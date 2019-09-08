@@ -91,7 +91,7 @@
         },
         mounted() {
             this.$store.commit('SET_LOADING_STATUS', false);
-            this.templates = window.dcfFormTemplates;
+            this.templates = window.dialogContactForm.templates;
             this.getForms();
         },
         methods: {

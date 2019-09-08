@@ -65,7 +65,7 @@ class Actions extends Collection {
 	/**
 	 * Get actions by priority
 	 *
-	 * @return array
+	 * @return Action[]|array
 	 */
 	public function getActionsByPriority() {
 		$tempCollections = $this->all();

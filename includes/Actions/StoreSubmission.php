@@ -60,12 +60,14 @@ class StoreSubmission extends Action {
 	 */
 	private function settings() {
 		global $post;
-		$_fields = (array) get_post_meta( $post->ID, '_contact_form_fields', true );
 		$options = [];
 
-		foreach ( $_fields as $item ) {
-			if ( ! empty( $item['field_id'] ) && ! empty( $item['field_title'] ) ) {
-				$options[ $item['field_id'] ] = 'Field: ' . $item['field_title'];
+		if ( $post instanceof \WP_Post ) {
+			$_fields = (array) get_post_meta( $post->ID, '_contact_form_fields', true );
+			foreach ( $_fields as $item ) {
+				if ( ! empty( $item['field_id'] ) && ! empty( $item['field_title'] ) ) {
+					$options[ $item['field_id'] ] = 'Field: ' . $item['field_title'];
+				}
 			}
 		}
 

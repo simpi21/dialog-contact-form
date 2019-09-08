@@ -3,6 +3,22 @@
 namespace DialogContactForm\Collections;
 
 use DialogContactForm\Abstracts\Field;
+use DialogContactForm\Fields\Acceptance;
+use DialogContactForm\Fields\Checkbox;
+use DialogContactForm\Fields\Date;
+use DialogContactForm\Fields\Divider;
+use DialogContactForm\Fields\Email;
+use DialogContactForm\Fields\File;
+use DialogContactForm\Fields\Hidden;
+use DialogContactForm\Fields\Html;
+use DialogContactForm\Fields\Number;
+use DialogContactForm\Fields\Password;
+use DialogContactForm\Fields\Radio;
+use DialogContactForm\Fields\Select;
+use DialogContactForm\Fields\Text;
+use DialogContactForm\Fields\Textarea;
+use DialogContactForm\Fields\Time;
+use DialogContactForm\Fields\Url;
 use DialogContactForm\Supports\Collection;
 
 // Exit if accessed directly
@@ -32,22 +48,22 @@ class Fields extends Collection {
 	 * FieldManager constructor.
 	 */
 	public function __construct() {
-		$this->set( 'acceptance', 'DialogContactForm\Fields\Acceptance' );
-		$this->set( 'checkbox', 'DialogContactForm\Fields\Checkbox' );
-		$this->set( 'date', 'DialogContactForm\Fields\Date' );
-		$this->set( 'email', 'DialogContactForm\Fields\Email' );
-		$this->set( 'file', 'DialogContactForm\Fields\File' );
-		$this->set( 'hidden', 'DialogContactForm\Fields\Hidden' );
-		$this->set( 'number', 'DialogContactForm\Fields\Number' );
-		$this->set( 'password', 'DialogContactForm\Fields\Password' );
-		$this->set( 'radio', 'DialogContactForm\Fields\Radio' );
-		$this->set( 'select', 'DialogContactForm\Fields\Select' );
-		$this->set( 'text', 'DialogContactForm\Fields\Text' );
-		$this->set( 'textarea', 'DialogContactForm\Fields\Textarea' );
-		$this->set( 'time', 'DialogContactForm\Fields\Time' );
-		$this->set( 'url', 'DialogContactForm\Fields\Url' );
-		$this->set( 'html', 'DialogContactForm\Fields\Html' );
-		$this->set( 'divider', 'DialogContactForm\Fields\Divider' );
+		$this->set( 'acceptance', Acceptance::class );
+		$this->set( 'checkbox', Checkbox::class );
+		$this->set( 'date', Date::class );
+		$this->set( 'email', Email::class );
+		$this->set( 'file', File::class );
+		$this->set( 'hidden', Hidden::class );
+		$this->set( 'number', Number::class );
+		$this->set( 'password', Password::class );
+		$this->set( 'radio', Radio::class );
+		$this->set( 'select', Select::class );
+		$this->set( 'text', Text::class );
+		$this->set( 'textarea', Textarea::class );
+		$this->set( 'time', Time::class );
+		$this->set( 'url', Url::class );
+		$this->set( 'html', Html::class );
+		$this->set( 'divider', Divider::class );
 
 		/**
 		 * Give other plugin option to add their own field(s)
@@ -74,7 +90,7 @@ class Fields extends Collection {
 	/**
 	 * Get fields by priority
 	 *
-	 * @return array
+	 * @return array|Field[]
 	 */
 	public function getFieldsByPriority() {
 		$tempCollections = $this->all();
