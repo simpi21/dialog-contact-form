@@ -7,6 +7,7 @@ use DialogContactForm\Collections\Fields;
 use DialogContactForm\Collections\Templates;
 use DialogContactForm\Supports\ContactForm;
 use DialogContactForm\Supports\Metabox;
+use DialogContactForm\Supports\Utils;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -91,9 +92,101 @@ class Admin {
 				'icon'  => $field->getAdminIcon(),
 			];
 		}
+
+		$data['settings'] = $this->get_form_settings();
+		$data['messages'] = $this->get_form_messages();
+
 		echo '<script>window.dialogContactForm = ' . wp_json_encode( $data ) . '</script>';
 		echo '<div id="dialog-contact-form-admin-forms"></div>';
 		include_once DIALOG_CONTACT_FORM_PATH . '/assets/icon/svg-icons.svg';
+	}
+
+	/**
+	 * Get form Settings
+	 *
+	 * @return array
+	 */
+	public function get_form_settings() {
+		$settings = [
+			[
+				'type'        => 'select',
+				'id'          => 'labelPosition',
+				'label'       => __( 'Position of the field title', 'dialog-contact-form' ),
+				'description' => __( 'choose the position of the field title', 'dialog-contact-form' ),
+				'default'     => 'both',
+				'options'     => [
+					'label'       => esc_html__( 'Label', 'dialog-contact-form' ),
+					'placeholder' => esc_html__( 'Placeholder', 'dialog-contact-form' ),
+					'both'        => esc_html__( 'Both label and placeholder', 'dialog-contact-form' ),
+				],
+			],
+			[
+				'type'        => 'text',
+				'id'          => 'btnLabel',
+				'label'       => __( 'Submit Button Label', 'dialog-contact-form' ),
+				'description' => __( 'Define the label of submit button.', 'dialog-contact-form' ),
+				'default'     => esc_html__( 'Send', 'dialog-contact-form' ),
+			],
+			[
+				'type'        => 'radio-button',
+				'id'          => 'btnAlign',
+				'label'       => __( 'Submit Button Alignment', 'dialog-contact-form' ),
+				'description' => __( 'Set the alignment of submit button.', 'dialog-contact-form' ),
+				'default'     => 'left',
+				'options'     => [
+					'left'  => esc_html__( 'Left', 'dialog-contact-form' ),
+					'right' => esc_html__( 'Right', 'dialog-contact-form' ),
+				],
+			],
+			[
+				'type'        => 'radio-button',
+				'id'          => 'reset_form',
+				'label'       => __( 'Reset form', 'dialog-contact-form' ),
+				'description' => __( 'Choose Yes to reset form after successfully submission.', 'dialog-contact-form' ),
+				'default'     => 'yes',
+				'options'     => [
+					'no'  => esc_html__( 'No', 'dialog-contact-form' ),
+					'yes' => esc_html__( 'Yes', 'dialog-contact-form' ),
+				],
+			],
+			[
+				'type'    => 'radio-button',
+				'id'      => 'recaptcha',
+				'label'   => __( 'Enable Google reCAPTCHA', 'dialog-contact-form' ),
+				'default' => 'no',
+				'options' => [
+					'no'  => esc_html__( 'No', 'dialog-contact-form' ),
+					'yes' => esc_html__( 'Yes', 'dialog-contact-form' ),
+				],
+			]
+		];
+
+		return apply_filters( 'dialog_contact_form/form/settings', $settings );
+	}
+
+	/**
+	 * Get form messages
+	 *
+	 * @return array
+	 */
+	public function get_form_messages() {
+		$default  = Utils::validation_messages();
+		$messages = [
+			array(
+				'type'    => 'textarea',
+				'id'      => 'mail_sent_ng',
+				'label'   => __( 'Message failed to sent', 'dialog-contact-form' ),
+				'default' => $default['mail_sent_ng'],
+			),
+			array(
+				'type'    => 'textarea',
+				'id'      => 'validation_error',
+				'label'   => __( 'Validation errors occurred', 'dialog-contact-form' ),
+				'default' => $default['validation_error'],
+			)
+		];
+
+		return apply_filters( 'dialog_contact_form/form/messages', $messages );
 	}
 
 	/**

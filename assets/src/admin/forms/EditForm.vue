@@ -28,7 +28,16 @@
             </tab>
             <tab name="Form Actions">
                 <columns>
-                    <column :tablet="8"></column>
+                    <column :tablet="8">
+                        <toggles>
+                            <template v-for="(action,key) in actions">
+                                <toggle v-for="_action in formActions" :name="_action.title" v-if="key === _action.id"
+                                        :key="_action.id">
+                                    {{_action.settings}}
+                                </toggle>
+                            </template>
+                        </toggles>
+                    </column>
                     <column :tablet="4">
                         <h4>Available Actions</h4>
                         <div v-for="_action in formActions" :key="_action.id">
@@ -37,8 +46,21 @@
                     </column>
                 </columns>
             </tab>
-            <tab name="Form Settings"></tab>
-            <tab name="Validation Message"></tab>
+            <tab name="Form Settings">
+                <template v-for="_setting in formSettings">
+                    {{_setting}}
+                </template>
+            </tab>
+            <tab name="Validation Message">
+                <table class="form-table">
+                    <tr v-for="_message in formMessages">
+                        <th v-html="_message.label"></th>
+                        <td>
+                            <textarea></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </tab>
         </tabs>
     </div>
 </template>
@@ -46,13 +68,15 @@
 <script>
     import {CrudMixin} from "../../components/CrudMixin";
     import {tabs, tab} from 'shapla-tabs';
+    import toggles from '../../shapla/shapla-toggles/src/toggles';
+    import toggle from '../../shapla/shapla-toggles/src/toggle';
     import {columns, column} from 'shapla-columns'
     import Field from "./Field";
 
     export default {
         name: "EditForm",
         mixins: [CrudMixin],
-        components: {Field, tabs, tab, columns, column},
+        components: {Field, tabs, tab, columns, column, toggles, toggle},
         data() {
             return {
                 id: 0,
@@ -69,6 +93,12 @@
             },
             formFields() {
                 return window.dialogContactForm.fields;
+            },
+            formSettings() {
+                return window.dialogContactForm.settings;
+            },
+            formMessages() {
+                return window.dialogContactForm.messages;
             }
         },
         mounted() {
