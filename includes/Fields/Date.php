@@ -38,6 +38,7 @@ class Date extends Text {
 		$this->priority    = 90;
 		$this->input_class = 'dcf-input dcf-input-date';
 		$this->type        = 'date';
+		$this->init_form_fields();
 	}
 
 	/**
@@ -80,5 +81,43 @@ class Date extends Text {
 		$date = date_parse( $value );
 
 		return checkdate( $date['month'], $date['day'], $date['year'] );
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		parent::init_form_fields();
+
+		$this->form_fields['autocomplete'] = [
+			'type'    => 'select',
+			'label'   => __( 'Autocomplete', 'dialog-contact-form' ),
+			'options' => [
+				'on'  => __( 'On', 'dialog-contact-form' ),
+				'off' => __( 'Off', 'dialog-contact-form' ),
+			]
+		];
+
+		$this->form_fields['min_date'] = [
+			'type'  => 'date',
+			'label' => __( 'Min. Date', 'dialog-contact-form' ),
+		];
+
+		$this->form_fields['max_date'] = [
+			'type'  => 'date',
+			'label' => __( 'Max. Date', 'dialog-contact-form' ),
+		];
+
+		$this->form_fields['native_html5'] = [
+			'type'    => 'buttonset',
+			'label'   => __( 'Native HTML5', 'dialog-contact-form' ),
+			'default' => 'on',
+			'options' => array(
+				'off' => esc_html__( 'No', 'dialog-contact-form' ),
+				'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+			),
+		];
 	}
 }

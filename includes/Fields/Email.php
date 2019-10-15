@@ -36,6 +36,7 @@ class Email extends Text {
 		$this->priority    = 50;
 		$this->input_class = 'dcf-input dcf-input-email';
 		$this->type        = 'email';
+		$this->init_form_fields();
 	}
 
 	/**
@@ -58,5 +59,35 @@ class Email extends Text {
 	 */
 	public function sanitize( $value ) {
 		return sanitize_email( $value );
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		parent::init_form_fields();
+
+		$this->form_fields['autocomplete'] = [
+			'type'    => 'select',
+			'label'   => __( 'Autocomplete', 'dialog-contact-form' ),
+			'default' => 'email',
+			'options' => [
+				'on'    => __( 'On', 'dialog-contact-form' ),
+				'off'   => __( 'Off', 'dialog-contact-form' ),
+				'email' => __( 'Email', 'dialog-contact-form' ),
+			]
+		];
+
+		$this->form_fields['multiple'] = [
+			'type'    => 'buttonset',
+			'label'   => __( 'Multiple', 'dialog-contact-form' ),
+			'default' => 'off',
+			'options' => array(
+				'off' => esc_html__( 'No', 'dialog-contact-form' ),
+				'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+			),
+		];
 	}
 }

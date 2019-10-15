@@ -87,9 +87,11 @@ class Admin {
 		$actionManager = Fields::init();
 		foreach ( $actionManager->getFieldsByPriority() as $field ) {
 			$data['fields'][] = [
-				'id'    => $field->getAdminId(),
-				'title' => $field->getAdminLabel(),
-				'icon'  => $field->getAdminIcon(),
+				'id'       => $field->getAdminId(),
+				'type'     => $field->getType(),
+				'title'    => $field->getAdminLabel(),
+				'icon'     => $field->getAdminIcon(),
+				'settings' => $field->get_form_fields()
 			];
 		}
 

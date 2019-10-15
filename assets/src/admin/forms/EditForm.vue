@@ -7,17 +7,17 @@
             <tab name="Form Fields" :selected="true">
                 <columns>
                     <column :tablet="8">
-                        <columns :multiline="true" :gapless="false">
+                        <draggable :list="fields" handle=".sort-field" class="shapla-columns is-multiline">
                             <column :class="`${field.field_width}`" v-for="field in fields" :key="field.field_id">
                                 <field :field="field" @click:action="handleFieldAction"></field>
                             </column>
-                        </columns>
+                        </draggable>
                     </column>
                     <column>
                         <h4>Available Fields</h4>
                         <columns class="dcf-available-fields" :multiline="true" :gapless="false" mobile>
                             <column :mobile="6" :tablet="6" v-for="_field in formFields" :key="_field.id">
-                                <div class="dcf-available-field">
+                                <div class="dcf-available-field" @click="addNewField(_field)">
                                     <span class="dcf-available-field__icon" v-html="_field.icon"></span>
                                     <span class="dcf-available-field__title" v-html="_field.title"></span>
                                 </div>
@@ -47,16 +47,38 @@
                 </columns>
             </tab>
             <tab name="Form Settings">
-                <template v-for="_setting in formSettings">
-                    {{_setting}}
-                </template>
+                <table class="form-table">
+                    <tr v-for="_setting in formSettings">
+                        <th>
+                            <label :for="_setting.id" v-html="_setting.label"></label>
+                        </th>
+                        <td>
+                            <template v-if="_setting.type === 'radio-button'">
+                                <button-group :settings="_setting" v-model="settings[_setting.id]"></button-group>
+                            </template>
+                            <template v-else-if="_setting.type === 'select'">
+                                <select class="regular-text" v-model="settings[_setting.id]">
+                                    <option value="">-- Choose --</option>
+                                    <option v-for="(label, value) in _setting.options" :value="value"
+                                            v-text="label"></option>
+                                </select>
+                            </template>
+                            <template v-else>
+                                <input type="text" :id="_setting.id" v-model="settings[_setting.id]"/>
+                            </template>
+                            <p class="description" v-if="_setting.description" v-html="_setting.description"></p>
+                        </td>
+                    </tr>
+                </table>
             </tab>
             <tab name="Validation Message">
                 <table class="form-table">
                     <tr v-for="_message in formMessages">
-                        <th v-html="_message.label"></th>
+                        <th>
+                            <label :for="_message.id" v-html="_message.label"></label>
+                        </th>
                         <td>
-                            <textarea></textarea>
+                            <textarea :id="_message.id" v-model="messages[_message.id]" rows="2" cols="35"></textarea>
                         </td>
                     </tr>
                 </table>
@@ -72,11 +94,13 @@
     import toggle from '../../shapla/shapla-toggles/src/toggle';
     import {columns, column} from 'shapla-columns'
     import Field from "./Field";
+    import ButtonGroup from "../../components/ButtonGroup";
+    import draggable from 'vuedraggable'
 
     export default {
         name: "EditForm",
         mixins: [CrudMixin],
-        components: {Field, tabs, tab, columns, column, toggles, toggle},
+        components: {ButtonGroup, Field, tabs, tab, columns, column, toggles, toggle, draggable},
         data() {
             return {
                 id: 0,
@@ -139,6 +163,19 @@
                     _field['field_title'] = field['field_title'] + ' Copy';
                     this.fields.splice(index + 1, 0, _field);
                 }
+            },
+            addNewField(field) {
+                let data = {
+                    field_type: field.type,
+                    field_title: field.title + '',
+                    field_id: '',
+                    required_field: '',
+                    field_class: '',
+                    field_width: 'is-12',
+                    autocomplete: '',
+                    placeholder: '',
+                };
+                this.fields.push(data);
             }
         }
     }

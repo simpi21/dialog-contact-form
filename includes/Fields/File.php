@@ -38,6 +38,7 @@ class File extends Field {
 		$this->priority    = 150;
 		$this->input_class = 'dcf-input-file';
 		$this->type        = 'file';
+		$this->init_form_fields();
 	}
 
 	/**
@@ -127,5 +128,93 @@ class File extends Field {
 		}
 
 		return $mime_types ? $mime_types : $allowed_mime_types;
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		$this->form_fields = [
+			'field_id'           => array(
+				'type'        => 'text',
+				'label'       => __( 'Field ID', 'dialog-contact-form' ),
+				'description' => __( 'Please make sure the ID is unique and not used elsewhere in this form. This field allows A-z 0-9 & underscore chars without spaces.',
+					'dialog-contact-form' ),
+			),
+			'required_field'     => array(
+				'type'        => 'buttonset',
+				'label'       => __( 'Required Field', 'dialog-contact-form' ),
+				'description' => __( 'Check this option to mark the field required. A form will not submit unless all required fields are provided.',
+					'dialog-contact-form' ),
+				'default'     => 'off',
+				'options'     => array(
+					'off' => esc_html__( 'No', 'dialog-contact-form' ),
+					'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+				),
+			),
+			'field_class'        => array(
+				'type'        => 'text',
+				'label'       => __( 'Field Class', 'dialog-contact-form' ),
+				'description' => __( 'Insert additional class(es) (separated by blank space) for more personalization.',
+					'dialog-contact-form' ),
+			),
+			'max_file_size'      => array(
+				'type'        => 'file_size',
+				'label'       => __( 'Max. File Size', 'dialog-contact-form' ),
+				'description' => __( 'If you need to increase max upload size please contact your hosting.',
+					'dialog-contact-form' ),
+				'default'     => '2',
+				'options'     => static::get_upload_file_size_options(),
+			),
+			'allowed_file_types' => array(
+				'type'        => 'mime_type',
+				'label'       => __( 'Allowed File Types', 'dialog-contact-form' ),
+				'description' => __( 'Choose file types.', 'dialog-contact-form' ),
+				'multiple'    => true,
+				'options'     => static::get_allowed_mime_types_options(),
+			),
+			'multiple'           => array(
+				'type'    => 'buttonset',
+				'label'   => __( 'Multiple', 'dialog-contact-form' ),
+				'default' => 'off',
+				'options' => array(
+					'off' => esc_html__( 'No', 'dialog-contact-form' ),
+					'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+				),
+			),
+		];
+	}
+
+	/**
+	 * creates array of upload sizes based on server limits
+	 * to use in the file_sizes control
+	 * @return array
+	 */
+	private static function get_upload_file_size_options() {
+		$max_file_size = wp_max_upload_size() / pow( 1024, 2 ); //MB
+
+		$sizes = array();
+		for ( $file_size = 1; $file_size <= $max_file_size; $file_size ++ ) {
+			$sizes[ $file_size ] = $file_size . 'MB';
+		}
+
+		return $sizes;
+	}
+
+	/**
+	 * Get allowed mime types list
+	 *
+	 * @return array
+	 */
+	private static function get_allowed_mime_types_options() {
+		$mime_types         = array();
+		$allowed_mime_types = get_allowed_mime_types();
+		foreach ( $allowed_mime_types as $extension => $allowed_mime_type ) {
+			$mime_types[ $extension ] = $extension;
+		}
+
+		return $mime_types;
 	}
 }

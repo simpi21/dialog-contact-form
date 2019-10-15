@@ -34,6 +34,7 @@ class Divider extends Field {
 		$this->show_label_in_form = false;
 		$this->show_in_entry      = false;
 		$this->is_fillable        = false;
+		$this->init_form_fields();
 	}
 
 	/**
@@ -82,5 +83,21 @@ class Divider extends Field {
 	 */
 	protected function getValue() {
 		return null;
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		$this->form_fields = [
+			'field_class' => array(
+				'type'        => 'text',
+				'label'       => __( 'Field Class', 'dialog-contact-form' ),
+				'description' => __( 'Insert additional class(es) (separated by blank space) for more personalization.',
+					'dialog-contact-form' ),
+			),
+		];
 	}
 }

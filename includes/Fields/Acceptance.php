@@ -35,6 +35,7 @@ class Acceptance extends Text {
 		$this->input_class        = 'dcf-checkbox';
 		$this->type               = 'checkbox';
 		$this->show_label_in_form = false;
+		$this->init_form_fields();
 	}
 
 	/**
@@ -106,5 +107,32 @@ class Acceptance extends Text {
 	 */
 	protected function isCheckedByDefault() {
 		return $this->validate( $this->get( 'checked_by_default' ) );
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		parent::init_form_fields();
+
+		$this->form_fields['acceptance_text'] = [
+			'type'        => 'textarea',
+			'label'       => __( 'Acceptance Text', 'dialog-contact-form' ),
+			'description' => __( 'Insert acceptance text. you can also use inline html markup.',
+				'dialog-contact-form' ),
+			'rows'        => 3,
+		];
+
+		$this->form_fields['checked_by_default'] = [
+			'type'    => 'buttonset',
+			'label'   => __( 'Checked by default', 'dialog-contact-form' ),
+			'default' => 'off',
+			'options' => array(
+				'off' => esc_html__( 'No', 'dialog-contact-form' ),
+				'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+			),
+		];
 	}
 }

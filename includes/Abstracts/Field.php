@@ -107,6 +107,13 @@ abstract class Field extends Data {
 	protected $input_class = 'dcf-input';
 
 	/**
+	 * Form option fields.
+	 *
+	 * @var array
+	 */
+	public $form_fields = array();
+
+	/**
 	 * Render field html for frontend display
 	 *
 	 * @param array $field
@@ -130,6 +137,51 @@ abstract class Field extends Data {
 	 * @param mixed $value
 	 */
 	abstract public function sanitize( $value );
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 *
+	 * @since  3.2.0
+	 */
+	public function init_form_fields() {
+	}
+
+	/**
+	 * Get field settings fields
+	 *
+	 * @return array
+	 */
+	public function get_form_fields() {
+		$global_fields = [
+			'field_type'  => [
+				'type'    => 'hidden',
+				'default' => $this->getType(),
+			],
+			'field_title' => [
+				'type'        => 'text',
+				'label'       => __( 'Label', 'dialog-contact-form' ),
+				'description' => __( 'Enter the label for the field.', 'dialog-contact-form' ),
+			],
+			'field_width' => [
+				'type'        => 'select',
+				'label'       => __( 'Field Width', 'dialog-contact-form' ),
+				'description' => __( 'Set field length.', 'dialog-contact-form' ),
+				'default'     => 'is-12',
+				'options'     => array(
+					'is-12' => esc_html__( 'Full', 'dialog-contact-form' ),
+					'is-9'  => esc_html__( 'Three Quarters', 'dialog-contact-form' ),
+					'is-8'  => esc_html__( 'Two Thirds', 'dialog-contact-form' ),
+					'is-6'  => esc_html__( 'Half', 'dialog-contact-form' ),
+					'is-4'  => esc_html__( 'One Third', 'dialog-contact-form' ),
+					'is-3'  => esc_html__( 'One Quarter', 'dialog-contact-form' ),
+				),
+			],
+		];
+
+		return wp_parse_args( $this->form_fields, $global_fields );
+	}
 
 	/**
 	 * Get current form ID
@@ -629,4 +681,6 @@ abstract class Field extends Data {
 
 		return array();
 	}
+
+
 }
