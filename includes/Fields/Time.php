@@ -36,6 +36,7 @@ class Time extends Text {
 		$this->priority    = 100;
 		$this->input_class = 'dcf-input dcf-input-time';
 		$this->type        = 'time';
+		$this->init_form_fields();
 	}
 
 	/**
@@ -53,4 +54,24 @@ class Time extends Text {
 
 		return (bool) preg_match( '/^(1[0-2]|0?[1-9]):[0-5][0-9] (AM|PM)$/i', $value );
 	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		parent::init_form_fields();
+
+		$this->form_fields['native_html5'] = [
+			'type'    => 'buttonset',
+			'label'   => __( 'Native HTML5', 'dialog-contact-form' ),
+			'default' => 'on',
+			'options' => array(
+				'off' => esc_html__( 'No', 'dialog-contact-form' ),
+				'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+			),
+		];
+	}
 }
+

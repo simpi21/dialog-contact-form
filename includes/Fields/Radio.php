@@ -36,6 +36,7 @@ class Radio extends Field {
 		$this->priority    = 120;
 		$this->input_class = 'dcf-radio';
 		$this->type        = 'radio';
+		$this->init_form_fields();
 	}
 
 	/**
@@ -105,5 +106,44 @@ class Radio extends Field {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		$this->form_fields = [
+			'field_id'       => array(
+				'type'        => 'text',
+				'label'       => __( 'Field ID', 'dialog-contact-form' ),
+				'description' => __( 'Please make sure the ID is unique and not used elsewhere in this form. This field allows A-z 0-9 & underscore chars without spaces.',
+					'dialog-contact-form' ),
+			),
+			'required_field' => array(
+				'type'        => 'buttonset',
+				'label'       => __( 'Required Field', 'dialog-contact-form' ),
+				'description' => __( 'Check this option to mark the field required. A form will not submit unless all required fields are provided.',
+					'dialog-contact-form' ),
+				'default'     => 'off',
+				'options'     => array(
+					'off' => esc_html__( 'No', 'dialog-contact-form' ),
+					'on'  => esc_html__( 'Yes', 'dialog-contact-form' ),
+				),
+			),
+			'field_class'    => array(
+				'type'        => 'text',
+				'label'       => __( 'Field Class', 'dialog-contact-form' ),
+				'description' => __( 'Insert additional class(es) (separated by blank space) for more personalization.',
+					'dialog-contact-form' ),
+			),
+			'options'        => [
+				'type'        => 'textarea',
+				'label'       => __( 'Add options', 'dialog-contact-form' ),
+				'description' => __( 'One option per line.', 'dialog-contact-form' ),
+				'rows'        => 5,
+			],
+		];
 	}
 }

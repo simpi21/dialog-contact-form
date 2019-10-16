@@ -74,9 +74,8 @@ class Email extends Text {
 			'label'   => __( 'Autocomplete', 'dialog-contact-form' ),
 			'default' => 'email',
 			'options' => [
-				'on'    => __( 'On', 'dialog-contact-form' ),
 				'off'   => __( 'Off', 'dialog-contact-form' ),
-				'email' => __( 'Email', 'dialog-contact-form' ),
+				'email' => __( 'On', 'dialog-contact-form' ),
 			]
 		];
 

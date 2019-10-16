@@ -2,14 +2,12 @@
 
 namespace DialogContactForm\Fields;
 
-use DialogContactForm\Abstracts\Field;
-
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Textarea extends Field {
+class Textarea extends Text {
 
 	/**
 	 * Metabox fields
@@ -38,6 +36,7 @@ class Textarea extends Field {
 		$this->priority    = 20;
 		$this->input_class = 'dcf-textarea';
 		$this->type        = 'textarea';
+		$this->init_form_fields();
 	}
 
 	/**
@@ -94,5 +93,20 @@ class Textarea extends Field {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		parent::init_form_fields();
+
+		$this->form_fields['rows'] = [
+			'type'     => 'number',
+			'meta_key' => '_contact_form_fields',
+			'label'    => __( 'Rows', 'dialog-contact-form' ),
+		];
 	}
 }

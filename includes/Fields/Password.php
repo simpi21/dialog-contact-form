@@ -35,5 +35,25 @@ class Password extends Text {
 		$this->priority    = 60;
 		$this->input_class = 'dcf-input dcf-input-password';
 		$this->type        = 'password';
+		$this->init_form_fields();
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		parent::init_form_fields();
+
+		$this->form_fields['autocomplete'] = array(
+			'type'    => 'select',
+			'label'   => __( 'Autocomplete', 'dialog-contact-form' ),
+			'options' => [
+				'off'              => __( 'Off', 'dialog-contact-form' ),
+				'current-password' => __( 'Current Password', 'dialog-contact-form' ),
+				'new-password'     => __( 'New Password', 'dialog-contact-form' ),
+			]
+		);
 	}
 }

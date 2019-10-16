@@ -35,6 +35,7 @@ class Html extends Field {
 		$this->show_in_entry      = false;
 		$this->is_fillable        = false;
 		$this->show_label_in_form = false;
+		$this->init_form_fields();
 	}
 
 	/**
@@ -83,5 +84,20 @@ class Html extends Field {
 	 */
 	protected function getValue() {
 		return null;
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		$this->form_fields = [
+			'html' => array(
+				'type'  => 'textarea',
+				'label' => __( 'HTML', 'dialog-contact-form' ),
+				'rows'  => 5,
+			),
+		];
 	}
 }

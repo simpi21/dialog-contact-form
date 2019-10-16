@@ -36,6 +36,7 @@ class Url extends Text {
 		$this->priority    = 110;
 		$this->input_class = 'dcf-input dcf-input-url';
 		$this->type        = 'url';
+		$this->init_form_fields();
 	}
 
 	/**

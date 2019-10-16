@@ -2,14 +2,12 @@
 
 namespace DialogContactForm\Fields;
 
-use DialogContactForm\Abstracts\Field;
-
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Number extends Field {
+class Number extends Text {
 
 	/**
 	 * Metabox fields
@@ -40,6 +38,7 @@ class Number extends Field {
 		$this->priority    = 70;
 		$this->input_class = 'dcf-input dcf-input-number';
 		$this->type        = 'number';
+		$this->init_form_fields();
 	}
 
 	/**
@@ -83,5 +82,31 @@ class Number extends Field {
 		}
 
 		return intval( $value );
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		parent::init_form_fields();
+
+		$this->form_fields['number_min'] = [
+			'type'  => 'number',
+			'label' => __( 'Min Number', 'dialog-contact-form' ),
+		];
+
+		$this->form_fields['number_max'] = [
+			'type'  => 'number',
+			'label' => __( 'Max Number', 'dialog-contact-form' ),
+		];
+
+		$this->form_fields['number_step'] = [
+			'type'        => 'number',
+			'label'       => __( 'Step Number', 'dialog-contact-form' ),
+			'description' => __( 'For allowing decimal values set step value (e.g. "0.01" to allow decimals to two decimal places).',
+				'dialog-contact-form' ),
+		];
 	}
 }

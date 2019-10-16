@@ -34,6 +34,7 @@ class Ip extends Text {
 		$this->priority    = 120;
 		$this->input_class = 'dcf-input dcf-input-ip';
 		$this->type        = 'text';
+		$this->init_form_fields();
 	}
 
 	/**

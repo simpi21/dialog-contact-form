@@ -33,6 +33,7 @@ class Hidden extends Text {
 		$this->type            = 'hidden';
 		$this->show_in_entry   = false;
 		$this->is_hidden_field = true;
+		$this->init_form_fields();
 	}
 
 	/**
@@ -53,5 +54,20 @@ class Hidden extends Text {
 	 */
 	protected function getValue() {
 		return $this->get( 'field_value' );
+	}
+
+	/**
+	 * Initialise settings form fields.
+	 *
+	 * Add an array of fields to be displayed on the form settings screen.
+	 */
+	public function init_form_fields() {
+		parent::init_form_fields();
+
+		$this->form_fields['field_value'] = [
+			'type'        => 'text',
+			'label'       => __( 'Default Value', 'dialog-contact-form' ),
+			'description' => __( 'Define field default value.', 'dialog-contact-form' ),
+		];
 	}
 }
