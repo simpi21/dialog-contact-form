@@ -30,9 +30,43 @@
                                 </columns>
                             </tab>
                             <tab name="Field Settings" :selected="showFieldOption">
-                                <template v-for="_field in formFields" v-if="_field.id === activeField.field_type">
-                                    {{_field.settings}}
-                                </template>
+                                <div class="dcf-field-settings">
+                                    <template v-for="_field in formFields" v-if="_field.id === activeField.field_type">
+                                        <template v-for="(_setting,_id) in Object.assign(_field.settings)">
+                                            <template v-if="'hidden' === _setting.type">
+                                                <input type="hidden" v-model="activeField[_id]">
+                                            </template>
+                                            <div class="dcf-field-settings__control" v-else>
+                                                <label class="dcf-field-settings__label">
+                                                    <strong v-text="_setting.label"></strong>
+                                                </label>
+                                                <p class="description" v-if="_setting.description"
+                                                   v-html="_setting.description"></p>
+                                                <template v-if="'text' === _setting.type">
+                                                    <input class="widefat" type="text" v-model="activeField[_id]">
+                                                </template>
+                                                <template v-else-if="'textarea' === _setting.type">
+                                                    <textarea class="widefat" :rows="_setting.rows"
+                                                              v-model="activeField[_id]"></textarea>
+                                                </template>
+                                                <template v-else-if="'select' === _setting.type">
+                                                    <select class="widefat" v-model="activeField[_id]">
+                                                        <option v-for="(label,value) in Object.assign(_setting.options)"
+                                                                :value="value" v-text="label"></option>
+                                                    </select>
+                                                </template>
+                                                <template v-else-if="'buttonset' === _setting.type">
+                                                    <button-group v-model="activeField[_id]"
+                                                                  :settings="buttonSetSettings(_setting)"></button-group>
+                                                </template>
+                                                <template v-else>
+                                                    {{_id}}
+                                                    {{_setting}}
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </template>
+                                </div>
                             </tab>
                         </tabs>
                     </column>
@@ -208,7 +242,13 @@
                     placeholder: '',
                 };
                 this.fields.push(data);
-            }
+            },
+            buttonSetSettings(_setting) {
+                return {
+                    id: '',
+                    options: _setting.options,
+                }
+            },
         }
     }
 </script>
@@ -235,6 +275,24 @@
         }
 
         &__title {
+        }
+    }
+
+    .dcf-field-settings {
+        background: #fff;
+        padding: 10px;
+
+        &__control {
+            margin-bottom: 15px;
+        }
+
+        &__label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .dcf-button-group {
+            display: flex;
         }
     }
 </style>
