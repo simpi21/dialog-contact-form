@@ -9,20 +9,32 @@
                     <column :tablet="8">
                         <draggable :list="fields" handle=".sort-field" class="shapla-columns is-multiline">
                             <column :class="`${field.field_width}`" v-for="field in fields" :key="field.field_id">
-                                <field :field="field" @click:action="handleFieldAction"></field>
+                                <field
+                                        :field="field"
+                                        :active="field === activeField"
+                                        @click:action="handleFieldAction"
+                                ></field>
                             </column>
                         </draggable>
                     </column>
                     <column>
-                        <h4>Available Fields</h4>
-                        <columns class="dcf-available-fields" :multiline="true" :gapless="false" mobile>
-                            <column :mobile="6" :tablet="6" v-for="_field in formFields" :key="_field.id">
-                                <div class="dcf-available-field" @click="addNewField(_field)">
-                                    <span class="dcf-available-field__icon" v-html="_field.icon"></span>
-                                    <span class="dcf-available-field__title" v-html="_field.title"></span>
-                                </div>
-                            </column>
-                        </columns>
+                        <tabs :fullwidth="true" @tab:change="onTabChange">
+                            <tab name="Available Fields" :selected="!showFieldOption">
+                                <columns class="dcf-available-fields" :multiline="true" :gapless="false" mobile>
+                                    <column :mobile="6" :tablet="6" v-for="_field in formFields" :key="_field.id">
+                                        <div class="dcf-available-field" @click="addNewField(_field)">
+                                            <span class="dcf-available-field__icon" v-html="_field.icon"></span>
+                                            <span class="dcf-available-field__title" v-html="_field.title"></span>
+                                        </div>
+                                    </column>
+                                </columns>
+                            </tab>
+                            <tab name="Field Settings" :selected="showFieldOption">
+                                <template v-for="_field in formFields" v-if="_field.id === activeField.field_type">
+                                    {{_field.settings}}
+                                </template>
+                            </tab>
+                        </tabs>
                     </column>
                 </columns>
             </tab>
@@ -109,6 +121,8 @@
                 actions: [],
                 settings: [],
                 messages: [],
+                activeField: {},
+                showFieldOption: false,
             }
         },
         computed: {
@@ -123,6 +137,9 @@
             },
             formMessages() {
                 return window.dialogContactForm.messages;
+            },
+            hasActiveField() {
+                return Object.keys(this.activeField).length;
             }
         },
         mounted() {
@@ -131,6 +148,17 @@
             this.getForm();
         },
         methods: {
+            onTabChange(name) {
+                if (name === 'Field Settings') {
+                    if (!this.hasActiveField) {
+                        this.activeField = this.fields[0];
+                        this.showFieldOption = true;
+                    }
+                } else {
+                    this.activeField = {};
+                    this.showFieldOption = false;
+                }
+            },
             getForm() {
                 this.$store.commit('SET_LOADING_STATUS', true);
                 this.get_item(dcfSettings.restRoot + '/forms/' + this.id).then(response => {
@@ -154,6 +182,10 @@
             },
             handleFieldAction(action, field) {
                 let index = this.fields.indexOf(field);
+                if ('edit' === action) {
+                    this.activeField = field;
+                    this.showFieldOption = true;
+                }
                 if ('delete' === action && confirm('Are you sure to delete?')) {
                     this.$delete(this.fields, index);
                 }

@@ -1,6 +1,6 @@
 <template>
     <div class="dcf-admin-field">
-        <div class="dcf-admin-field__settings">
+        <div class="dcf-admin-field__settings" :class="{'is-active':active}">
             <div class="dcf-admin-field__controls">
                 <div class="dcf-admin-field__control">
                     <a href="#" title="Edit" @click.prevent="fieldAction('edit')">
@@ -36,7 +36,12 @@
                 </div>
             </div>
         </div>
-        <template v-if="field.field_type === 'textarea'">
+        <template v-if="field.field_type === 'html'">
+            <div class="pt-40 pr-10 pb-10 pl-10">
+                <div v-html="field.html"></div>
+            </div>
+        </template>
+        <template v-else-if="field.field_type === 'textarea'">
             <div class="dcf-admin-field__label">
                 <label :for="field.field_id">{{field.field_title}}</label>
             </div>
@@ -66,7 +71,8 @@
     export default {
         name: "Field",
         props: {
-            field: {type: Object, required: true}
+            field: {type: Object, required: true},
+            active: {type: Boolean, default: false},
         },
         methods: {
             fieldAction(action) {
@@ -76,9 +82,26 @@
     }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
     .dcf-admin-field {
         position: relative;
+        background-color: #fff;
+
+        .pt-40 {
+            padding-top: 40px;
+        }
+
+        .pr-10 {
+            padding-right: 10px;
+        }
+
+        .pb-10 {
+            padding-bottom: 10px;
+        }
+
+        .pl-10 {
+            padding-left: 10px;
+        }
 
         &__label,
         &__input {
@@ -110,13 +133,22 @@
         }
 
         &__settings {
-            border: 1px dashed darkgreen;
+            border: 1px dashed rgba(#000, .1);
             background: rgba(#000, .01);
-            // display: none;
             height: 100%;
             position: absolute;
             top: 0;
             width: 100%;
+            opacity: 0;
+
+            &:hover {
+                opacity: 1;
+            }
+
+            &.is-active {
+                border-color: limegreen;
+                opacity: 1;
+            }
         }
 
         &:hover .dcf-admin-field__settings,
@@ -133,7 +165,7 @@
             padding: 5px;
 
             a {
-                border: 1px solid darkgreen;
+                border: 1px solid rgba(#000, .1);
                 height: 32px;
                 width: 32px;
                 display: flex;
@@ -141,9 +173,13 @@
                 align-items: center;
                 border-radius: 16px;
 
+                &:hover {
+                    border-color: rgba(#000, .38);
+                }
             }
 
             svg {
+                fill: rgba(#000, .54);
                 height: 20px;
                 overflow: hidden;
                 width: 20px;

@@ -38,6 +38,11 @@
         },
         mounted() {
             this.isActive = this.selected;
+        },
+        watch: {
+            selected(newValue) {
+                this.isActive = newValue;
+            }
         }
     }
 </script>
