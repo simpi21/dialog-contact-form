@@ -31,6 +31,11 @@
                             </tab>
                             <tab name="Field Settings" :selected="showFieldOption">
                                 <div class="dcf-field-settings">
+
+                                    <field-options
+                                            :option_field="{title:'Options'}"
+                                    />
+
                                     <template v-for="_field in formFields" v-if="_field.id === activeField.field_type">
                                         <template v-for="(_setting,_id) in Object.assign(_field.settings)">
                                             <template v-if="'hidden' === _setting.type">
@@ -142,11 +147,12 @@
     import Field from "./Field";
     import ButtonGroup from "../../components/ButtonGroup";
     import draggable from 'vuedraggable'
+    import FieldOptions from "../../components/FieldOptions";
 
     export default {
         name: "EditForm",
         mixins: [CrudMixin],
-        components: {ButtonGroup, Field, tabs, tab, columns, column, toggles, toggle, draggable},
+        components: {FieldOptions, ButtonGroup, Field, tabs, tab, columns, column, toggles, toggle, draggable},
         data() {
             return {
                 id: 0,
